@@ -401,6 +401,33 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 #splash .sp-tag{color:#eafff4;font-size:clamp(14px,3.4vw,18px);font-weight:600;letter-spacing:.2px}
 @keyframes spbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 @keyframes splashHide{to{opacity:0;visibility:hidden}}
+/* ===== Kho giáo án số ===== */
+.bk-list{display:flex;flex-direction:column;gap:8px}
+.bk-row{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;flex-wrap:wrap}
+.bk-row.ok{border-color:#cdeed9;background:#f5fbf7}
+.bk-row.warn{border-color:#f3e3c2;background:#fdfaf2}
+.bk-main{min-width:0;flex:1 1 240px}
+.bk-bai{font-weight:700;font-size:14px;color:var(--ink,#1d2b24)}
+.bk-meta{font-size:12px;color:var(--muted,#6b7a72);margin-top:2px}
+.bk-act{display:flex;gap:6px;flex-wrap:wrap}
+.bk-badge{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:700}
+.bk-badge.draft{background:#fff3d6;color:#9a6b00}
+.bk-badge.checked{background:#dcefe4;color:#127a45}
+.bk-badge.approved{background:#cfe8ff;color:#0a5aa8}
+.bk-badge.needs-update{background:#ffe0e0;color:#b03636}
+.bk-badge.none{background:#eee;color:#777}
+.bank-tag{padding:9px 12px;border-radius:10px;font-size:13px;background:#eef6f1;border:1px solid #d7e9df;margin-bottom:10px}
+.bank-tag.ok{background:#f0fbf4;border-color:#bfe7cd;color:#136b3b}
+.bank-tag.warn{background:#fff7ea;border-color:#f0dcb0;color:#8a5a00}
+.ai-assist{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.aa-label{font-size:12px;font-weight:700;color:var(--muted,#6b7a72)}
+.aa-btn{font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:#fff;cursor:pointer;color:#3a4a42}
+.aa-btn:hover{background:#f0f7f3;border-color:#bfe7cd}
+.bank-stat{font-size:13px;color:#3a4a42}
+.bank-stat .bk-chips{display:flex;gap:6px;flex-wrap:wrap}
+.bank-stat .bk-chip{background:#f0f5f2;border:1px solid var(--line);border-radius:999px;padding:1px 9px;font-size:12px}
+.bk-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.bk-tools code,.muted-sm code{font-size:11px;background:#f3f5f4;padding:1px 5px;border-radius:5px}
 </style>
 </head>
 <body>
@@ -636,10 +663,14 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
     <!-- ============ VIEW: KẾ HOẠCH BÀI DẠY ============ -->
     <section class="view" id="v-khbd">
       <div class="page-head">
-        <div><h2 class="ph-title">Kế hoạch bài dạy</h2><div class="ph-sub">Tạo, lưu và quản lý bản nháp KHBD — bám CT GDPT 2018, bộ Kết nối tri thức</div></div>
+        <div><h2 class="ph-title">Kế hoạch bài dạy</h2><div class="ph-sub">Chọn lịch báo giảng → Bút Xanh tra <b>Kho giáo án số</b> và cấp đúng KHBD — bám CT GDPT 2018, bộ Kết nối tri thức</div></div>
       </div>
       <div class="card">
-        <div class="card-head"><h3>Tạo nhanh từ lịch tuần <span id="khbd-week">12</span></h3><span class="muted-sm">Bấm một tiết để soạn KHBD (mẫu trống hoặc nhờ AI)</span></div>
+        <div class="card-head"><h3>📚 Giáo án theo lịch báo giảng tuần <span id="khbd-week">12</span></h3><span class="muted-sm">Đã có trong kho: <b id="khbd-bank-count">0/0</b> tiết</span></div>
+        <div id="khbd-bank-list" class="bk-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Tạo nhanh (mở nhanh từng tiết)</h3><span class="muted-sm">Bấm một tiết để xem/soạn KHBD</span></div>
         <div class="chip-list" id="khbd-tiet-chips"></div>
       </div>
       <div class="card">
@@ -662,6 +693,18 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
           <button class="btn-xs" onclick="document.getElementById('kho-file').click()">⤴ Thêm tệp</button>
           <button class="btn-xs solid" onclick="downloadAllKHBD()">⬇ Tải tất cả (Word)</button>
         </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>📚 Kho giáo án số (chuẩn hóa)</h3><span class="muted-sm">Nguồn cấp KHBD cho lịch báo giảng</span></div>
+        <div id="bank-stat" class="bank-stat"></div>
+        <div class="bk-tools">
+          <input type="file" id="bank-file" accept=".json,application/json" style="display:none" onchange="importBank(this)">
+          <button class="btn-xs solid" onclick="document.getElementById('bank-file').click()">⤴ Nạp giáo án (JSON)</button>
+          <button class="btn-xs" onclick="exportBankJson()">⬇ Xuất kho (JSON)</button>
+          <button class="btn-xs" onclick="downloadBankTemplate()">📄 Tải mẫu nhập</button>
+          <button class="btn-xs danger" onclick="clearBankImport()">Xoá phần đã nạp</button>
+        </div>
+        <div class="muted-sm" style="margin-top:8px">Định dạng mỗi giáo án: <code>id, khoi, mon, tuan, tiet, bai, bosach, yccd, dodung, hoatdong, hotro, hoanhap, source, status</code>. Thành viên dự án có dữ liệu chỉ cần "Nạp giáo án (JSON)" là kho tự cập nhật.</div>
       </div>
       <div class="toolbar">
         <label class="search"><svg class="icn" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
@@ -825,12 +868,22 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
       <button class="close" onclick="closeModal('khbd-overlay')">×</button>
     </div>
     <div class="modal-body">
-      <div class="notice">KHBD bám CT GDPT 2018 và cấu trúc theo CV 2345/BGDĐT-GDTH. Thầy cô có thể <b>dùng mẫu trống soạn tay</b> hoặc nhờ AI tạo bản nháp, rồi chỉnh sửa trực tiếp trong ô soạn thảo trước khi lưu/tải.</div>
+      <div class="notice">KHBD bám CT GDPT 2018 và cấu trúc theo CV 2345/BGDĐT-GDTH. Bút Xanh tự lấy giáo án từ <b>Kho giáo án số</b> nếu có; thầy cô chỉnh sửa trực tiếp rồi lưu thành <b>bản của riêng mình</b> (không ảnh hưởng bản gốc trong kho).</div>
+      <div id="khbd-bank-tag" class="bank-tag" style="display:none"></div>
       <div id="khbd-loading" class="hidden"><div class="loading"><span class="spinner"></span> Bút Xanh đang soạn bản nháp…</div></div>
       <textarea class="box khbd-out hidden" id="khbd-text" oninput="onKhbdEdit()"></textarea>
       <div id="khbd-empty" class="empty">
         <div class="mascot" aria-hidden="true"></div>
         Nhấn "Dùng mẫu trống" để soạn tay, hoặc "Tạo bản nháp" để nhờ AI.</div>
+      <div class="ai-assist">
+        <span class="aa-label">✨ AI hỗ trợ (phụ):</span>
+        <button class="aa-btn" onclick="aiAssist('expand')">Bổ sung hoạt động</button>
+        <button class="aa-btn" onclick="aiAssist('shorten')">Rút gọn</button>
+        <button class="aa-btn" onclick="aiAssist('diff')">Thêm phân hóa</button>
+        <button class="aa-btn" onclick="aiAssist('inclusive')">Hỗ trợ HS khuyết tật</button>
+        <button class="aa-btn" onclick="aiAssist('review')">Rà soát</button>
+        <button class="aa-btn" onclick="aiAssist('ppt')">Tạo dàn ý PPT</button>
+      </div>
     </div>
     <div class="modal-foot">
       <button class="btn ghost" id="btn-tpl" onclick="fillTemplate()">📝 Dùng mẫu trống</button>
@@ -1008,7 +1061,7 @@ function renderSchedule(){
 
 /* ---------- 4) SINH KHBD (AI) ---------- */
 function openKHBD(idx){
-  const l=state.schedule[idx]; state.current=l;
+  const l=state.schedule[idx]; state.current=Object.assign({},l);
   document.getElementById("khbd-title").textContent=`KHBD: ${l.mon} — ${l.bai}`;
   document.getElementById("khbd-sub").textContent=`Lớp ${state.klass} · ${l.day} ${l.date} · Tiết ${l.tiet} · Tuần ${state.week}`;
   document.getElementById("khbd-text").classList.add("hidden");
@@ -1020,7 +1073,9 @@ function openKHBD(idx){
   document.getElementById("btn-save").disabled=true;
   document.getElementById("btn-save").textContent="💾 Lưu vào kho";
   document.getElementById("btn-gen").textContent="✨ Tạo bản nháp";
+  const tag=el("khbd-bank-tag"); if(tag) tag.style.display="none";
   document.getElementById("khbd-overlay").classList.add("show");
+  serveBankIntoModal(l); /* tra Kho giáo án số → rót sẵn nếu có */
 }
 function closeModal(id){ document.getElementById(id).classList.remove("show"); }
 
@@ -1466,7 +1521,7 @@ function saveCurrentKHBD(){
     const k=state.khbd.find(x=>x.id===l.id);
     if(k){ k.content=content; k.bai=l.bai||k.bai; k.updated=new Date().toLocaleDateString('vi-VN'); }
   }else{
-    const item={id:'k'+Date.now(),mon:l.mon,bai:l.bai,lop:state.klass,tuan:state.week,day:l.day,date:l.date,content,created:new Date().toLocaleDateString('vi-VN')};
+    const item={id:'k'+Date.now(),mon:l.mon,bai:l.bai,lop:state.klass,tuan:state.week,day:l.day,date:l.date,content,fromBank:l.bankId||null,created:new Date().toLocaleDateString('vi-VN')};
     state.khbd.unshift(item); state.current=item;
   }
   persistKHBD();
@@ -1487,7 +1542,7 @@ function openSavedKHBD(id){
   el('btn-gen').textContent='↻ Soạn lại'; el('khbd-overlay').classList.add('show');
 }
 function downloadSavedKHBD(id){ const k=state.khbd.find(x=>x.id===id); if(!k)return; state.current=k; el('khbd-text').value=k.content; downloadKHBD(); }
-function renderKHBDView(){ renderKHBDChips(); renderKHBDList(); }
+function renderKHBDView(){ renderBankSchedule(); renderKHBDChips(); renderKHBDList(); }
 function renderKHBDChips(){
   const box=el('khbd-tiet-chips'); if(!box)return;
   const wk=el('khbd-week'); if(wk) wk.textContent=state.week;
@@ -1508,6 +1563,322 @@ function renderKHBDList(){
     .slice().sort((a,b)=>(parseInt((b.id||'').replace(/\D/g,''),10)||0)-(parseInt((a.id||'').replace(/\D/g,''),10)||0));
   if(!list.length){ box.innerHTML='<div class="empty-pad">Không tìm thấy KHBD phù hợp với bộ lọc.</div>'; return; }
   box.innerHTML=list.map(k=>`<div class="kitem"><div class="wic">W</div><div class="kbody"><div class="ktitle">${k.mon} — ${k.bai}</div><div class="kmeta">Lớp ${k.lop} · Tuần ${k.tuan} · ${k.day} ${k.date} · Lưu ${k.created}${k.updated?(' · Sửa '+k.updated):''}</div></div><div class="kact"><button class="btn-xs" onclick="openSavedKHBD('${k.id}')">Mở</button><button class="btn-xs solid" onclick="downloadSavedKHBD('${k.id}')">Tải Word</button><button class="btn-xs danger" onclick="delKHBD('${k.id}')">Xoá</button></div></div>`).join('');
+}
+
+/* ======================================================================
+   KHO GIÁO ÁN SỐ THÔNG MINH (lõi mới) — tra giáo án chuẩn hóa theo lịch
+   - LESSON_BANK: seed Toán + Tiếng Việt (Claude tạo nháp). Thành viên dự án
+     nạp thêm qua JSON (localStorage 'butxanh_bank'), gộp & ghi đè theo id.
+   - Ghép theo (môn + tên bài) đã chuẩn hóa; cá nhân hóa nhẹ (GV/lớp/tuần/ngày).
+   - GV sửa -> lưu BẢN CÁ NHÂN (state.khbd), KHÔNG ghi đè bản gốc trong kho.
+   ====================================================================== */
+const LESSON_BANK=[
+  {
+    id:'TOAN5-T12-058', khoi:5, mon:'Toán', tuan:12, tiet:58,
+    bai:'Luyện tập chung', bosach:'Kết nối tri thức với cuộc sống',
+    yccd:`1. Năng lực đặc thù (Toán học):
+   - Củng cố kĩ năng nhân một số thập phân với một số thập phân; thực hiện đúng thứ tự các phép tính trong biểu thức.
+   - Vận dụng tính chất giao hoán, kết hợp của phép nhân để tính bằng cách thuận tiện.
+   - Giải được bài toán có lời văn liên quan đến phép nhân số thập phân.
+2. Năng lực chung:
+   - Tự chủ và tự học: tự hoàn thành các bài luyện tập trong SGK.
+   - Giao tiếp và hợp tác: trao đổi cách làm trong nhóm đôi.
+   - Giải quyết vấn đề và sáng tạo: lựa chọn cách tính thuận tiện.
+3. Phẩm chất: chăm chỉ, cẩn thận, trung thực khi trình bày bài làm.`,
+    dodung:`1. Giáo viên: bảng nhóm, phiếu bài tập, máy tính – màn hình trình chiếu.
+2. Học sinh: SGK Toán 5 (tập 1), vở ô li, bảng con.`,
+    hoatdong:`1. Hoạt động Khởi động (5 phút)
+   - Mục tiêu: tạo hứng thú, ôn lại quy tắc nhân số thập phân.
+   - Cách tiến hành: trò chơi "Ai nhanh hơn" – GV nêu nhanh các phép tính (2,5 × 3; 0,4 × 6...), HS ghi nhanh kết quả vào bảng con.
+   - Đánh giá thường xuyên: quan sát, nhận xét tốc độ và độ chính xác.
+2. Hoạt động Luyện tập – Thực hành (25 phút)
+   - Bài 1: Đặt tính rồi tính (nhân số thập phân) – HS làm bảng con, 2 HS làm bảng lớp.
+   - Bài 2: Tính bằng cách thuận tiện – HS thảo luận nhóm đôi, vận dụng tính chất giao hoán/kết hợp.
+   - Bài 3: Giải toán có lời văn – HS đọc đề, tóm tắt, nêu phép tính, trình bày bài giải vào vở.
+   - Đánh giá thường xuyên: chấm bảng con, nhận xét bài giải, sửa lỗi điển hình.
+3. Hoạt động Vận dụng (5 phút)
+   - Liên hệ thực tế: tính tiền mua hàng theo cân nặng (kg) và đơn giá là số thập phân.
+   - Giao nhiệm vụ: hoàn thành bài còn lại ở nhà.`,
+    hotro:`- Cho phép dùng bảng nhân hỗ trợ; chia nhỏ bài 3 thành các bước (tóm tắt → phép tính → lời giải).
+- Ghép cặp với bạn học tốt để cùng kiểm tra kết quả.`,
+    hoanhap:`- Giảm số lượng bài tập (chỉ yêu cầu bài 1 và 1 ý của bài 2).
+- Ưu tiên hoạt động thao tác trên bảng con; ghi nhận sự tiến bộ, không so sánh với cả lớp.`,
+    source:'Lop5_Toan_Tuan12_LuyenTapChung_T58.docx', status:'checked'
+  },
+  {
+    id:'TOAN5-T12-059', khoi:5, mon:'Toán', tuan:12, tiet:59,
+    bai:'Luyện tập chung', bosach:'Kết nối tri thức với cuộc sống',
+    yccd:`1. Năng lực đặc thù (Toán học):
+   - Củng cố nhân, chia số thập phân; tính giá trị biểu thức có nhiều phép tính.
+   - Vận dụng giải bài toán thực tế có hai bước tính.
+2. Năng lực chung: tự học, hợp tác nhóm, trình bày lời giải rõ ràng.
+3. Phẩm chất: chăm chỉ, cẩn thận, có trách nhiệm với bài làm của mình.`,
+    dodung:`1. Giáo viên: bảng nhóm, phiếu học tập, máy tính – màn hình.
+2. Học sinh: SGK Toán 5, vở ô li, nháp.`,
+    hoatdong:`1. Khởi động (5 phút): trò chơi "Truyền điện" ôn quy tắc chia số thập phân.
+2. Luyện tập – Thực hành (25 phút):
+   - Bài 1: Tính (kết hợp nhân và chia số thập phân) – làm cá nhân.
+   - Bài 2: Tính giá trị biểu thức – nhóm đôi, lưu ý thứ tự thực hiện phép tính.
+   - Bài 3: Bài toán thực tế hai bước tính – HS tóm tắt, giải vào vở; 1 HS trình bày bảng lớp.
+   - Đánh giá thường xuyên: nhận xét bài bảng lớp, sửa lỗi chung.
+3. Vận dụng (5 phút): ước lượng – kiểm tra kết quả bằng phép tính nhẩm gần đúng.`,
+    hotro:`- Cung cấp mẫu trình bày bài giải; gợi ý từng bước cho bài 3.
+- Cho thêm thời gian và giảm yêu cầu về tốc độ.`,
+    hoanhap:`- Chỉ yêu cầu thực hiện bài 1; hỗ trợ trực tiếp khi cần.
+- Khích lệ, ghi nhận từng kết quả đúng.`,
+    source:'Lop5_Toan_Tuan12_LuyenTapChung_T59.docx', status:'draft'
+  },
+  {
+    id:'TV5-T12-167', khoi:5, mon:'Tiếng Việt', tuan:12, tiet:167,
+    bai:'Luyện tập tả người (TT)', bosach:'Kết nối tri thức với cuộc sống',
+    yccd:`1. Năng lực đặc thù (Ngôn ngữ – Văn học):
+   - Củng cố cấu tạo bài văn tả người (mở bài, thân bài, kết bài).
+   - Lập được dàn ý chi tiết và viết được đoạn văn tả hoạt động của một người mà em quý mến.
+   - Dùng từ ngữ gợi tả, hình ảnh so sánh phù hợp.
+2. Năng lực chung: tự học, hợp tác, sáng tạo trong diễn đạt.
+3. Phẩm chất: yêu thương, trân trọng người thân, thầy cô, bạn bè.`,
+    dodung:`1. Giáo viên: máy tính – màn hình, đoạn văn mẫu, phiếu dàn ý.
+2. Học sinh: SGK Tiếng Việt 5, vở, dàn ý đã chuẩn bị ở tiết trước.`,
+    hoatdong:`1. Khởi động (4 phút): HS nói nhanh 2–3 từ tả ngoại hình/hoạt động của một người mà em yêu quý.
+2. Khám phá – Phân tích mẫu (10 phút):
+   - Đọc đoạn văn mẫu tả hoạt động; tìm câu mở đoạn, các chi tiết tả hoạt động, từ gợi tả.
+   - Chốt: tả hoạt động cần chọn lọc chi tiết tiêu biểu, dùng động từ – tính từ sinh động.
+3. Luyện tập – Thực hành (18 phút):
+   - HS hoàn thiện dàn ý; viết một đoạn văn tả hoạt động của người đã chọn.
+   - GV theo dõi, gợi ý cho HS còn lúng túng.
+   - Đánh giá thường xuyên: 2–3 HS đọc bài, lớp nhận xét theo tiêu chí (đủ ý – từ ngữ gợi tả – cảm xúc).
+4. Vận dụng (3 phút): chỉnh sửa đoạn văn theo góp ý; chuẩn bị viết bài hoàn chỉnh ở tiết sau.`,
+    hotro:`- Cung cấp khung câu gợi ý ("Mỗi khi…, bà em thường…"); cho phép viết 3–4 câu.
+- Ghép cặp để bạn đọc – soát giúp.`,
+    hoanhap:`- Chấp nhận sản phẩm là 1–2 câu hoặc tranh kèm lời chú thích.
+- Ghi nhận nỗ lực diễn đạt, không yêu cầu đủ bố cục.`,
+    source:'Lop5_TiengViet_Tuan12_LuyenTapTaNguoi.docx', status:'approved'
+  },
+  {
+    id:'TV5-T12-168', khoi:5, mon:'Tiếng Việt', tuan:12, tiet:168,
+    bai:'Mở rộng vốn từ: Hữu nghị - Hợp tác', bosach:'Kết nối tri thức với cuộc sống',
+    yccd:`1. Năng lực đặc thù (Ngôn ngữ):
+   - Hiểu nghĩa và mở rộng được vốn từ thuộc chủ điểm Hữu nghị – Hợp tác.
+   - Đặt câu đúng với một số từ ngữ vừa học; sử dụng từ phù hợp ngữ cảnh.
+2. Năng lực chung: hợp tác nhóm, giao tiếp tích cực.
+3. Phẩm chất: thân ái, đoàn kết, tôn trọng và hợp tác với bạn bè.`,
+    dodung:`1. Giáo viên: thẻ từ, bảng nhóm, máy tính – màn hình.
+2. Học sinh: SGK Tiếng Việt 5, vở, từ điển (nếu có).`,
+    hoatdong:`1. Khởi động (4 phút): trò chơi "Nối nhanh" – nối từ với nghĩa (hữu nghị, hợp tác, đoàn kết…).
+2. Khám phá – Mở rộng vốn từ (12 phút):
+   - Bài 1: tìm hiểu nghĩa các từ chứa tiếng "hữu", "hợp"; phân loại theo nhóm nghĩa (nhóm đôi).
+   - Bài 2: ghép từ thành cụm/câu thể hiện tinh thần hợp tác.
+   - Chốt: hữu nghị, hợp tác là những giá trị tốt đẹp trong quan hệ giữa người với người, giữa các nước.
+3. Luyện tập (16 phút):
+   - Bài 3: đặt câu với 2 từ vừa học – HS viết vở, một số HS trình bày.
+   - Đánh giá thường xuyên: nhận xét câu đặt (đúng nghĩa – đúng ngữ pháp).
+4. Vận dụng (3 phút): nói 1 câu thể hiện sự hợp tác với bạn trong giờ học.`,
+    hotro:`- Cung cấp sẵn nghĩa của từ; gợi ý mẫu câu để HS điền.
+- Giảm số từ cần đặt câu (1 từ).`,
+    hoanhap:`- Yêu cầu nhận biết/đọc lại từ và nghĩa; ghép thẻ từ – nghĩa.
+- Khích lệ tham gia trò chơi cùng nhóm.`,
+    source:'Lop5_TiengViet_Tuan12_MRVT_HuuNghiHopTac.docx', status:'checked'
+  }
+];
+/* --- chuẩn hóa khóa ghép (bỏ dấu, gộp "tiếp theo"≈"TT") --- */
+function _normTxt(s){
+  return (s||'').toString().toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d')
+    .replace(/\(?\s*tiep theo\s*\)?/g,'tt')
+    .replace(/[^a-z0-9]+/g,'');
+}
+function bankKey(mon,bai){ return _normTxt(mon)+'|'+_normTxt(bai); }
+function loadBankImport(){ try{const v=JSON.parse(localStorage.getItem('butxanh_bank')); return Array.isArray(v)?v:[];}catch(e){return [];} }
+function persistBankImport(arr){ try{localStorage.setItem('butxanh_bank',JSON.stringify(arr)); return true;}catch(e){return false;} }
+function bankAll(){
+  const byId={}; LESSON_BANK.forEach(L=>{byId[L.id]=L;});
+  loadBankImport().forEach(L=>{ if(L&&L.mon&&L.bai){ byId[L.id||('imp-'+_normTxt(L.mon)+'-'+_normTxt(L.bai))]=L; } });
+  return Object.keys(byId).map(k=>byId[k]);
+}
+function bankStatusLabel(s){ return ({draft:'Bản nháp',checked:'Đã kiểm tra',approved:'Đã duyệt','needs-update':'Cần cập nhật'})[s]||'Bản nháp'; }
+/* tìm giáo án trong kho khớp 1 tiết của lịch */
+function findBankLesson(row){
+  if(!row) return null;
+  const all=bankAll(), k=bankKey(row.mon,row.bai);
+  let cands=all.filter(L=>bankKey(L.mon,L.bai)===k);
+  if(!cands.length) return null;
+  if(cands.length>1){
+    const wk=String(row.tuan||state.week);
+    const byWk=cands.filter(L=>String(L.tuan)===wk); if(byWk.length) cands=byWk;
+    const ti=String(row.ppct||row.tiet||'');
+    const byTi=cands.filter(L=>String(L.tiet)===ti); if(byTi.length) cands=byTi;
+  }
+  return cands[0];
+}
+/* dựng nội dung KHBD đầy đủ từ 1 giáo án trong kho + cá nhân hóa nhẹ */
+function bankLessonToText(L,row){
+  row=row||{};
+  const gv=state.gvcn||'…', lop=row.lop||state.klass, tuan=L.tuan||row.tuan||state.week;
+  const tiet=row.ppct||row.tiet||L.tiet||'', ngay=row.date||'';
+  const ln=[];
+  ln.push('KẾ HOẠCH BÀI DẠY');
+  ln.push('Môn: '+L.mon+'   |   Lớp: '+lop+'   |   Tuần: '+tuan+(tiet?('   |   Tiết (PPCT): '+tiet):''));
+  ln.push('Bài: '+L.bai);
+  ln.push('Giáo viên: '+gv+(ngay?('   |   Ngày dạy: '+ngay):'')+'   |   Bộ sách: '+(L.bosach||'Kết nối tri thức với cuộc sống'));
+  ln.push('');
+  ln.push('I. YÊU CẦU CẦN ĐẠT'); ln.push(L.yccd||'(Thầy cô đối chiếu SGK/SGV)'); ln.push('');
+  ln.push('II. ĐỒ DÙNG DẠY HỌC'); ln.push(L.dodung||'…'); ln.push('');
+  ln.push('III. CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU'); ln.push(L.hoatdong||'…'); ln.push('');
+  ln.push('IV. ĐIỀU CHỈNH, HỖ TRỢ HỌC SINH');
+  ln.push('1. Học sinh cần hỗ trợ:'); ln.push(L.hotro||'…');
+  ln.push('2. Học sinh khuyết tật học hòa nhập:'); ln.push(L.hoanhap||'…'); ln.push('');
+  ln.push('V. ĐIỀU CHỈNH SAU BÀI DẠY'); ln.push('   - …');
+  return ln.join('\n');
+}
+/* rót giáo án vào modal soạn KHBD (gọi cuối openKHBD) */
+function serveBankIntoModal(row){
+  const L=findBankLesson(row), ta=el('khbd-text'), empty=el('khbd-empty'), tag=el('khbd-bank-tag');
+  if(L){
+    state.current.bankId=L.id;
+    ta.value=bankLessonToText(L,row); ta.classList.remove('hidden'); empty.classList.add('hidden');
+    el('btn-copy').disabled=false; el('btn-word').disabled=false; el('btn-save').disabled=false;
+    el('btn-save').textContent='💾 Lưu bản của tôi';
+    if(tag){ tag.style.display=''; tag.className='bank-tag ok';
+      tag.innerHTML='✅ Lấy từ <b>Kho giáo án số</b> · '+bankStatusLabel(L.status)+' · đã cá nhân hóa cho <b>'+_xe(state.gvcn||'thầy/cô')+'</b>. Thầy cô có thể chỉnh sửa, lưu bản của riêng mình.'; }
+  }else{
+    ta.value=''; ta.classList.add('hidden');
+    if(tag){ tag.style.display=''; tag.className='bank-tag warn';
+      tag.innerHTML='⚠️ <b>Kho giáo án chưa có bài này.</b> Vui lòng thêm giáo án vào kho, hoặc dùng <b>📝 mẫu trống</b> / <b>✨ AI hỗ trợ</b> để tạo bản nháp.'; }
+    empty.classList.remove('hidden');
+    empty.innerHTML='<div class="mascot" aria-hidden="true"></div>Kho chưa có bài <b>'+_xe(row.bai||'')+'</b>.<br>Bấm <b>📝 Dùng mẫu trống</b> để soạn tay, hoặc <b>✨ Tạo bản nháp</b> (AI hỗ trợ).';
+  }
+}
+/* danh sách "Giáo án theo lịch báo giảng" trong view KHBD */
+function renderBankSchedule(){
+  const box=el('khbd-bank-list'); if(!box) return;
+  const rows=state.schedule||[]; let have=0;
+  const html=rows.map((r,idx)=>{
+    const L=findBankLesson(r);
+    if(L){ have++;
+      return '<div class="bk-row ok"><div class="bk-main"><div class="bk-bai">'+_xe(r.mon)+' — '+_xe(r.bai)+'</div>'+
+        '<div class="bk-meta">'+_xe(r.day||'')+' '+_xe(r.date||'')+' · Tiết '+_xe(String(r.tiet||''))+' · <span class="bk-badge '+L.status+'">'+bankStatusLabel(L.status)+'</span> · từ Kho giáo án số</div></div>'+
+        '<div class="bk-act"><button class="btn-xs" onclick="openKHBD('+idx+')">Xem</button>'+
+        '<button class="btn-xs" onclick="openKHBD('+idx+')">Chỉnh sửa</button>'+
+        '<button class="btn-xs solid" onclick="exportBankWord('+idx+')">Xuất Word</button>'+
+        '<button class="btn-xs" onclick="makePptFromLesson('+idx+')">Tạo PPT</button></div></div>';
+    }
+    return '<div class="bk-row warn"><div class="bk-main"><div class="bk-bai">'+_xe(r.mon)+' — '+_xe(r.bai)+'</div>'+
+      '<div class="bk-meta">'+_xe(r.day||'')+' '+_xe(r.date||'')+' · Tiết '+_xe(String(r.tiet||''))+' · <span class="bk-badge none">Chưa có trong kho</span></div></div>'+
+      '<div class="bk-act"><button class="btn-xs" onclick="showView(\'kho\')">Thêm giáo án</button>'+
+      '<button class="btn-xs" onclick="openKHBD('+idx+')">Dùng AI / mẫu</button></div></div>';
+  }).join('');
+  const cnt=el('khbd-bank-count'); if(cnt) cnt.textContent=have+'/'+rows.length;
+  box.innerHTML=rows.length?html:'<div class="empty-pad">Chưa có lịch báo giảng. Vào mục <b>Lịch báo giảng</b> để tải/nhập lịch tuần.</div>';
+}
+/* Xuất Word trực tiếp từ kho (không cần mở modal) */
+function exportBankWord(idx){
+  const r=state.schedule[idx], L=findBankLesson(r); if(!L) return;
+  const content=bankLessonToText(L,r);
+  const safe=((L.mon||'')+'_'+(L.bai||'')).replace(/[^A-Za-zÀ-ỹ0-9]/g,'').slice(0,40);
+  _downloadBlob('KHBD_'+safe+'_Lop'+state.klass+'.docx', buildKhbdDocx([{mon:L.mon,bai:L.bai,lop:state.klass,tuan:L.tuan||state.week,content}]));
+}
+/* Tạo dàn ý PPT từ 1 giáo án trong kho rồi chuyển sang view PPT */
+function pptOutlineFromBank(L){
+  const pick=(t,n)=>(t||'').split('\n').map(x=>x.trim()).filter(Boolean).filter(x=>!/^\d+\.\s|^[a-zàâ]/i.test(x)===false||true).slice(0,n);
+  const clean=x=>x.replace(/^[-•*]\s*/,'').replace(/^\d+\.\s*/,'');
+  let s='# '+(L.bai||'')+'\nMôn '+L.mon+' · Lớp '+state.klass+' · Tuần '+(L.tuan||state.week)+'\n';
+  s+='\n# Yêu cầu cần đạt\n'+pick(L.yccd,5).map(x=>'- '+clean(x)).join('\n')+'\n';
+  s+='\n# Đồ dùng dạy học\n'+pick(L.dodung,4).map(x=>'- '+clean(x)).join('\n')+'\n';
+  s+='\n# Hoạt động dạy học\n'+pick(L.hoatdong,8).map(x=>'- '+clean(x)).join('\n')+'\n';
+  s+='\n# Củng cố – Dặn dò\n- Hệ thống nội dung chính của bài\n- Nhận xét, đánh giá tiết học\n- Dặn dò, chuẩn bị bài sau\n';
+  return s;
+}
+function makePptFromLesson(idx){
+  const r=state.schedule[idx], L=findBankLesson(r);
+  showView('ppt');
+  const s=el('ppt-select'); if(s) s.value=String(idx);
+  el('ppt-text').value = L? pptOutlineFromBank(L) : pptOutlineText(r);
+  renderPptPreview();
+  try{ el('ppt-text').scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
+}
+/* AI HỖ TRỢ (chức năng phụ) — fallback nhẹ khi chưa có máy chủ AI */
+async function aiAssist(mode){
+  const ta=el('khbd-text'), tag=el('khbd-bank-tag'), cur=(ta&&ta.value||'').trim();
+  if(mode==='ppt'){
+    closeModal('khbd-overlay');
+    const c=state.current||{}, i=(state.schedule||[]).findIndex(r=>r.mon===c.mon&&r.bai===c.bai);
+    if(i>=0) makePptFromLesson(i); else { showView('ppt'); pptFillTemplate(); }
+    return;
+  }
+  if(!cur){ alert('Chưa có nội dung để AI hỗ trợ. Hãy lấy giáo án từ kho hoặc dùng mẫu trống trước nhé.'); return; }
+  const ask={
+    expand:'Hãy bổ sung, làm rõ hơn các hoạt động dạy học (thêm câu hỏi gợi mở, hình thức tổ chức) nhưng giữ nguyên cấu trúc KHBD.',
+    shorten:'Hãy rút gọn KHBD sau cho súc tích, giữ đủ các mục chính và ý quan trọng.',
+    diff:'Hãy bổ sung phương án phân hóa cho các nhóm học sinh (hoàn thành tốt / cần hỗ trợ) vào phần hoạt động.',
+    inclusive:'Hãy bổ sung điều chỉnh hỗ trợ học sinh khuyết tật học hòa nhập phù hợp với bài này.',
+    review:'Hãy rà soát KHBD sau và nêu ngắn gọn các điểm nên bổ sung (yêu cầu cần đạt, đánh giá, phân hóa, đồ dùng) bằng giọng nhắc nhẹ.'
+  };
+  const lbl={expand:'bổ sung hoạt động',shorten:'rút gọn',diff:'thêm phân hóa',inclusive:'hỗ trợ HS khuyết tật',review:'rà soát'}[mode]||'hỗ trợ';
+  if(tag){ tag.style.display=''; tag.className='bank-tag'; tag.textContent='✨ AI đang '+lbl+'…'; }
+  try{
+    const out=await callAI('Bạn là trợ lý chuyên môn cho GV tiểu học VN (CT GDPT 2018, bộ Kết nối tri thức). Giữ văn phong KHBD, tiếng Việt rõ ràng, không bịa kiến thức.', ask[mode]+'\n\n--- KHBD hiện tại ---\n'+cur);
+    if(mode==='review'){ alert('Bút Xanh rà soát (gợi ý):\n\n'+out); if(tag){tag.className='bank-tag ok'; tag.textContent='✅ Đã rà soát — xem hộp thoại gợi ý.';} }
+    else { ta.value=out; onKhbdEdit(); if(tag){tag.className='bank-tag ok'; tag.textContent='✅ AI đã '+lbl+' xong. Thầy cô kiểm tra và lưu bản của mình nhé.';} }
+  }catch(e){
+    if(tag){ tag.className='bank-tag warn'; tag.innerHTML='⚠️ AI hỗ trợ (chức năng phụ) cần kết nối máy chủ — hiện chưa bật. <b>Kho giáo án vẫn dùng offline bình thường.</b>'; }
+  }
+}
+/* ===== Quản lý Kho giáo án số: nạp/xuất JSON, mẫu nhập ===== */
+function renderBankManager(){
+  const box=el('bank-stat'); if(!box) return;
+  const all=bankAll();
+  const byMon={}; all.forEach(L=>{byMon[L.mon]=(byMon[L.mon]||0)+1;});
+  const byStt={}; all.forEach(L=>{const k=bankStatusLabel(L.status); byStt[k]=(byStt[k]||0)+1;});
+  const mons=Object.keys(byMon).map(m=>'<span class="bk-chip">'+_xe(m)+': <b>'+byMon[m]+'</b></span>').join('');
+  const stts=Object.keys(byStt).map(s=>'<span class="bk-chip">'+_xe(s)+': <b>'+byStt[s]+'</b></span>').join('');
+  box.innerHTML='<div style="margin-bottom:6px"><b>'+all.length+'</b> giáo án trong kho (seed '+LESSON_BANK.length+' + nạp thêm '+loadBankImport().length+').</div>'+
+    '<div class="bk-chips">'+mons+'</div><div class="bk-chips" style="margin-top:4px">'+stts+'</div>';
+}
+function importBank(input){
+  const f=input.files&&input.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=function(){
+    try{
+      let data=JSON.parse(rd.result);
+      if(!Array.isArray(data)&&data&&Array.isArray(data.lessons)) data=data.lessons;
+      if(!Array.isArray(data)) throw 0;
+      const valid=data.filter(L=>L&&L.mon&&L.bai);
+      if(!valid.length){ alert('File không có giáo án hợp lệ (mỗi giáo án cần ít nhất "mon" và "bai").'); return; }
+      const byId={}; loadBankImport().forEach(L=>{byId[L.id]=L;});
+      let i=0; valid.forEach(L=>{ if(!L.id) L.id='imp-'+_normTxt(L.mon)+'-'+_normTxt(L.bai)+'-'+(i++); if(!L.status)L.status='draft'; byId[L.id]=L; });
+      persistBankImport(Object.keys(byId).map(k=>byId[k]));
+      renderBankManager();
+      if(el('v-khbd').classList.contains('active')) renderBankSchedule();
+      alert('✓ Đã nạp '+valid.length+' giáo án vào kho. Tổng kho hiện có '+bankAll().length+' giáo án.');
+    }catch(e){ alert('File JSON không hợp lệ. Hãy dùng "Tải mẫu nhập" để xem đúng định dạng.'); }
+    finally{ input.value=''; }
+  };
+  rd.readAsText(f,'utf-8');
+}
+function exportBankJson(){
+  const blob=new Blob([JSON.stringify(bankAll(),null,2)],{type:'application/json'});
+  _downloadBlob('KhoGiaoAn_ButXanh.json', blob);
+}
+function clearBankImport(){
+  if(!loadBankImport().length){ alert('Kho chưa có giáo án nạp thêm (chỉ còn dữ liệu mẫu).'); return; }
+  if(!confirm('Xoá toàn bộ giáo án ĐÃ NẠP THÊM? (Dữ liệu mẫu Toán/Tiếng Việt vẫn giữ)')) return;
+  localStorage.removeItem('butxanh_bank'); renderBankManager();
+  if(el('v-khbd').classList.contains('active')) renderBankSchedule();
+}
+function downloadBankTemplate(){
+  const sample=[{
+    id:'TOAN5-T12-058', khoi:5, mon:'Toán', tuan:12, tiet:58,
+    bai:'Luyện tập chung', bosach:'Kết nối tri thức với cuộc sống',
+    yccd:'1. Năng lực đặc thù: …\n2. Năng lực chung: …\n3. Phẩm chất: …',
+    dodung:'1. Giáo viên: …\n2. Học sinh: …',
+    hoatdong:'1. Khởi động (… phút): …\n2. Khám phá (… phút): …\n3. Luyện tập (… phút): …\n4. Vận dụng (… phút): …',
+    hotro:'- …',
+    hoanhap:'- …',
+    source:'Lop5_Toan_Tuan12_LuyenTapChung.docx',
+    status:'draft'
+  }];
+  const blob=new Blob([JSON.stringify(sample,null,2)],{type:'application/json'});
+  _downloadBlob('Mau_Nhap_KhoGiaoAn.json', blob);
 }
 
 /* ---------- 10) KHO GIÁO ÁN (KHBD đã lưu + mẫu trống .docx + tệp upload) ---------- */
@@ -1571,6 +1942,7 @@ function renderKho(){
     else act=`<button class="btn-xs solid" onclick="downloadBlankKHBD('${(f.mon||'').replace(/'/g,"\\'")}')">Tải mẫu</button>`;
     return `<div class="kitem"><div class="wic">${ic[f.kind]||'W'}</div><div class="kbody"><div class="ktitle">${f.name}</div><div class="kmeta">${f.meta}</div></div><div class="kact">${act}</div></div>`;
   }).join(''):'<div class="empty-pad">Không tìm thấy tệp phù hợp.</div>';
+  renderBankManager();
 }
 
 /* ---------- 10b) DASHBOARD — tệp gần đây & học liệu gợi ý (động) ---------- */
@@ -2041,7 +2413,7 @@ el('set-save').onclick=function(){
 };
 
 /* ---------- 16b) SAO LƯU / KHÔI PHỤC DỮ LIỆU (JSON) ---------- */
-const BACKUP_KEYS=['butxanh_profile','butxanh_schedule','butxanh_khbd','butxanh_hocsinh','butxanh_hoclieu','butxanh_khofiles'];
+const BACKUP_KEYS=['butxanh_profile','butxanh_schedule','butxanh_khbd','butxanh_hocsinh','butxanh_hoclieu','butxanh_khofiles','butxanh_bank'];
 function buildBackupPayload(){
   const data={}; BACKUP_KEYS.forEach(k=>{ const v=localStorage.getItem(k); if(v!==null) data[k]=v; });
   return {app:'butxanh', version:1, exportedAt:new Date().toISOString(), data};
