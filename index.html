@@ -1182,18 +1182,68 @@ function _khbdItemParas(it){
     out.push(_docP(''));
   }
   content.split('\n').forEach(line=>{ const tr=line.trim();
+    if(/^\(Khi xuất Word/.test(tr)) return; /* bỏ dòng chú thích bảng khi xuất từ text */
     if(/^KẾ HOẠCH BÀI DẠY/.test(tr)) out.push(_docP(tr,{bold:true,center:true,size:14}));
     else if(/^Môn:/.test(tr)) out.push(_docP(tr,{center:true}));
     else if(/^Bài:/.test(tr)) out.push(_docP(tr,{bold:true,center:true}));
     else if(/^(I|II|III|IV|V|VI|VII|VIII)\.\s/.test(tr)) out.push(_docP(line,{bold:true}));
     else out.push(_docP(line));
   });
-  out.push(_docP(''));
-  out.push(_docP('Bản nháp tạo bởi Bút Xanh — thầy cô đối chiếu SGK/SGV và chỉnh sửa trước khi dùng.',{italic:true,size:10,color:'777777'}));
   return out.join('');
 }
-function buildKhbdDocx(items){
-  const body=items.map((it,i)=>(i?'<w:p><w:r><w:br w:type="page"/></w:r></w:p>':'')+_khbdItemParas(it)).join('');
+/* ----- Bảng 2 cột cho mục III (Hoạt động của GV | của HS) ----- */
+const _DOTLINE='.'.repeat(92);
+/* Ngày dạy đầy đủ: nếu lịch chỉ ghi "11/11" thì ghép năm lấy từ tuần đang dạy (state.from) */
+function _ngayFull(d){
+  d=(d||'').toString().trim(); if(!d) return '';
+  if(/\d+[/.\-]\d+[/.\-]\d{2,4}/.test(d)) return d; /* đã có năm */
+  const m=/(\d{4})/.exec(state.from||state.to||state.year||'');
+  return m? d.replace(/[/.\-]+$/,'')+'/'+m[1] : d;
+}
+function _docTc(inner,w){ return `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/></w:tcPr>${inner||'<w:p/>'}</w:tc>`; }
+function _cellParas(text,title){
+  const out=[]; if(title) out.push(_docP(title,{bold:true,size:12}));
+  (text||'').replace(/\r/g,'').split('\n').forEach(l=>{ if(l.trim()!=='') out.push(_docP(l,{size:12})); });
+  return out.length?out.join(''):'<w:p/>';
+}
+function hoatdongTableXml(blocks){
+  const bd='<w:tblBorders>'+['top','left','bottom','right','insideH','insideV'].map(s=>`<w:${s} w:val="single" w:sz="4" w:space="0" w:color="000000"/>`).join('')+'</w:tblBorders>';
+  const hdr='<w:tr><w:trPr><w:tblHeader/></w:trPr>'+_docTc(_docP('HOẠT ĐỘNG CỦA GV',{bold:true,center:true,size:12}),5400)+_docTc(_docP('HOẠT ĐỘNG CỦA HS',{bold:true,center:true,size:12}),3954)+'</w:tr>';
+  const rows=(blocks||[]).map(b=>'<w:tr>'+_docTc(_cellParas(b.gv,b.ten),5400)+_docTc(_cellParas(b.hs),3954)+'</w:tr>').join('');
+  return `<w:tbl><w:tblPr><w:tblW w:w="9354" w:type="dxa"/>${bd}<w:tblLayout w:type="fixed"/></w:tblPr><w:tblGrid><w:gridCol w:w="5400"/><w:gridCol w:w="3954"/></w:tblGrid>${hdr}${rows}</w:tbl>`;
+}
+/* ----- Dựng KHBD .docx trực tiếp từ 1 giáo án trong kho (mục III = bảng) ----- */
+function _lessonBodyParas(L,row){
+  row=row||{};
+  const lop=row.lop||state.klass, tuan=L.tuan||row.tuan||state.week;
+  const tiet=row.ppct||row.tiet||L.tiet||'', ngay=_ngayFull(row.date);
+  const P=[];
+  P.push(_docP('KẾ HOẠCH BÀI DẠY',{bold:true,center:true,size:14}));
+  P.push(_docP('Môn: '+L.mon+'   |   Lớp: '+lop+'   |   Tuần: '+tuan+(tiet?('   |   Tiết (PPCT): '+tiet):''),{center:true}));
+  P.push(_docP('Bài: '+L.bai,{bold:true,center:true}));
+  if(ngay) P.push(_docP('Ngày dạy: '+ngay,{center:true,size:12}));
+  P.push(_docP(''));
+  P.push(_docP('I. YÊU CẦU CẦN ĐẠT',{bold:true}));
+  (L.yccd||'(Thầy cô đối chiếu SGK/SGV)').split('\n').forEach(l=>P.push(_docP(l)));
+  P.push(_docP(''));
+  P.push(_docP('II. ĐỒ DÙNG DẠY HỌC',{bold:true}));
+  (L.dodung||'…').split('\n').forEach(l=>P.push(_docP(l)));
+  P.push(_docP(''));
+  P.push(_docP('III. CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU',{bold:true}));
+  if(Array.isArray(L.hoatdong)) P.push(hoatdongTableXml(L.hoatdong));
+  else (L.hoatdong||'…').split('\n').forEach(l=>P.push(_docP(l)));
+  P.push(_docP(''));
+  P.push(_docP('IV. ĐIỀU CHỈNH, HỖ TRỢ HỌC SINH',{bold:true}));
+  P.push(_docP('1. Học sinh cần hỗ trợ:',{bold:true,size:12}));
+  (L.hotro||'…').split('\n').forEach(l=>P.push(_docP(l)));
+  P.push(_docP('2. Học sinh khuyết tật học hòa nhập:',{bold:true,size:12}));
+  (L.hoanhap||'…').split('\n').forEach(l=>P.push(_docP(l)));
+  P.push(_docP(''));
+  P.push(_docP('V. ĐIỀU CHỈNH SAU BÀI DẠY',{bold:true}));
+  P.push(_docP(_DOTLINE)); P.push(_docP(_DOTLINE));
+  return P.join('');
+}
+function _wrapDocx(body){
   const sect='<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1418" w:header="709" w:footer="709" w:gutter="0"/></w:sectPr>';
   const doc=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body}${sect}</w:body></w:document>`;
   const styles='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/><w:sz w:val="26"/><w:szCs w:val="26"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="120" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style></w:styles>';
@@ -1206,8 +1256,21 @@ function buildKhbdDocx(items){
     F('word/document.xml',doc)
   ]);
 }
+function buildKhbdDocx(items){
+  return _wrapDocx(items.map((it,i)=>(i?'<w:p><w:r><w:br w:type="page"/></w:r></w:p>':'')+_khbdItemParas(it)).join(''));
+}
+function buildKhbdDocxFromLesson(L,row){ return _wrapDocx(_lessonBodyParas(L,row)); }
 function downloadKHBD(){
   const l=state.current; if(!l) return;
+  /* Bản lấy từ kho & chưa chỉnh tay → xuất bản bảng 2 cột đẹp từ giáo án gốc */
+  if(l.bankId){
+    const L=bankAll().find(x=>x.id===l.bankId);
+    if(L && el('khbd-text').value===l.bankPristine){
+      const safe=(L.mon||'KHBD').replace(/[^A-Za-zÀ-ỹ0-9]/g,'');
+      _downloadBlob(`KHBD_${safe}_Lop${(l.bankRow&&l.bankRow.lop)||state.klass}.docx`, buildKhbdDocxFromLesson(L,l.bankRow));
+      return;
+    }
+  }
   const it={mon:l.mon,bai:l.bai,lop:l.lop||state.klass,tuan:l.tuan||state.week,content:el('khbd-text').value};
   const safe=(l.mon||'KHBD').replace(/[^A-Za-zÀ-ỹ0-9]/g,'');
   _downloadBlob(`KHBD_${safe}_Tuan${it.tuan}_Lop${it.lop}.docx`, buildKhbdDocx([it]));
@@ -1587,18 +1650,17 @@ const LESSON_BANK=[
 3. Phẩm chất: chăm chỉ, cẩn thận, trung thực khi trình bày bài làm.`,
     dodung:`1. Giáo viên: bảng nhóm, phiếu bài tập, máy tính – màn hình trình chiếu.
 2. Học sinh: SGK Toán 5 (tập 1), vở ô li, bảng con.`,
-    hoatdong:`1. Hoạt động Khởi động (5 phút)
-   - Mục tiêu: tạo hứng thú, ôn lại quy tắc nhân số thập phân.
-   - Cách tiến hành: trò chơi "Ai nhanh hơn" – GV nêu nhanh các phép tính (2,5 × 3; 0,4 × 6...), HS ghi nhanh kết quả vào bảng con.
-   - Đánh giá thường xuyên: quan sát, nhận xét tốc độ và độ chính xác.
-2. Hoạt động Luyện tập – Thực hành (25 phút)
-   - Bài 1: Đặt tính rồi tính (nhân số thập phân) – HS làm bảng con, 2 HS làm bảng lớp.
-   - Bài 2: Tính bằng cách thuận tiện – HS thảo luận nhóm đôi, vận dụng tính chất giao hoán/kết hợp.
-   - Bài 3: Giải toán có lời văn – HS đọc đề, tóm tắt, nêu phép tính, trình bày bài giải vào vở.
-   - Đánh giá thường xuyên: chấm bảng con, nhận xét bài giải, sửa lỗi điển hình.
-3. Hoạt động Vận dụng (5 phút)
-   - Liên hệ thực tế: tính tiền mua hàng theo cân nặng (kg) và đơn giá là số thập phân.
-   - Giao nhiệm vụ: hoàn thành bài còn lại ở nhà.`,
+    hoatdong:[
+      {ten:'1. Khởi động (5 phút)',
+       gv:'- Tổ chức trò chơi "Ai nhanh hơn": nêu nhanh các phép tính (2,5 × 3; 0,4 × 6…).\n- Quan sát, nhận xét tốc độ và độ chính xác.\n- Giới thiệu, kết nối vào bài luyện tập.',
+       hs:'- Ghi nhanh kết quả vào bảng con.\n- Nhận xét bạn.\n- Lắng nghe, sẵn sàng vào bài.'},
+      {ten:'2. Luyện tập – Thực hành (25 phút)',
+       gv:'- Bài 1: yêu cầu đặt tính rồi tính (nhân số thập phân); mời 2 HS làm bảng lớp.\n- Bài 2: tổ chức nhóm đôi tính bằng cách thuận tiện (giao hoán, kết hợp).\n- Bài 3: hướng dẫn đọc đề, tóm tắt, nêu phép tính.\n- Chấm bảng con, nhận xét bài giải, sửa lỗi điển hình.',
+       hs:'- Làm bảng con; 2 HS làm bảng lớp.\n- Thảo luận nhóm đôi, trình bày cách tính thuận tiện.\n- Đọc đề, tóm tắt, trình bày bài giải vào vở.\n- Nhận xét, sửa lỗi cùng cô.'},
+      {ten:'3. Vận dụng (5 phút)',
+       gv:'- Liên hệ thực tế: tính tiền mua hàng theo cân nặng (kg) và đơn giá là số thập phân.\n- Giao nhiệm vụ hoàn thành bài còn lại ở nhà.',
+       hs:'- Vận dụng tính tiền theo tình huống thực tế.\n- Ghi nhận nhiệm vụ về nhà.'}
+    ],
     hotro:`- Cho phép dùng bảng nhân hỗ trợ; chia nhỏ bài 3 thành các bước (tóm tắt → phép tính → lời giải).
 - Ghép cặp với bạn học tốt để cùng kiểm tra kết quả.`,
     hoanhap:`- Giảm số lượng bài tập (chỉ yêu cầu bài 1 và 1 ý của bài 2).
@@ -1615,13 +1677,17 @@ const LESSON_BANK=[
 3. Phẩm chất: chăm chỉ, cẩn thận, có trách nhiệm với bài làm của mình.`,
     dodung:`1. Giáo viên: bảng nhóm, phiếu học tập, máy tính – màn hình.
 2. Học sinh: SGK Toán 5, vở ô li, nháp.`,
-    hoatdong:`1. Khởi động (5 phút): trò chơi "Truyền điện" ôn quy tắc chia số thập phân.
-2. Luyện tập – Thực hành (25 phút):
-   - Bài 1: Tính (kết hợp nhân và chia số thập phân) – làm cá nhân.
-   - Bài 2: Tính giá trị biểu thức – nhóm đôi, lưu ý thứ tự thực hiện phép tính.
-   - Bài 3: Bài toán thực tế hai bước tính – HS tóm tắt, giải vào vở; 1 HS trình bày bảng lớp.
-   - Đánh giá thường xuyên: nhận xét bài bảng lớp, sửa lỗi chung.
-3. Vận dụng (5 phút): ước lượng – kiểm tra kết quả bằng phép tính nhẩm gần đúng.`,
+    hoatdong:[
+      {ten:'1. Khởi động (5 phút)',
+       gv:'- Tổ chức trò chơi "Truyền điện" ôn quy tắc chia số thập phân.\n- Dẫn dắt vào bài.',
+       hs:'- Tham gia "Truyền điện", nêu nhanh kết quả.\n- Lắng nghe, vào bài.'},
+      {ten:'2. Luyện tập – Thực hành (25 phút)',
+       gv:'- Bài 1: yêu cầu tính (kết hợp nhân và chia số thập phân) – làm cá nhân.\n- Bài 2: tổ chức nhóm đôi tính giá trị biểu thức, lưu ý thứ tự thực hiện phép tính.\n- Bài 3: hướng dẫn bài toán thực tế hai bước tính; mời 1 HS trình bày bảng lớp.\n- Nhận xét bài bảng lớp, sửa lỗi chung.',
+       hs:'- Làm bài 1 cá nhân vào vở.\n- Thảo luận nhóm đôi, thống nhất thứ tự thực hiện phép tính.\n- Tóm tắt, giải bài 3 vào vở; 1 HS trình bày bảng lớp.\n- Nhận xét, sửa lỗi cùng cô.'},
+      {ten:'3. Vận dụng (5 phút)',
+       gv:'- Hướng dẫn ước lượng, kiểm tra kết quả bằng phép tính nhẩm gần đúng.\n- Giao nhiệm vụ về nhà.',
+       hs:'- Ước lượng và đối chiếu kết quả vừa tính.\n- Ghi nhận nhiệm vụ về nhà.'}
+    ],
     hotro:`- Cung cấp mẫu trình bày bài giải; gợi ý từng bước cho bài 3.
 - Cho thêm thời gian và giảm yêu cầu về tốc độ.`,
     hoanhap:`- Chỉ yêu cầu thực hiện bài 1; hỗ trợ trực tiếp khi cần.
@@ -1639,15 +1705,20 @@ const LESSON_BANK=[
 3. Phẩm chất: yêu thương, trân trọng người thân, thầy cô, bạn bè.`,
     dodung:`1. Giáo viên: máy tính – màn hình, đoạn văn mẫu, phiếu dàn ý.
 2. Học sinh: SGK Tiếng Việt 5, vở, dàn ý đã chuẩn bị ở tiết trước.`,
-    hoatdong:`1. Khởi động (4 phút): HS nói nhanh 2–3 từ tả ngoại hình/hoạt động của một người mà em yêu quý.
-2. Khám phá – Phân tích mẫu (10 phút):
-   - Đọc đoạn văn mẫu tả hoạt động; tìm câu mở đoạn, các chi tiết tả hoạt động, từ gợi tả.
-   - Chốt: tả hoạt động cần chọn lọc chi tiết tiêu biểu, dùng động từ – tính từ sinh động.
-3. Luyện tập – Thực hành (18 phút):
-   - HS hoàn thiện dàn ý; viết một đoạn văn tả hoạt động của người đã chọn.
-   - GV theo dõi, gợi ý cho HS còn lúng túng.
-   - Đánh giá thường xuyên: 2–3 HS đọc bài, lớp nhận xét theo tiêu chí (đủ ý – từ ngữ gợi tả – cảm xúc).
-4. Vận dụng (3 phút): chỉnh sửa đoạn văn theo góp ý; chuẩn bị viết bài hoàn chỉnh ở tiết sau.`,
+    hoatdong:[
+      {ten:'1. Khởi động (4 phút)',
+       gv:'- Mời HS nói nhanh 2–3 từ tả ngoại hình/hoạt động của một người em yêu quý.\n- Dẫn dắt vào bài luyện tập tả người.',
+       hs:'- Nói nhanh các từ ngữ gợi tả.\n- Lắng nghe, vào bài.'},
+      {ten:'2. Khám phá – Phân tích mẫu (10 phút)',
+       gv:'- Cho HS đọc đoạn văn mẫu tả hoạt động; gợi ý tìm câu mở đoạn, chi tiết tả hoạt động, từ gợi tả.\n- Chốt: tả hoạt động cần chọn chi tiết tiêu biểu, dùng động từ – tính từ sinh động.',
+       hs:'- Đọc đoạn văn mẫu, tìm câu mở đoạn và các chi tiết tả hoạt động.\n- Nêu các từ gợi tả; lắng nghe phần chốt.'},
+      {ten:'3. Luyện tập – Thực hành (18 phút)',
+       gv:'- Yêu cầu HS hoàn thiện dàn ý; viết một đoạn văn tả hoạt động của người đã chọn.\n- Theo dõi, gợi ý cho HS còn lúng túng.\n- Mời 2–3 HS đọc bài; nêu tiêu chí nhận xét (đủ ý – từ ngữ gợi tả – cảm xúc).',
+       hs:'- Hoàn thiện dàn ý, viết đoạn văn vào vở.\n- 2–3 HS đọc bài trước lớp.\n- Lớp nhận xét theo tiêu chí.'},
+      {ten:'4. Vận dụng (3 phút)',
+       gv:'- Hướng dẫn chỉnh sửa đoạn văn theo góp ý; dặn chuẩn bị viết bài hoàn chỉnh ở tiết sau.',
+       hs:'- Chỉnh sửa đoạn văn theo góp ý.\n- Ghi nhận nhiệm vụ chuẩn bị.'}
+    ],
     hotro:`- Cung cấp khung câu gợi ý ("Mỗi khi…, bà em thường…"); cho phép viết 3–4 câu.
 - Ghép cặp để bạn đọc – soát giúp.`,
     hoanhap:`- Chấp nhận sản phẩm là 1–2 câu hoặc tranh kèm lời chú thích.
@@ -1664,15 +1735,20 @@ const LESSON_BANK=[
 3. Phẩm chất: thân ái, đoàn kết, tôn trọng và hợp tác với bạn bè.`,
     dodung:`1. Giáo viên: thẻ từ, bảng nhóm, máy tính – màn hình.
 2. Học sinh: SGK Tiếng Việt 5, vở, từ điển (nếu có).`,
-    hoatdong:`1. Khởi động (4 phút): trò chơi "Nối nhanh" – nối từ với nghĩa (hữu nghị, hợp tác, đoàn kết…).
-2. Khám phá – Mở rộng vốn từ (12 phút):
-   - Bài 1: tìm hiểu nghĩa các từ chứa tiếng "hữu", "hợp"; phân loại theo nhóm nghĩa (nhóm đôi).
-   - Bài 2: ghép từ thành cụm/câu thể hiện tinh thần hợp tác.
-   - Chốt: hữu nghị, hợp tác là những giá trị tốt đẹp trong quan hệ giữa người với người, giữa các nước.
-3. Luyện tập (16 phút):
-   - Bài 3: đặt câu với 2 từ vừa học – HS viết vở, một số HS trình bày.
-   - Đánh giá thường xuyên: nhận xét câu đặt (đúng nghĩa – đúng ngữ pháp).
-4. Vận dụng (3 phút): nói 1 câu thể hiện sự hợp tác với bạn trong giờ học.`,
+    hoatdong:[
+      {ten:'1. Khởi động (4 phút)',
+       gv:'- Tổ chức trò chơi "Nối nhanh": nối từ với nghĩa (hữu nghị, hợp tác, đoàn kết…).\n- Dẫn dắt vào bài mở rộng vốn từ.',
+       hs:'- Tham gia trò chơi, nối từ với nghĩa.\n- Lắng nghe, vào bài.'},
+      {ten:'2. Khám phá – Mở rộng vốn từ (12 phút)',
+       gv:'- Bài 1: cho HS tìm hiểu nghĩa các từ chứa tiếng "hữu", "hợp"; phân loại theo nhóm nghĩa (nhóm đôi).\n- Bài 2: tổ chức ghép từ thành cụm/câu thể hiện tinh thần hợp tác.\n- Chốt: hữu nghị, hợp tác là giá trị tốt đẹp trong quan hệ giữa người với người, giữa các nước.',
+       hs:'- Thảo luận nhóm đôi, tìm nghĩa và phân loại từ.\n- Ghép từ thành cụm/câu theo yêu cầu.\n- Lắng nghe phần chốt.'},
+      {ten:'3. Luyện tập (16 phút)',
+       gv:'- Bài 3: yêu cầu đặt câu với 2 từ vừa học – HS viết vở.\n- Mời một số HS trình bày; nhận xét câu đặt (đúng nghĩa – đúng ngữ pháp).',
+       hs:'- Đặt câu với 2 từ vừa học vào vở.\n- Một số HS trình bày; lớp nhận xét.'},
+      {ten:'4. Vận dụng (3 phút)',
+       gv:'- Mời HS nói 1 câu thể hiện sự hợp tác với bạn trong giờ học.',
+       hs:'- Nói 1 câu thể hiện sự hợp tác với bạn.'}
+    ],
     hotro:`- Cung cấp sẵn nghĩa của từ; gợi ý mẫu câu để HS điền.
 - Giảm số từ cần đặt câu (1 từ).`,
     hoanhap:`- Yêu cầu nhận biết/đọc lại từ và nghĩa; ghép thẻ từ – nghĩa.
@@ -1710,32 +1786,48 @@ function findBankLesson(row){
   }
   return cands[0];
 }
+/* hoạt động dạng text (cho ô soạn trên màn hình) — bảng chỉ dựng khi xuất Word */
+function hoatdongToText(hd){
+  if(!Array.isArray(hd)) return hd||'…';
+  return hd.map(b=>{
+    const fmt=t=>(t||'').replace(/\r/g,'').split('\n').filter(x=>x.trim()).map(x=>'      '+x.trim()).join('\n');
+    return (b.ten||'')+'\n   ◦ Hoạt động của GV:\n'+fmt(b.gv)+'\n   ◦ Hoạt động của HS:\n'+fmt(b.hs);
+  }).join('\n');
+}
+/* danh sách hoạt động dạng phẳng (cho dàn ý PPT) */
+function hoatdongFlat(hd){
+  if(!Array.isArray(hd)) return hd||'';
+  return hd.map(b=>(b.ten||'')+'\n'+(b.gv||'')).join('\n');
+}
 /* dựng nội dung KHBD đầy đủ từ 1 giáo án trong kho + cá nhân hóa nhẹ */
 function bankLessonToText(L,row){
   row=row||{};
-  const gv=state.gvcn||'…', lop=row.lop||state.klass, tuan=L.tuan||row.tuan||state.week;
-  const tiet=row.ppct||row.tiet||L.tiet||'', ngay=row.date||'';
+  const lop=row.lop||state.klass, tuan=L.tuan||row.tuan||state.week;
+  const tiet=row.ppct||row.tiet||L.tiet||'', ngay=_ngayFull(row.date);
   const ln=[];
   ln.push('KẾ HOẠCH BÀI DẠY');
   ln.push('Môn: '+L.mon+'   |   Lớp: '+lop+'   |   Tuần: '+tuan+(tiet?('   |   Tiết (PPCT): '+tiet):''));
   ln.push('Bài: '+L.bai);
-  ln.push('Giáo viên: '+gv+(ngay?('   |   Ngày dạy: '+ngay):'')+'   |   Bộ sách: '+(L.bosach||'Kết nối tri thức với cuộc sống'));
+  if(ngay) ln.push('Ngày dạy: '+ngay);
   ln.push('');
   ln.push('I. YÊU CẦU CẦN ĐẠT'); ln.push(L.yccd||'(Thầy cô đối chiếu SGK/SGV)'); ln.push('');
   ln.push('II. ĐỒ DÙNG DẠY HỌC'); ln.push(L.dodung||'…'); ln.push('');
-  ln.push('III. CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU'); ln.push(L.hoatdong||'…'); ln.push('');
+  ln.push('III. CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU');
+  if(Array.isArray(L.hoatdong)) ln.push('(Khi xuất Word sẽ trình bày dạng bảng 2 cột: Hoạt động của GV | Hoạt động của HS)');
+  ln.push(hoatdongToText(L.hoatdong)); ln.push('');
   ln.push('IV. ĐIỀU CHỈNH, HỖ TRỢ HỌC SINH');
   ln.push('1. Học sinh cần hỗ trợ:'); ln.push(L.hotro||'…');
   ln.push('2. Học sinh khuyết tật học hòa nhập:'); ln.push(L.hoanhap||'…'); ln.push('');
-  ln.push('V. ĐIỀU CHỈNH SAU BÀI DẠY'); ln.push('   - …');
+  ln.push('V. ĐIỀU CHỈNH SAU BÀI DẠY'); ln.push(_DOTLINE); ln.push(_DOTLINE);
   return ln.join('\n');
 }
 /* rót giáo án vào modal soạn KHBD (gọi cuối openKHBD) */
 function serveBankIntoModal(row){
   const L=findBankLesson(row), ta=el('khbd-text'), empty=el('khbd-empty'), tag=el('khbd-bank-tag');
   if(L){
-    state.current.bankId=L.id;
-    ta.value=bankLessonToText(L,row); ta.classList.remove('hidden'); empty.classList.add('hidden');
+    state.current.bankId=L.id; state.current.bankRow=row;
+    ta.value=bankLessonToText(L,row); state.current.bankPristine=ta.value;
+    ta.classList.remove('hidden'); empty.classList.add('hidden');
     el('btn-copy').disabled=false; el('btn-word').disabled=false; el('btn-save').disabled=false;
     el('btn-save').textContent='💾 Lưu bản của tôi';
     if(tag){ tag.style.display=''; tag.className='bank-tag ok';
@@ -1773,9 +1865,8 @@ function renderBankSchedule(){
 /* Xuất Word trực tiếp từ kho (không cần mở modal) */
 function exportBankWord(idx){
   const r=state.schedule[idx], L=findBankLesson(r); if(!L) return;
-  const content=bankLessonToText(L,r);
   const safe=((L.mon||'')+'_'+(L.bai||'')).replace(/[^A-Za-zÀ-ỹ0-9]/g,'').slice(0,40);
-  _downloadBlob('KHBD_'+safe+'_Lop'+state.klass+'.docx', buildKhbdDocx([{mon:L.mon,bai:L.bai,lop:state.klass,tuan:L.tuan||state.week,content}]));
+  _downloadBlob('KHBD_'+safe+'_Lop'+(r.lop||state.klass)+'.docx', buildKhbdDocxFromLesson(L,r));
 }
 /* Tạo dàn ý PPT từ 1 giáo án trong kho rồi chuyển sang view PPT */
 function pptOutlineFromBank(L){
@@ -1784,7 +1875,7 @@ function pptOutlineFromBank(L){
   let s='# '+(L.bai||'')+'\nMôn '+L.mon+' · Lớp '+state.klass+' · Tuần '+(L.tuan||state.week)+'\n';
   s+='\n# Yêu cầu cần đạt\n'+pick(L.yccd,5).map(x=>'- '+clean(x)).join('\n')+'\n';
   s+='\n# Đồ dùng dạy học\n'+pick(L.dodung,4).map(x=>'- '+clean(x)).join('\n')+'\n';
-  s+='\n# Hoạt động dạy học\n'+pick(L.hoatdong,8).map(x=>'- '+clean(x)).join('\n')+'\n';
+  s+='\n# Hoạt động dạy học\n'+pick(hoatdongFlat(L.hoatdong),8).map(x=>'- '+clean(x)).join('\n')+'\n';
   s+='\n# Củng cố – Dặn dò\n- Hệ thống nội dung chính của bài\n- Nhận xét, đánh giá tiết học\n- Dặn dò, chuẩn bị bài sau\n';
   return s;
 }
@@ -1871,7 +1962,12 @@ function downloadBankTemplate(){
     bai:'Luyện tập chung', bosach:'Kết nối tri thức với cuộc sống',
     yccd:'1. Năng lực đặc thù: …\n2. Năng lực chung: …\n3. Phẩm chất: …',
     dodung:'1. Giáo viên: …\n2. Học sinh: …',
-    hoatdong:'1. Khởi động (… phút): …\n2. Khám phá (… phút): …\n3. Luyện tập (… phút): …\n4. Vận dụng (… phút): …',
+    hoatdong:[
+      {ten:'1. Khởi động (… phút)', gv:'- Việc của giáo viên…', hs:'- Việc của học sinh…'},
+      {ten:'2. Khám phá (… phút)', gv:'- …', hs:'- …'},
+      {ten:'3. Luyện tập (… phút)', gv:'- …', hs:'- …'},
+      {ten:'4. Vận dụng (… phút)', gv:'- …', hs:'- …'}
+    ],
     hotro:'- …',
     hoanhap:'- …',
     source:'Lop5_Toan_Tuan12_LuyenTapChung.docx',
