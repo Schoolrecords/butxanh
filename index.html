@@ -664,9 +664,11 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
     <section class="view" id="v-khbd">
       <div class="page-head">
         <div><h2 class="ph-title">Kế hoạch bài dạy</h2><div class="ph-sub">Chọn lịch báo giảng → Bút Xanh tra <b>Kho giáo án số</b> và cấp đúng KHBD — bám CT GDPT 2018, bộ Kết nối tri thức</div></div>
+        <div class="ph-actions"><button class="btn solid" onclick="downloadWeekKHBD()">📦 Tạo KHBD Tuần <span id="khbd-week-btn">12</span></button></div>
       </div>
       <div class="card">
         <div class="card-head"><h3>📚 Giáo án theo lịch báo giảng tuần <span id="khbd-week">12</span></h3><span class="muted-sm">Đã có trong kho: <b id="khbd-bank-count">0/0</b> tiết</span></div>
+        <div class="muted-sm" style="margin:-4px 0 10px">Một file Word gồm <b>toàn bộ giáo án trong tuần</b> (theo thứ tự lịch báo giảng), hoặc tải lẻ từng tiết ở danh sách dưới.</div>
         <div id="khbd-bank-list" class="bk-list"></div>
       </div>
       <div class="card">
@@ -822,6 +824,7 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
       <div class="card set-card">
         <div class="card-head"><h3>Hồ sơ giáo viên</h3></div>
         <div class="form-grid">
+          <label class="fld"><span>Xưng hô</span><select id="set-xung"><option value="Cô">Cô</option><option value="Thầy">Thầy</option></select></label>
           <label class="fld"><span>Họ và tên</span><input id="set-name" value="Phan Thị Thương"></label>
           <label class="fld"><span>Cấp / Khối</span><input id="set-grade" value="Giáo viên Tiểu học — Lớp 5A"></label>
           <label class="fld"><span>Trường</span><input id="set-school" placeholder="Tên trường…"></label>
@@ -1002,7 +1005,7 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 
 /* ---------- 1) DỮ LIỆU LỊCH (mẫu chuẩn Tuần 12 - Lớp 5A) ---------- */
 const state = {
-  klass:"5A", week:"12", khoi:"5", gvcn:"Phan Thị Thương",
+  klass:"5A", week:"12", khoi:"5", gvcn:"Phan Thị Thương", xung:"Cô",
   year:"2026 - 2027", from:"11/11/2026", to:"17/11/2026", place:"Nghệ An",
   schedule:[
     {day:"Thứ 2", date:"11/11", buoi:"Sáng", tiet:1, mon:"HĐTN",            ppct:12,  bai:"Sinh hoạt dưới cờ",                    tbdh:"Loa, micro"},
@@ -1015,10 +1018,10 @@ const state = {
     {day:"Thứ 5", date:"14/11", buoi:"Sáng", tiet:2, mon:"Đạo đức",         ppct:11,  bai:"Tôn trọng sự khác biệt",               tbdh:"TV, Máy tính"},
     {day:"Thứ 6", date:"15/11", buoi:"Sáng", tiet:1, mon:"Âm nhạc",         ppct:12,  bai:"Ôn tập bài hát: Em yêu hòa bình",      tbdh:"Đàn, loa"},
     {day:"Thứ 6", date:"15/11", buoi:"Sáng", tiet:2, mon:"Mĩ thuật",        ppct:12,  bai:"Vẽ tranh phong cảnh quê hương",        tbdh:"Giấy vẽ, màu"},
-    {day:"Thứ 7", date:"16/11", buoi:"Sáng", tiet:1, mon:"Công nghệ",       ppct:14,  bai:"Lắp ráp mô hình tự chọn",              tbdh:"Bộ lắp ghép"},
-    {day:"Thứ 7", date:"16/11", buoi:"Sáng", tiet:2, mon:"Tin học",         ppct:24,  bai:"Em tập thiết kế trang trình chiếu",    tbdh:"Phòng máy"},
-    {day:"Thứ 7", date:"16/11", buoi:"Sáng", tiet:3, mon:"GDTC",            ppct:47,  bai:"Bài thể dục phát triển chung",         tbdh:"Còi, sân tập"},
-    {day:"Thứ 7", date:"16/11", buoi:"Sáng", tiet:4, mon:"Tiếng Anh",       ppct:89,  bai:"Unit 2: A closer look 1",              tbdh:"TV, Máy tính"}
+    {day:"Thứ 6", date:"15/11", buoi:"Sáng", tiet:3, mon:"Công nghệ",       ppct:14,  bai:"Lắp ráp mô hình tự chọn",              tbdh:"Bộ lắp ghép"},
+    {day:"Thứ 6", date:"15/11", buoi:"Chiều", tiet:1, mon:"Tin học",        ppct:24,  bai:"Em tập thiết kế trang trình chiếu",    tbdh:"Phòng máy"},
+    {day:"Thứ 6", date:"15/11", buoi:"Chiều", tiet:2, mon:"GDTC",           ppct:47,  bai:"Bài thể dục phát triển chung",         tbdh:"Còi, sân tập"},
+    {day:"Thứ 6", date:"15/11", buoi:"Chiều", tiet:3, mon:"Tiếng Anh",      ppct:89,  bai:"Unit 2: A closer look 1",              tbdh:"TV, Máy tính"}
   ],
   current:null, khbd:[], hocsinh:[], hoclieu:[], khofiles:[]
 };
@@ -1037,7 +1040,19 @@ async function callAI(system, prompt){
 function parseJSON(t){ return JSON.parse(t.replace(/```json|```/g,"").trim()); }
 
 /* ---------- 3) DỰNG BẢNG LỊCH DẠY (gộp ô Thứ/Ngày như ảnh mẫu) ---------- */
+/* Tính ngày (dd/mm) cho từng tiết theo "Từ ngày" (đầu tuần = Thứ 2) + thứ trong tuần.
+   → Upload lịch hay đổi tuần đều hiển thị đúng ngày, không lệch. */
+function _parseDMY(s){ const m=(s||'').match(/(\d{1,2})[/.\-](\d{1,2})[/.\-](\d{2,4})/); if(!m)return null; let y=+m[3]; if(y<100)y+=2000; const d=new Date(y,(+m[2])-1,+m[1]); return isNaN(d)?null:d; }
+function dateForDay(day){
+  const base=_parseDMY(state.from); if(!base) return '';
+  const dow={'Thứ 2':2,'Thứ 3':3,'Thứ 4':4,'Thứ 5':5,'Thứ 6':6,'Thứ 7':7,'Chủ nhật':8,'CN':8};
+  const off=(dow[(day||'').trim()]||2)-2;
+  const d=new Date(base.getTime()+off*86400000);
+  return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0');
+}
+function fillScheduleDates(){ if(!_parseDMY(state.from))return; (state.schedule||[]).forEach(r=>{ const d=dateForDay(r.day); if(d) r.date=d; }); }
 function renderSchedule(){
+  fillScheduleDates();
   const tb=document.getElementById("sched-body");
   tb.innerHTML="";
   let i=0;
@@ -1394,6 +1409,7 @@ async function readScheduleXlsx(input){
     if(meta.week)state.week=meta.week; if(meta.year)state.year=meta.year; if(meta.gvcn)state.gvcn=meta.gvcn;
     if(meta.from)state.from=meta.from; if(meta.to)state.to=meta.to; if(meta.place)state.place=meta.place;
     const km=String(state.klass).match(/\d+/); if(km)state.khoi=km[0];
+    fillScheduleDates();
     try{ persistSchedule(); }catch(e){}
     if(typeof syncStaticLabels==='function') syncStaticLabels();
     renderSchedule();
@@ -1458,6 +1474,7 @@ function scheduleRows(){
 }
 function placeStr(){ const p=(state.to||'').split('/'); return p.length===3?`${state.place}, ngày ${p[0]} tháng ${p[1]} năm ${p[2]}`:`${state.place}, ngày … tháng … năm ……`; }
 function renderFullSchedule(){
+  fillScheduleDates();
   el('lbg-year').textContent=state.year;
   el('lbg-range').textContent=`Từ ngày: ${state.from} đến ${state.to}`;
   el('lbg-week').textContent=state.week; el('lbg-khoi').textContent=state.khoi;
@@ -1867,6 +1884,19 @@ function exportBankWord(idx){
   const r=state.schedule[idx], L=findBankLesson(r); if(!L) return;
   const safe=((L.mon||'')+'_'+(L.bai||'')).replace(/[^A-Za-zÀ-ỹ0-9]/g,'').slice(0,40);
   _downloadBlob('KHBD_'+safe+'_Lop'+(r.lop||state.klass)+'.docx', buildKhbdDocxFromLesson(L,r));
+}
+/* Gộp TẤT CẢ giáo án trong tuần (theo lịch báo giảng) thành 1 file Word — mục tiêu lõi của Bút Xanh */
+function buildWeekKhbdDocx(rows){
+  const found=[]; (rows||[]).forEach(r=>{ const L=findBankLesson(r); if(L) found.push({L,r}); });
+  const body=found.map((it,i)=>(i?'<w:p><w:r><w:br w:type="page"/></w:r></w:p>':'')+_lessonBodyParas(it.L,it.r)).join('');
+  return _wrapDocx(body);
+}
+function downloadWeekKHBD(){
+  const rows=state.schedule||[];
+  const found=rows.filter(r=>findBankLesson(r)), miss=rows.length-found.length;
+  if(!found.length){ alert('Tuần '+state.week+' chưa có tiết nào khớp Kho giáo án số.\nHãy nạp thêm giáo án vào kho (mục Kho giáo án) hoặc dùng mẫu/AI để soạn từng tiết.'); return; }
+  _downloadBlob(`KHBD_Tuan${state.week}_Lop${state.klass}.docx`, buildWeekKhbdDocx(rows));
+  if(miss>0) setTimeout(()=>alert('✓ Đã tạo KHBD Tuần '+state.week+': '+found.length+' tiết lấy từ Kho giáo án số.\nCòn '+miss+' tiết chưa có trong kho — thầy cô soạn riêng từng tiết ở danh sách bên dưới rồi tải thêm.'),200);
 }
 /* Tạo dàn ý PPT từ 1 giáo án trong kho rồi chuyển sang view PPT */
 function pptOutlineFromBank(L){
@@ -2470,6 +2500,7 @@ function exportThongKeDocx(){
 /* ---------- 16) CÀI ĐẶT (hồ sơ GV) ---------- */
 function loadSettings(){
   let p={}; try{p=JSON.parse(localStorage.getItem('butxanh_profile')||'{}');}catch(e){}
+  el('set-xung').value=p.xung||state.xung||'Cô';
   if(p.name)el('set-name').value=p.name; if(p.grade)el('set-grade').value=p.grade;
   if(p.school)el('set-school').value=p.school; if(p.year)el('set-year').value=p.year;
   if(p.team)el('set-team').value=p.team;
@@ -2478,6 +2509,7 @@ function loadSettings(){
 }
 function applyProfile(p){
   if(!p||typeof p!=='object') return;
+  if(p.xung) state.xung=p.xung;
   if(p.name) state.gvcn=p.name;
   if(p.klass) state.klass=p.klass;
   if(p.week) state.week=p.week;
@@ -2494,13 +2526,14 @@ function applyProfile(p){
 }
 function syncStaticLabels(){
   const w=state.week,l=state.klass;
-  [['dash-week1',w],['dash-week2',w],['tk-week',w],['khbd-week',w],['tk-lop',l]].forEach(p=>{const e=el(p[0]); if(e)e.textContent=p[1];});
+  [['dash-week1',w],['dash-week2',w],['tk-week',w],['khbd-week',w],['khbd-week-btn',w],['tk-lop',l]].forEach(p=>{const e=el(p[0]); if(e)e.textContent=p[1];});
   const full=(state.gvcn||'').trim(), short=full.split(/\s+/).slice(-1)[0]||full;
-  const g=el('hdr-greet'); if(g&&full) g.textContent='Cô '+full;
-  const pn=el('hdr-pname'); if(pn&&full) pn.textContent='Cô '+short;
+  const xg=(state.xung||'Cô').trim();
+  const g=el('hdr-greet'); if(g&&full) g.textContent=xg+' '+full;
+  const pn=el('hdr-pname'); if(pn&&full) pn.textContent=xg+' '+short;
 }
 el('set-save').onclick=function(){
-  const p={name:el('set-name').value,grade:el('set-grade').value,school:el('set-school').value,year:el('set-year').value,team:el('set-team').value,
+  const p={xung:el('set-xung').value,name:el('set-name').value,grade:el('set-grade').value,school:el('set-school').value,year:el('set-year').value,team:el('set-team').value,
     klass:el('set-class').value.trim(),week:el('set-week').value.trim(),place:el('set-place').value.trim(),
     from:el('set-from').value.trim(),to:el('set-to').value.trim()};
   try{localStorage.setItem('butxanh_profile',JSON.stringify(p));}catch(e){}
