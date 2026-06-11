@@ -664,7 +664,7 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
     <section class="view" id="v-khbd">
       <div class="page-head">
         <div><h2 class="ph-title">Kế hoạch bài dạy</h2><div class="ph-sub">Chọn lịch báo giảng → Bút Xanh tra <b>Kho giáo án số</b> và cấp đúng KHBD — bám CT GDPT 2018, bộ Kết nối tri thức</div></div>
-        <div class="ph-actions"><button class="btn solid" onclick="downloadWeekKHBD()">📦 Tạo KHBD Tuần <span id="khbd-week-btn">12</span></button></div>
+        <div class="ph-actions"><button class="btn solid" onclick="openWeekKhbdModal()">📦 Tạo KHBD Tuần <span id="khbd-week-btn">12</span></button></div>
       </div>
       <div class="card">
         <div class="card-head"><h3>📚 Giáo án theo lịch báo giảng tuần <span id="khbd-week">12</span></h3><span class="muted-sm">Đã có trong kho: <b id="khbd-bank-count">0/0</b> tiết</span></div>
@@ -995,6 +995,67 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
       <button class="btn ghost" onclick="closeModal('hl-overlay')">Huỷ</button>
       <button class="btn save" onclick="saveHl()">💾 Lưu</button>
     </div>
+  </div>
+</div>
+
+<!-- ====== Cửa sổ thông báo "đã tạo KHBD tuần" ====== -->
+<style>
+.wx-card{background:#fff;border-radius:24px;max-width:780px;width:100%;padding:34px 40px;position:relative;box-shadow:0 24px 60px rgba(0,0,0,.28);display:flex;gap:28px;align-items:center;animation:pop .2s ease}
+.wx-x{position:absolute;top:14px;right:16px;border:1px solid var(--line);border-radius:50%;background:#fff}
+.wx-mascot{flex:0 0 190px;height:210px;background:var(--masc) no-repeat center/contain}
+.wx-main{flex:1;min-width:0}
+.wx-badge{width:64px;height:64px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;margin-bottom:14px;box-shadow:0 0 0 8px #e8f6ec}
+.wx-title{font-size:30px;font-weight:800;color:var(--green);line-height:1.12}
+.wx-title span{color:#23394d}
+.wx-msg{font-size:16px;color:#33414d;margin:12px 0 22px;line-height:1.55}
+.wx-acts{display:flex;gap:14px;flex-wrap:wrap}
+.wx-acts .btn{font-size:15px;padding:13px 22px;border-radius:13px}
+@media(max-width:640px){.wx-card{flex-direction:column;text-align:center;padding:28px 22px}.wx-mascot{flex-basis:140px;height:150px;width:100%}.wx-acts{justify-content:center}.wx-title{font-size:25px}}
+#preview-overlay{z-index:70;background:rgba(18,28,22,.62);padding:0;align-items:stretch}
+.pv-wrap{display:flex;flex-direction:column;width:100%;min-height:100%}
+.pv-bar{position:sticky;top:0;z-index:2;background:var(--green-dark,#1f6b3a);color:#fff;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 18px;flex-wrap:wrap}
+.pv-ttl{font-weight:700;font-size:15px}
+.pv-bar .btn{background:#fff;color:#1f6b3a}.pv-bar .btn.ghost{background:rgba(255,255,255,.16);color:#fff}
+.pv-scroll{flex:1;background:#606b64;padding:22px 10px}
+.a4{width:794px;max-width:100%;min-height:1080px;background:#fff;margin:0 auto 22px;padding:54px 62px;box-shadow:0 4px 22px rgba(0,0,0,.35);font-family:'Times New Roman',Georgia,serif;color:#111;font-size:15px;line-height:1.5;box-sizing:border-box}
+.a4 h1{text-align:center;font-size:17px;margin:0 0 4px;font-weight:700}
+.a4 .a4-meta{text-align:center;margin:2px 0}
+.a4 .a4-bai{text-align:center;font-weight:700;margin:2px 0}
+.a4 h2{font-size:15px;font-weight:700;margin:15px 0 4px}
+.a4 .ln{white-space:pre-wrap;margin:1px 0}
+.a4 table{width:100%;border-collapse:collapse;margin:5px 0}
+.a4 th,.a4 td{border:1px solid #000;padding:6px 9px;vertical-align:top;font-size:14px}
+.a4 th{background:#d9ead3;text-align:center}
+.a4 .dots{color:#333;letter-spacing:1px}
+@media(max-width:860px){.a4{padding:30px 22px}}
+</style>
+<div class="overlay wx" id="week-overlay">
+  <div class="wx-card">
+    <button class="close wx-x" onclick="closeModal('week-overlay')">×</button>
+    <div class="wx-mascot" aria-hidden="true"></div>
+    <div class="wx-main">
+      <div class="wx-badge"><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></div>
+      <h3 class="wx-title">Bút Xanh <span>thông báo!</span></h3>
+      <p class="wx-msg" id="week-msg">Kế hoạch bài dạy <b>Tuần 12</b> của thầy cô đã tạo xong, thầy cô xem trước khi lưu về máy tính của mình!</p>
+      <div class="wx-acts">
+        <button class="btn" onclick="previewWeekKhbd()">👁 Xem trước kế hoạch</button>
+        <button class="btn ghost" onclick="downloadWeekKHBD()">⬇ Lưu về máy tính</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Trang xem trước KHBD cả tuần (kiểu A4 như Word) ====== -->
+<div class="overlay pv" id="preview-overlay">
+  <div class="pv-wrap">
+    <div class="pv-bar">
+      <div class="pv-ttl">📄 Xem trước KHBD <span id="pv-week">Tuần 12</span> · <span id="pv-count"></span></div>
+      <div class="wx-acts">
+        <button class="btn" onclick="downloadWeekKHBD()">⬇ Tải về máy tính</button>
+        <button class="btn ghost" onclick="closeModal('preview-overlay')">Đóng</button>
+      </div>
+    </div>
+    <div class="pv-scroll" id="pv-pages"></div>
   </div>
 </div>
 
@@ -1891,12 +1952,60 @@ function buildWeekKhbdDocx(rows){
   const body=found.map((it,i)=>(i?'<w:p><w:r><w:br w:type="page"/></w:r></w:p>':'')+_lessonBodyParas(it.L,it.r)).join('');
   return _wrapDocx(body);
 }
-function downloadWeekKHBD(){
+/* Bấm "Tạo KHBD Tuần" → mở cửa sổ thông báo (xem trước / lưu) */
+function openWeekKhbdModal(){
   const rows=state.schedule||[];
   const found=rows.filter(r=>findBankLesson(r)), miss=rows.length-found.length;
   if(!found.length){ alert('Tuần '+state.week+' chưa có tiết nào khớp Kho giáo án số.\nHãy nạp thêm giáo án vào kho (mục Kho giáo án) hoặc dùng mẫu/AI để soạn từng tiết.'); return; }
+  const msg=el('week-msg');
+  if(msg) msg.innerHTML='Kế hoạch bài dạy <b>Tuần '+_xe(state.week)+'</b> của thầy cô đã tạo xong'+
+    (miss>0?(' — <b>'+found.length+'/'+rows.length+'</b> tiết có trong kho'):'')+
+    ', thầy cô xem trước khi lưu về máy tính của mình!';
+  el('week-overlay').classList.add('show');
+}
+function downloadWeekKHBD(){
+  const rows=state.schedule||[];
+  const found=rows.filter(r=>findBankLesson(r));
+  if(!found.length){ alert('Tuần '+state.week+' chưa có tiết nào khớp Kho giáo án số.'); return; }
   _downloadBlob(`KHBD_Tuan${state.week}_Lop${state.klass}.docx`, buildWeekKhbdDocx(rows));
-  if(miss>0) setTimeout(()=>alert('✓ Đã tạo KHBD Tuần '+state.week+': '+found.length+' tiết lấy từ Kho giáo án số.\nCòn '+miss+' tiết chưa có trong kho — thầy cô soạn riêng từng tiết ở danh sách bên dưới rồi tải thêm.'),200);
+  closeModal('week-overlay');
+}
+/* HTML 1 giáo án dạng trang A4 (mục III = bảng 2 cột) cho trang xem trước */
+function lessonPreviewHtml(L,row){
+  row=row||{};
+  const lop=row.lop||state.klass, tuan=L.tuan||row.tuan||state.week;
+  const tiet=row.ppct||row.tiet||L.tiet||'', ngay=_ngayFull(row.date);
+  const esc=_xe, nl=s=>esc(s||'').replace(/\n/g,'<br>');
+  let h='<div class="a4">';
+  h+='<h1>KẾ HOẠCH BÀI DẠY</h1>';
+  h+='<div class="a4-meta">Môn: '+esc(L.mon)+' &nbsp;|&nbsp; Lớp: '+esc(lop)+' &nbsp;|&nbsp; Tuần: '+esc(tuan)+(tiet?(' &nbsp;|&nbsp; Tiết (PPCT): '+esc(tiet)):'')+'</div>';
+  h+='<div class="a4-bai">Bài: '+esc(L.bai)+'</div>';
+  if(ngay) h+='<div class="a4-meta">Ngày dạy: '+esc(ngay)+'</div>';
+  h+='<h2>I. YÊU CẦU CẦN ĐẠT</h2><div class="ln">'+nl(L.yccd||'(Thầy cô đối chiếu SGK/SGV)')+'</div>';
+  h+='<h2>II. ĐỒ DÙNG DẠY HỌC</h2><div class="ln">'+nl(L.dodung||'…')+'</div>';
+  h+='<h2>III. CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU</h2>';
+  if(Array.isArray(L.hoatdong)){
+    h+='<table><thead><tr><th style="width:58%">HOẠT ĐỘNG CỦA GV</th><th>HOẠT ĐỘNG CỦA HS</th></tr></thead><tbody>';
+    L.hoatdong.forEach(b=>{ h+='<tr><td><b>'+esc(b.ten||'')+'</b><br>'+nl(b.gv)+'</td><td>'+nl(b.hs)+'</td></tr>'; });
+    h+='</tbody></table>';
+  }else h+='<div class="ln">'+nl(L.hoatdong||'…')+'</div>';
+  h+='<h2>IV. ĐIỀU CHỈNH, HỖ TRỢ HỌC SINH</h2>';
+  h+='<div class="ln"><b>1. Học sinh cần hỗ trợ:</b><br>'+nl(L.hotro||'…')+'</div>';
+  h+='<div class="ln" style="margin-top:6px"><b>2. Học sinh khuyết tật học hòa nhập:</b><br>'+nl(L.hoanhap||'…')+'</div>';
+  h+='<h2>V. ĐIỀU CHỈNH SAU BÀI DẠY</h2><div class="ln dots">'+_DOTLINE+'<br>'+_DOTLINE+'</div>';
+  h+='</div>';
+  return h;
+}
+/* Xem trước KHBD cả tuần (kiểu A4) */
+function previewWeekKhbd(){
+  const rows=state.schedule||[], found=[];
+  rows.forEach(r=>{ const L=findBankLesson(r); if(L) found.push({L,r}); });
+  if(!found.length){ alert('Chưa có tiết nào trong kho để xem trước.'); return; }
+  el('pv-week').textContent='Tuần '+state.week;
+  el('pv-count').textContent=found.length+' tiết';
+  el('pv-pages').innerHTML=found.map(it=>lessonPreviewHtml(it.L,it.r)).join('');
+  const sc=el('pv-pages'); if(sc) sc.scrollTop=0;
+  el('preview-overlay').classList.add('show');
 }
 /* Tạo dàn ý PPT từ 1 giáo án trong kho rồi chuyển sang view PPT */
 function pptOutlineFromBank(L){
