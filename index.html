@@ -468,7 +468,69 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
   .sidebar .nav a .chev{display:none}
   .sidebar .nav-grp{display:block!important;margin:10px 6px 2px}
 }
+/* ===================== KHO GIÁO ÁN SỐ (duyệt Lớp/Môn/Tuần/Tiết) ===================== */
+.kho-hero{background:linear-gradient(135deg,#0f8a52,#22a862);color:#fff;border-radius:18px;padding:20px 22px;margin-bottom:16px;box-shadow:0 10px 26px rgba(15,138,82,.22);position:relative;overflow:hidden}
+.kho-hero::after{content:"📚";position:absolute;right:14px;top:-10px;font-size:96px;opacity:.10;transform:rotate(-8deg)}
+.kho-hero h3{margin:0 0 3px;font-size:21px;font-weight:800;display:flex;align-items:center;gap:8px}
+.kho-hero .kh-sub{font-size:13px;opacity:.93;max-width:560px;position:relative;z-index:1}
+.kho-hero .kh-stat{margin-top:13px;display:flex;gap:8px;flex-wrap:wrap;position:relative;z-index:1}
+.kho-hero .kh-pill{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:4px 12px;font-size:12.5px;font-weight:700}
+.kho-filters{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;box-shadow:0 2px 10px rgba(20,60,40,.04)}
+.kho-fsel{display:flex;flex-direction:column;gap:5px;flex:1 1 130px;min-width:110px}
+.kho-fsel label{font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:#8a978f}
+.kho-fsel select{padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-weight:600;color:#1d2b24;background:#fff;cursor:pointer}
+.kho-fsel select:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(31,164,92,.15)}
+.kho-dlweek{flex:0 0 auto;display:flex;align-items:center;gap:7px;padding:10px 16px;height:42px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 6px 14px rgba(31,164,92,.28)}
+.kho-dlweek:hover{background:var(--green-dark)}
+.kho-dlweek:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.kho-summary{font-size:13px;color:#5b6b61;margin:0 2px 10px}
+.kho-summary b{color:var(--green-dark)}
+.kho-tiet{display:flex;align-items:center;gap:14px;padding:12px 15px;border:1px solid var(--line);border-radius:13px;background:#fff;margin-bottom:9px;transition:.15s}
+.kho-tiet:hover{border-color:#bfe7cd;box-shadow:0 5px 14px rgba(15,138,82,.09);transform:translateY(-1px)}
+.kho-tiet .kt-no{flex:0 0 auto;width:52px;height:52px;border-radius:12px;background:#eef7f1;color:var(--green-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.kho-tiet .kt-no small{font-size:9px;font-weight:800;opacity:.7;letter-spacing:.6px}
+.kho-tiet .kt-no b{font-size:20px}
+.kho-tiet .kt-main{flex:1 1 auto;min-width:0}
+.kho-tiet .kt-bai{font-weight:700;font-size:14.5px;color:#1d2b24}
+.kho-tiet .kt-meta{font-size:12px;color:#8a978f;margin-top:3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.kho-tiet .kt-act{flex:0 0 auto;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.kho-empty{padding:34px 16px;text-align:center;color:#8a978f;border:1px dashed var(--line);border-radius:14px;background:#fafdfb}
+.kho-empty .ke-ic{font-size:36px;margin-bottom:8px}
+@media(max-width:560px){
+  .kho-tiet{flex-wrap:wrap}
+  .kho-tiet .kt-main{flex:1 1 60%}
+  .kho-tiet .kt-act{width:100%;justify-content:flex-start;margin-top:6px}
+  .kho-dlweek{width:100%;justify-content:center;margin-top:2px}
+  .kho-fsel{flex:1 1 28%;min-width:88px}
+}
+/* Cửa sổ "Xem" — trang giáo án dạng A4 phẳng */
+#kho-prev-overlay{align-items:stretch;justify-content:center;padding:0;overflow:hidden}
+.kho-prev-wrap{display:flex;flex-direction:column;width:100%;max-width:980px;height:100vh;height:100dvh}
+.kho-prev-bar{flex:0 0 auto;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 18px;background:#0f7a44;color:#fff}
+.kho-prev-bar h3{margin:0;font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kho-prev-bar .pb-act{flex:0 0 auto;display:flex;gap:8px;align-items:center}
+.kho-prev-bar .pb-close{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.4)}
+.kho-prev-bar .pb-close:hover{background:rgba(255,255,255,.28)}
+.kho-prev-scroll{flex:1 1 auto;overflow-y:auto;background:#46554d;padding:22px 14px}
+.a4page{background:#fff;width:100%;max-width:794px;margin:0 auto;padding:48px 56px;box-shadow:0 8px 30px rgba(0,0,0,.35);font-family:"Times New Roman",Times,serif;color:#111;font-size:15px;line-height:1.5}
+.a4page .doc-title{text-align:center;font-weight:800;font-size:18px;margin:0 0 6px;text-transform:uppercase}
+.a4page .doc-meta{text-align:center;margin:1px 0}
+.a4page .doc-bai{text-align:center;font-weight:700;margin:3px 0 2px}
+.a4page h4{font-weight:800;font-size:15px;margin:15px 0 5px}
+.a4page p{margin:3px 0}
+.a4page table.hd{width:100%;border-collapse:collapse;margin:6px 0 2px;table-layout:fixed}
+.a4page table.hd th,.a4page table.hd td{border:1px solid #2b2b2b;padding:7px 9px;vertical-align:top;font-size:14px}
+.a4page table.hd th{background:#eef7f1;text-align:center;font-weight:800}
+.a4page table.hd td.gv{width:58%}
+.a4page .dotline{border-bottom:1px dotted #666;height:20px}
+@media(max-width:560px){
+  .kho-prev-scroll{padding:12px 8px}
+  .a4page{padding:26px 20px;font-size:14px}
+  .kho-prev-bar h3{font-size:13px}
+  .kho-prev-bar .pb-act .btn-xs{padding:6px 9px;font-size:11px}
+}
 </style>
+<script src="kho-data.js"></script>
 </head>
 <body>
 <div id="splash">
@@ -592,7 +654,7 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
           <div class="card">
             <div class="card-head">
               <h3><svg class="icn ic" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg> Lịch dạy tuần <span id="dash-week1">12</span></h3>
-              <span class="link" onclick="openUpload()">Xem chi tiết</span>
+              <span class="link" onclick="showView('lich')">Xem chi tiết</span>
             </div>
             <div class="sched-wrap">
             <table class="sched">
@@ -600,7 +662,7 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
               <tbody id="sched-body"></tbody>
             </table>
             </div>
-            <div class="sched-foot"><span class="link" onclick="openUpload()">Xem toàn bộ lịch dạy →</span></div>
+            <div class="sched-foot"><span class="link" onclick="showView('lich')">Xem toàn bộ lịch dạy →</span></div>
           </div>
 
           <!-- Bút Xanh nhắc thầy cô -->
@@ -690,13 +752,13 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
       <div class="page-head">
         <div><h2 class="ph-title">Lịch báo giảng</h2><div class="ph-sub">Mẫu chuẩn Bút Xanh — bám cấu trúc lịch báo giảng tiểu học (A4 dọc)</div></div>
         <div class="ph-actions">
-          <button class="btn-xs" onclick="downloadScheduleTemplate()">📥 Tải mẫu Excel (trống)</button>
+          <input type="file" id="lbg-file" accept=".xlsx" style="display:none" onchange="lbgRead(this)">
+          <button class="btn-xs" onclick="downloadScheduleTemplate()">📥 Tải LBG trống về máy</button>
           <button class="btn-xs solid" onclick="exportScheduleXls()">📤 Xuất Excel tuần này</button>
-          <button class="btn-xs" onclick="openSchedEditor()">✏️ Sửa lịch</button>
-          <button class="btn-xs" onclick="openUpload()">⤴ Tải / dán lịch</button>
+          <button class="btn-xs" onclick="openSchedEditor()">✏️ Sửa LBG</button>
+          <button class="btn-xs" onclick="lbgPick()">⤴ Đưa LBG lên</button>
         </div>
       </div>
-      <div class="notice" style="margin-bottom:16px">Đây là <b>mẫu lịch báo giảng chuẩn</b> để thầy cô điền và nộp. Tải file Excel (.xlsx) ở trên, điền theo đúng các cột, rồi tải lên để Bút Xanh đọc và tạo KHBD/nhắc nhở. Bấm vào một dòng để tạo KHBD cho tiết đó.</div>
       <div class="card lbg-card">
         <div class="lbg-title">LỊCH BÁO GIẢNG NĂM HỌC <span id="lbg-year"></span></div>
         <div class="lbg-range" id="lbg-range"></div>
@@ -748,31 +810,26 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
     <!-- ============ VIEW: KHO GIÁO ÁN ============ -->
     <section class="view" id="v-kho">
       <div class="page-head">
-        <div><h2 class="ph-title">Kho giáo án</h2><div class="ph-sub">Tất cả tệp KHBD đã tạo, mẫu trống & tệp sưu tầm <span id="kho-count" class="muted-sm"></span></div></div>
-        <div class="ph-actions">
-          <input type="file" id="kho-file" accept=".docx,.doc,.pdf,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword" multiple style="display:none" onchange="onKhoFilePicked(this)">
-          <button class="btn-xs" onclick="document.getElementById('kho-file').click()">⤴ Thêm tệp</button>
-          <button class="btn-xs solid" onclick="downloadAllKHBD()">⬇ Tải tất cả (Word)</button>
-        </div>
+        <div><h2 class="ph-title">Kho giáo án</h2><div class="ph-sub">Chọn <b>Lớp · Môn · Tuần · Tiết</b> để lấy giáo án và tải về</div></div>
       </div>
-      <div class="card">
-        <div class="card-head"><h3>📚 Kho giáo án số (chuẩn hóa)</h3><span class="muted-sm">Nguồn cấp KHBD cho lịch báo giảng</span></div>
-        <div id="bank-stat" class="bank-stat"></div>
-        <div class="bk-tools">
-          <input type="file" id="bank-file" accept=".json,application/json" style="display:none" onchange="importBank(this)">
-          <button class="btn-xs solid" onclick="document.getElementById('bank-file').click()">⤴ Nạp giáo án (JSON)</button>
-          <button class="btn-xs" onclick="exportBankJson()">⬇ Xuất kho (JSON)</button>
-          <button class="btn-xs" onclick="downloadBankTemplate()">📄 Tải mẫu nhập</button>
-          <button class="btn-xs danger" onclick="clearBankImport()">Xoá phần đã nạp</button>
-        </div>
-        <div class="muted-sm" style="margin-top:8px">Định dạng mỗi giáo án: <code>id, khoi, mon, tuan, tiet, bai, yccd, dodung, hoatdong, hotro, hoanhap, source, status</code>. Thành viên dự án có dữ liệu chỉ cần "Nạp giáo án (JSON)" là kho tự cập nhật.</div>
+
+      <!-- HERO -->
+      <div class="kho-hero">
+        <h3>📚 Kho giáo án số</h3>
+        <div class="kh-sub">Giáo án chuẩn hóa theo <b>Lớp · Môn · Tuần · Tiết</b> — tải về theo từng tiết hoặc cả tuần để in &amp; trình ký.</div>
+        <div class="kh-stat" id="kho-hero-stat"></div>
       </div>
-      <div class="toolbar">
-        <label class="search"><svg class="icn" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-          <input id="kho-search" placeholder="Tìm theo tên tệp, môn, bài…" oninput="renderKho()"></label>
-        <div class="pills" id="kho-pills"></div>
+
+      <!-- THANH LỌC -->
+      <div class="kho-filters">
+        <div class="kho-fsel"><label>Lớp</label><select id="kho-f-lop" onchange="KHO_onLop(this.value)"></select></div>
+        <div class="kho-fsel"><label>Môn</label><select id="kho-f-mon" onchange="KHO_onMon(this.value)"></select></div>
+        <div class="kho-fsel"><label>Tuần</label><select id="kho-f-tuan" onchange="KHO_onTuan(this.value)"></select></div>
+        <button class="kho-dlweek" id="kho-dl-week" onclick="KHO_downloadTuan()"><svg class="icn" style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg> Tải cả tuần</button>
       </div>
-      <div class="card"><div id="kho-list" class="kfiles"></div></div>
+
+      <div class="kho-summary" id="kho-summary"></div>
+      <div id="kho-tiet-list"></div>
     </section>
 
     <!-- ============ VIEW: BÚT XANH NHẮC THẦY CÔ ============ -->
@@ -927,6 +984,22 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
   <a class="mi" data-t="more"><svg viewBox="0 0 24 24"><circle cx="5" cy="6" r="1.4"/><circle cx="5" cy="12" r="1.4"/><circle cx="5" cy="18" r="1.4"/><path d="M10 6h10M10 12h10M10 18h10"/></svg>Thêm</a>
 </nav>
 
+<!-- ==================== MODAL: XEM TRƯỚC GIÁO ÁN (KHO) ==================== -->
+<div class="overlay" id="kho-prev-overlay">
+  <div class="kho-prev-wrap">
+    <div class="kho-prev-bar">
+      <h3 id="kho-prev-title">Xem trước giáo án</h3>
+      <div class="pb-act">
+        <button class="btn-xs solid" id="kho-prev-dl">⬇ Tải tiết này (Word)</button>
+        <button class="btn-xs pb-close" onclick="closeModal('kho-prev-overlay')">✕ Đóng</button>
+      </div>
+    </div>
+    <div class="kho-prev-scroll">
+      <div class="a4page" id="kho-prev-body"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ==================== MODAL: SINH KHBD ==================== -->
 <div class="overlay" id="khbd-overlay">
   <div class="modal">
@@ -963,27 +1036,20 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 </div>
 
 <!-- ==================== MODAL: TẢI LỊCH BÁO GIẢNG ==================== -->
-<div class="overlay" id="up-overlay">
-  <div class="modal">
+<div class="overlay" id="lbg-overlay">
+  <div class="modal" style="max-width:560px">
     <div class="modal-head">
-      <div><h3>Tải / dán lịch báo giảng</h3><div class="sub">Bút Xanh sẽ bóc tách thành bảng tuần để thầy cô kiểm tra.</div></div>
-      <button class="close" onclick="closeModal('up-overlay')">×</button>
+      <div><h3>Đưa Lịch báo giảng lên</h3><div class="sub">Bút Xanh đọc file LBG (.xlsx) thầy cô đã điền theo mẫu — không cần mạng.</div></div>
+      <button class="close" onclick="closeModal('lbg-overlay')">×</button>
     </div>
     <div class="modal-body">
-      <div class="notice"><b>Cách 1 (khuyên dùng):</b> Tải lên file Excel <b>.xlsx</b> đã điền theo mẫu — Bút Xanh đọc trực tiếp, <b>không cần mạng</b>. Hệ thống tự nhận lịch và các tiết cần soạn giáo án.</div>
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px">
-        <input type="file" id="xlsx-file" accept=".xlsx" style="display:none" onchange="readScheduleXlsx(this)">
-        <button class="btn" onclick="document.getElementById('xlsx-file').click()">📂 Chọn &amp; đọc file Excel (.xlsx)</button>
-        <span class="muted-sm">Cột: Thứ · Buổi · Tiết · Môn · Lớp · Tên bài · Đồ dùng TBDH</span>
-      </div>
-      <div id="xlsx-status" style="margin-bottom:12px"></div>
-      <div class="notice" style="margin-top:4px"><b>Cách 2:</b> Dán nội dung lịch (mỗi tiết một dòng) rồi nhờ AI bóc tách.</div>
-      <textarea class="box" id="paste-box" rows="6" placeholder="Thứ 2 (11/11)  Tiết 1  HĐTN  Sinh hoạt dưới cờ&#10;Thứ 2 (11/11)  Tiết 2  Toán  Luyện tập chung ..."></textarea>
-      <div id="parse-status" style="margin-top:12px"></div>
+      <div class="notice" style="margin-bottom:10px">Các cột chuẩn: <b>Thứ · Buổi · Tiết · Môn · Lớp · Tên bài · Đồ dùng TBDH</b>. Chưa có mẫu? Bấm <b>“Tải LBG trống về máy”</b> để điền.</div>
+      <div id="lbg-status"></div>
     </div>
     <div class="modal-foot">
-      <button class="btn ghost" onclick="loadSample()">Dùng lịch mẫu</button>
-      <button class="btn ghost" onclick="parseSchedule()">📥 AI đọc text đã dán</button>
+      <button class="btn ghost" onclick="closeModal('lbg-overlay')">Hủy</button>
+      <button class="btn ghost" onclick="lbgPick()">📂 Chọn file khác</button>
+      <button class="btn" id="lbg-apply-btn" onclick="lbgApply()" disabled>✓ Cập nhật LBG</button>
     </div>
   </div>
 </div>
@@ -1425,7 +1491,7 @@ function downloadKHBD(){
 }
 
 /* ---------- 5) TẢI / ĐỌC LỊCH BÁO GIẢNG (AI) ---------- */
-function openUpload(){ document.getElementById("up-overlay").classList.add("show"); }
+function openUpload(){ lbgPick(); }
 function loadSample(){
   document.getElementById("paste-box").value=state.schedule.map(r=>`${r.day} (${r.date})  Tiết ${r.tiet}  ${r.mon}  ${r.bai}`).join("\n");
 }
@@ -1525,36 +1591,59 @@ function metaFromCells(cells){
   if(m=find(/^([^,…]+),\s*ngày .* năm/i)){ const p=m[1].trim(); if(p) meta.place=p; }
   return meta;
 }
-async function readScheduleXlsx(input){
-  const file=(input.files||[])[0]; if(!file) return;
-  const st=el('xlsx-status'); st.innerHTML='<div class="loading"><span class="spinner"></span> Đang đọc file Excel…</div>';
+/* Đọc 1 file .xlsx → trả {sch, meta}; lỗi thì ném Error (để cảnh báo GV). */
+async function _parseScheduleFile(file){
+  const ab=await file.arrayBuffer(), zip=await _unzip(ab);
+  const sheetName=Object.keys(zip).find(n=>/xl\/worksheets\/sheet1\.xml$/i.test(n))||Object.keys(zip).find(n=>/xl\/worksheets\/.*\.xml$/i.test(n));
+  if(!sheetName) throw new Error('Không tìm thấy bảng tính trong file.');
+  const ssName=Object.keys(zip).find(n=>/sharedStrings\.xml$/i.test(n));
+  const shared=ssName?_parseSharedStrings(await _readPart(zip[ssName])):[];
+  const cells=_parseSheet(await _readPart(zip[sheetName]), shared);
+  const sch=scheduleFromCells(cells);
+  if(!sch.length) throw new Error('Không đọc được tiết nào — hãy kiểm tra file đã điền đúng cột Môn/Tên bài chưa.');
+  return {sch, meta:metaFromCells(cells)};
+}
+/* Áp dụng lịch đã đọc vào state + render lại. */
+function _applyScheduleData(sch, meta){
+  meta=meta||{};
+  state.schedule=sch;
+  if(meta.week)state.week=meta.week; if(meta.year)state.year=meta.year; if(meta.gvcn)state.gvcn=meta.gvcn;
+  if(meta.from)state.from=meta.from; if(meta.to)state.to=meta.to; if(meta.place)state.place=meta.place;
+  const km=String(state.klass).match(/\d+/); if(km)state.khoi=km[0];
+  fillScheduleDates();
+  try{ persistSchedule(); }catch(e){}
+  if(typeof syncStaticLabels==='function') syncStaticLabels();
+  renderSchedule();
+  if(el('v-lich').classList.contains('active')) renderFullSchedule();
+  if(el('v-khbd').classList.contains('active')) renderKHBDChips();
+}
+/* ===== Luồng "Đưa LBG lên": chọn file → đọc/kiểm tra → xác nhận "Cập nhật LBG" ===== */
+var _lbgPending=null;
+function lbgPick(){ const i=el('lbg-file'); if(i){ i.value=''; i.click(); } }
+async function lbgRead(input){
+  const file=(input.files||[])[0]; if(input) input.value=''; if(!file) return;
+  const ov=el('lbg-overlay'), st=el('lbg-status'), btn=el('lbg-apply-btn');
+  if(ov) ov.classList.add('show');
+  if(btn) btn.disabled=true; _lbgPending=null;
+  if(st) st.innerHTML='<div class="loading"><span class="spinner"></span> Đang đọc file…</div>';
   try{
-    const ab=await file.arrayBuffer(), zip=await _unzip(ab);
-    const sheetName=Object.keys(zip).find(n=>/xl\/worksheets\/sheet1\.xml$/i.test(n))||Object.keys(zip).find(n=>/xl\/worksheets\/.*\.xml$/i.test(n));
-    if(!sheetName) throw new Error('Không tìm thấy bảng tính trong file.');
-    const ssName=Object.keys(zip).find(n=>/sharedStrings\.xml$/i.test(n));
-    const shared=_parseSharedStrings(await _readPart(zip[ssName]));
-    const cells=_parseSheet(await _readPart(zip[sheetName]), shared);
-    const sch=scheduleFromCells(cells);
-    if(!sch.length) throw new Error('Không đọc được tiết nào — kiểm tra file đã điền cột Môn/Tên bài chưa.');
-    state.schedule=sch;
-    const meta=metaFromCells(cells);
-    if(meta.week)state.week=meta.week; if(meta.year)state.year=meta.year; if(meta.gvcn)state.gvcn=meta.gvcn;
-    if(meta.from)state.from=meta.from; if(meta.to)state.to=meta.to; if(meta.place)state.place=meta.place;
-    const km=String(state.klass).match(/\d+/); if(km)state.khoi=km[0];
-    fillScheduleDates();
-    try{ persistSchedule(); }catch(e){}
-    if(typeof syncStaticLabels==='function') syncStaticLabels();
-    renderSchedule();
-    if(el('v-lich').classList.contains('active')) renderFullSchedule();
-    if(el('v-khbd').classList.contains('active')) renderKHBDChips();
-    const cov=khbdCoverage();
-    st.innerHTML=`<div class="notice" style="margin:0;background:var(--green-soft);border-color:#cdeed9;color:var(--green-dark)">✓ Đã đọc <b>${sch.length} tiết</b>${meta.week?(' · Tuần '+meta.week):''}. Còn <b>${cov.todo.length} bài</b> cần soạn giáo án — xem ở <b>Thống kê</b> hoặc <b>Lịch báo giảng</b> (đóng cửa sổ này).</div>`;
-    input.value='';
+    const r=await _parseScheduleFile(file);
+    _lbgPending=r;
+    if(st) st.innerHTML='<div class="notice" style="margin:0;background:var(--green-soft);border-color:#cdeed9;color:var(--green-dark)">✓ Đã đọc <b>'+r.sch.length+' tiết</b>'+(r.meta.week?(' · Tuần '+r.meta.week):'')+' từ <b>'+_xe(file.name)+'</b>.<br>Bấm <b>“✓ Cập nhật LBG”</b> để áp dụng vào tuần học.</div>';
+    if(btn) btn.disabled=false;
   }catch(e){
-    st.innerHTML=`<div class="notice" style="margin:0">⚠ ${(e&&e.message)||'Không đọc được file.'} Thầy cô có thể dùng Cách 2 bên dưới.</div>`;
-    input.value='';
+    if(st) st.innerHTML='<div class="notice" style="margin:0;background:#fdecec;border-color:#f3c0c0;color:#b03636">⚠ <b>File chưa đúng mẫu LBG.</b><br>'+_xe((e&&e.message)||'Không đọc được file.')+'<br>Hãy bấm <b>“📥 Tải LBG trống về máy”</b>, điền theo đúng các cột rồi <b>“📂 Chọn file khác”</b>.</div>';
+    if(btn) btn.disabled=true; _lbgPending=null;
   }
+}
+function lbgApply(){
+  if(!_lbgPending){ return; }
+  _applyScheduleData(_lbgPending.sch, _lbgPending.meta);
+  const n=_lbgPending.sch.length, wk=_lbgPending.meta&&_lbgPending.meta.week;
+  _lbgPending=null;
+  closeModal('lbg-overlay');
+  if(typeof showView==='function') showView('lich');
+  try{ const cov=khbdCoverage(); alert('✓ Đã cập nhật Lịch báo giảng: '+n+' tiết'+(wk?(' · Tuần '+wk):'')+'.'+(cov&&cov.todo?('\nCòn '+cov.todo.length+' bài cần soạn giáo án.'):'')); }catch(e){}
 }
 
 /* ---------- 6) BÚT XANH GỢI Ý MỚI (AI, tùy chọn) ---------- */
@@ -2466,25 +2555,10 @@ function khoFiles(){
 let khoMon='Tất cả';
 function setKhoMon(m){ khoMon=m; renderKho(); }
 function renderKho(){
-  const F=khoFiles(), all=F.all;
-  if(el('kho-count')) el('kho-count').textContent=`· ${F.saved.length} đã lưu · ${F.ups.length} tải lên · ${F.tpl.length} mẫu`;
-  const mons=['Tất cả'].concat([...new Set(all.map(f=>f.mon))]);
-  if(!mons.includes(khoMon)) khoMon='Tất cả';
-  el('kho-pills').innerHTML=mons.map(m=>`<span class="pill ${m===khoMon?'active':''}" onclick="setKhoMon(this.dataset.m)" data-m="${m}">${m}</span>`).join('');
-  const q=(el('kho-search').value||'').toLowerCase();
-  let list=all.filter(f=>(khoMon==='Tất cả'||f.mon===khoMon)&&((f.name||'').toLowerCase().includes(q)||(f.mon||'').toLowerCase().includes(q)));
-  const w=k=>k.kind==='template'?2:(k.kind==='upload'?1:0);
-  list=list.slice().sort((a,b)=> w(a)!==w(b) ? w(a)-w(b) : (b.ord||0)-(a.ord||0));
-  const ic={saved:'W',upload:'⤴',template:'＋'};
-  const box=el('kho-list');
-  box.innerHTML=list.length?list.map(f=>{
-    let act;
-    if(f.kind==='saved') act=`<button class="btn-xs" onclick="openSavedKHBD('${f.id}')">Mở</button><button class="btn-xs solid" onclick="downloadSavedKHBD('${f.id}')">Tải</button><button class="btn-xs danger" onclick="delKHBD('${f.id}')">Xoá</button>`;
-    else if(f.kind==='upload') act=`<button class="btn-xs solid" onclick="downloadKhoFile('${f.id}')">Tải</button><button class="btn-xs danger" onclick="delKhoFile('${f.id}')">Xoá</button>`;
-    else act=`<button class="btn-xs solid" onclick="downloadBlankKHBD('${(f.mon||'').replace(/'/g,"\\'")}')">Tải mẫu</button>`;
-    return `<div class="kitem"><div class="wic">${ic[f.kind]||'W'}</div><div class="kbody"><div class="ktitle">${f.name}</div><div class="kmeta">${f.meta}</div></div><div class="kact">${act}</div></div>`;
-  }).join(''):'<div class="empty-pad">Không tìm thấy tệp phù hợp.</div>';
-  renderBankManager();
+  /* Khối "Tệp cá nhân & công cụ dữ liệu" đã gỡ bỏ — kho lấy dữ liệu trực tiếp
+     từ tệp kho-data.js. Giữ hàm này để các nơi gọi cũ không lỗi; chỉ dựng lại
+     trình duyệt kho theo Lớp/Môn/Tuần/Tiết. */
+  if(window.renderKhoBrowser){ try{ window.renderKhoBrowser(); }catch(e){} }
 }
 
 /* ---------- 10b) DASHBOARD — tệp gần đây & học liệu gợi ý (động) ---------- */
@@ -4256,6 +4330,160 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
   window.addEventListener('hashchange',syncMnav);
   syncMnav();
   window.__bxSyncMnav=syncMnav;
+})();
+</script>
+<script>
+/* ============ KHO GIÁO ÁN SỐ — duyệt Lớp/Môn/Tuần/Tiết + tải Word ============ */
+(function(){
+  function nf(s){ return (s||'').toString().trim(); }
+  function nkey(s){ return (typeof _normTxt==='function')?_normTxt(s):nf(s).toLowerCase(); }
+  function esc(s){ return (typeof _xe==='function')?_xe(s):nf(s); }
+  function safe(s){ return nf(s).replace(/[^A-Za-zÀ-ỹ0-9]/g,''); }
+  function stLabel(s){ return (typeof bankStatusLabel==='function')?bankStatusLabel(s):(s||'Bản nháp'); }
+
+  /* Gộp 3 nguồn: tệp dữ liệu KHO_DATA + seed cũ LESSON_BANK + nạp JSON (localStorage). Khử trùng theo Lớp|Môn|Tuần|Tiết|Bài. */
+  function lessons(){
+    var out=[], seen={};
+    function add(L){
+      if(!L||!L.mon||!L.bai) return;
+      var lop=parseInt(L.lop!=null?L.lop:L.khoi,10)||5;
+      var mon=nf(L.mon), tuan=parseInt(L.tuan,10)||0, tiet=parseInt(L.tiet,10)||0;
+      var rec={}; for(var k in L) rec[k]=L[k];
+      rec.lop=lop; rec.mon=mon; rec._tuan=tuan; rec._tiet=tiet;
+      var key=lop+'|'+nkey(mon)+'|'+tuan+'|'+tiet+'|'+nkey(L.bai);
+      if(seen[key]!=null) out[seen[key]]=rec; else { seen[key]=out.length; out.push(rec); }
+    }
+    (window.KHO_DATA||[]).forEach(add);
+    (typeof LESSON_BANK!=='undefined'?LESSON_BANK:[]).forEach(add);
+    (typeof loadBankImport==='function'?loadBankImport():[]).forEach(add);
+    return out;
+  }
+  var ST={lop:null,mon:null,tuan:null};
+  function uniq(a){ var s=[]; a.forEach(function(x){ if(s.indexOf(x)<0) s.push(x); }); return s; }
+  function numSort(a){ return a.slice().sort(function(x,y){return x-y;}); }
+  function fill(id,opts,val,fmt){
+    var s=document.getElementById(id); if(!s) return;
+    s.innerHTML=opts.map(function(o){return '<option value="'+o+'">'+(fmt?fmt(o):o)+'</option>';}).join('');
+    if(opts.indexOf(val)>=0) s.value=String(val);
+  }
+  function rowOf(L){ return {lop:L.lop,mon:L.mon,bai:L.bai,tuan:L._tuan,tiet:L._tiet,ppct:L._tiet}; }
+  function findByKey(key){
+    var a=lessons();
+    for(var i=0;i<a.length;i++){ if((a[i].lop+'|'+a[i].mon+'|'+a[i]._tuan+'|'+a[i]._tiet)===key) return a[i]; }
+    return null;
+  }
+
+  window.renderKhoBrowser=function(){
+    var all=lessons();
+    var hs=document.getElementById('kho-hero-stat');
+    if(hs){
+      var byMon={}; all.forEach(function(L){byMon[L.mon]=(byMon[L.mon]||0)+1;});
+      var weeks=uniq(all.map(function(L){return L._tuan;}).filter(Boolean)).length;
+      hs.innerHTML='<span class="kh-pill">📘 '+all.length+' tiết</span>'
+        +'<span class="kh-pill">📚 '+Object.keys(byMon).length+' môn</span>'
+        +'<span class="kh-pill">🗓️ '+weeks+' tuần có giáo án</span>';
+    }
+    var lops=numSort(uniq(all.map(function(L){return L.lop;})));
+    if(!lops.length){ fill('kho-f-lop',[],null); fill('kho-f-mon',[],null); fill('kho-f-tuan',[],null); renderList([]); return; }
+    if(ST.lop==null||lops.indexOf(ST.lop)<0) ST.lop=lops.indexOf(5)>=0?5:lops[0];
+    fill('kho-f-lop',lops,ST.lop,function(v){return 'Lớp '+v;});
+    var inLop=all.filter(function(L){return L.lop===ST.lop;});
+    var mons=uniq(inLop.map(function(L){return L.mon;}));
+    if(ST.mon==null||mons.indexOf(ST.mon)<0) ST.mon=mons[0]||null;
+    fill('kho-f-mon',mons,ST.mon);
+    var inMon=inLop.filter(function(L){return L.mon===ST.mon;});
+    var tuans=numSort(uniq(inMon.map(function(L){return L._tuan;})));
+    if(ST.tuan==null||tuans.indexOf(ST.tuan)<0) ST.tuan=tuans[0]||null;
+    fill('kho-f-tuan',tuans,ST.tuan,function(v){return 'Tuần '+v;});
+    renderList(inMon.filter(function(L){return L._tuan===ST.tuan;}).sort(function(a,b){return a._tiet-b._tiet;}));
+  };
+  function renderList(rows){
+    var box=document.getElementById('kho-tiet-list'),
+        sum=document.getElementById('kho-summary'),
+        dl=document.getElementById('kho-dl-week');
+    if(sum) sum.innerHTML = rows.length ? ('Lớp '+ST.lop+' · <b>'+esc(ST.mon)+'</b> · Tuần '+ST.tuan+' — <b>'+rows.length+'</b> tiết') : '';
+    if(dl) dl.disabled=!rows.length;
+    if(!box) return;
+    if(!rows.length){
+      box.innerHTML='<div class="kho-empty"><div class="ke-ic">📭</div>Chưa có giáo án cho lựa chọn này.<br>'
+        +'<span class="muted-sm">Thầy cô nạp thêm trong tệp <code>kho-data.js</code> theo khóa Lớp·Môn·Tuần·Tiết.</span></div>';
+      return;
+    }
+    box.innerHTML=rows.map(function(L){
+      var st=L.status||'draft', key=L.lop+'|'+L.mon+'|'+L._tuan+'|'+L._tiet;
+      return '<div class="kho-tiet">'
+        +'<div class="kt-no"><small>TIẾT</small><b>'+L._tiet+'</b></div>'
+        +'<div class="kt-main"><div class="kt-bai">'+esc(L.bai)+'</div>'
+        +'<div class="kt-meta"><span class="bk-badge '+st+'">'+esc(stLabel(st))+'</span>'
+        +'<span>'+esc(L.mon)+' · Tuần '+L._tuan+'</span></div></div>'
+        +'<div class="kt-act">'
+        +'<button class="btn-xs" onclick="KHO_preview(\''+key+'\')">👁 Xem</button>'
+        +'<button class="btn-xs solid" onclick="KHO_downloadTiet(\''+key+'\')">⬇ Word</button>'
+        +'</div></div>';
+    }).join('');
+  }
+
+  window.KHO_onLop=function(v){ ST.lop=parseInt(v,10); ST.mon=null; ST.tuan=null; renderKhoBrowser(); };
+  window.KHO_onMon=function(v){ ST.mon=v; ST.tuan=null; renderKhoBrowser(); };
+  window.KHO_onTuan=function(v){ ST.tuan=parseInt(v,10); renderKhoBrowser(); };
+
+  window.KHO_downloadTiet=function(key){
+    var L=findByKey(key); if(!L||typeof buildKhbdDocxFromLesson!=='function') return;
+    _downloadBlob('KHBD_Lop'+L.lop+'_'+safe(L.mon)+'_Tuan'+L._tuan+'_Tiet'+L._tiet+'.docx',
+      buildKhbdDocxFromLesson(L,rowOf(L)));
+  };
+  window.KHO_downloadTuan=function(){
+    var rows=lessons().filter(function(L){return L.lop===ST.lop&&L.mon===ST.mon&&L._tuan===ST.tuan;})
+                      .sort(function(a,b){return a._tiet-b._tiet;});
+    if(!rows.length||typeof _wrapDocx!=='function'||typeof _lessonBodyParas!=='function') return;
+    var body=rows.map(function(L,i){
+      return (i?'<w:p><w:r><w:br w:type="page"/></w:r></w:p>':'')+_lessonBodyParas(L,rowOf(L));
+    }).join('');
+    _downloadBlob('KHBD_Lop'+ST.lop+'_'+safe(ST.mon)+'_Tuan'+ST.tuan+'.docx', _wrapDocx(body));
+  };
+  /* Dựng giáo án dạng trang A4 (HTML phẳng) — khớp bố cục bản Word */
+  function mline(t){ return esc((t==null?'':String(t)).replace(/\r/g,'')).split('\n').join('<br>'); }
+  function para(t){ return '<p>'+mline(t)+'</p>'; }
+  function khoLessonToHtml(L,row){
+    row=row||{};
+    var lop=row.lop||L.lop||'', tuan=L._tuan||L.tuan||row.tuan||'', tiet=row.ppct||row.tiet||L._tiet||L.tiet||'';
+    var ngay=(typeof _ngayFull==='function')?_ngayFull(row.date):'';
+    var H=[];
+    H.push('<div class="doc-title">Kế hoạch bài dạy</div>');
+    H.push('<div class="doc-meta">Môn: '+esc(L.mon)+'&nbsp;&nbsp;|&nbsp;&nbsp;Lớp: '+esc(lop)+'&nbsp;&nbsp;|&nbsp;&nbsp;Tuần: '+esc(tuan)+(tiet?('&nbsp;&nbsp;|&nbsp;&nbsp;Tiết (PPCT): '+esc(tiet)):'')+'</div>');
+    H.push('<div class="doc-bai">Bài: '+esc(L.bai)+'</div>');
+    if(ngay) H.push('<div class="doc-meta" style="font-size:13.5px">Ngày dạy: '+esc(ngay)+'</div>');
+    H.push('<h4>I. YÊU CẦU CẦN ĐẠT</h4>'+para(L.yccd||'(Thầy cô đối chiếu SGK/SGV)'));
+    H.push('<h4>II. ĐỒ DÙNG DẠY HỌC</h4>'+para(L.dodung||'…'));
+    H.push('<h4>III. CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU</h4>');
+    if(Array.isArray(L.hoatdong)){
+      var rows=L.hoatdong.map(function(b){
+        return '<tr><td class="gv"><b>'+esc(b.ten||'')+'</b>'+(b.gv?('<br>'+mline(b.gv)):'')+'</td>'
+             +'<td>'+mline(b.hs||'')+'</td></tr>';
+      }).join('');
+      H.push('<table class="hd"><thead><tr><th>HOẠT ĐỘNG CỦA GV</th><th>HOẠT ĐỘNG CỦA HS</th></tr></thead><tbody>'+rows+'</tbody></table>');
+    } else {
+      H.push(para(L.hoatdong||'…'));
+    }
+    H.push('<h4>IV. ĐIỀU CHỈNH, HỖ TRỢ HỌC SINH</h4>');
+    H.push('<p><b>1. Học sinh cần hỗ trợ:</b></p>'+para(L.hotro||'…'));
+    H.push('<p><b>2. Học sinh khuyết tật học hòa nhập:</b></p>'+para(L.hoanhap||'…'));
+    H.push('<h4>V. ĐIỀU CHỈNH SAU BÀI DẠY</h4>');
+    H.push('<div class="dotline"></div><div class="dotline"></div>');
+    return H.join('');
+  }
+  window.KHO_preview=function(key){
+    var L=findByKey(key); if(!L) return;
+    var t=document.getElementById('kho-prev-title'), b=document.getElementById('kho-prev-body');
+    if(t) t.textContent='Lớp '+L.lop+' · '+L.mon+' · Tuần '+L._tuan+' · Tiết '+L._tiet+' — '+L.bai;
+    if(b){ b.innerHTML=khoLessonToHtml(L,rowOf(L)); b.scrollTop=0; }
+    var sc=document.querySelector('#kho-prev-overlay .kho-prev-scroll'); if(sc) sc.scrollTop=0;
+    var dl=document.getElementById('kho-prev-dl'); if(dl) dl.onclick=function(){ KHO_downloadTiet(key); };
+    var ov=document.getElementById('kho-prev-overlay'); if(ov) ov.classList.add('show');
+  };
+
+  /* render lần đầu nếu đang ở view kho */
+  try{ if(document.getElementById('v-kho') && document.getElementById('v-kho').classList.contains('active')) renderKhoBrowser(); }catch(e){}
 })();
 </script>
 </body>
