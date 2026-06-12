@@ -468,43 +468,7 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
   .sidebar .nav a .chev{display:none}
   .sidebar .nav-grp{display:block!important;margin:10px 6px 2px}
 }
-/* ===================== KHO GIÁO ÁN SỐ (duyệt Lớp/Môn/Tuần/Tiết) ===================== */
-.kho-hero{background:linear-gradient(135deg,#0f8a52,#22a862);color:#fff;border-radius:18px;padding:20px 22px;margin-bottom:16px;box-shadow:0 10px 26px rgba(15,138,82,.22);position:relative;overflow:hidden}
-.kho-hero::after{content:"📚";position:absolute;right:14px;top:-10px;font-size:96px;opacity:.10;transform:rotate(-8deg)}
-.kho-hero h3{margin:0 0 3px;font-size:21px;font-weight:800;display:flex;align-items:center;gap:8px}
-.kho-hero .kh-sub{font-size:13px;opacity:.93;max-width:560px;position:relative;z-index:1}
-.kho-hero .kh-stat{margin-top:13px;display:flex;gap:8px;flex-wrap:wrap;position:relative;z-index:1}
-.kho-hero .kh-pill{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:4px 12px;font-size:12.5px;font-weight:700}
-.kho-filters{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;box-shadow:0 2px 10px rgba(20,60,40,.04)}
-.kho-fsel{display:flex;flex-direction:column;gap:5px;flex:1 1 130px;min-width:110px}
-.kho-fsel label{font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:#8a978f}
-.kho-fsel select{padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-weight:600;color:#1d2b24;background:#fff;cursor:pointer}
-.kho-fsel select:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(31,164,92,.15)}
-.kho-dlweek{flex:0 0 auto;display:flex;align-items:center;gap:7px;padding:10px 16px;height:42px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 6px 14px rgba(31,164,92,.28)}
-.kho-dlweek:hover{background:var(--green-dark)}
-.kho-dlweek:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
-.kho-summary{font-size:13px;color:#5b6b61;margin:0 2px 10px}
-.kho-summary b{color:var(--green-dark)}
-.kho-tiet{display:flex;align-items:center;gap:14px;padding:12px 15px;border:1px solid var(--line);border-radius:13px;background:#fff;margin-bottom:9px;transition:.15s}
-.kho-tiet:hover{border-color:#bfe7cd;box-shadow:0 5px 14px rgba(15,138,82,.09);transform:translateY(-1px)}
-.kho-tiet .kt-no{flex:0 0 auto;width:52px;height:52px;border-radius:12px;background:#eef7f1;color:var(--green-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
-.kho-tiet .kt-no small{font-size:9px;font-weight:800;opacity:.7;letter-spacing:.6px}
-.kho-tiet .kt-no b{font-size:20px}
-.kho-tiet .kt-main{flex:1 1 auto;min-width:0}
-.kho-tiet .kt-bai{font-weight:700;font-size:14.5px;color:#1d2b24}
-.kho-tiet .kt-meta{font-size:12px;color:#8a978f;margin-top:3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.kho-tiet .kt-act{flex:0 0 auto;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-.kho-empty{padding:34px 16px;text-align:center;color:#8a978f;border:1px dashed var(--line);border-radius:14px;background:#fafdfb}
-.kho-empty .ke-ic{font-size:36px;margin-bottom:8px}
-@media(max-width:560px){
-  .kho-tiet{flex-wrap:wrap}
-  .kho-tiet .kt-main{flex:1 1 60%}
-  .kho-tiet .kt-act{width:100%;justify-content:flex-start;margin-top:6px}
-  .kho-dlweek{width:100%;justify-content:center;margin-top:2px}
-  .kho-fsel{flex:1 1 28%;min-width:88px}
-}
 </style>
-<script src="kho-data.js"></script>
 </head>
 <body>
 <div id="splash">
@@ -784,53 +748,31 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
     <!-- ============ VIEW: KHO GIÁO ÁN ============ -->
     <section class="view" id="v-kho">
       <div class="page-head">
-        <div><h2 class="ph-title">Kho giáo án</h2><div class="ph-sub">Chọn <b>Lớp · Môn · Tuần · Tiết</b> để lấy giáo án và tải về</div></div>
-      </div>
-
-      <!-- HERO -->
-      <div class="kho-hero">
-        <h3>📚 Kho giáo án số</h3>
-        <div class="kh-sub">Giáo án chuẩn hóa theo <b>Lớp · Môn · Tuần · Tiết</b> — tải về theo từng tiết hoặc cả tuần để in &amp; trình ký.</div>
-        <div class="kh-stat" id="kho-hero-stat"></div>
-      </div>
-
-      <!-- THANH LỌC -->
-      <div class="kho-filters">
-        <div class="kho-fsel"><label>Lớp</label><select id="kho-f-lop" onchange="KHO_onLop(this.value)"></select></div>
-        <div class="kho-fsel"><label>Môn</label><select id="kho-f-mon" onchange="KHO_onMon(this.value)"></select></div>
-        <div class="kho-fsel"><label>Tuần</label><select id="kho-f-tuan" onchange="KHO_onTuan(this.value)"></select></div>
-        <button class="kho-dlweek" id="kho-dl-week" onclick="KHO_downloadTuan()"><svg class="icn" style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg> Tải cả tuần</button>
-      </div>
-
-      <div class="kho-summary" id="kho-summary"></div>
-      <div id="kho-tiet-list"></div>
-
-      <!-- TỆP CÁ NHÂN & CÔNG CỤ DỮ LIỆU (thu gọn) -->
-      <details class="card" style="margin-top:18px">
-        <summary style="cursor:pointer;font-weight:700;color:#3a4a42">🗂️ Tệp cá nhân &amp; công cụ dữ liệu <span class="muted-sm" id="kho-count"></span></summary>
-        <div style="margin-top:14px">
-          <div class="card-head" style="margin-bottom:6px"><h3 style="font-size:15px">📦 Thống kê kho &amp; nạp dữ liệu</h3><span class="muted-sm">Nguồn cấp KHBD cho lịch báo giảng</span></div>
-          <div id="bank-stat" class="bank-stat"></div>
-          <div class="bk-tools">
-            <input type="file" id="bank-file" accept=".json,application/json" style="display:none" onchange="importBank(this)">
-            <button class="btn-xs solid" onclick="document.getElementById('bank-file').click()">⤴ Nạp giáo án (JSON)</button>
-            <button class="btn-xs" onclick="exportBankJson()">⬇ Xuất kho (JSON)</button>
-            <button class="btn-xs" onclick="downloadBankTemplate()">📄 Tải mẫu nhập</button>
-            <button class="btn-xs danger" onclick="clearBankImport()">Xoá phần đã nạp</button>
-          </div>
-          <div class="muted-sm" style="margin-top:8px">Khuyến nghị: nạp hàng loạt giáo án ngay trong tệp <code>kho-data.js</code> (Lớp·Môn·Tuần·Tiết). Cách nhanh khác: "Nạp giáo án (JSON)".</div>
-
-          <div class="toolbar" style="margin-top:14px">
-            <label class="search"><svg class="icn" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-              <input id="kho-search" placeholder="Tìm tệp đã lưu / tải lên / mẫu…" oninput="renderKho()"></label>
-            <div class="pills" id="kho-pills"></div>
-            <input type="file" id="kho-file" accept=".docx,.doc,.pdf,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword" multiple style="display:none" onchange="onKhoFilePicked(this)">
-            <button class="btn-xs" onclick="document.getElementById('kho-file').click()">⤴ Thêm tệp</button>
-            <button class="btn-xs" onclick="downloadAllKHBD()">⬇ Tải tất cả (Word)</button>
-          </div>
-          <div id="kho-list" class="kfiles" style="margin-top:10px"></div>
+        <div><h2 class="ph-title">Kho giáo án</h2><div class="ph-sub">Tất cả tệp KHBD đã tạo, mẫu trống & tệp sưu tầm <span id="kho-count" class="muted-sm"></span></div></div>
+        <div class="ph-actions">
+          <input type="file" id="kho-file" accept=".docx,.doc,.pdf,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword" multiple style="display:none" onchange="onKhoFilePicked(this)">
+          <button class="btn-xs" onclick="document.getElementById('kho-file').click()">⤴ Thêm tệp</button>
+          <button class="btn-xs solid" onclick="downloadAllKHBD()">⬇ Tải tất cả (Word)</button>
         </div>
-      </details>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>📚 Kho giáo án số (chuẩn hóa)</h3><span class="muted-sm">Nguồn cấp KHBD cho lịch báo giảng</span></div>
+        <div id="bank-stat" class="bank-stat"></div>
+        <div class="bk-tools">
+          <input type="file" id="bank-file" accept=".json,application/json" style="display:none" onchange="importBank(this)">
+          <button class="btn-xs solid" onclick="document.getElementById('bank-file').click()">⤴ Nạp giáo án (JSON)</button>
+          <button class="btn-xs" onclick="exportBankJson()">⬇ Xuất kho (JSON)</button>
+          <button class="btn-xs" onclick="downloadBankTemplate()">📄 Tải mẫu nhập</button>
+          <button class="btn-xs danger" onclick="clearBankImport()">Xoá phần đã nạp</button>
+        </div>
+        <div class="muted-sm" style="margin-top:8px">Định dạng mỗi giáo án: <code>id, khoi, mon, tuan, tiet, bai, yccd, dodung, hoatdong, hotro, hoanhap, source, status</code>. Thành viên dự án có dữ liệu chỉ cần "Nạp giáo án (JSON)" là kho tự cập nhật.</div>
+      </div>
+      <div class="toolbar">
+        <label class="search"><svg class="icn" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input id="kho-search" placeholder="Tìm theo tên tệp, môn, bài…" oninput="renderKho()"></label>
+        <div class="pills" id="kho-pills"></div>
+      </div>
+      <div class="card"><div id="kho-list" class="kfiles"></div></div>
     </section>
 
     <!-- ============ VIEW: BÚT XANH NHẮC THẦY CÔ ============ -->
@@ -984,22 +926,6 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
   <a class="mi" data-t="nhac"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M10.5 21a1.8 1.8 0 003 0"/></svg><span class="dot2"></span>Nhắc</a>
   <a class="mi" data-t="more"><svg viewBox="0 0 24 24"><circle cx="5" cy="6" r="1.4"/><circle cx="5" cy="12" r="1.4"/><circle cx="5" cy="18" r="1.4"/><path d="M10 6h10M10 12h10M10 18h10"/></svg>Thêm</a>
 </nav>
-
-<!-- ==================== MODAL: XEM TRƯỚC GIÁO ÁN (KHO) ==================== -->
-<div class="overlay" id="kho-prev-overlay">
-  <div class="modal" style="max-width:840px">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line)">
-      <h3 id="kho-prev-title" style="margin:0;font-size:16px;color:#1d2b24">Xem trước giáo án</h3>
-      <button class="btn-xs" onclick="closeModal('kho-prev-overlay')">✕ Đóng</button>
-    </div>
-    <div style="padding:18px 20px">
-      <pre id="kho-prev-body" style="white-space:pre-wrap;font-family:inherit;font-size:13.5px;line-height:1.55;margin:0;max-height:58vh;overflow:auto;color:#28342e"></pre>
-      <div style="margin-top:14px;display:flex;gap:8px;justify-content:flex-end">
-        <button class="btn-xs solid" id="kho-prev-dl">⬇ Tải tiết này (Word)</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- ==================== MODAL: SINH KHBD ==================== -->
 <div class="overlay" id="khbd-overlay">
@@ -2559,7 +2485,6 @@ function renderKho(){
     return `<div class="kitem"><div class="wic">${ic[f.kind]||'W'}</div><div class="kbody"><div class="ktitle">${f.name}</div><div class="kmeta">${f.meta}</div></div><div class="kact">${act}</div></div>`;
   }).join(''):'<div class="empty-pad">Không tìm thấy tệp phù hợp.</div>';
   renderBankManager();
-  if(window.renderKhoBrowser){ try{ window.renderKhoBrowser(); }catch(e){} }
 }
 
 /* ---------- 10b) DASHBOARD — tệp gần đây & học liệu gợi ý (động) ---------- */
@@ -4331,128 +4256,6 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
   window.addEventListener('hashchange',syncMnav);
   syncMnav();
   window.__bxSyncMnav=syncMnav;
-})();
-</script>
-<script>
-/* ============ KHO GIÁO ÁN SỐ — duyệt Lớp/Môn/Tuần/Tiết + tải Word ============ */
-(function(){
-  function nf(s){ return (s||'').toString().trim(); }
-  function nkey(s){ return (typeof _normTxt==='function')?_normTxt(s):nf(s).toLowerCase(); }
-  function esc(s){ return (typeof _xe==='function')?_xe(s):nf(s); }
-  function safe(s){ return nf(s).replace(/[^A-Za-zÀ-ỹ0-9]/g,''); }
-  function stLabel(s){ return (typeof bankStatusLabel==='function')?bankStatusLabel(s):(s||'Bản nháp'); }
-
-  /* Gộp 3 nguồn: tệp dữ liệu KHO_DATA + seed cũ LESSON_BANK + nạp JSON (localStorage). Khử trùng theo Lớp|Môn|Tuần|Tiết|Bài. */
-  function lessons(){
-    var out=[], seen={};
-    function add(L){
-      if(!L||!L.mon||!L.bai) return;
-      var lop=parseInt(L.lop!=null?L.lop:L.khoi,10)||5;
-      var mon=nf(L.mon), tuan=parseInt(L.tuan,10)||0, tiet=parseInt(L.tiet,10)||0;
-      var rec={}; for(var k in L) rec[k]=L[k];
-      rec.lop=lop; rec.mon=mon; rec._tuan=tuan; rec._tiet=tiet;
-      var key=lop+'|'+nkey(mon)+'|'+tuan+'|'+tiet+'|'+nkey(L.bai);
-      if(seen[key]!=null) out[seen[key]]=rec; else { seen[key]=out.length; out.push(rec); }
-    }
-    (window.KHO_DATA||[]).forEach(add);
-    (typeof LESSON_BANK!=='undefined'?LESSON_BANK:[]).forEach(add);
-    (typeof loadBankImport==='function'?loadBankImport():[]).forEach(add);
-    return out;
-  }
-  var ST={lop:null,mon:null,tuan:null};
-  function uniq(a){ var s=[]; a.forEach(function(x){ if(s.indexOf(x)<0) s.push(x); }); return s; }
-  function numSort(a){ return a.slice().sort(function(x,y){return x-y;}); }
-  function fill(id,opts,val,fmt){
-    var s=document.getElementById(id); if(!s) return;
-    s.innerHTML=opts.map(function(o){return '<option value="'+o+'">'+(fmt?fmt(o):o)+'</option>';}).join('');
-    if(opts.indexOf(val)>=0) s.value=String(val);
-  }
-  function rowOf(L){ return {lop:L.lop,mon:L.mon,bai:L.bai,tuan:L._tuan,tiet:L._tiet,ppct:L._tiet}; }
-  function findByKey(key){
-    var a=lessons();
-    for(var i=0;i<a.length;i++){ if((a[i].lop+'|'+a[i].mon+'|'+a[i]._tuan+'|'+a[i]._tiet)===key) return a[i]; }
-    return null;
-  }
-
-  window.renderKhoBrowser=function(){
-    var all=lessons();
-    var hs=document.getElementById('kho-hero-stat');
-    if(hs){
-      var byMon={}; all.forEach(function(L){byMon[L.mon]=(byMon[L.mon]||0)+1;});
-      var weeks=uniq(all.map(function(L){return L._tuan;}).filter(Boolean)).length;
-      hs.innerHTML='<span class="kh-pill">📘 '+all.length+' tiết</span>'
-        +'<span class="kh-pill">📚 '+Object.keys(byMon).length+' môn</span>'
-        +'<span class="kh-pill">🗓️ '+weeks+' tuần có giáo án</span>';
-    }
-    var lops=numSort(uniq(all.map(function(L){return L.lop;})));
-    if(!lops.length){ fill('kho-f-lop',[],null); fill('kho-f-mon',[],null); fill('kho-f-tuan',[],null); renderList([]); return; }
-    if(ST.lop==null||lops.indexOf(ST.lop)<0) ST.lop=lops.indexOf(5)>=0?5:lops[0];
-    fill('kho-f-lop',lops,ST.lop,function(v){return 'Lớp '+v;});
-    var inLop=all.filter(function(L){return L.lop===ST.lop;});
-    var mons=uniq(inLop.map(function(L){return L.mon;}));
-    if(ST.mon==null||mons.indexOf(ST.mon)<0) ST.mon=mons[0]||null;
-    fill('kho-f-mon',mons,ST.mon);
-    var inMon=inLop.filter(function(L){return L.mon===ST.mon;});
-    var tuans=numSort(uniq(inMon.map(function(L){return L._tuan;})));
-    if(ST.tuan==null||tuans.indexOf(ST.tuan)<0) ST.tuan=tuans[0]||null;
-    fill('kho-f-tuan',tuans,ST.tuan,function(v){return 'Tuần '+v;});
-    renderList(inMon.filter(function(L){return L._tuan===ST.tuan;}).sort(function(a,b){return a._tiet-b._tiet;}));
-  };
-  function renderList(rows){
-    var box=document.getElementById('kho-tiet-list'),
-        sum=document.getElementById('kho-summary'),
-        dl=document.getElementById('kho-dl-week');
-    if(sum) sum.innerHTML = rows.length ? ('Lớp '+ST.lop+' · <b>'+esc(ST.mon)+'</b> · Tuần '+ST.tuan+' — <b>'+rows.length+'</b> tiết') : '';
-    if(dl) dl.disabled=!rows.length;
-    if(!box) return;
-    if(!rows.length){
-      box.innerHTML='<div class="kho-empty"><div class="ke-ic">📭</div>Chưa có giáo án cho lựa chọn này.<br>'
-        +'<span class="muted-sm">Thầy cô nạp thêm trong tệp <code>kho-data.js</code> theo khóa Lớp·Môn·Tuần·Tiết.</span></div>';
-      return;
-    }
-    box.innerHTML=rows.map(function(L){
-      var st=L.status||'draft', key=L.lop+'|'+L.mon+'|'+L._tuan+'|'+L._tiet;
-      return '<div class="kho-tiet">'
-        +'<div class="kt-no"><small>TIẾT</small><b>'+L._tiet+'</b></div>'
-        +'<div class="kt-main"><div class="kt-bai">'+esc(L.bai)+'</div>'
-        +'<div class="kt-meta"><span class="bk-badge '+st+'">'+esc(stLabel(st))+'</span>'
-        +'<span>'+esc(L.mon)+' · Tuần '+L._tuan+'</span></div></div>'
-        +'<div class="kt-act">'
-        +'<button class="btn-xs" onclick="KHO_preview(\''+key+'\')">👁 Xem</button>'
-        +'<button class="btn-xs solid" onclick="KHO_downloadTiet(\''+key+'\')">⬇ Word</button>'
-        +'</div></div>';
-    }).join('');
-  }
-
-  window.KHO_onLop=function(v){ ST.lop=parseInt(v,10); ST.mon=null; ST.tuan=null; renderKhoBrowser(); };
-  window.KHO_onMon=function(v){ ST.mon=v; ST.tuan=null; renderKhoBrowser(); };
-  window.KHO_onTuan=function(v){ ST.tuan=parseInt(v,10); renderKhoBrowser(); };
-
-  window.KHO_downloadTiet=function(key){
-    var L=findByKey(key); if(!L||typeof buildKhbdDocxFromLesson!=='function') return;
-    _downloadBlob('KHBD_Lop'+L.lop+'_'+safe(L.mon)+'_Tuan'+L._tuan+'_Tiet'+L._tiet+'.docx',
-      buildKhbdDocxFromLesson(L,rowOf(L)));
-  };
-  window.KHO_downloadTuan=function(){
-    var rows=lessons().filter(function(L){return L.lop===ST.lop&&L.mon===ST.mon&&L._tuan===ST.tuan;})
-                      .sort(function(a,b){return a._tiet-b._tiet;});
-    if(!rows.length||typeof _wrapDocx!=='function'||typeof _lessonBodyParas!=='function') return;
-    var body=rows.map(function(L,i){
-      return (i?'<w:p><w:r><w:br w:type="page"/></w:r></w:p>':'')+_lessonBodyParas(L,rowOf(L));
-    }).join('');
-    _downloadBlob('KHBD_Lop'+ST.lop+'_'+safe(ST.mon)+'_Tuan'+ST.tuan+'.docx', _wrapDocx(body));
-  };
-  window.KHO_preview=function(key){
-    var L=findByKey(key); if(!L) return;
-    var t=document.getElementById('kho-prev-title'), b=document.getElementById('kho-prev-body');
-    if(t) t.textContent='Lớp '+L.lop+' · '+L.mon+' · Tuần '+L._tuan+' · Tiết '+L._tiet+' — '+L.bai;
-    if(b) b.textContent=(typeof bankLessonToText==='function')?bankLessonToText(L,rowOf(L)):'';
-    var dl=document.getElementById('kho-prev-dl'); if(dl) dl.onclick=function(){ KHO_downloadTiet(key); };
-    var ov=document.getElementById('kho-prev-overlay'); if(ov) ov.classList.add('show');
-  };
-
-  /* render lần đầu nếu đang ở view kho */
-  try{ if(document.getElementById('v-kho') && document.getElementById('v-kho').classList.contains('active')) renderKhoBrowser(); }catch(e){}
 })();
 </script>
 </body>
