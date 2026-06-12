@@ -558,6 +558,16 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 .fb-menu .fb-info{padding:8px 11px;font-size:12px;color:#8a978f;border-bottom:1px solid var(--line);margin-bottom:4px}
 .fb-auth{position:relative}
 @media(max-width:520px){ .fb-btn .fb-name{display:none} .fb-btn{padding:7px 10px} }
+/* Dải nút chọn Tuần 01–35 (Lịch báo giảng) */
+.wk-picker{margin-bottom:14px}
+.wk-pk-label{display:block;font-size:11px;font-weight:800;color:#8a978f;text-transform:uppercase;letter-spacing:.5px;margin:0 2px 8px}
+.wk-btns{display:flex;flex-wrap:wrap;gap:6px}
+.wk-btn{position:relative;min-width:40px;padding:7px 9px;border:1px solid var(--line);border-radius:9px;background:#fff;color:#3a4a42;font-size:13px;font-weight:700;cursor:pointer;transition:.12s}
+.wk-btn:hover{border-color:#bfe7cd;background:#f0f7f3}
+.wk-btn.active{background:var(--green);color:#fff;border-color:var(--green);box-shadow:0 4px 10px rgba(31,164,92,.28)}
+.wk-btn.has::after{content:"";position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:#27b46d}
+.wk-btn.active.has::after{background:#fff}
+@media(max-width:560px){ .wk-btn{min-width:35px;padding:6px 7px;font-size:12px} }
 </style>
 <script src="kho-data.js"></script>
 </head>
@@ -775,6 +785,7 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
           <button class="btn-xs" onclick="lbgPick()">⤴ Đưa LBG lên</button>
         </div>
       </div>
+      <div class="wk-picker" id="wk-picker"></div>
       <div class="card lbg-card">
         <div class="lbg-title">LỊCH BÁO GIẢNG NĂM HỌC <span id="lbg-year"></span></div>
         <div class="lbg-range" id="lbg-range"></div>
@@ -1799,6 +1810,7 @@ function renderFullSchedule(){
     h+=`<td>${r.tiet}</td><td class="bai">${r.mon}</td><td>${r.lop||state.klass}</td><td class="bai">${r.bai}</td><td class="tbdh">${r.tbdh||''}</td>`;
     tr.innerHTML=h; tb.appendChild(tr);
   });
+  if(window.BX_renderWeekPicker){ try{ window.BX_renderWeekPicker(); }catch(e){} }
 }
 
 /* ---------- 8b) XUẤT / TẢI MẪU EXCEL — .XLSX THẬT (OOXML/zip), khổ A4 dọc ----------
@@ -3218,8 +3230,23 @@ function resetAllData(){
 
 /* ---------- 16b) SỬA LỊCH OFFLINE (thêm/xoá tiết) + lưu localStorage ---------- */
 var SCHEDULE_SEED=JSON.parse(JSON.stringify(state.schedule));
-function loadSchedule(){ try{const v=JSON.parse(localStorage.getItem('butxanh_schedule')); return (Array.isArray(v)&&v.length)?v:null;}catch(e){return null;} }
-function persistSchedule(){ try{localStorage.setItem('butxanh_schedule',JSON.stringify(state.schedule));}catch(e){} }
+/* ===== LBG lưu theo TỪNG TUẦN: butxanh_lbg_weeks = { "1":[...], "6":[...] } ===== */
+function loadLBGWeeks(){ try{ var v=JSON.parse(localStorage.getItem('butxanh_lbg_weeks')); return (v&&typeof v==='object'&&!Array.isArray(v))?v:{}; }catch(e){ return {}; } }
+function saveLBGWeeks(map){ try{ localStorage.setItem('butxanh_lbg_weeks',JSON.stringify(map)); }catch(e){} }
+function getLBGForWeek(w){ var s=loadLBGWeeks()[String(w)]; return (Array.isArray(s)&&s.length)?s:null; }
+/* Lịch của tuần đang xem (cho reloadAllState / init) */
+function loadSchedule(){
+  try{
+    var meta=JSON.parse(localStorage.getItem('butxanh_lbg_meta')||'{}');
+    if(meta.week){ var s=getLBGForWeek(meta.week); if(s) return s; }
+  }catch(e){}
+  try{ var v=JSON.parse(localStorage.getItem('butxanh_schedule')); return (Array.isArray(v)&&v.length)?v:null; }catch(e){ return null; }
+}
+function persistSchedule(){ try{
+  var map=loadLBGWeeks(); map[String(state.week)]=state.schedule; saveLBGWeeks(map);
+  localStorage.setItem('butxanh_lbg_meta',JSON.stringify({week:String(state.week),from:state.from,to:state.to,gvcn:state.gvcn,klass:state.klass}));
+  localStorage.setItem('butxanh_schedule',JSON.stringify(state.schedule)); // gương tuần hiện tại (tương thích cũ)
+}catch(e){} }
 const DOW={'Thứ 2':2,'Thứ 3':3,'Thứ 4':4,'Thứ 5':5,'Thứ 6':6,'Thứ 7':7,'Chủ nhật':8,'CN':8};
 const BUOI_ORD={'Sáng':0,'Chiều':1,'Tối':2};
 function sortSchedule(){ state.schedule.sort((a,b)=>(DOW[a.day]||9)-(DOW[b.day]||9) || (BUOI_ORD[a.buoi]||0)-(BUOI_ORD[b.buoi]||0) || (a.tiet||0)-(b.tiet||0)); }
@@ -4382,14 +4409,39 @@ function reRender(){
   try{ if(typeof renderFullSchedule==='function') renderFullSchedule(); }catch(e){}
 }
 window.BX_setWeek=function(w){
-  w=parseInt(w,10)||12;
+  w=parseInt(w,10)||1;
   var d=BX_weekDates(w);
   state.week=String(w); state.from=d.fromY; state.to=d.toY;
-  state.schedule=BX_weekSchedule(w);
-  // đồng bộ select
+  var saved=(typeof getLBGForWeek==='function')?getLBGForWeek(w):null;
+  state.schedule = saved ? saved : BX_weekSchedule(w);   // tuần này đã có LBG thật → dùng; chưa có → bản mẫu
+  // ghi nhớ tuần đang xem (đồng bộ giữa các máy)
+  try{ localStorage.setItem('butxanh_lbg_meta',JSON.stringify({week:String(w),from:d.fromY,to:d.toY,gvcn:state.gvcn,klass:state.klass})); }catch(e){}
   var sw=document.getElementById('sel-week'); if(sw) sw.value=String(w);
   var sh=document.getElementById('sel-hk'); if(sh) sh.value=(w<=18?'Học kỳ 1':'Học kỳ 2');
+  if(typeof BX_renderWeekPicker==='function') BX_renderWeekPicker();
   reRender();
+};
+window.BX_renderWeekPicker=function(){
+  var box=document.getElementById('wk-picker'); if(!box) return;
+  var cur=parseInt(state.week,10)||1, map=(typeof loadLBGWeeks==='function')?loadLBGWeeks():{};
+  var b='';
+  for(var w=1;w<=35;w++){
+    var has=map[String(w)]&&map[String(w)].length;
+    b+='<button class="wk-btn'+(w===cur?' active':'')+(has?' has':'')+'" onclick="BX_setWeek('+w+')" title="Tuần '+w+(has?' — đã có LBG':'')+'">'+(w<10?('0'+w):w)+'</button>';
+  }
+  box.innerHTML='<span class="wk-pk-label">Chọn tuần để xem / soạn:</span><div class="wk-btns">'+b+'</div>';
+};
+/* Nạp lại state từ localStorage rồi render (đồng bộ "mượt", không reload trang) */
+window.BX_reloadFromStorage=function(){
+  try{ if(typeof loadKHBD==='function') state.khbd=loadKHBD(); }catch(e){}
+  try{ if(typeof loadHocSinh==='function') state.hocsinh=loadHocSinh(); }catch(e){}
+  try{ if(typeof loadHocLieu==='function') state.hoclieu=loadHocLieu(); }catch(e){}
+  try{ if(typeof loadKhoFiles==='function') state.khofiles=loadKhoFiles(); }catch(e){}
+  try{ if(typeof applyProfile==='function') applyProfile(JSON.parse(localStorage.getItem('butxanh_profile')||'{}')); }catch(e){}
+  var w=BX_realWeek();
+  try{ var m=JSON.parse(localStorage.getItem('butxanh_lbg_meta')||'{}'); if(m.week) w=parseInt(m.week,10)||w; }catch(e){}
+  BX_setWeek(w);
+  try{ var act=ALLVIEWS.find(function(v){var e=document.getElementById('v-'+v);return e&&e.classList.contains('active');})||'dashboard'; if(typeof showView==='function') showView(act); }catch(e){}
 };
 window.BX_dashSel=function(){
   var sw=document.getElementById('sel-week'), sy=document.getElementById('sel-year'),
@@ -4417,8 +4469,13 @@ function init(){
   fillWeekSelect();
   var sy=document.getElementById('sel-year'); if(sy) sy.value='Năm học '+(state.year||'2026 - 2027');
   var sl=document.getElementById('sel-lop'); if(sl){ var v='Lớp '+(state.klass||'5A'); for(var i=0;i<sl.options.length;i++){ if(sl.options[i].value===v||sl.options[i].text===v) sl.selectedIndex=i; } }
-  BX_setWeek(BX_realWeek()); // mặc định = tuần học thực tế theo ngày hôm nay
-  console.log('[Bút Xanh] Dashboard: select theo tuần đã chạy thật.');
+  // Mở đúng TUẦN đang xem dở (đã lưu/đồng bộ); chưa có thì lấy tuần thực tế.
+  // BX_setWeek tự lấy LBG thật của tuần đó nếu có, không thì hiện bản mẫu.
+  var w=BX_realWeek();
+  try{ var m=JSON.parse(localStorage.getItem('butxanh_lbg_meta')||'{}'); if(m.week) w=parseInt(m.week,10)||w; }catch(e){}
+  BX_setWeek(w);
+  if(typeof BX_renderWeekPicker==='function') BX_renderWeekPicker();
+  console.log('[Bút Xanh] Dashboard init: mở tuần '+w+'.');
 }
 if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded',init);
 })();
@@ -4627,8 +4684,8 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
     appId:"1:288012765675:web:a07f84a69f16a17352b1ae"
   };
   /* Khóa đồng bộ — phần chữ (bỏ butxanh_khofiles vì tệp Word nặng, để v2 dùng Storage) */
-  var KEYS=['butxanh_profile','butxanh_schedule','butxanh_khbd','butxanh_hocsinh','butxanh_hoclieu','butxanh_bank'];
-  var auth=null, db=null, user=null, lastPushed=null, loopT=null, busy=false;
+  var KEYS=['butxanh_profile','butxanh_lbg_weeks','butxanh_lbg_meta','butxanh_khbd','butxanh_hocsinh','butxanh_hoclieu','butxanh_bank'];
+  var auth=null, db=null, user=null, lastPushed=null, loopT=null, busy=false, seeded=false, reloadT=null, curRef=null;
   var box=document.getElementById('fb-auth');
 
   function gather(){ var o={}; KEYS.forEach(function(k){ var v=localStorage.getItem(k); if(v!=null) o[k]=v; }); return o; }
@@ -4654,39 +4711,46 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
   }
 
   function startLoop(){ stopLoop(); loopT=setInterval(function(){
-    if(!user||busy) return;
-    var cur=JSON.stringify(gather());
-    if(cur!==lastPushed) push();
+    if(!user||busy||!seeded) return;
+    if(JSON.stringify(gather())!==lastPushed) push();
   }, 4000); }
   function stopLoop(){ if(loopT){ clearInterval(loopT); loopT=null; } }
 
   function push(){
     if(!db||!user) return; busy=true; setStatus('syncing');
-    var data=gather();
+    var data=gather(), dataStr=JSON.stringify(data);
     db.ref('users/'+user.uid).set({ data:data, updatedAt:firebase.database.ServerValue.TIMESTAMP, app:'butxanh' })
-      .then(function(){ lastPushed=JSON.stringify(data); busy=false; setStatus('synced'); })
+      .then(function(){ lastPushed=dataStr; busy=false; setStatus('synced'); })
       .catch(function(e){ console.warn('[ĐB] push lỗi',e); busy=false; setStatus('error'); });
   }
+  function localHasLBG(){ try{ var m=JSON.parse(localStorage.getItem('butxanh_lbg_weeks')||'{}'); return m&&Object.keys(m).length>0; }catch(e){ return false; } }
   function applyCloud(data){
-    try{ KEYS.forEach(function(k){ if(data[k]!=null) localStorage.setItem(k,data[k]); else localStorage.removeItem(k); }); }catch(e){}
-    location.reload(); // nạp lại để app đọc dữ liệu mới sạch sẽ
+    try{ KEYS.forEach(function(k){ if(data&&data[k]!=null) localStorage.setItem(k,data[k]); else localStorage.removeItem(k); }); }catch(e){}
+    var soft=false;
+    if(typeof window.BX_reloadFromStorage==='function'){ try{ window.BX_reloadFromStorage(); soft=true; }catch(e){} }
+    lastPushed=JSON.stringify(gather()); setStatus('synced');
+    if(!soft){ if(reloadT) clearTimeout(reloadT); reloadT=setTimeout(function(){ try{ location.reload(); }catch(e){} }, 700); }
   }
-  function initialSync(){
-    if(!db||!user) return; busy=true; setStatus('syncing');
-    db.ref('users/'+user.uid).once('value').then(function(snap){
-      var v=snap.val(), cloud=v&&v.data?v.data:null;
-      var local=gather(), localStr=JSON.stringify(local);
-      if(!cloud){ busy=false; push(); return; }                 // đám mây trống → đẩy dữ liệu máy này lên
+  /* Một listener xử lý cả lần đầu (đối chiếu) lẫn cập nhật realtime từ thiết bị khác */
+  function onCloud(snap){
+    var v=snap.val(), cloud=(v&&v.data)?v.data:null, localStr=JSON.stringify(gather());
+    if(!seeded){
+      seeded=true;
+      if(!cloud){ busy=false; push(); return; }                       // đám mây trống → đẩy local lên
       if(JSON.stringify(cloud)===localStr){ lastPushed=localStr; busy=false; setStatus('synced'); return; }
-      if(!hasLocalData()){ applyCloud(cloud); return; }          // máy này trống → lấy đám mây về (im lặng)
-      // cả hai có dữ liệu & khác nhau → hỏi thầy cô
-      var useCloud=confirm('Tài khoản này đã có dữ liệu trên đám mây, KHÁC với dữ liệu trên máy hiện tại.\n\n• Bấm OK: DÙNG dữ liệu trên ĐÁM MÂY (thay dữ liệu máy này).\n• Bấm Cancel: GIỮ dữ liệu MÁY NÀY (ghi đè lên đám mây).');
+      if(!localHasLBG()){ applyCloud(cloud); return; }                 // máy chưa có LBG thật → lấy đám mây (im lặng)
+      var useCloud=confirm('Tài khoản đã có dữ liệu trên đám mây, KHÁC với dữ liệu Lịch báo giảng trên máy này.\n\n• Bấm OK: DÙNG dữ liệu ĐÁM MÂY (thay máy này).\n• Bấm Cancel: GIỮ máy này (ghi đè đám mây).');
       if(useCloud){ applyCloud(cloud); } else { busy=false; push(); }
-    }).catch(function(e){ console.warn('[ĐB] đọc lỗi',e); busy=false; setStatus('error'); });
+      return;
+    }
+    // realtime: thiết bị khác vừa cập nhật → nếu khác dữ liệu hiện tại thì lấy về
+    if(cloud && JSON.stringify(cloud)!==localStr){ setStatus('syncing'); applyCloud(cloud); }
   }
+  function startSync(){ if(!db||!user) return; seeded=false; busy=true; setStatus('syncing'); curRef=db.ref('users/'+user.uid); curRef.on('value', onCloud); }
+  function stopSync(){ if(curRef){ try{ curRef.off('value', onCloud); }catch(e){} curRef=null; } }
   function onAuth(u){
     user=u; renderUI();
-    if(u){ initialSync(); startLoop(); } else { stopLoop(); lastPushed=null; setStatus('off'); }
+    if(u){ startSync(); startLoop(); } else { stopSync(); stopLoop(); seeded=false; lastPushed=null; setStatus('off'); }
   }
 
   window.FBX={
