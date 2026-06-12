@@ -403,10 +403,13 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
   .footer .flinks{justify-content:center;flex-wrap:wrap}
 }
 .logo-m{background:var(--mascot) center/contain no-repeat}
-#splash{position:fixed;inset:0;z-index:9999;background:radial-gradient(circle at 50% 40%,#27b46d,#0f8a52 75%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;animation:splashHide .55s ease 1.4s forwards}
-#splash .sp-art{width:clamp(150px,36vw,230px);height:clamp(132px,32vw,200px);background:var(--mascot) center/contain no-repeat;filter:drop-shadow(0 14px 22px rgba(0,0,0,.22));animation:spbob 2.2s ease-in-out infinite}
-#splash .sp-name{font-size:clamp(30px,7vw,46px);font-weight:800;color:#fff;letter-spacing:-.5px;line-height:1}
-#splash .sp-tag{color:#eafff4;font-size:clamp(14px,3.4vw,18px);font-weight:600;letter-spacing:.2px}
+#splash{position:fixed;inset:0;z-index:9999;overflow:hidden;background:radial-gradient(circle at 50% 38%,#f4fbf7 0%,#e3f6ec 55%,#d2efdf 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;animation:splashHide .6s ease 2.1s forwards}
+#splash::before{content:"";position:absolute;width:min(640px,86vw);height:min(640px,86vw);border-radius:50%;background:radial-gradient(circle,rgba(39,180,109,.16),rgba(39,180,109,0) 68%);top:30%;left:50%;transform:translate(-50%,-50%)}
+#splash .sp-art{position:relative;z-index:2;width:clamp(220px,48vw,340px);height:clamp(196px,42vw,300px);background:var(--mascot) center/contain no-repeat;filter:drop-shadow(0 18px 28px rgba(15,138,82,.22));animation:spbob 2.4s ease-in-out infinite}
+#splash .sp-name{position:relative;z-index:2;font-size:clamp(34px,7.6vw,54px);font-weight:800;color:#0f7a44;letter-spacing:-.5px;line-height:1;text-shadow:0 1px 0 #fff}
+#splash .sp-tag{position:relative;z-index:2;color:#3c7a59;font-size:clamp(14px,3.4vw,18px);font-weight:600;letter-spacing:.2px}
+#splash .edu{position:absolute;z-index:1;font-size:clamp(24px,5vw,44px);opacity:0;animation:eduFloat 5.5s ease-in-out infinite;filter:drop-shadow(0 5px 9px rgba(15,138,82,.14))}
+@keyframes eduFloat{0%{transform:translateY(10px) rotate(-4deg);opacity:0}18%{opacity:.9}50%{transform:translateY(-12px) rotate(4deg)}82%{opacity:.9}100%{transform:translateY(10px) rotate(-4deg);opacity:.55}}
 @keyframes spbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 @keyframes splashHide{to{opacity:0;visibility:hidden}}
 /* ===== Kho giáo án số ===== */
@@ -439,7 +442,19 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 </style>
 </head>
 <body>
-<div id="splash"><div class="sp-art"></div><div class="sp-name">Bút Xanh</div><div class="sp-tag">Trợ lý đắc lực của thầy cô 🌿</div></div>
+<div id="splash">
+  <span class="edu" style="top:14%;left:11%;animation-delay:.0s">📚</span>
+  <span class="edu" style="top:20%;right:13%;animation-delay:.5s">✏️</span>
+  <span class="edu" style="top:30%;left:19%;animation-delay:1.0s">🎓</span>
+  <span class="edu" style="top:24%;right:26%;animation-delay:1.4s">✨</span>
+  <span class="edu" style="top:62%;left:10%;animation-delay:.3s">📖</span>
+  <span class="edu" style="top:70%;right:12%;animation-delay:.8s">📐</span>
+  <span class="edu" style="top:80%;left:24%;animation-delay:1.2s">🍎</span>
+  <span class="edu" style="top:78%;right:25%;animation-delay:1.6s">🔬</span>
+  <div class="sp-art"></div>
+  <div class="sp-name">Bút Xanh</div>
+  <div class="sp-tag">Trợ lý đắc lực của thầy cô 🌿</div>
+</div>
 <div class="app">
 
   <!-- ==================== SIDEBAR ==================== -->
