@@ -3772,6 +3772,25 @@ window.BX_KHGD_RAW={"Toán":[["1","Chủ đề 1: Ôn tập và bổ sung (19 TI
 "use strict";
 // hợp nhất kho dữ liệu: TV + 11 môn
 window.BX_KHGD = Object.assign({'Tiếng Việt': (window.TV5_KHGD||[])}, (window.BX_KHGD_RAW||{}));
+/* Chuẩn hoá cột Thời lượng: vài môn (Tin học/Công nghệ) ghi "35'" = số PHÚT/tiết thay vì SỐ TIẾT.
+   Phát hiện (có dấu ' hoặc số ≥10) → tính lại theo quy ước: gộp các dòng cùng bài (bỏ đuôi "(T1)/(Tiết 1)"),
+   ghi "N tiết" ở dòng đầu, để trống dòng tiếp theo — đồng bộ với cách các môn khác trình bày. */
+(function BX_fixDurations(KH){
+  function key(r){ return String(r[4]||'').replace(/\s*\(\s*(?:T|Tiết|tiết)\s*\d+\s*\)\s*$/,'').replace(/\s+/g,' ').trim(); }
+  Object.keys(KH).forEach(function(subj){
+    var rows=KH[subj]; if(!rows||!rows.length) return;
+    var bad=rows.some(function(r){ var v=String(r[5]||'').trim(); return /'/.test(v) || (/^\d+$/.test(v) && parseInt(v,10)>=10); });
+    if(!bad) return;
+    var i=0;
+    while(i<rows.length){
+      var k=key(rows[i]), j=i;
+      while(j+1<rows.length && k!=='' && key(rows[j+1])===k) j++;
+      rows[i][5]=(j-i+1)+' tiết';
+      for(var t=i+1;t<=j;t++) rows[t][5]='';
+      i=j+1;
+    }
+  });
+})(window.BX_KHGD);
 window.BX_SUBJECTS = ['Tiếng Việt','Toán','Khoa học','Lịch sử & Địa lí','Đạo đức','Tin học','Công nghệ','HĐTN','Âm nhạc','Mĩ thuật','GDTC','Tiếng Anh']
   .filter(function(s){ return window.BX_KHGD[s] && window.BX_KHGD[s].length; });
 if(!window.BX_curSubject) window.BX_curSubject='Tiếng Việt';
