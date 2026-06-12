@@ -529,6 +529,33 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
   .kho-prev-bar h3{font-size:13px}
   .kho-prev-bar .pb-act .btn-xs{padding:6px 9px;font-size:11px}
 }
+/* Bảng "Sửa lịch báo giảng" — giống lịch chính, có nút sửa từng dòng */
+.se-table{width:100%;border-collapse:collapse;font-size:13px;min-width:760px}
+.se-table th,.se-table td{border:1px solid #e3ebe6;padding:7px 8px;text-align:left;vertical-align:middle}
+.se-table thead th{background:var(--green-soft);color:var(--green-dark);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;text-align:center}
+.se-table tbody tr:hover{background:#fafdfb}
+.se-table td.se-bai{color:var(--ink,#1d2b24)}
+.se-table td.se-tbdh{color:var(--muted);font-size:12px}
+.se-table tr.se-editing{background:#f0f9f4}
+.se-table td input{width:100%;border:1px solid var(--line);border-radius:7px;padding:6px 7px;font-size:13px;box-sizing:border-box;font-family:inherit}
+.se-table td input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(31,164,92,.15)}
+.se-table td.se-act{white-space:nowrap;text-align:center}
+.se-table td.se-act .btn-xs{padding:4px 9px;margin:1px}
+/* Đăng nhập Google + đồng bộ đám mây */
+.fb-auth{display:flex;align-items:center}
+.fb-btn{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:#fff;cursor:pointer;font-size:13px;font-weight:600;color:#3a4a42;white-space:nowrap}
+.fb-btn:hover{background:#f0f7f3;border-color:#bfe7cd}
+.fb-btn.in{padding:4px 6px 4px 4px;gap:8px}
+.fb-btn .fb-ava{width:26px;height:26px;border-radius:50%;object-fit:cover;flex:0 0 auto;background:#dceee3}
+.fb-btn .fb-name{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fb-dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+.fb-dot.ok{background:#27b46d}.fb-dot.sync{background:#e6a800}.fb-dot.off{background:#c0c8c3}.fb-dot.err{background:#e5503b}
+.fb-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 26px rgba(0,0,0,.14);padding:6px;min-width:200px;z-index:80}
+.fb-menu .fb-mi{display:block;width:100%;text-align:left;padding:9px 11px;border:none;background:none;border-radius:8px;cursor:pointer;font-size:13px;color:#3a4a42}
+.fb-menu .fb-mi:hover{background:#f0f7f3}
+.fb-menu .fb-info{padding:8px 11px;font-size:12px;color:#8a978f;border-bottom:1px solid var(--line);margin-bottom:4px}
+.fb-auth{position:relative}
+@media(max-width:520px){ .fb-btn .fb-name{display:none} .fb-btn{padding:7px 10px} }
 </style>
 <script src="kho-data.js"></script>
 </head>
@@ -597,6 +624,7 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
         <div class="role">Giáo viên Tiểu học</div>
       </div>
       <div class="header-right">
+        <div id="fb-auth" class="fb-auth"></div>
         <button class="bell" aria-label="Thông báo"><svg class="icn" style="width:23px;height:23px" viewBox="0 0 24 24"><path d="M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M10.5 21a1.8 1.8 0 003 0"/></svg><span class="dot">3</span></button>
         <div class="help"><svg class="icn" style="width:18px;height:18px" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 014 1.8c0 1.7-2.5 2-2.5 3.7"/><path d="M12 17.5h.01"/></svg> Hướng dẫn</div>
         <div class="profile">
@@ -1056,14 +1084,14 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 
 <!-- ==================== MODAL: SỬA LỊCH (offline) ==================== -->
 <div class="overlay" id="sched-overlay">
-  <div class="modal">
+  <div class="modal" style="max-width:1040px">
     <div class="modal-head">
-      <div><h3>Sửa lịch báo giảng</h3><div class="sub">Thêm / xoá tiết — lưu ngay vào máy, không cần mạng.</div></div>
+      <div><h3>Sửa lịch báo giảng</h3><div class="sub">Sửa / xoá từng tiết, hoặc thêm tiết mới — lưu ngay vào máy, không cần mạng.</div></div>
       <button class="close" onclick="closeModal('sched-overlay')">×</button>
     </div>
     <div class="modal-body">
-      <div class="notice">Mỗi tiết một dòng. Thêm tiết mới ở form dưới rồi bấm <b>Thêm tiết</b>. Lịch sắp theo Thứ → Buổi → Tiết khi lưu.</div>
-      <div id="sched-rows"></div>
+      <div class="notice">Bấm <b>✏️ Sửa</b> ở từng dòng để chỉnh trực tiếp; <b>Xoá</b> để bỏ tiết; thêm tiết mới ở form dưới bảng. Lịch tự sắp theo Thứ → Buổi → Tiết khi lưu.</div>
+      <div id="sched-rows" style="overflow-x:auto"></div>
       <div class="form-grid sched-add">
         <label class="fld"><span>Thứ</span><input id="se-day" placeholder="Thứ 2"></label>
         <label class="fld"><span>Ngày</span><input id="se-date" placeholder="11/11"></label>
@@ -1260,12 +1288,11 @@ function renderSchedule(){
     while(i+span<state.schedule.length && state.schedule[i+span].day===r.day && state.schedule[i+span].date===r.date) span++;
     for(let k=0;k<span;k++){
       const row=state.schedule[i+k];
-      const tr=document.createElement("tr"); tr.className="lesson";
-      tr.dataset.idx=i+k; tr.onclick=()=>openKHBD(i+k);
+      const tr=document.createElement("tr");
       let html="";
       if(k===0) html+=`<td class="day" rowspan="${span}">${row.day}<small>${row.date}</small></td>`;
       html+=`<td class="tiet">${row.tiet}</td><td><span class="subject">${row.mon}</span></td>
-             <td class="bai">${row.bai} <span class="gen-hint">· tạo KHBD ✨</span></td>`;
+             <td class="bai">${row.bai}</td>`;
       tr.innerHTML=html;
       tb.appendChild(tr);
     }
@@ -1629,7 +1656,15 @@ async function lbgRead(input){
   try{
     const r=await _parseScheduleFile(file);
     _lbgPending=r;
-    if(st) st.innerHTML='<div class="notice" style="margin:0;background:var(--green-soft);border-color:#cdeed9;color:var(--green-dark)">✓ Đã đọc <b>'+r.sch.length+' tiết</b>'+(r.meta.week?(' · Tuần '+r.meta.week):'')+' từ <b>'+_xe(file.name)+'</b>.<br>Bấm <b>“✓ Cập nhật LBG”</b> để áp dụng vào tuần học.</div>';
+    const warns=(typeof BX_validateLBG==='function')?BX_validateLBG(r.sch,r.meta):[];
+    r.warns=warns;
+    let html='<div class="notice" style="margin:0;background:var(--green-soft);border-color:#cdeed9;color:var(--green-dark)">✓ Đã đọc <b>'+r.sch.length+' tiết</b>'+(r.meta.week?(' · Tuần '+r.meta.week):'')+' từ <b>'+_xe(file.name)+'</b>.</div>';
+    if(warns.length){
+      html+='<div class="notice" style="margin:10px 0 0;background:#fff7e6;border-color:#f0d9a8;color:#8a5a00"><b>⚠ '+warns.length+' điểm cần thầy cô rà lại</b> <span style="font-weight:400">(chỉ soi dòng có dữ liệu — tiết trống được bỏ qua):</span><ul style="margin:6px 0 0;padding-left:18px">'+warns.map(w=>'<li style="margin:3px 0">'+_xe(w)+'</li>').join('')+'</ul><div style="margin-top:8px;font-size:12.5px">Thầy cô có thể sửa file rồi bấm <b>“📂 Chọn file khác”</b>, hoặc vẫn <b>“✓ Cập nhật LBG”</b> nếu đã chắc chắn.</div></div>';
+    } else {
+      html+='<div class="notice" style="margin:10px 0 0;background:var(--green-soft);border-color:#cdeed9;color:var(--green-dark)">✓ Không phát hiện bất thường so với chương trình &amp; ngày tháng. Bấm <b>“✓ Cập nhật LBG”</b> để áp dụng.</div>';
+    }
+    if(st) st.innerHTML=html;
     if(btn) btn.disabled=false;
   }catch(e){
     if(st) st.innerHTML='<div class="notice" style="margin:0;background:#fdecec;border-color:#f3c0c0;color:#b03636">⚠ <b>File chưa đúng mẫu LBG.</b><br>'+_xe((e&&e.message)||'Không đọc được file.')+'<br>Hãy bấm <b>“📥 Tải LBG trống về máy”</b>, điền theo đúng các cột rồi <b>“📂 Chọn file khác”</b>.</div>';
@@ -1644,6 +1679,71 @@ function lbgApply(){
   closeModal('lbg-overlay');
   if(typeof showView==='function') showView('lich');
   try{ const cov=khbdCoverage(); alert('✓ Đã cập nhật Lịch báo giảng: '+n+' tiết'+(wk?(' · Tuần '+wk):'')+'.'+(cov&&cov.todo?('\nCòn '+cov.todo.length+' bài cần soạn giáo án.'):'')); }catch(e){}
+}
+/* ===== LỚP KIỂM TRA LBG: đối chiếu chương trình (KHDH) + ngày tháng. Chỉ soi dòng có dữ liệu. ===== */
+function _bxDMY(d){ return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear(); }
+function _bxCanonSubject(s){
+  const k=(typeof _normTxt==='function')?_normTxt(s):(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const A={
+    'toan':'Toán',
+    'tiengviet':'Tiếng Việt','tv':'Tiếng Việt',
+    'khoahoc':'Khoa học','kh':'Khoa học',
+    'lichsuvadiali':'Lịch sử & Địa lí','lichsudiali':'Lịch sử & Địa lí','lsdl':'Lịch sử & Địa lí','sudia':'Lịch sử & Địa lí','lichsudia':'Lịch sử & Địa lí',
+    'tinhoc':'Tin học','tin':'Tin học',
+    'congnghe':'Công nghệ','cn':'Công nghệ',
+    'daoduc':'Đạo đức','dd':'Đạo đức',
+    'hdtn':'HĐTN','hoatdongtrainghiem':'HĐTN','hoatdongtrainghiemhuongnghiep':'HĐTN',
+    'tienganh':'Tiếng Anh','ta':'Tiếng Anh','anhvan':'Tiếng Anh',
+    'amnhac':'Âm nhạc','nhac':'Âm nhạc',
+    'mithuat':'Mĩ thuật','mythuat':'Mĩ thuật','mt':'Mĩ thuật',
+    'gdtc':'GDTC','giaoducthechat':'GDTC','theduc':'GDTC'
+  };
+  return A[k]||null;
+}
+function _bxPpctMap(){
+  /* PPCT số tiết/tuần Lớp 5 (dựng sẵn để luôn chạy); ưu tiên CURRICULUM_MASTER_SEED nếu truy cập được. */
+  const m={'Toán':5,'Tiếng Việt':7,'Khoa học':2,'Lịch sử & Địa lí':2,'Tin học':1,'Công nghệ':1,'Đạo đức':1,'HĐTN':3,'Tiếng Anh':4,'Âm nhạc':1,'Mĩ thuật':1,'GDTC':2};
+  try{ if(typeof CURRICULUM_MASTER_SEED!=='undefined'){ CURRICULUM_MASTER_SEED.forEach(c=>{ if(String(c.grade)==='5'&&c.subject&&c.periods_per_week) m[c.subject]=c.periods_per_week; }); } }catch(e){}
+  return m;
+}
+function BX_validateLBG(sch, meta){
+  const W=[]; meta=meta||{};
+  if(!sch||!sch.length) return W;
+  /* --- 1) Ngày tháng (dựa "Từ ngày" + Tuần) --- */
+  const from=meta.from, fd=(typeof _parseDMY==='function')?_parseDMY(from):null;
+  if(from && !fd) W.push('Ô “Từ ngày” (“'+from+'”) không đúng định dạng ngày dd/mm/yyyy.');
+  if(fd){
+    if(fd.getDay()!==1) W.push('“Từ ngày” ('+from+') không rơi vào Thứ Hai — kiểm tra lại mốc đầu tuần.');
+    if(typeof BX_WEEK1!=='undefined' && BX_WEEK1){
+      const y0=BX_WEEK1.getFullYear();
+      if(fd.getFullYear()<y0 || fd.getFullYear()>y0+1) W.push('“Từ ngày” ('+from+') không thuộc năm học '+y0+'–'+(y0+1)+'.');
+      const wk=parseInt(meta.week,10);
+      if(wk){
+        const exp=new Date(BX_WEEK1.getTime()+(wk-1)*7*86400000);
+        const diff=Math.round((fd-exp)/86400000);
+        if(Math.abs(diff)>6) W.push('Tuần '+wk+' theo lịch năm học bắt đầu khoảng '+_bxDMY(exp)+', nhưng “Từ ngày” trong file là '+from+' (lệch '+diff+' ngày) — kiểm tra lại Tuần hoặc Từ ngày.');
+      }
+    }
+  }
+  /* --- 2) Môn lạ + 3) trùng tiết (chỉ dòng có dữ liệu) --- */
+  const ppct=_bxPpctMap(), cnt={}, slot={};
+  sch.forEach(r=>{
+    const ref='Thứ '+String(r.day||'').replace(/^Thứ\s*/i,'')+' · '+(r.buoi||'')+' · Tiết '+(r.tiet||'');
+    if(r.mon){
+      const canon=_bxCanonSubject(r.mon);
+      if(!canon) W.push(ref+': môn “'+r.mon+'” không có trong chương trình Lớp 5 (kiểm tra chính tả tên môn).');
+      else cnt[canon]=(cnt[canon]||0)+1;
+    }
+    const key=(r.day||'')+'|'+(r.buoi||'')+'|'+(r.tiet||'');
+    if(slot[key]) W.push('Trùng tiết: '+ref+' xuất hiện nhiều lần — mỗi ô (Thứ · Buổi · Tiết) chỉ nên có 1 môn.');
+    else slot[key]=1;
+  });
+  /* --- 4) Số tiết/tuần VƯỢT định mức PPCT --- */
+  Object.keys(cnt).forEach(s=>{
+    const max=ppct[s];
+    if(max && cnt[s]>max) W.push('Môn “'+s+'” có '+cnt[s]+' tiết trong tuần, vượt định mức ('+max+' tiết/tuần theo PPCT) — kiểm tra lại.');
+  });
+  return W;
 }
 
 /* ---------- 6) BÚT XANH GỢI Ý MỚI (AI, tùy chọn) ---------- */
@@ -1704,11 +1804,11 @@ function renderFullSchedule(){
   el('lbg-place').textContent=placeStr(); el('lbg-sign').textContent=state.gvcn;
   const tb=el('sched-body-full'); if(!tb) return; tb.innerHTML='';
   scheduleRows().forEach(d=>{
-    const r=d.row, tr=document.createElement('tr'); tr.className='lesson'; tr.onclick=()=>openKHBD(d.idx);
+    const r=d.row, tr=document.createElement('tr');
     let h='';
     if(d.thuSpan) h+=`<td class="thu" rowspan="${d.thuSpan}">${r.day.replace('Thứ ','')}<div style="font-weight:400;font-size:10.5px;color:var(--muted);margin-top:2px">${r.date}</div></td>`;
     if(d.buoiSpan) h+=`<td class="buoi" rowspan="${d.buoiSpan}">${r.buoi}</td>`;
-    h+=`<td>${r.tiet}</td><td class="bai">${r.mon}</td><td>${r.lop||state.klass}</td><td class="bai">${r.bai} <span class="gen-hint">· tạo KHBD ✨</span></td><td class="tbdh">${r.tbdh||''}</td>`;
+    h+=`<td>${r.tiet}</td><td class="bai">${r.mon}</td><td>${r.lop||state.klass}</td><td class="bai">${r.bai}</td><td class="tbdh">${r.tbdh||''}</td>`;
     tr.innerHTML=h; tb.appendChild(tr);
   });
 }
@@ -3143,20 +3243,55 @@ function refreshSchedule(){
   if(el('v-thongke').classList.contains('active')) renderThongKe();
   const ps=el('ppt-select'); if(ps){ ps.innerHTML=''; if(el('v-ppt').classList.contains('active')) renderPPTOptions(); }
 }
-function openSchedEditor(){ renderSchedRows(); el('sched-overlay').classList.add('show'); }
+var _seEdit=-1;
+function openSchedEditor(){ _seEdit=-1; renderSchedRows(); el('sched-overlay').classList.add('show'); }
 function renderSchedRows(){
   const box=el('sched-rows'); if(!box)return;
-  if(!state.schedule.length){ box.innerHTML='<div class="empty-pad">Chưa có tiết nào — thêm ở form dưới.</div>'; return; }
-  box.innerHTML=state.schedule.map((r,i)=>`<div class="kitem"><div class="kbody"><div class="ktitle">${r.day} · ${r.buoi} · Tiết ${r.tiet} — ${r.mon} · Lớp ${r.lop||state.klass}</div><div class="kmeta">${r.bai}${r.tbdh?(' · '+r.tbdh):''}</div></div><div class="kact"><button class="btn-xs danger" onclick="delSchedRow(${i})">Xoá</button></div></div>`).join('');
+  const sch=state.schedule;
+  if(!sch.length){ box.innerHTML='<div class="empty-pad">Chưa có tiết nào — thêm ở form dưới bảng.</div>'; return; }
+  let h='<table class="se-table"><thead><tr><th>Thứ</th><th>Ngày</th><th>Buổi</th><th>Tiết</th><th>Môn</th><th>Lớp</th><th>Tên bài</th><th>Đồ dùng TBDH</th><th>Thao tác</th></tr></thead><tbody>';
+  sch.forEach((r,i)=>{
+    if(i===_seEdit){
+      h+='<tr class="se-editing">'
+        +'<td><input id="se-e-day" value="'+_xe(r.day||'')+'" style="width:64px"></td>'
+        +'<td><input id="se-e-date" value="'+_xe(r.date||'')+'" style="width:58px"></td>'
+        +'<td><input id="se-e-buoi" value="'+_xe(r.buoi||'')+'" style="width:60px"></td>'
+        +'<td><input id="se-e-tiet" type="number" value="'+_xe(String(r.tiet||''))+'" style="width:48px"></td>'
+        +'<td><input id="se-e-mon" value="'+_xe(r.mon||'')+'" style="width:96px"></td>'
+        +'<td><input id="se-e-lop" value="'+_xe(r.lop||state.klass)+'" style="width:54px"></td>'
+        +'<td><input id="se-e-bai" value="'+_xe(r.bai||'')+'"></td>'
+        +'<td><input id="se-e-tbdh" value="'+_xe(r.tbdh||'')+'"></td>'
+        +'<td class="se-act"><button class="btn-xs solid" onclick="saveSchedRow('+i+')">💾 Lưu</button><button class="btn-xs" onclick="cancelSchedEdit()">Huỷ</button></td>'
+        +'</tr>';
+    } else {
+      h+='<tr>'
+        +'<td>'+_xe(r.day||'')+'</td><td>'+_xe(r.date||'')+'</td><td>'+_xe(r.buoi||'')+'</td>'
+        +'<td>'+_xe(String(r.tiet||''))+'</td><td>'+_xe(r.mon||'')+'</td><td>'+_xe(r.lop||state.klass)+'</td>'
+        +'<td class="se-bai">'+_xe(r.bai||'')+'</td><td class="se-tbdh">'+_xe(r.tbdh||'')+'</td>'
+        +'<td class="se-act"><button class="btn-xs" onclick="editSchedRow('+i+')">✏️ Sửa</button><button class="btn-xs danger" onclick="delSchedRow('+i+')">Xoá</button></td>'
+        +'</tr>';
+    }
+  });
+  h+='</tbody></table>';
+  box.innerHTML=h;
+}
+function editSchedRow(i){ _seEdit=i; renderSchedRows(); const f=el('se-e-bai'); if(f) f.focus(); }
+function cancelSchedEdit(){ _seEdit=-1; renderSchedRows(); }
+function saveSchedRow(i){
+  const g=id=>{const e=el(id);return e?e.value.trim():'';};
+  const tiet=parseInt(g('se-e-tiet'),10), mon=g('se-e-mon'), bai=g('se-e-bai'), day=g('se-e-day');
+  if(!day||!mon||!bai||!tiet){ alert('Cần ít nhất: Thứ, Tiết, Môn, Tên bài.'); return; }
+  state.schedule[i]={day,date:g('se-e-date'),buoi:g('se-e-buoi')||'Sáng',tiet,mon,lop:g('se-e-lop')||state.klass,bai,tbdh:g('se-e-tbdh')};
+  _seEdit=-1; refreshSchedule();
 }
 function addSchedRow(){
   const day=el('se-day').value.trim(), tiet=parseInt(el('se-tiet').value,10), mon=el('se-mon').value.trim(), bai=el('se-bai').value.trim();
   if(!day||!mon||!bai||!tiet){ alert('Cần ít nhất: Thứ, Tiết, Môn, Tên bài.'); return; }
   state.schedule.push({day,date:el('se-date').value.trim(),buoi:el('se-buoi').value.trim()||'Sáng',tiet,mon,lop:el('se-lop').value.trim()||state.klass,bai,tbdh:el('se-tbdh').value.trim()});
   el('se-bai').value=''; el('se-tbdh').value=''; el('se-lop').value=''; el('se-tiet').value=tiet+1;
-  refreshSchedule();
+  _seEdit=-1; refreshSchedule();
 }
-function delSchedRow(i){ state.schedule.splice(i,1); refreshSchedule(); }
+function delSchedRow(i){ _seEdit=-1; state.schedule.splice(i,1); refreshSchedule(); }
 function resetSchedule(){ if(!confirm('Khôi phục lịch mẫu ban đầu? Lịch hiện tại sẽ bị thay thế.'))return; state.schedule=JSON.parse(JSON.stringify(SCHEDULE_SEED)); refreshSchedule(); }
 
 /* ---------- 16c) TẢI TẤT CẢ KHBD (Word gộp) ---------- */
@@ -4289,6 +4424,7 @@ function BX_realWeek(){
   return Math.max(1, Math.min(35, diff));
 }
 window.BX_realWeek=BX_realWeek;
+window.BX_WEEK1=BX_WEEK1; // phơi mốc Thứ Hai tuần 1 để lớp kiểm tra LBG đối chiếu ngày/tuần
 function init(){
   fillWeekSelect();
   var sy=document.getElementById('sel-year'); if(sy) sy.value='Năm học '+(state.year||'2026 - 2027');
@@ -4484,6 +4620,117 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
 
   /* render lần đầu nếu đang ở view kho */
   try{ if(document.getElementById('v-kho') && document.getElementById('v-kho').classList.contains('active')) renderKhoBrowser(); }catch(e){}
+})();
+</script>
+
+<!-- ============ ĐĂNG NHẬP GOOGLE + ĐỒNG BỘ ĐÁM MÂY (Firebase) ============ -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script>
+(function(){
+  var CFG={
+    apiKey:"AIzaSyBdXispvBXgvxYFP62UUVuMrYn84LGt_i4",
+    authDomain:"but-xanh.firebaseapp.com",
+    databaseURL:"https://but-xanh-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId:"but-xanh",
+    storageBucket:"but-xanh.firebasestorage.app",
+    messagingSenderId:"288012765675",
+    appId:"1:288012765675:web:a07f84a69f16a17352b1ae"
+  };
+  /* Khóa đồng bộ — phần chữ (bỏ butxanh_khofiles vì tệp Word nặng, để v2 dùng Storage) */
+  var KEYS=['butxanh_profile','butxanh_schedule','butxanh_khbd','butxanh_hocsinh','butxanh_hoclieu','butxanh_bank'];
+  var auth=null, db=null, user=null, lastPushed=null, loopT=null, busy=false;
+  var box=document.getElementById('fb-auth');
+
+  function gather(){ var o={}; KEYS.forEach(function(k){ var v=localStorage.getItem(k); if(v!=null) o[k]=v; }); return o; }
+  function hasLocalData(){ return !!(localStorage.getItem('butxanh_schedule')||localStorage.getItem('butxanh_khbd')||localStorage.getItem('butxanh_hocsinh')); }
+  function esc(s){ return (s==null?'':String(s)).replace(/[<>&"]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];}); }
+
+  var status='off';
+  function setStatus(s){ status=s; renderUI(); }
+  function renderUI(){
+    if(!box) return;
+    if(!window.firebase){ box.innerHTML='<button class="fb-btn" title="Cần kết nối mạng để đồng bộ" disabled style="opacity:.6;cursor:default">☁ Đồng bộ (cần mạng)</button>'; return; }
+    if(!user){
+      box.innerHTML='<button class="fb-btn" onclick="FBX.login()"><svg width="16" height="16" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.3 5.1 29.4 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.2-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.3 5.1 29.4 3 24 3 16.3 3 9.7 7.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 9.9-2 13.5-5.2l-6.2-5.3C29.2 35.9 26.7 37 24 37c-5.3 0-9.7-2.6-11.3-6.9l-6.5 5C9.6 41.6 16.2 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.2 5.3C41 38 44 31.7 44 24c0-1.2-.1-2.3-.4-3.5z"/></svg> Đăng nhập</button>';
+      return;
+    }
+    var name=user.displayName||user.email||'Thầy/cô';
+    var ava=user.photoURL?('<img class="fb-ava" src="'+esc(user.photoURL)+'" alt="">'):'<span class="fb-ava"></span>';
+    var st=(status==='synced')?'ok':(status==='syncing'?'sync':(status==='error'?'err':'ok'));
+    box.innerHTML='<button class="fb-btn in" onclick="FBX.toggleMenu(event)">'+ava+'<span class="fb-name">'+esc(name)+'</span><span class="fb-dot '+st+'" title="'+(status==='synced'?'Đã đồng bộ':status==='syncing'?'Đang đồng bộ…':status==='error'?'Lỗi đồng bộ':'')+'"></span></button>'+
+      '<div class="fb-menu" id="fb-menu" style="display:none"><div class="fb-info">'+esc(user.email||'')+'<br>'+(status==='synced'?'✓ Đã đồng bộ đám mây':status==='syncing'?'⏳ Đang đồng bộ…':status==='error'?'⚠ Lỗi đồng bộ — kiểm tra mạng':'Đồng bộ đám mây')+'</div>'+
+      '<button class="fb-mi" onclick="FBX.syncNow()">↻ Đồng bộ ngay</button>'+
+      '<button class="fb-mi" onclick="FBX.logout()">↩ Đăng xuất</button></div>';
+  }
+
+  function startLoop(){ stopLoop(); loopT=setInterval(function(){
+    if(!user||busy) return;
+    var cur=JSON.stringify(gather());
+    if(cur!==lastPushed) push();
+  }, 4000); }
+  function stopLoop(){ if(loopT){ clearInterval(loopT); loopT=null; } }
+
+  function push(){
+    if(!db||!user) return; busy=true; setStatus('syncing');
+    var data=gather();
+    db.ref('users/'+user.uid).set({ data:data, updatedAt:firebase.database.ServerValue.TIMESTAMP, app:'butxanh' })
+      .then(function(){ lastPushed=JSON.stringify(data); busy=false; setStatus('synced'); })
+      .catch(function(e){ console.warn('[ĐB] push lỗi',e); busy=false; setStatus('error'); });
+  }
+  function applyCloud(data){
+    try{ KEYS.forEach(function(k){ if(data[k]!=null) localStorage.setItem(k,data[k]); else localStorage.removeItem(k); }); }catch(e){}
+    location.reload(); // nạp lại để app đọc dữ liệu mới sạch sẽ
+  }
+  function initialSync(){
+    if(!db||!user) return; busy=true; setStatus('syncing');
+    db.ref('users/'+user.uid).once('value').then(function(snap){
+      var v=snap.val(), cloud=v&&v.data?v.data:null;
+      var local=gather(), localStr=JSON.stringify(local);
+      if(!cloud){ busy=false; push(); return; }                 // đám mây trống → đẩy dữ liệu máy này lên
+      if(JSON.stringify(cloud)===localStr){ lastPushed=localStr; busy=false; setStatus('synced'); return; }
+      if(!hasLocalData()){ applyCloud(cloud); return; }          // máy này trống → lấy đám mây về (im lặng)
+      // cả hai có dữ liệu & khác nhau → hỏi thầy cô
+      var useCloud=confirm('Tài khoản này đã có dữ liệu trên đám mây, KHÁC với dữ liệu trên máy hiện tại.\n\n• Bấm OK: DÙNG dữ liệu trên ĐÁM MÂY (thay dữ liệu máy này).\n• Bấm Cancel: GIỮ dữ liệu MÁY NÀY (ghi đè lên đám mây).');
+      if(useCloud){ applyCloud(cloud); } else { busy=false; push(); }
+    }).catch(function(e){ console.warn('[ĐB] đọc lỗi',e); busy=false; setStatus('error'); });
+  }
+  function onAuth(u){
+    user=u; renderUI();
+    if(u){ initialSync(); startLoop(); } else { stopLoop(); lastPushed=null; setStatus('off'); }
+  }
+
+  window.FBX={
+    login:function(){
+      if(!auth) return;
+      var p=new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(p).catch(function(e){
+        console.warn('[ĐB] đăng nhập lỗi',e);
+        if(e&&(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment'||e.code==='auth/cancelled-popup-request')){
+          try{ auth.signInWithRedirect(p); }catch(_){ alert('Không mở được cửa sổ đăng nhập. Thầy cô thử lại hoặc cho phép pop-up.'); }
+        } else if(e&&e.code==='auth/unauthorized-domain'){
+          alert('Tên miền chưa được cho phép đăng nhập. (Mở bằng file:// sẽ không đăng nhập được — cần localhost hoặc trang web chính thức.)');
+        } else { alert('Đăng nhập chưa được — '+((e&&e.message)||'')); }
+      });
+    },
+    logout:function(){ if(auth) auth.signOut(); var m=document.getElementById('fb-menu'); if(m)m.style.display='none'; },
+    syncNow:function(){ var m=document.getElementById('fb-menu'); if(m)m.style.display='none'; if(user) push(); },
+    toggleMenu:function(ev){ ev.stopPropagation(); var m=document.getElementById('fb-menu'); if(m) m.style.display=(m.style.display==='none')?'block':'none'; }
+  };
+  document.addEventListener('click',function(){ var m=document.getElementById('fb-menu'); if(m) m.style.display='none'; });
+
+  function init(){
+    if(!window.firebase){ renderUI(); console.warn('[ĐB] Firebase SDK chưa nạp (offline?) — app vẫn chạy bình thường.'); return; }
+    try{
+      firebase.initializeApp(CFG);
+      auth=firebase.auth(); db=firebase.database();
+      try{ auth.getRedirectResult().catch(function(){}); }catch(e){}
+      auth.onAuthStateChanged(onAuth);
+      renderUI();
+    }catch(e){ console.warn('[ĐB] init lỗi',e); renderUI(); }
+  }
+  if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded',init);
 })();
 </script>
 </body>
