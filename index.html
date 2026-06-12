@@ -1068,8 +1068,8 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 
 /* ---------- 1) DỮ LIỆU LỊCH (mẫu chuẩn Tuần 12 - Lớp 5A) ---------- */
 const state = {
-  klass:"5A", week:"12", khoi:"5", gvcn:"Phan Thị Thương", xung:"Cô",
-  year:"2026 - 2027", from:"11/11/2026", to:"17/11/2026", place:"Nghệ An",
+  klass:"5A", week:"1", khoi:"5", gvcn:"Phan Thị Thương", xung:"Cô",
+  year:"2026 - 2027", from:"07/09/2026", to:"13/09/2026", place:"Nghệ An",
   schedule:[
     {day:"Thứ 2", date:"11/11", buoi:"Sáng", tiet:1, mon:"HĐTN",            ppct:12,  bai:"Sinh hoạt dưới cờ",                    tbdh:"Loa, micro"},
     {day:"Thứ 2", date:"11/11", buoi:"Sáng", tiet:2, mon:"Toán",            ppct:58,  bai:"Luyện tập chung",                      tbdh:"Bảng nhóm"},
@@ -3331,11 +3331,16 @@ function BX_injectNav(){
 }
 function BX_injectViews(){
   var main=document.querySelector('main.main'); if(!main) return;
-  var mapHtml='<section class="view" id="v-map"><div class="card"><h3 style="margin-top:0">🗺️ Bản đồ chương trình năm học</h3>'+
-    '<div id="bx-map-stats" class="stats" style="margin:8px 0"></div>'+
-    '<div id="bx-map-warn"></div>'+
-    '<h4>Mức độ số hoá theo môn (Khối '+_xe(String(state.khoi))+')</h4>'+
-    '<div id="bx-map-table"></div></div></section>';
+  var mapHtml='<section class="view" id="v-map">'+
+    '<div class="card"><h3 style="margin-top:0">🗺️ Bản đồ chương trình năm học — Lớp '+_xe(String(state.khoi))+'</h3>'+
+      '<div style="font-size:13px;color:#5b6b61;margin:-4px 0 10px">Bức tranh tổng thể chương trình '+_xe(state.year||'2026 - 2027')+': toàn bộ môn học, chủ đề và dòng chảy 35 tuần.</div>'+
+      '<div id="bx-map-overview"></div></div>'+
+    '<div class="card"><h4 style="margin-top:0">📊 Tổng hợp theo môn <span style="font-weight:400;color:#8a978f;font-size:12px">· bấm vào môn để xem chủ đề</span></h4>'+
+      '<div id="bx-map-subjects" style="overflow:auto"></div></div>'+
+    '<div class="card"><h4 style="margin-top:0">📅 Dòng thời gian 35 tuần</h4>'+
+      '<div id="bx-map-legend" style="margin-bottom:8px"></div>'+
+      '<div id="bx-map-timeline" style="overflow:auto"></div></div>'+
+    '</section>';
   var khdhHtml='<section class="view" id="v-khdh"><div class="card">'+
     '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">'+
     '<h3 style="margin:0">📚 Kế hoạch giáo dục môn học (KHDH)</h3>'+
@@ -3369,40 +3374,109 @@ function BX_injectIntgFilter(){
   v.insertBefore(bar, v.firstChild);
 }
 
-/* ----- Render: Bản đồ chương trình ----- */
+/* ----- Render: Bản đồ chương trình (bức tranh tổng thể cho GV) ----- */
+var BX_MAP_PAL=['#cfe8d4','#cfe0f5','#f7e3c4','#e6d6f2','#cdeaf0','#f7d6dc','#dde7c4','#f0dfb6','#d4e9e2','#e9d8c3','#d8e4f7','#ede0cf'];
+function BX_mapNorm(s){ return String(s==null?'':s).replace(/\s+/g,' ').trim(); }
+function BX_mapSubjects(){ return (window.BX_SUBJECTS&&window.BX_SUBJECTS.length)?window.BX_SUBJECTS:Object.keys(window.BX_KHGD||{}); }
+function BX_mapLastPeriod(rows){ var mx=0; rows.forEach(function(r){ String(r[6]||'').split(/[^0-9]+/).forEach(function(x){ var n=parseInt(x,10); if(n>mx)mx=n; }); }); return mx; }
+function BX_rowPeriods(r){ return String(r[6]||'').split(/[^0-9]+/).filter(Boolean).length || (r[6]?1:0); }
+function BX_isReview(name){ return /(ôn tập|kiểm tra|đánh giá)/i.test(BX_mapNorm(name)); }
+function BX_mapTopics(rows){
+  var seen={}, order=[];
+  rows.forEach(function(r){
+    var name=BX_mapNorm(r[1]); if(!name) return;
+    if(!seen[name]){ seen[name]={name:name, from:99, to:0, periods:0, review:BX_isReview(name)}; order.push(name); }
+    var t=seen[name], w=parseInt(r[0],10)||0;
+    if(w){ if(w<t.from)t.from=w; if(w>t.to)t.to=w; }
+    t.periods+=BX_rowPeriods(r);
+  });
+  return order.map(function(n){ var t=seen[n]; if(t.from===99)t.from=0; return t; });
+}
+function BX_weekTopic(rows,w){ for(var i=0;i<rows.length;i++){ if(parseInt(rows[i][0],10)===w) return BX_mapNorm(rows[i][1]); } return ''; }
+function BX_mapModel(){
+  var KH=window.BX_KHGD||{};
+  return BX_mapSubjects().filter(function(s){return KH[s]&&KH[s].length;}).map(function(s){
+    var rows=KH[s], topics=BX_mapTopics(rows), periods=BX_mapLastPeriod(rows);
+    var hk1=0; rows.forEach(function(r){ if(parseInt(r[0],10)<=18) hk1+=BX_rowPeriods(r); });
+    var ci=0, colorOf={}; topics.forEach(function(t){ colorOf[t.name]=t.review?null:BX_MAP_PAL[ci++%BX_MAP_PAL.length]; });
+    return {subject:s, rows:rows, topics:topics, periods:periods, perWeek:periods/35, hk1:hk1, hk2:periods-hk1, colorOf:colorOf};
+  });
+}
+function BX_mapStyleOnce(){
+  if(el('bx-map-style')) return;
+  var s=document.createElement('style'); s.id='bx-map-style';
+  s.textContent=
+   '#v-map .bx-mtable{width:100%;border-collapse:collapse;font-size:13px}'+
+   '#v-map .bx-mtable th,#v-map .bx-mtable td{border:1px solid #e6ecf1;padding:8px}'+
+   '#v-map .bx-mtable thead th{background:#f4f8f4;color:#002060;font-weight:700}'+
+   '#v-map .bx-msub{cursor:pointer} #v-map .bx-msub:hover{background:#f4f8f4}'+
+   '#v-map .bx-mcaret{display:inline-block;width:14px;color:#3a9b6e;font-weight:700}'+
+   '#v-map .bx-mtopics{display:flex;flex-wrap:wrap;gap:6px;padding:6px 2px}'+
+   '#v-map .bx-mtopic{font-size:12px;padding:4px 9px;border-radius:13px;border:1px solid rgba(0,0,0,.07);color:#1c2a22}'+
+   '#v-map .bx-mtopic small{color:#5b6b61}'+
+   '#v-map .bx-tl{border-collapse:collapse;font-size:10px;table-layout:fixed}'+
+   '#v-map .bx-tl th,#v-map .bx-tl td{border:1px solid #e7ecf1;text-align:center;height:20px}'+
+   '#v-map .bx-tl thead th{background:#f4f8f4;color:#002060;font-weight:700;position:sticky;top:0;z-index:2}'+
+   '#v-map .bx-tlsubj{position:sticky;left:0;background:#f4f8f4;text-align:left!important;padding:3px 8px;font-size:12px;white-space:nowrap;z-index:3}'+
+   '#v-map .bx-tlcell{width:20px;padding:0;cursor:default}'+
+   '#v-map .bx-tlw{width:20px;color:#5b6b61;font-weight:400}'+
+   '#v-map .bx-tlhk{border-left:2px solid #6b7b8c!important}'+
+   '#v-map .bx-tlrev{color:#5b6b61;font-weight:700}'+
+   '#v-map .bx-leg{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#5b6b61;margin-right:14px}'+
+   '#v-map .bx-legbox{width:14px;height:14px;border-radius:3px;border:1px solid rgba(0,0,0,.1);display:inline-block}';
+  document.head.appendChild(s);
+}
+window.BX_mapToggleSubject=function(i){ var acc=el('bx-macc-'+i), c=el('bx-mcaret-'+i); if(!acc)return; var open=acc.style.display!=='none'; acc.style.display=open?'none':''; if(c)c.textContent=open?'▸':'▾'; };
 window.renderProgramMap=function(){
-  var box=el('bx-map-stats'); if(!box) return;
-  var plan=BX_plan(), bank=bankAll(), intg=BX_intgMap(), master=BX_master();
-  var digitized=plan.length;
-  var withKhbd=plan.filter(function(p){ return bank.some(function(L){ return BX_cpidOfBank(L)===p.curriculum_period_id; }); }).length;
-  var withDigital=plan.filter(function(p){ var g=BX_intgByCpid(p.curriculum_period_id); return g&&g.digital_level>0; }).length;
-  var withAi=plan.filter(function(p){ var g=BX_intgByCpid(p.curriculum_period_id); return g&&g.ai_level>0; }).length;
+  if(!el('bx-map-overview')) return;
+  BX_mapStyleOnce();
+  var model=BX_mapModel();
+  var totalP=model.reduce(function(a,m){return a+m.periods;},0);
+  var totalT=model.reduce(function(a,m){return a+m.topics.filter(function(t){return !t.review;}).length;},0);
+  var rwSet={}; model.forEach(function(m){ for(var w=1;w<=35;w++){ if(BX_isReview(BX_weekTopic(m.rows,w))) rwSet[w]=1; } });
+  var rw=Object.keys(rwSet).map(Number).sort(function(a,b){return a-b;});
+  /* A — thẻ tổng quan */
   function st(n,l){ return '<div class="stat"><div><div class="n">'+n+'</div><div class="l">'+l+'</div></div></div>'; }
-  box.innerHTML=st(master.length,'Môn có CT master')+st(digitized,'Tiết đã số hoá (KHDH)')+
-    st((digitized?Math.round(withKhbd/digitized*100):0)+'%','Tiết có KHBD trong kho')+
-    st((digitized?Math.round(withDigital/digitized*100):0)+'%','Tiết có năng lực số')+
-    st((digitized?Math.round(withAi/digitized*100):0)+'%','Tiết có AI thí điểm');
-  // cảnh báo
-  var warn=[];
-  var dups=BX_dupRowsInSchedule();
-  if(dups.length) warn.push('⚠️ '+dups.length+' tiết trong lịch tuần đang trùng tên bài, chưa định danh PPCT.');
-  master.forEach(function(m){
-    var cntPlan=plan.filter(function(p){ return BX_subjCode(p.subject)===BX_subjCode(m.subject)&&p.grade===m.grade; }).length;
-    if(m.total_periods && cntPlan>0 && cntPlan<m.total_periods) warn.push('• '+m.subject+' (K'+m.grade+'): mới số hoá '+cntPlan+'/'+m.total_periods+' tiết — KHDH chưa đủ năm.');
-  });
-  warn.push('<small style="color:#8a978f">Lưu ý: số tiết/căn cứ pháp lý ở trạng thái <b>nháp — cần kiểm chứng</b> theo TT32/2018 và KH giáo dục nhà trường.</small>');
-  el('bx-map-warn').innerHTML=warn.length?('<div class="bank-tag warn" style="display:block;margin:8px 0">'+warn.join('<br>')+'</div>'):'';
-  // bảng theo môn
-  var bySubj={};
-  plan.forEach(function(p){ var k=p.subject; (bySubj[k]=bySubj[k]||{plan:0,khbd:0,d:0,a:0}); bySubj[k].plan++;
-    if(bank.some(function(L){return BX_cpidOfBank(L)===p.curriculum_period_id;})) bySubj[k].khbd++;
-    var g=BX_intgByCpid(p.curriculum_period_id); if(g&&g.digital_level>0) bySubj[k].d++; if(g&&g.ai_level>0) bySubj[k].a++;
-  });
-  var rows=Object.keys(bySubj).map(function(s){ var o=bySubj[s];
-    return '<tr><td>'+_xe(s)+'</td><td style="text-align:center">'+o.plan+'</td><td style="text-align:center">'+o.khbd+'</td><td style="text-align:center">'+o.d+'</td><td style="text-align:center">'+o.a+'</td></tr>'; }).join('');
-  el('bx-map-table').innerHTML='<table class="tbl" style="width:100%;border-collapse:collapse"><thead><tr>'+
-    '<th style="text-align:left">Môn</th><th>Tiết KHDH</th><th>Có KHBD</th><th>NLS</th><th>AI</th></tr></thead><tbody>'+
-    (rows||'<tr><td colspan="5" class="empty-pad">Chưa có KHDH.</td></tr>')+'</tbody></table>';
+  el('bx-map-overview').innerHTML='<div class="stats" style="margin:4px 0">'+
+    st(model.length,'môn học')+st('~'+totalP,'tiết / năm')+st('35','tuần (HK1: 18 · HK2: 17)')+
+    st(totalT,'chủ đề / chủ điểm')+st(rw.length,'tuần ôn tập – kiểm tra')+'</div>'+
+    (rw.length?'<div style="font-size:12px;color:#5b6b61;margin-top:4px">📌 Mốc ôn tập – đánh giá rơi vào tuần: <b>'+rw.join(', ')+'</b>.</div>':'');
+  /* B + D — bảng theo môn + accordion chủ đề */
+  var body=model.map(function(m,idx){
+    var nT=m.topics.filter(function(t){return !t.review;}).length;
+    var tr='<tr class="bx-msub" onclick="BX_mapToggleSubject('+idx+')">'+
+      '<td style="text-align:left"><span class="bx-mcaret" id="bx-mcaret-'+idx+'">▸</span><b>'+_xe(m.subject)+'</b></td>'+
+      '<td style="text-align:center">'+m.periods+'</td>'+
+      '<td style="text-align:center">'+(m.perWeek%1===0?m.perWeek:m.perWeek.toFixed(1))+'</td>'+
+      '<td style="text-align:center">'+nT+'</td>'+
+      '<td style="text-align:center">'+m.hk1+' / '+m.hk2+'</td></tr>';
+    var chips=m.topics.map(function(t){
+      var col=t.review?'#ececec':(m.colorOf[t.name]||'#eee');
+      var wk=t.from?('T'+t.from+(t.to>t.from?('–'+t.to):'')):'';
+      return '<span class="bx-mtopic" style="background:'+col+'">'+(t.review?'📝 ':'')+_xe(t.name)+' <small>· '+wk+' · '+t.periods+' tiết</small></span>';
+    }).join('');
+    return tr+'<tr class="bx-macc" id="bx-macc-'+idx+'" style="display:none"><td colspan="5"><div class="bx-mtopics">'+chips+'</div></td></tr>';
+  }).join('');
+  el('bx-map-subjects').innerHTML='<table class="bx-mtable"><thead><tr>'+
+    '<th style="text-align:left">Môn</th><th>Tổng tiết</th><th>Tiết/tuần</th><th>Số chủ đề</th><th>HK1 / HK2 (tiết)</th></tr></thead><tbody>'+body+'</tbody></table>';
+  /* C — dòng thời gian 35 tuần */
+  var h1='<th class="bx-tlsubj" rowspan="2">Môn \\ Tuần</th><th colspan="18">Học kì I</th><th colspan="17">Học kì II</th>';
+  var h2=''; for(var w=1;w<=35;w++){ h2+='<th class="bx-tlw'+(w===19?' bx-tlhk':'')+'">'+w+'</th>'; }
+  var tbody=model.map(function(m){
+    var tds='<td class="bx-tlsubj">'+_xe(m.subject)+'</td>';
+    for(var w=1;w<=35;w++){
+      var name=BX_weekTopic(m.rows,w), rev=BX_isReview(name);
+      var col=name?(rev?'#e0e0e0':(m.colorOf[name]||'#eee')):'#fafafa';
+      var title=name?(m.subject+' · Tuần '+w+': '+name):(m.subject+' · Tuần '+w+': (—)');
+      tds+='<td class="bx-tlcell'+(w===19?' bx-tlhk':'')+'" style="background:'+col+'" title="'+_xe(title)+'">'+(rev?'<span class="bx-tlrev">✓</span>':'')+'</td>';
+    }
+    return '<tr>'+tds+'</tr>';
+  }).join('');
+  el('bx-map-legend').innerHTML='<span class="bx-leg"><span class="bx-legbox" style="background:#cfe8d4"></span> mỗi màu = một chủ đề (đổi màu = chuyển chủ đề)</span>'+
+    '<span class="bx-leg"><span class="bx-legbox" style="background:#e0e0e0"></span> ✓ tuần ôn tập / kiểm tra</span>'+
+    '<span class="bx-leg">Vạch dọc đậm = ranh giới HK1 | HK2</span>';
+  el('bx-map-timeline').innerHTML='<table class="bx-tl"><thead><tr>'+h1+'</tr><tr>'+h2+'</tr></thead><tbody>'+tbody+'</tbody></table>'+
+    '<div style="font-size:11px;color:#8a978f;margin-top:6px">Dữ liệu chương trình ở trạng thái nháp — giáo viên đối chiếu SGK/KH nhà trường khi sử dụng. Di chuột vào ô để xem chủ đề từng tuần.</div>';
 };
 
 /* ----- Render: KHDH môn học ----- */
@@ -3878,10 +3952,11 @@ var TKB = (window.SCHEDULE_SEED ? JSON.parse(JSON.stringify(window.SCHEDULE_SEED
 function norm(s){ return (typeof _normTxt==='function'? _normTxt(s) : String(s||'').toLowerCase()); }
 var TV_KEY = norm('Tiếng Việt');
 
-// Tuần 12 = Thứ 2 ngày 11/11/2026 → mốc tính ngày các tuần khác
+// Tuần 1 = Thứ 2 ngày 07/9/2026 → mốc tính ngày các tuần khác (tuần liên tiếp)
+var BX_WEEK1=new Date(2026,8,7); // 07/9/2026 (tháng 8 = tháng 9 vì 0-index)
 function BX_weekDates(w){
-  var anchor=new Date(2026,10,11); // 11/11/2026
-  var mon=new Date(anchor.getTime()+(parseInt(w,10)-12)*7*86400000);
+  var anchor=BX_WEEK1;
+  var mon=new Date(anchor.getTime()+(parseInt(w,10)-1)*7*86400000);
   function dm(d){ return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2); }
   function dmy(d){ return dm(d)+'/'+d.getFullYear(); }
   var days=['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'], byDay={};
@@ -3936,11 +4011,17 @@ function fillWeekSelect(){
   for(var w=1;w<=35;w++){ var d=BX_weekDates(w); html+='<option value="'+w+'"'+(w===cur?' selected':'')+'>Tuần '+w+' ('+d.from+' - '+d.to+')</option>'; }
   sw.innerHTML=html;
 }
+// Tuần học thực tế theo ngày hôm nay (kẹp trong 1..35); trước khai giảng → Tuần 1
+function BX_realWeek(){
+  var diff=Math.floor((new Date()-BX_WEEK1)/(7*86400000))+1;
+  return Math.max(1, Math.min(35, diff));
+}
+window.BX_realWeek=BX_realWeek;
 function init(){
   fillWeekSelect();
   var sy=document.getElementById('sel-year'); if(sy) sy.value='Năm học '+(state.year||'2026 - 2027');
   var sl=document.getElementById('sel-lop'); if(sl){ var v='Lớp '+(state.klass||'5A'); for(var i=0;i<sl.options.length;i++){ if(sl.options[i].value===v||sl.options[i].text===v) sl.selectedIndex=i; } }
-  BX_setWeek(parseInt(state.week,10)||12); // dựng lại lịch tuần hiện tại (sửa cả TV tuần 12 cho đúng SGK)
+  BX_setWeek(BX_realWeek()); // mặc định = tuần học thực tế theo ngày hôm nay
   console.log('[Bút Xanh] Dashboard: select theo tuần đã chạy thật.');
 }
 if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded',init);
