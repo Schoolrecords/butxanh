@@ -2136,9 +2136,23 @@ function exportBankWord(idx){
   _downloadBlob('KHBD_'+safe+'_Lop'+(r.lop||state.klass)+'.docx', buildKhbdDocxFromLesson(L,r));
 }
 /* Gộp TẤT CẢ giáo án trong tuần (theo lịch báo giảng) thành 1 file Word — mục tiêu lõi của Bút Xanh */
+/* Khung KHBD trống từ 1 tiết trong lịch (khi kho chưa có bài) — để nút "Tạo KHBD Tuần"
+   luôn dùng được: tiết nào có trong kho thì lấy kho, còn lại cấp mẫu trống cho GV soạn. */
+function _blankLessonFromRow(r){
+  r=r||{};
+  return { mon:r.mon||'', bai:r.bai||'(Chưa rõ tên bài)', tuan:r.tuan||state.week,
+    tiet:r.ppct||r.tiet||'', dodung:r.tbdh||'', yccd:'', hoatdong:'', hotro:'', hoanhap:'', _blank:true };
+}
+/* Gộp lịch tuần thành danh sách giáo án: ưu tiên kho, fallback mẫu trống */
+function _weekKhbdItems(){
+  const rows=state.schedule||[], items=[];
+  rows.forEach(r=>{ const L=findBankLesson(r); items.push(L?{L,r,src:'kho'}:{L:_blankLessonFromRow(r),r,src:'mau'}); });
+  return items;
+}
 function buildWeekKhbdDocx(rows){
-  const found=[]; (rows||[]).forEach(r=>{ const L=findBankLesson(r); if(L) found.push({L,r}); });
-  const body=found.map((it,i)=>(i?'<w:p><w:r><w:br w:type="page"/></w:r></w:p>':'')+_lessonBodyParas(it.L,it.r)).join('');
+  /* rows tham số để tương thích cũ; thực tế dùng cả tuần (kho + mẫu trống) */
+  const items=_weekKhbdItems();
+  const body=items.map((it,i)=>(i?'<w:p><w:r><w:br w:type="page"/></w:r></w:p>':'')+_lessonBodyParas(it.L,it.r)).join('');
   return _wrapDocx(body);
 }
 /* Bấm "Tạo KHBD Tuần" → mở cửa sổ thông báo (xem trước / lưu) */
@@ -2154,10 +2168,9 @@ function openWeekKhbdModal(){
 }
 function downloadWeekKHBD(){
   const rows=state.schedule||[];
-  const found=rows.filter(r=>findBankLesson(r));
-  if(!found.length){ alert('Tuần '+state.week+' chưa có tiết nào khớp Kho giáo án số.'); return; }
+  if(!rows.length){ alert('Tuần '+state.week+' chưa có tiết nào trong thời khoá biểu.'); return; }
   _downloadBlob(`KHBD_Tuan${state.week}_Lop${state.klass}.docx`, buildWeekKhbdDocx(rows));
-  closeModal('week-overlay');
+  closeModal('week-overlay'); closeModal('preview-overlay');
 }
 /* HTML 1 giáo án dạng trang A4 (mục III = bảng 2 cột) cho trang xem trước */
 function lessonPreviewHtml(L,row){
@@ -2166,6 +2179,7 @@ function lessonPreviewHtml(L,row){
   const tiet=row.ppct||row.tiet||L.tiet||'', ngay=_ngayFull(row.date);
   const esc=_xe, nl=s=>esc(s||'').replace(/\n/g,'<br>');
   let h='<div class="a4">';
+  if(L._blank) h+='<div style="background:#fff7e0;border:1px solid #f0d68a;color:#8a6d10;font-size:12px;border-radius:6px;padding:5px 9px;margin-bottom:8px">📝 Khung mẫu trống — tiết này chưa có trong Kho giáo án số; thầy cô soạn nội dung hoặc thêm vào kho.</div>';
   h+='<h1>KẾ HOẠCH BÀI DẠY</h1>';
   h+='<div class="a4-meta">Môn: '+esc(L.mon)+' &nbsp;|&nbsp; Lớp: '+esc(lop)+' &nbsp;|&nbsp; Tuần: '+esc(tuan)+(tiet?(' &nbsp;|&nbsp; Tiết (PPCT): '+esc(tiet)):'')+'</div>';
   h+='<div class="a4-bai">Bài: '+esc(L.bai)+'</div>';
@@ -2185,14 +2199,14 @@ function lessonPreviewHtml(L,row){
   h+='</div>';
   return h;
 }
-/* Xem trước KHBD cả tuần (kiểu A4) */
+/* Xem trước KHBD cả tuần (kiểu A4) — ưu tiên kho, tiết chưa có thì xem khung mẫu trống */
 function previewWeekKhbd(){
-  const rows=state.schedule||[], found=[];
-  rows.forEach(r=>{ const L=findBankLesson(r); if(L) found.push({L,r}); });
-  if(!found.length){ alert('Chưa có tiết nào trong kho để xem trước.'); return; }
+  const items=_weekKhbdItems();
+  if(!items.length){ alert('Tuần '+state.week+' chưa có tiết nào trong thời khoá biểu.'); return; }
+  const nKho=items.filter(it=>it.src==='kho').length, nMau=items.length-nKho;
   el('pv-week').textContent='Tuần '+state.week;
-  el('pv-count').textContent=found.length+' tiết';
-  el('pv-pages').innerHTML=found.map(it=>lessonPreviewHtml(it.L,it.r)).join('');
+  el('pv-count').textContent=items.length+' tiết'+(nMau?(' · '+nKho+' từ kho, '+nMau+' mẫu trống'):'');
+  el('pv-pages').innerHTML=items.map(it=>lessonPreviewHtml(it.L,it.r)).join('');
   const sc=el('pv-pages'); if(sc) sc.scrollTop=0;
   el('preview-overlay').classList.add('show');
 }
@@ -3274,16 +3288,14 @@ window.serveBankIntoModal = function(row){
 var _bxWeekOrig = openWeekKhbdModal;
 window.openWeekKhbdModal = function(){
   var rows=state.schedule||[];
-  var rpt=BX_weekReport(rows);
-  if(!rpt.ok){ alert('Tuần '+state.week+' chưa có tiết nào chắc chắn khớp Kho giáo án số.\n'+
-    '• Tổng tiết: '+rpt.total+'\n• Khớp kho (chắc chắn): '+rpt.ok+'\n• Trùng tên cần xác nhận: '+rpt.ambiguous+'\n• Thiếu KHBD: '+rpt.missing+
-    (rpt.ambiguous?'\n\nHãy mở "Kế hoạch bài dạy" để chọn đúng tiết cho bài trùng tên trước khi gộp.':'')); return; }
+  if(!rows.length){ alert('Tuần '+_xe(state.week)+' chưa có tiết nào trong thời khoá biểu.\nHãy chọn tuần ở Bảng điều khiển hoặc nạp Lịch báo giảng.'); return; }
+  var rpt=BX_weekReport(rows), fromKho=rpt.ok, mau=rpt.total-rpt.ok; /* tiết không chắc chắn → dùng mẫu trống */
   var msg=el('week-msg');
-  if(msg) msg.innerHTML='Kế hoạch bài dạy <b>Tuần '+_xe(state.week)+'</b>: '+
-    '<b>'+rpt.ok+'/'+rpt.total+'</b> tiết chắc chắn có KHBD'+
-    (rpt.ambiguous?(' · <b style="color:#c47d00">'+rpt.ambiguous+'</b> tiết trùng tên cần xác nhận'):'')+
-    (rpt.missing?(' · <b>'+rpt.missing+'</b> tiết chưa có KHBD'):'')+'.'+
-    (rpt.ambiguous?' <br><small>Lưu ý: chỉ những tiết chắc chắn mới được gộp xuất; tiết trùng tên hãy xác nhận PPCT trước.</small>':'');
+  if(msg) msg.innerHTML='Kế hoạch bài dạy <b>Tuần '+_xe(state.week)+'</b> ('+rpt.total+' tiết) đã sẵn sàng: '+
+    '<b>'+fromKho+'</b> tiết lấy từ Kho giáo án số'+
+    (mau>0?(' · <b>'+mau+'</b> tiết dùng khung mẫu trống để thầy cô soạn'):'')+'.'+
+    (rpt.ambiguous?(' <br><small>Có '+rpt.ambiguous+' tiết trùng tên — mở "Kế hoạch bài dạy" xác nhận PPCT để lấy đúng bài từ kho.</small>'):'')+
+    ' <br>Thầy cô xem trước rồi lưu về máy nhé!';
   el('week-overlay').classList.add('show');
 };
 function BX_weekReport(rows){
