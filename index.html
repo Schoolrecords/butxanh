@@ -289,6 +289,14 @@ tr.lesson:hover .gen-hint{display:inline}
 .hs-card .hs-ic .icn{width:21px;height:21px}
 .hs-card .hs-name{font-weight:700;font-size:14.5px}
 .hs-card .hs-tag{font-size:11.5px;color:var(--muted);margin-top:1px}
+.hs-kt-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.hs-chip{font-size:11px;padding:2px 8px;border-radius:11px;background:var(--pur-soft);color:#5a3fa0;border:1px solid rgba(124,90,194,.18)}
+.hs-chip.iep-co{background:var(--green-soft);color:#157a43;border-color:rgba(31,164,92,.2)}
+.hs-chip.iep-dang{background:var(--org-soft);color:#9a5b10;border-color:rgba(224,135,28,.22)}
+.hs-chip.iep-chua{background:var(--red-soft);color:#b13a28;border-color:rgba(229,80,59,.22)}
+.hs-kt-note{font-size:12px;line-height:1.5;color:#5a3fa0;background:var(--pur-soft);border:1px solid rgba(124,90,194,.18);border-radius:8px;padding:8px 10px;margin-bottom:8px}
+.hs-kt-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+@media(max-width:560px){.hs-kt-grid{grid-template-columns:1fr}}
 .hs-card ul{list-style:none;display:flex;flex-direction:column;gap:6px}
 .hs-card li{font-size:12.7px;color:#42554A;display:flex;gap:8px;line-height:1.45}
 .hs-card li::before{content:"•";color:var(--green);font-weight:800}
@@ -964,8 +972,16 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
     <div class="modal-body">
       <div class="form-grid">
         <label class="fld" style="grid-column:1/-1"><span>Tên nhóm / học sinh</span><input id="hs-name" placeholder="VD: Nhóm đọc chậm"></label>
-        <label class="fld"><span>Loại hỗ trợ</span><select id="hs-type"></select></label>
-        <label class="fld"><span>Số học sinh</span><input id="hs-count" type="number" min="1" placeholder="VD: 3"></label>
+        <label class="fld"><span>Loại hỗ trợ</span><select id="hs-type" onchange="hsTypeChanged()"></select></label>
+        <label class="fld"><span>Số học sinh</span><input id="hs-num" type="number" min="1" placeholder="VD: 3"></label>
+        <div id="hs-kt-fields" style="display:none;grid-column:1/-1">
+          <div class="hs-kt-note">🧩 <b>Khuyết tật học hòa nhập</b> — theo Luật Người khuyết tật 2010 &amp; TT 03/2018/TT-BGDĐT: cần xác định <b>dạng tật</b>, <b>mức độ</b> và có <b>Kế hoạch giáo dục cá nhân (KHGDCN)</b>; đánh giá theo KHGDCN (TT 27/2020).</div>
+          <div class="hs-kt-grid">
+            <label class="fld"><span>Dạng khuyết tật</span><select id="hs-disability"></select></label>
+            <label class="fld"><span>Mức độ</span><select id="hs-severity"></select></label>
+            <label class="fld"><span>Kế hoạch GD cá nhân</span><select id="hs-iep"></select></label>
+          </div>
+        </div>
         <label class="fld" style="grid-column:1/-1"><span>Môn liên quan</span><input id="hs-subject" placeholder="VD: Tiếng Việt (bỏ trống nếu chung)"></label>
         <label class="fld" style="grid-column:1/-1"><span>Ghi chú / biện pháp (mỗi dòng một ý)</span><textarea id="hs-notes" rows="4" placeholder="Cho đọc nối tiếp câu trước khi đọc cả đoạn.&#10;Gọi đọc đoạn ngắn, khen ngợi kịp thời."></textarea></label>
       </div>
@@ -2419,6 +2435,8 @@ function todayLabel(){
 function buildReminders(max){
   max=max||4; const out=[], sch=state.schedule||[], keys=pickKeyLessons(4);
   if(keys[0]){ const r=keys[0]; out.push({group:'red',title:'Tiết '+r.mon,when:r.day||'Hôm nay',body:`Bài "${r.bai}"${r.tbdh?(' cần: '+r.tbdh):''} — ${prepReason(r)}`}); }
+  const ktNeedIep=(state.hocsinh||[]).filter(x=>hsIsKT(x) && (x.iep||'chua')!=='co');
+  if(ktNeedIep.length){ const k=ktNeedIep[0]; out.push({group:'pur',title:'KHGDCN học sinh hòa nhập',when:'Cần hoàn thiện',body:`${k.name}${k.disability?(' — '+hsDisabilityLabel(k.disability)):''}: ${(k.iep==='dang')?'đang xây dựng':'chưa có'} Kế hoạch giáo dục cá nhân; cần hoàn thiện để dạy & đánh giá theo KHGDCN.${ktNeedIep.length>1?(' (+'+(ktNeedIep.length-1)+' em khác)'):''}`}); }
   const mat=sch.filter(r=>r!==keys[0] && (r.tbdh||'').trim().length>0).sort((a,b)=>(b.tbdh||'').length-(a.tbdh||'').length)[0];
   if(mat) out.push({group:'org',title:'Chuẩn bị đồ dùng',when:mat.day||'',body:`Tiết ${mat.mon} "${mat.bai}" cần: ${mat.tbdh}.`});
   const hs=state.hocsinh||[];
@@ -2466,14 +2484,30 @@ const HS_TYPES=[
   {key:'doc-cham',label:'Đọc chậm / khó đọc',color:'blue',icon:'📖'},
   {key:'cung-co',label:'Cần củng cố kiến thức',color:'org',icon:'➗'},
   {key:'mo-rong',label:'Hoàn thành tốt — mở rộng',color:'green',icon:'⭐'},
-  {key:'hoa-nhap',label:'Học hoà nhập',color:'pur',icon:'🧩'},
+  {key:'hoa-nhap',label:'Khuyết tật học hòa nhập',color:'pur',icon:'🧩'},
   {key:'hoan-canh',label:'Hoàn cảnh đặc biệt',color:'red',icon:'💗'},
   {key:'khac',label:'Khác',color:'blue',icon:'👤'}
 ];
+/* HS khuyết tật học hòa nhập — theo Luật Người khuyết tật 2010 (Đ.3) + NĐ 28/2012 + TT 03/2018/TT-BGDĐT */
+const HS_DISABILITY=[
+  {key:'vandong',label:'Khuyết tật vận động'},
+  {key:'nghenoi',label:'Khuyết tật nghe, nói (khiếm thính)'},
+  {key:'nhin',label:'Khuyết tật nhìn (khiếm thị)'},
+  {key:'thankinh',label:'Khuyết tật thần kinh, tâm thần (gồm tự kỷ)'},
+  {key:'trltue',label:'Khuyết tật trí tuệ'},
+  {key:'khac',label:'Khuyết tật khác / đa tật'}
+];
+const HS_SEVERITY=[{key:'nhe',label:'Nhẹ'},{key:'nang',label:'Nặng'},{key:'dbnang',label:'Đặc biệt nặng'}];
+const HS_IEP=[{key:'co',label:'Đã có KHGDCN'},{key:'dang',label:'Đang xây dựng'},{key:'chua',label:'Chưa có'}];
+function hsDisabilityLabel(k){ const x=HS_DISABILITY.find(d=>d.key===k); return x?x.label:''; }
+function hsSeverityLabel(k){ const x=HS_SEVERITY.find(d=>d.key===k); return x?x.label:''; }
+function hsIepLabel(k){ const x=HS_IEP.find(d=>d.key===k); return x?x.label:'Chưa có'; }
+function hsIsKT(s){ return s.type==='hoa-nhap'; }
 const HS_SEED=[
   {id:'h1',type:'doc-cham',count:3,subject:'Tiếng Việt',name:'Nhóm đọc chậm',notes:['Cho đọc nối tiếp câu trước khi đọc cả đoạn.','Gọi đọc đoạn ngắn, khen ngợi kịp thời.','Tiết Tiếng Việt thứ 3 cần hỗ trợ thêm.']},
   {id:'h2',type:'cung-co',count:2,subject:'Toán',name:'Cần củng cố Toán',notes:['Bài nhiều bước giải — chuẩn bị bảng phụ.','Dành thêm thời gian trình bày cách làm.','Ghép cặp với bạn khá để hỗ trợ.']},
-  {id:'h3',type:'mo-rong',count:4,subject:'',name:'Hoàn thành tốt — mở rộng',notes:['Giao thêm bài nâng cao, câu hỏi mở.','Khuyến khích hỗ trợ bạn trong nhóm.','Mở rộng vận dụng vào thực tế.']}
+  {id:'h3',type:'mo-rong',count:4,subject:'',name:'Hoàn thành tốt — mở rộng',notes:['Giao thêm bài nâng cao, câu hỏi mở.','Khuyến khích hỗ trợ bạn trong nhóm.','Mở rộng vận dụng vào thực tế.']},
+  {id:'h4',type:'hoa-nhap',count:1,subject:'',name:'Em N.V.A — học hòa nhập',disability:'trltue',severity:'nhe',iep:'dang',notes:['Giao nhiệm vụ ngắn, chia nhỏ từng bước, làm mẫu trước.','Đánh giá theo KHGDCN, ưu tiên động viên sự tiến bộ.','Sắp xếp chỗ ngồi gần GV, ghép bạn hỗ trợ.']}
 ];
 function loadHocSinh(){ try{const v=JSON.parse(localStorage.getItem('butxanh_hocsinh')); return Array.isArray(v)?v:HS_SEED.slice();}catch(e){return HS_SEED.slice();} }
 function persistHocSinh(){ try{localStorage.setItem('butxanh_hocsinh',JSON.stringify(state.hocsinh));}catch(e){} }
@@ -2498,8 +2532,15 @@ function renderHocSinh(){
   const list=state.hocsinh.filter(s=> (hsFilter==='Tất cả'||hsTypeLabel(s)===hsFilter) && (!q || (s.name+' '+(s.subject||'')+' '+(s.notes||[]).join(' ')).toLowerCase().includes(q)));
   if(!list.length){ box.innerHTML='<div class="empty-pad">Không tìm thấy nhóm phù hợp.</div>'; return; }
   box.innerHTML=list.map(s=>{const c=HS_COLORS[hsColorKey(s)]||HS_COLORS.blue;
-    return `<div class="card hs-card"><div class="hs-top"><span class="hs-ic" style="background:${c[1]};color:${c[0]};font-size:20px">${hsIconOf(s)}</span><div style="flex:1"><div class="hs-name">${s.name}</div><div class="hs-tag">${hsTag(s)||hsTypeLabel(s)}</div></div></div><ul>${(s.notes||[]).map(n=>`<li>${n}</li>`).join('')}</ul><div class="kact" style="margin-top:10px"><button class="btn-xs" onclick="openHsEditor('${s.id}')">Sửa</button><button class="btn-xs danger" onclick="delHs('${s.id}')">Xoá</button></div></div>`;
+    return `<div class="card hs-card"><div class="hs-top"><span class="hs-ic" style="background:${c[1]};color:${c[0]};font-size:20px">${hsIconOf(s)}</span><div style="flex:1"><div class="hs-name">${s.name}</div><div class="hs-tag">${hsTypeLabel(s)}${hsTag(s)?(' · '+hsTag(s)):''}</div>${hsKtInfoHtml(s)}</div></div><ul>${(s.notes||[]).map(n=>`<li>${n}</li>`).join('')}</ul><div class="kact" style="margin-top:10px"><button class="btn-xs" onclick="openHsEditor('${s.id}')">Sửa</button><button class="btn-xs danger" onclick="delHs('${s.id}')">Xoá</button></div></div>`;
   }).join('');
+}
+function hsKtInfoHtml(s){ if(!hsIsKT(s)) return '';
+  const chips=[];
+  if(s.disability) chips.push(`<span class="hs-chip">${hsDisabilityLabel(s.disability)}</span>`);
+  if(s.severity) chips.push(`<span class="hs-chip">Mức độ: ${hsSeverityLabel(s.severity)}</span>`);
+  const iep=s.iep||'chua'; chips.push(`<span class="hs-chip iep-${iep}">KHGDCN: ${hsIepLabel(iep)}</span>`);
+  return `<div class="hs-kt-chips">${chips.join('')}</div>`;
 }
 let hsEditId=null;
 function openHsEditor(id){
@@ -2507,18 +2548,28 @@ function openHsEditor(id){
   const s=hsEditId?state.hocsinh.find(x=>x.id===hsEditId):null;
   el('hs-mtitle').textContent=s?'Sửa nhóm / học sinh':'Thêm nhóm / học sinh';
   const sel=el('hs-type'); if(sel&&!sel.options.length) sel.innerHTML=HS_TYPES.map(tp=>`<option value="${tp.key}">${tp.icon} ${tp.label}</option>`).join('');
+  const dsel=el('hs-disability'); if(dsel&&!dsel.options.length) dsel.innerHTML='<option value="">— Chọn dạng tật —</option>'+HS_DISABILITY.map(d=>`<option value="${d.key}">${d.label}</option>`).join('');
+  const vsel=el('hs-severity'); if(vsel&&!vsel.options.length) vsel.innerHTML='<option value="">— Chọn mức độ —</option>'+HS_SEVERITY.map(d=>`<option value="${d.key}">${d.label}</option>`).join('');
+  const isel=el('hs-iep'); if(isel&&!isel.options.length) isel.innerHTML=HS_IEP.map(d=>`<option value="${d.key}">${d.label}</option>`).join('');
   el('hs-name').value=s?s.name:'';
   if(sel) sel.value=s?(s.type||'khac'):'doc-cham';
-  el('hs-count').value=(s&&s.count)?s.count:'';
+  el('hs-num').value=(s&&s.count)?s.count:'';
+  if(dsel) dsel.value=s?(s.disability||''):'';
+  if(vsel) vsel.value=s?(s.severity||''):'';
+  if(isel) isel.value=s?(s.iep||'chua'):'chua';
   el('hs-subject').value=s?(s.subject||''):'';
   el('hs-notes').value=s?(s.notes||[]).join('\n'):'';
+  hsTypeChanged();
   el('hs-overlay').classList.add('show');
 }
+function hsTypeChanged(){ const f=el('hs-kt-fields'); if(f) f.style.display=(el('hs-type')&&el('hs-type').value==='hoa-nhap')?'':'none'; }
 function saveHs(){
   const name=el('hs-name').value.trim(); if(!name){ alert('Thầy cô nhập tên nhóm/học sinh nhé.'); return; }
-  const obj={name,type:el('hs-type').value,count:parseInt(el('hs-count').value,10)||0,subject:el('hs-subject').value.trim(),
+  const type=el('hs-type').value;
+  const obj={name,type,count:parseInt(el('hs-num').value,10)||0,subject:el('hs-subject').value.trim(),
     notes:el('hs-notes').value.split('\n').map(x=>x.trim()).filter(Boolean)};
-  if(hsEditId){ const s=state.hocsinh.find(x=>x.id===hsEditId); if(s){ delete s.tag; delete s.color; delete s.icon; Object.assign(s,obj); } }
+  if(type==='hoa-nhap'){ obj.disability=el('hs-disability').value||''; obj.severity=el('hs-severity').value||''; obj.iep=el('hs-iep').value||'chua'; }
+  if(hsEditId){ const s=state.hocsinh.find(x=>x.id===hsEditId); if(s){ delete s.tag; delete s.color; delete s.icon; delete s.disability; delete s.severity; delete s.iep; Object.assign(s,obj); } }
   else { obj.id='h'+Date.now(); state.hocsinh.unshift(obj); }
   persistHocSinh(); renderHocSinh(); closeModal('hs-overlay');
   if(el('v-dashboard')&&el('v-dashboard').classList.contains('active')) renderDashboard();
@@ -2543,12 +2594,19 @@ function buildHocSinhDocx(){
   P.push(_docP('DANH SÁCH HỌC SINH CẦN HỖ TRỢ',{bold:true,center:true,size:14}));
   P.push(_docP(`Lớp: ${state.klass}     GVCN: ${state.gvcn||''}     Năm học: ${state.year||''}`,{center:true}));
   P.push(_docP(''));
+  let hasKT=false;
   state.hocsinh.forEach((s,i)=>{
     P.push(_docP(`${i+1}. ${s.name} — ${hsTypeLabel(s)}`,{bold:true}));
     const tag=hsTag(s); if(tag) P.push(_docP(tag,{italic:true,size:12}));
+    if(hsIsKT(s)){ hasKT=true;
+      const det=[]; if(s.disability)det.push('Dạng tật: '+hsDisabilityLabel(s.disability));
+      if(s.severity)det.push('Mức độ: '+hsSeverityLabel(s.severity)); det.push('KHGDCN: '+hsIepLabel(s.iep||'chua'));
+      P.push(_docP(det.join('   |   '),{italic:true,size:12,color:'7C5AC2'}));
+    }
     (s.notes||[]).forEach(n=>P.push(_docP('•  '+n)));
     P.push(_docP(''));
   });
+  if(hasKT) P.push(_docP('Ghi chú: Học sinh khuyết tật học hòa nhập cần có Kế hoạch giáo dục cá nhân (KHGDCN) và được đánh giá theo KHGDCN — căn cứ Luật Người khuyết tật 2010, TT 03/2018/TT-BGDĐT và TT 27/2020/TT-BGDĐT.',{italic:true,size:11,color:'7C5AC2'}));
   P.push(_docP('Thông tin nội bộ — phục vụ hỗ trợ học sinh, bảo mật theo quy định.',{italic:true,size:10,color:'777777'}));
   return _docxBlob(P.join(''));
 }
