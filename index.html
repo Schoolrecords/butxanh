@@ -1497,7 +1497,7 @@ function _lessonBodyParas(L,row){
   const P=[];
   P.push(_docP('KẾ HOẠCH BÀI DẠY',{bold:true,center:true,size:14}));
   P.push(_docP('Môn: '+L.mon+'   |   Lớp: '+lop+'   |   Tuần: '+tuan+(tiet?('   |   Tiết (PPCT): '+tiet):''),{center:true}));
-  P.push(_docP('Bài: '+L.bai,{bold:true,center:true}));
+  P.push(_docP(_baiTitle(L.bai),{bold:true,center:true}));
   if(ngay) P.push(_docP('Ngày dạy: '+ngay,{center:true,size:12}));
   P.push(_docP(''));
   P.push(_docP('I. YÊU CẦU CẦN ĐẠT',{bold:true}));
@@ -2224,6 +2224,8 @@ function _tietNo(s){ const m=/ti[eế]t\s*0*(\d+)/i.exec(s||''); return m?+m[1]:
 function _words(s){ return (s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').split(/[^a-z0-9]+/).filter(Boolean); }
 /* độ giống tên bài (Jaccard trên tập từ) — "số TP" vs "số thập phân" vẫn cao */
 function _simTitle(a,b){ const A=new Set(_words(a)),B=new Set(_words(b)); if(!A.size||!B.size) return 0; let it=0; A.forEach(x=>{if(B.has(x))it++;}); return it/(A.size+B.size-it); }
+/* dòng tiêu đề tên bài: nếu tên đã có sẵn "Bài N…" thì KHÔNG thêm nhãn "Bài:" (tránh lặp "Bài: Bài 12:") */
+function _baiTitle(bai){ bai=(bai||'').toString().trim(); const n=bai.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(); return /^bai\b/.test(n)?bai:('Bài: '+bai); }
 /* tìm giáo án trong kho khớp 1 tiết của lịch */
 function findBankLesson(row){
   if(!row) return null;
@@ -2274,7 +2276,7 @@ function bankLessonToText(L,row){
   const ln=[];
   ln.push('KẾ HOẠCH BÀI DẠY');
   ln.push('Môn: '+L.mon+'   |   Lớp: '+lop+'   |   Tuần: '+tuan+(tiet?('   |   Tiết (PPCT): '+tiet):''));
-  ln.push('Bài: '+L.bai);
+  ln.push(_baiTitle(L.bai));
   if(ngay) ln.push('Ngày dạy: '+ngay);
   ln.push('');
   ln.push('I. YÊU CẦU CẦN ĐẠT'); ln.push(L.yccd||'(Thầy cô đối chiếu SGK/SGV)'); ln.push('');
@@ -2382,7 +2384,7 @@ function lessonPreviewHtml(L,row){
   if(L._blank) h+='<div style="background:#fff7e0;border:1px solid #f0d68a;color:#8a6d10;font-size:12px;border-radius:6px;padding:5px 9px;margin-bottom:8px">📝 Khung mẫu trống — tiết này chưa có trong Kho giáo án số; thầy cô soạn nội dung hoặc thêm vào kho.</div>';
   h+='<h1>KẾ HOẠCH BÀI DẠY</h1>';
   h+='<div class="a4-meta">Môn: '+esc(L.mon)+' &nbsp;|&nbsp; Lớp: '+esc(lop)+' &nbsp;|&nbsp; Tuần: '+esc(tuan)+(tiet?(' &nbsp;|&nbsp; Tiết (PPCT): '+esc(tiet)):'')+'</div>';
-  h+='<div class="a4-bai">Bài: '+esc(L.bai)+'</div>';
+  h+='<div class="a4-bai">'+esc(_baiTitle(L.bai))+'</div>';
   if(ngay) h+='<div class="a4-meta">Ngày dạy: '+esc(ngay)+'</div>';
   h+='<h2>I. YÊU CẦU CẦN ĐẠT</h2><div class="ln">'+nl(L.yccd||'(Thầy cô đối chiếu SGK/SGV)')+'</div>';
   h+='<h2>II. ĐỒ DÙNG DẠY HỌC</h2><div class="ln">'+nl(L.dodung||'…')+'</div>';
@@ -4649,7 +4651,7 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
     var H=[];
     H.push('<div class="doc-title">Kế hoạch bài dạy</div>');
     H.push('<div class="doc-meta">Môn: '+esc(L.mon)+'&nbsp;&nbsp;|&nbsp;&nbsp;Lớp: '+esc(lop)+'&nbsp;&nbsp;|&nbsp;&nbsp;Tuần: '+esc(tuan)+(tiet?('&nbsp;&nbsp;|&nbsp;&nbsp;Tiết (PPCT): '+esc(tiet)):'')+'</div>');
-    H.push('<div class="doc-bai">Bài: '+esc(L.bai)+'</div>');
+    H.push('<div class="doc-bai">'+esc(_baiTitle(L.bai))+'</div>');
     if(ngay) H.push('<div class="doc-meta" style="font-size:13.5px">Ngày dạy: '+esc(ngay)+'</div>');
     H.push('<h4>I. YÊU CẦU CẦN ĐẠT</h4>'+para(L.yccd||'(Thầy cô đối chiếu SGK/SGV)'));
     H.push('<h4>II. ĐỒ DÙNG DẠY HỌC</h4>'+para(L.dodung||'…'));
