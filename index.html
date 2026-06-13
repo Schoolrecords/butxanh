@@ -590,6 +590,22 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 .intg-tg.on .intg-ck{background:var(--green);border-color:var(--green)}
 .intg-tg.on .intg-ck::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
 @media(max-width:560px){ .intg-tg{padding:7px 11px;font-size:12px} }
+/* Hộp thông báo / xác nhận tùy biến của Bút Xanh (thay confirm() mặc định) */
+.bxc-overlay{position:fixed;inset:0;background:rgba(18,38,28,.46);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:9999;padding:16px}
+.bxc-overlay.show{display:flex}
+.bxc-modal{background:#fff;border-radius:18px;max-width:392px;width:100%;box-shadow:0 22px 54px rgba(0,0,0,.30);overflow:hidden;animation:bxcPop .18s ease}
+@keyframes bxcPop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+.bxc-top{background:linear-gradient(135deg,#eafaf0,#d4f1de);padding:18px 20px 14px;display:flex;align-items:center;gap:14px}
+.bxc-mascot{width:62px;height:62px;flex:none;background:var(--masc) center/contain no-repeat;filter:drop-shadow(0 3px 6px rgba(0,0,0,.14))}
+.bxc-title{font-size:18px;font-weight:800;color:var(--green);line-height:1.2}
+.bxc-body{padding:16px 22px 20px}
+.bxc-msg{font-size:14.5px;color:#3a4a42;line-height:1.6}
+.bxc-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.bxc-btn{padding:10px 22px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:1px solid transparent;transition:.12s}
+.bxc-btn.ok{background:var(--green);color:#fff;box-shadow:0 4px 12px rgba(31,164,92,.32)}
+.bxc-btn.ok:hover{filter:brightness(1.06)}
+.bxc-btn.cancel{background:#fff;color:#5b6b61;border-color:var(--line)}
+.bxc-btn.cancel:hover{background:#f0f7f3}
 </style>
 <script src="kho-data.js"></script>
 </head>
@@ -4648,6 +4664,26 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
 })();
 </script>
 
+<!-- Hộp xác nhận / thông báo tùy biến của Bút Xanh (thay confirm()/alert mặc định của trình duyệt) -->
+<script>
+window.BX_confirm=function(opts,onOk,onCancel){
+  opts=opts||{};
+  var ov=document.getElementById('bxc-overlay');
+  if(!ov){ ov=document.createElement('div'); ov.id='bxc-overlay'; ov.className='bxc-overlay'; document.body.appendChild(ov); }
+  var single=(opts.single===true); // chỉ 1 nút (thông báo)
+  ov.innerHTML='<div class="bxc-modal" role="dialog" aria-modal="true" aria-labelledby="bxc-title">'+
+    '<div class="bxc-top"><div class="bxc-mascot"></div><div class="bxc-title" id="bxc-title">'+(opts.title||'Bút Xanh thông báo!')+'</div></div>'+
+    '<div class="bxc-body"><div class="bxc-msg">'+(opts.html||'')+'</div>'+
+    '<div class="bxc-actions">'+
+      (single?'':'<button class="bxc-btn cancel" id="bxc-cancel">'+(opts.cancelText||'Hủy')+'</button>')+
+      '<button class="bxc-btn ok" id="bxc-ok">'+(opts.okText||'OK')+'</button>'+
+    '</div></div></div>';
+  ov.classList.add('show');
+  function close(){ ov.classList.remove('show'); ov.innerHTML=''; }
+  var okb=document.getElementById('bxc-ok'); if(okb){ okb.focus(); okb.onclick=function(){ close(); if(onOk)onOk(); }; }
+  var cb=document.getElementById('bxc-cancel'); if(cb){ cb.onclick=function(){ close(); if(onCancel)onCancel(); }; }
+};
+</script>
 <!-- ============ ĐĂNG NHẬP GOOGLE + ĐỒNG BỘ ĐÁM MÂY (Firebase) ============ -->
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
@@ -4726,8 +4762,15 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
       if(!cloud){ busy=false; push(); return; }                       // đám mây trống → đẩy local lên
       if(JSON.stringify(cloud)===localStr){ lastPushed=localStr; busy=false; setStatus('synced'); return; }
       if(!localHasLBG()){ applyCloud(cloud); return; }                 // máy chưa có LBG thật → lấy đám mây (im lặng)
-      var useCloud=confirm('Tài khoản đã có dữ liệu trên đám mây, KHÁC với dữ liệu Lịch báo giảng trên máy này.\n\n• Bấm OK: DÙNG dữ liệu ĐÁM MÂY (thay máy này).\n• Bấm Cancel: GIỮ máy này (ghi đè đám mây).');
-      if(useCloud){ applyCloud(cloud); } else { busy=false; push(); }
+      if(typeof window.BX_confirm==='function'){
+        window.BX_confirm({
+          title:'Bút Xanh thông báo!',
+          html:'Đã có dữ liệu mới cần cập nhật lên thiết bị này!<br>Bấm <b>OK</b> để đồng ý, nếu không bấm <b>Hủy</b>.',
+          okText:'OK', cancelText:'Hủy'
+        }, function(){ applyCloud(cloud); }, function(){ busy=false; push(); });
+      } else {
+        if(confirm('Đã có dữ liệu mới cần cập nhật lên thiết bị này! Bấm OK để đồng ý, nếu không bấm Hủy.')){ applyCloud(cloud); } else { busy=false; push(); }
+      }
       return;
     }
     // realtime: thiết bị khác vừa cập nhật → nếu khác dữ liệu hiện tại thì lấy về
