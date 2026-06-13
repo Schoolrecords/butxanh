@@ -2218,11 +2218,32 @@ function bankAll(){
   return Object.keys(byId).map(k=>byId[k]);
 }
 function bankStatusLabel(s){ return ({draft:'Bản nháp',checked:'Đã kiểm tra',approved:'Đã duyệt','needs-update':'Cần cập nhật'})[s]||'Bản nháp'; }
+/* tách số "Bài N" / "Tiết M" và token từ trong tên bài (cho khớp dự phòng) */
+function _baiNo(s){ const m=/b[aà]i\s*0*(\d+)/i.exec(s||''); return m?+m[1]:null; }
+function _tietNo(s){ const m=/ti[eế]t\s*0*(\d+)/i.exec(s||''); return m?+m[1]:null; }
+function _words(s){ return (s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').split(/[^a-z0-9]+/).filter(Boolean); }
+/* độ giống tên bài (Jaccard trên tập từ) — "số TP" vs "số thập phân" vẫn cao */
+function _simTitle(a,b){ const A=new Set(_words(a)),B=new Set(_words(b)); if(!A.size||!B.size) return 0; let it=0; A.forEach(x=>{if(B.has(x))it++;}); return it/(A.size+B.size-it); }
 /* tìm giáo án trong kho khớp 1 tiết của lịch */
 function findBankLesson(row){
   if(!row) return null;
   const all=bankAll(), k=bankKey(row.mon,row.bai);
   let cands=all.filter(L=>bankKey(L.mon,L.bai)===k);
+  /* Dự phòng: tên bài viết khác nhau (vd LBG "số TP" ≠ kho "số thập phân").
+     Khớp theo Môn + số "Bài N" + số "Tiết M" (nếu có) + ưu tiên cùng Tuần,
+     rồi chọn giáo án có tên giống nhất (≥0.5) để tránh khớp nhầm. */
+  if(!cands.length){
+    const mon=_normTxt(row.mon), bn=_baiNo(row.bai), tn=_tietNo(row.bai), wk=String(row.tuan||state.week);
+    let pool=all.filter(L=>_normTxt(L.mon)===mon).filter(L=>{
+      if(bn!=null){ const lb=_baiNo(L.bai); if(lb!=null && lb!==bn) return false; }
+      if(tn!=null){ const lt=_tietNo(L.bai); if(lt!=null && lt!==tn) return false; }
+      return true;
+    });
+    const byWk=pool.filter(L=>String(L.tuan)===wk); const search=byWk.length?byWk:pool;
+    let best=null, bestS=0;
+    search.forEach(L=>{ const s=_simTitle(row.bai,L.bai); if(s>bestS){ bestS=s; best=L; } });
+    if(best && bestS>=0.5) cands=[best];
+  }
   if(!cands.length) return null;
   if(cands.length>1){
     const wk=String(row.tuan||state.week);
