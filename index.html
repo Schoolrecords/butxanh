@@ -558,8 +558,20 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 .fb-menu .fb-info{padding:8px 11px;font-size:12px;color:#8a978f;border-bottom:1px solid var(--line);margin-bottom:4px}
 .fb-auth{position:relative}
 @media(max-width:520px){ .fb-btn .fb-name{display:none} .fb-btn{padding:7px 10px} }
-/* Dải nút chọn Tuần 01–35 (Lịch báo giảng) */
-.wk-picker{margin-bottom:14px}
+/* Bộ chọn Tuần (Lịch báo giảng) — bấm để mở bảng chọn, gọn không chiếm chỗ */
+.wk-picker{position:relative;margin-top:6px}
+.wk-sel{display:inline-flex;align-items:center;gap:6px}
+.wk-nav{width:30px;height:30px;border:1px solid var(--line);border-radius:8px;background:#fff;color:#3a4a42;font-size:17px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:.12s}
+.wk-nav:hover{border-color:#bfe7cd;background:#f0f7f3}
+.wk-nav:disabled{opacity:.35;cursor:default;background:#fff}
+.wk-cur{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;cursor:pointer;transition:.12s}
+.wk-cur:hover{border-color:#bfe7cd;background:#f0f7f3}
+.wk-cur .wk-cur-lbl{font-size:14px;font-weight:800;color:var(--green)}
+.wk-cur .wk-cur-rng{font-size:12px;font-weight:600;color:#8a978f}
+.wk-cur .wk-caret{font-size:11px;color:#8a978f;transition:transform .15s}
+.wk-picker.open .wk-caret{transform:rotate(180deg)}
+.wk-pop{position:absolute;top:calc(100% + 6px);left:0;z-index:90;display:none;width:min(540px,88vw);background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.16);padding:12px}
+.wk-picker.open .wk-pop{display:block}
 .wk-pk-label{display:block;font-size:11px;font-weight:800;color:#8a978f;text-transform:uppercase;letter-spacing:.5px;margin:0 2px 8px}
 .wk-btns{display:flex;flex-wrap:wrap;gap:6px}
 .wk-btn{position:relative;min-width:40px;padding:7px 9px;border:1px solid var(--line);border-radius:9px;background:#fff;color:#3a4a42;font-size:13px;font-weight:700;cursor:pointer;transition:.12s}
@@ -567,7 +579,17 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 .wk-btn.active{background:var(--green);color:#fff;border-color:var(--green);box-shadow:0 4px 10px rgba(31,164,92,.28)}
 .wk-btn.has::after{content:"";position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:#27b46d}
 .wk-btn.active.has::after{background:#fff}
-@media(max-width:560px){ .wk-btn{min-width:35px;padding:6px 7px;font-size:12px} }
+@media(max-width:560px){ .wk-btn{min-width:35px;padding:6px 7px;font-size:12px} .wk-cur .wk-cur-rng{display:none} }
+/* Hàng nút tích hợp (Kế hoạch bài dạy) — trải phẳng, bấm để tích chọn */
+.intg-row{display:flex;flex-wrap:wrap;gap:8px;margin:-4px 0 16px}
+.intg-tg{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:#fff;color:#5b6b61;font-size:13px;font-weight:600;cursor:pointer;transition:.12s}
+.intg-tg:hover{border-color:#bfe7cd;background:#f6fbf8}
+.intg-tg .intg-ck{width:16px;height:16px;border:1.6px solid #c4d2ca;border-radius:5px;position:relative;flex:none;transition:.12s}
+.intg-tg .intg-ic{font-size:14px;line-height:1}
+.intg-tg.on{border-color:var(--green);background:#eafaf0;color:#1f7d49}
+.intg-tg.on .intg-ck{background:var(--green);border-color:var(--green)}
+.intg-tg.on .intg-ck::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+@media(max-width:560px){ .intg-tg{padding:7px 11px;font-size:12px} }
 </style>
 <script src="kho-data.js"></script>
 </head>
@@ -776,7 +798,7 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
     <!-- ============ VIEW: LỊCH BÁO GIẢNG ============ -->
     <section class="view" id="v-lich">
       <div class="page-head">
-        <div><h2 class="ph-title">Lịch báo giảng</h2><div class="ph-sub">Mẫu chuẩn Bút Xanh — bám cấu trúc lịch báo giảng tiểu học (A4 dọc)</div></div>
+        <div><h2 class="ph-title">Lịch báo giảng</h2><div class="wk-picker" id="wk-picker"></div></div>
         <div class="ph-actions">
           <input type="file" id="lbg-file" accept=".xlsx" style="display:none" onchange="lbgRead(this)">
           <button class="btn-xs" onclick="downloadScheduleTemplate()">📥 Tải LBG trống về máy</button>
@@ -785,7 +807,6 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
           <button class="btn-xs" onclick="lbgPick()">⤴ Đưa LBG lên</button>
         </div>
       </div>
-      <div class="wk-picker" id="wk-picker"></div>
       <div class="card lbg-card">
         <div class="lbg-title">LỊCH BÁO GIẢNG NĂM HỌC <span id="lbg-year"></span></div>
         <div class="lbg-range" id="lbg-range"></div>
@@ -3646,7 +3667,9 @@ function BX_weekReport(rows){
  * 9) TÍCH HỢP NLS/AI — bộ lọc + chèn ĐÚNG CHỖ (an toàn)
  * ----------------------------------------------------------- */
 var BX_SAFE_NOTE='Nội dung AI dùng ở mức trải nghiệm/nhận biết, giáo viên kiểm soát; không yêu cầu học sinh dùng tài khoản cá nhân hoặc cung cấp thông tin cá nhân.';
-function BX_intgMode(){ var s=el('bx-intg-mode'); return s?s.value:'khdh'; }
+var BX_INTG_DEF={digital:true, ai:false, local:false, hskt:false};
+function BX_intgState(){ try{ var v=JSON.parse(localStorage.getItem('butxanh_intg_toggles')||'null'); return (v&&typeof v==='object'&&!Array.isArray(v))?Object.assign({},BX_INTG_DEF,v):Object.assign({},BX_INTG_DEF); }catch(e){ return Object.assign({},BX_INTG_DEF); } }
+window.BX_toggleIntg=function(k,btn){ var s=BX_intgState(); s[k]=!s[k]; try{localStorage.setItem('butxanh_intg_toggles',JSON.stringify(s));}catch(e){} if(btn)btn.classList.toggle('on',s[k]); if(typeof renderBankSchedule==='function')renderBankSchedule(); };
 function BX_integrationFor(L,row){
   var cp = (row&&(row.cpid||row.curriculum_period_id)) || BX_cpidOfBank(L);
   var ig = cp?BX_intgByCpid(cp):null;
@@ -3658,25 +3681,109 @@ function BX_integrationFor(L,row){
   for(var i=0;i<all.length;i++){ var p=BX_plan().filter(function(x){return x.curriculum_period_id===all[i].curriculum_period_id;})[0]; if(p&&BX_ppctKey({mon:p.subject,khoi:p.grade,ppct:p.period_in_year})===pk) return all[i]; }
   return null;
 }
-/* Có nên chèn theo bộ lọc? */
-function BX_intgActive(ig){
-  var mode=BX_intgMode(); if(!ig||mode==='off') return {d:false,a:false};
-  var d=ig.digital_level>0, a=ig.ai_level>0;
-  if(mode==='digital') return {d:d, a:false};
-  if(mode==='ai') return {d:d, a:a};        // chỉ hữu ích khi a=true
-  return {d:d, a:a};                          // 'khdh' (mặc định) & 'overload'
+/* ----- BỘ SINH TÍCH HỢP THEO QUY TẮC (theo môn/chủ điểm, lớp 5) -----
+ * Ưu tiên dữ liệu ĐÃ DUYỆT trong KHDH (ig theo curriculum_period_id);
+ * tiết chưa có dữ liệu → sinh GỢI Ý theo môn (draft) để GV xem & điều chỉnh. */
+function BX_subjKey(mon){
+  var m=String(mon||'').toLowerCase();
+  if(/tin h/.test(m)) return 'tin';
+  if(/tiếng việt|tieng viet/.test(m)) return 'tv';
+  if(/toán|toan/.test(m)) return 'toan';
+  if(/khoa h/.test(m)) return 'khoa';
+  if(/lịch sử|địa l|lich su|dia l/.test(m)) return 'lsdl';
+  if(/tự nhiên|tnxh/.test(m)) return 'khoa';
+  if(/đạo đức|dao duc/.test(m)) return 'daoduc';
+  if(/âm nhạc|am nhac/.test(m)) return 'amnhac';
+  if(/mĩ thuật|mỹ thuật|mi thuat/.test(m)) return 'mythuat';
+  if(/công nghệ|cong nghe/.test(m)) return 'congnghe';
+  if(/hđtn|hdtn|trải nghiệm|trai nghiem/.test(m)) return 'hdtn';
+  if(/thể chất|the chat|gdtc|thể dục/.test(m)) return 'gdtc';
+  if(/anh|english/.test(m)) return 'anh';
+  return 'other';
 }
-function BX_intgLines(ig){
-  var act=BX_intgActive(ig), out=[];
-  if(act.d){
-    if(ig.suggested_yccd) out.push(['yccd','• (YCCD) '+ig.suggested_yccd]);
-    if(ig.suggested_dodung) out.push(['dodung','• (Đồ dùng) '+ig.suggested_dodung]);
-    if(ig.suggested_activity) out.push(['hoatdong','• (Hoạt động) '+ig.suggested_activity]);
-    if(ig.digital_domain) out.push(['meta','• Miền NLS: '+ig.digital_domain+(ig.digital_competency?(' — '+ig.digital_competency):'')+' (mức '+ig.digital_level+')']);
+var BX_NLS_RULE={
+  tin:    {domain:'Ứng dụng và sáng tạo nội dung số', level:2, act:'HS thực hành thao tác cơ bản trên phần mềm theo hướng dẫn; tạo một sản phẩm số đơn giản.'},
+  tv:     {domain:'Khai thác và xử lí thông tin số', level:1, act:'HS đọc/tra cứu văn bản, hình ảnh số do GV chuẩn bị; chọn lọc thông tin phù hợp nội dung bài.'},
+  toan:   {domain:'Giải quyết vấn đề với hỗ trợ công nghệ', level:1, act:'HS quan sát mô hình/biểu đồ số trực quan; dùng công cụ số đối chiếu lại kết quả tính toán.'},
+  khoa:   {domain:'Khai thác thông tin số', level:1, act:'HS quan sát video/hình ảnh số về hiện tượng đang học; nêu nhận xét, rút ra kết luận.'},
+  lsdl:   {domain:'Khai thác thông tin số', level:1, act:'HS quan sát bản đồ số/tư liệu lịch sử số; khai thác thông tin để trả lời câu hỏi.'},
+  daoduc: {domain:'Ứng xử có văn hoá trên môi trường số', level:1, act:'HS nhận biết hành vi ứng xử đúng/sai khi dùng thiết bị số qua tình huống minh hoạ.'},
+  amnhac: {domain:'Khai thác học liệu số', level:1, act:'HS nghe bản nhạc/bài hát mẫu từ học liệu số; cảm thụ và thể hiện theo.'},
+  mythuat:{domain:'Sáng tạo nội dung số', level:1, act:'HS tham khảo hình ảnh số làm tư liệu; thử công cụ vẽ số đơn giản (với HS khá).'},
+  congnghe:{domain:'Ứng dụng công nghệ', level:1, act:'HS xem hướng dẫn số về quy trình/thao tác; làm theo từng bước an toàn.'},
+  hdtn:   {domain:'Giao tiếp và hợp tác qua môi trường số', level:1, act:'HS tìm hiểu thông tin số phục vụ chủ đề trải nghiệm dưới hướng dẫn của GV.'},
+  gdtc:   {domain:'Khai thác học liệu số', level:1, act:'HS quan sát video kĩ thuật động tác mẫu; tự điều chỉnh khi luyện tập.'},
+  anh:    {domain:'Khai thác học liệu số', level:1, act:'HS nghe phát âm/hội thoại mẫu từ học liệu số; luyện nói theo.'},
+  other:  {domain:'Khai thác thông tin số', level:1, act:'HS khai thác học liệu số do GV chuẩn bị phù hợp nội dung bài.'}
+};
+var BX_AI_RULE={
+  tin: 'Cho HS trải nghiệm công cụ gợi ý thông minh (trợ lí ảo) ở mức nhận biết; GV thao tác và kiểm soát hoàn toàn.',
+  tv:  'GV dùng công cụ AI gợi ý từ ngữ/ý tưởng làm ví dụ minh hoạ; HS quan sát, nhận xét, không tự nhập liệu cá nhân.',
+  toan:'GV minh hoạ công cụ số/AI kiểm tra nhanh kết quả; HS đối chiếu với cách làm của mình.',
+  khoa:'GV dùng AI minh hoạ mô phỏng hiện tượng (nếu có điều kiện); HS quan sát, nêu nhận xét.'
+};
+var BX_LOCAL_RULE={
+  tv:     'Liên hệ bài học với cảnh đẹp, di tích, danh nhân hoặc câu chuyện ở địa phương em; khuyến khích HS kể/giới thiệu bằng lời.',
+  toan:   'Lồng số liệu thực tế của địa phương (dân số, diện tích, giá hàng ở chợ quê…) vào bài toán để HS vận dụng.',
+  khoa:   'Liên hệ kiến thức với hiện tượng, tài nguyên, môi trường và việc bảo vệ thiên nhiên ở địa phương.',
+  lsdl:   'Liên hệ với di tích lịch sử, nhân vật, đặc điểm dân cư – địa lí của tỉnh/huyện nơi HS sinh sống.',
+  daoduc: 'Liên hệ chuẩn mực đạo đức với tấm gương người tốt – việc tốt, phong tục, nếp sống văn hoá ở địa phương.',
+  amnhac: 'Giới thiệu/cho HS nghe một làn điệu dân ca, bài hát gắn với quê hương địa phương.',
+  mythuat:'Hướng HS quan sát, vẽ/tạo hình về cảnh vật, sản vật, lễ hội đặc trưng của quê hương.',
+  congnghe:'Liên hệ với nghề truyền thống, sản phẩm thủ công của địa phương.',
+  hdtn:   'Tổ chức hoạt động tìm hiểu, giữ gìn cảnh quan, di sản, nghề và nét đẹp văn hoá địa phương.',
+  gdtc:   'Giới thiệu trò chơi dân gian, môn thể thao truyền thống của địa phương để HS trải nghiệm.',
+  tin:    'Liên hệ ứng dụng công nghệ trong đời sống, sản xuất tại địa phương.',
+  anh:    'Khuyến khích HS giới thiệu ngắn về quê hương mình bằng vốn từ đã học.',
+  other:  'Liên hệ nội dung bài với thực tiễn, cảnh quan, sản vật và con người ở địa phương.'
+};
+var BX_HSKT_RULE={
+  tv:     'Cho HSKT đọc/viết lượng vừa sức (câu ngắn, phóng to chữ); GV đọc mẫu, cho thêm thời gian; chấp nhận sản phẩm đơn giản hơn.',
+  toan:   'Dùng vật thật, sơ đồ, que tính hỗ trợ; giảm số lượng bài, chia nhỏ từng bước; cho thêm thời gian làm bài.',
+  khoa:   'Tăng trực quan (vật mẫu, hình ảnh lớn); đặt câu hỏi gợi mở đơn giản; cho HSKT nêu lại 1 ý chính.',
+  lsdl:   'Dùng tranh ảnh, bản đồ phóng to; yêu cầu HSKT nhận biết/chỉ ra thay vì trình bày dài.',
+  daoduc: 'Dùng tình huống tranh ảnh trực quan; cho HSKT bày tỏ thái độ bằng cử chỉ/lựa chọn đơn giản.',
+  amnhac: 'Cho HSKT tham gia ở mức phù hợp (vỗ tay theo nhịp, hát một câu); không ép biểu diễn.',
+  mythuat:'Hỗ trợ dụng cụ phù hợp, làm mẫu từng bước; đánh giá theo nỗ lực và sự tiến bộ.',
+  congnghe:'Làm mẫu thao tác chậm, hỗ trợ an toàn; cho HSKT thực hiện phần việc đơn giản.',
+  hdtn:   'Phân công nhiệm vụ vừa sức trong nhóm, có bạn hỗ trợ; ghi nhận sự tham gia.',
+  gdtc:   'Điều chỉnh bài tập/cường độ theo thể trạng; chuẩn bị phương án thay thế an toàn.',
+  tin:    'Hỗ trợ thao tác chuột/bàn phím, làm mẫu chậm; giảm yêu cầu sản phẩm.',
+  anh:    'Giảm lượng từ cần nhớ; ưu tiên nghe – nói đơn giản, dùng hình ảnh hỗ trợ.',
+  other:  'Điều chỉnh yêu cầu cần đạt phù hợp; tăng hỗ trợ trực quan, làm mẫu, đánh giá theo sự tiến bộ.'
+};
+function BX_intgLines(ig, L, row){
+  var s=BX_intgState(), out=[], sk=BX_subjKey(L&&L.mon);
+  // 1) NĂNG LỰC SỐ — ưu tiên dữ liệu KHDH đã duyệt; chưa có → sinh theo môn
+  if(s.digital){
+    if(ig && ig.digital_level>0){
+      if(ig.suggested_yccd) out.push(['yccd','• (YCCD) '+ig.suggested_yccd]);
+      if(ig.suggested_dodung) out.push(['dodung','• (Đồ dùng) '+ig.suggested_dodung]);
+      if(ig.suggested_activity) out.push(['hoatdong','• (Hoạt động) '+ig.suggested_activity]);
+      if(ig.digital_domain) out.push(['meta','• Miền NLS: '+ig.digital_domain+(ig.digital_competency?(' — '+ig.digital_competency):'')+' (mức '+ig.digital_level+')']);
+    } else {
+      var rn=BX_NLS_RULE[sk]||BX_NLS_RULE.other;
+      out.push(['hoatdong','• (Hoạt động NLS) '+rn.act]);
+      out.push(['meta','• Miền NLS: '+rn.domain+' (mức '+rn.level+' — lớp 5: Cơ bản) · gợi ý, GV điều chỉnh']);
+    }
   }
-  if(act.a){
-    if(ig.ai_content) out.push(['hoatdong','• (AI mức '+ig.ai_level+') '+ig.ai_content]);
-    out.push(['safe','⚠ '+(ig.safety_note||BX_SAFE_NOTE)]);
+  // 2) AI — ưu tiên dữ liệu duyệt; chưa có → chỉ sinh cho môn phù hợp, kèm lưu ý an toàn
+  if(s.ai){
+    if(ig && ig.ai_level>0 && ig.ai_content){
+      out.push(['hoatdong','• (AI mức '+ig.ai_level+') '+ig.ai_content]);
+      out.push(['safe','⚠ '+(ig.safety_note||BX_SAFE_NOTE)]);
+    } else if(BX_AI_RULE[sk]){
+      out.push(['hoatdong','• (AI mức 1 — gợi ý) '+BX_AI_RULE[sk]]);
+      out.push(['safe','⚠ '+BX_SAFE_NOTE]);
+    }
+  }
+  // 3) GIÁO DỤC ĐỊA PHƯƠNG
+  if(s.local){
+    out.push(['hoatdong','• (GD địa phương) '+(BX_LOCAL_RULE[sk]||BX_LOCAL_RULE.other)]);
+  }
+  // 4) GIÁO DỤC HSKT (học sinh khuyết tật học hoà nhập)
+  if(s.hskt){
+    out.push(['hoatdong','• (HSKT) '+(BX_HSKT_RULE[sk]||BX_HSKT_RULE.other)]);
   }
   return out;
 }
@@ -3684,20 +3791,20 @@ function BX_intgLines(ig){
 var _bxLBPOrig = _lessonBodyParas;
 window._lessonBodyParas = function(L,row){
   var xml=_bxLBPOrig(L,row);
-  var ig=BX_integrationFor(L,row); if(!ig) return xml;
-  var lines=BX_intgLines(ig); if(!lines.length) return xml;
-  var add = _docP('TÍCH HỢP NĂNG LỰC SỐ / AI (theo KHDH môn học)',{bold:true});
+  var ig=BX_integrationFor(L,row);
+  var lines=BX_intgLines(ig, L, row); if(!lines.length) return xml;
+  var add = _docP('TÍCH HỢP (NLS / AI / GD ĐỊA PHƯƠNG / HSKT)',{bold:true});
   lines.forEach(function(p){ add += _docP(p[1]); });
-  add += _docP('Ghi chú: Nội dung tích hợp NLS/AI gợi ý theo KHDH môn học; giáo viên xem xét điều chỉnh phù hợp đối tượng HS và điều kiện lớp học.',{italic:true});
+  add += _docP('Ghi chú: Nội dung tích hợp gợi ý theo KHDH môn học & lựa chọn của giáo viên; thầy cô xem xét điều chỉnh phù hợp đối tượng HS và điều kiện lớp học.',{italic:true});
   return xml+add;
 };
 /* WRAP bankLessonToText (xem trên màn hình): phụ lục tích hợp có nhãn mục. */
 var _bxBL2T = bankLessonToText;
 window.bankLessonToText = function(L,row){
   var base=_bxBL2T(L,row);
-  var ig=BX_integrationFor(L,row); if(!ig) return base;
-  var lines=BX_intgLines(ig); if(!lines.length) return base;
-  var add=['','— TÍCH HỢP NĂNG LỰC SỐ / AI (theo KHDH, chèn vào đúng mục khi xuất Word) —'];
+  var ig=BX_integrationFor(L,row);
+  var lines=BX_intgLines(ig, L, row); if(!lines.length) return base;
+  var add=['','— TÍCH HỢP (NLS / AI / GD địa phương / HSKT) — chèn vào đúng mục khi xuất Word —'];
   lines.forEach(function(p){ add.push('   '+p[1]); });
   return base+'\n'+add.join('\n');
 };
@@ -3763,18 +3870,23 @@ function BX_injectViews(){
   main.insertAdjacentHTML('beforeend', mapHtml+khdhHtml);
 }
 function BX_injectIntgFilter(){
-  var v=el('v-khbd'); if(!v||el('bx-intg-mode')) return;
-  var bar=document.createElement('div'); bar.className='card'; bar.style.cssText='display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px';
-  bar.innerHTML='<b>🔌 Tích hợp NLS/AI:</b>'+
-    '<select id="bx-intg-mode" onchange="renderBankSchedule()" style="padding:7px 10px;border:1px solid #d6e2da;border-radius:8px">'+
-    '<option value="khdh" selected>Theo KHDH đã duyệt (mặc định)</option>'+
-    '<option value="off">Không tích hợp</option>'+
-    '<option value="digital">Chỉ năng lực số</option>'+
-    '<option value="ai">Có AI thí điểm</option>'+
-    '<option value="overload">Kiểm tra quá tải</option>'+
-    '</select>'+
-    '<span style="font-size:12px;color:#5b6b61">Chỉ chèn nội dung số/AI khi tiết có địa chỉ tích hợp trong KHDH.</span>';
-  v.insertBefore(bar, v.firstChild);
+  var v=el('v-khbd'); if(!v||el('bx-intg-toggles')) return;
+  var head=v.querySelector('.page-head');
+  var s=BX_intgState();
+  var defs=[
+    {k:'digital', label:'Tích hợp Năng lực số',          icon:'💡'},
+    {k:'ai',      label:'Tích hợp AI',                    icon:'🤖'},
+    {k:'local',   label:'Tích hợp giáo dục địa phương',   icon:'🏞️'},
+    {k:'hskt',    label:'Tích hợp giáo dục HSKT',         icon:'🧩'}
+  ];
+  var bar=document.createElement('div'); bar.id='bx-intg-toggles'; bar.className='intg-row';
+  bar.innerHTML=defs.map(function(d){
+    return '<button type="button" class="intg-tg'+(s[d.k]?' on':'')+'" onclick="BX_toggleIntg(\''+d.k+'\',this)" title="Bấm để bật/tắt — chỉ chèn khi tiết có địa chỉ tích hợp trong KHDH">'+
+      '<span class="intg-ck"></span><span class="intg-ic">'+d.icon+'</span>'+d.label+'</button>';
+  }).join('');
+  if(head&&head.nextSibling) v.insertBefore(bar, head.nextSibling);
+  else if(head) v.appendChild(bar);
+  else v.insertBefore(bar, v.firstChild);
 }
 
 /* ----- Render: Bản đồ chương trình (bức tranh tổng thể cho GV) ----- */
@@ -4421,16 +4533,32 @@ window.BX_setWeek=function(w){
   if(typeof BX_renderWeekPicker==='function') BX_renderWeekPicker();
   reRender();
 };
+function BX_wkPad(w){ return w<10?('0'+w):(''+w); }
 window.BX_renderWeekPicker=function(){
   var box=document.getElementById('wk-picker'); if(!box) return;
   var cur=parseInt(state.week,10)||1, map=(typeof loadLBGWeeks==='function')?loadLBGWeeks():{};
+  var d=(typeof BX_weekDates==='function')?BX_weekDates(cur):{from:'',to:''};
   var b='';
   for(var w=1;w<=35;w++){
     var has=map[String(w)]&&map[String(w)].length;
-    b+='<button class="wk-btn'+(w===cur?' active':'')+(has?' has':'')+'" onclick="BX_setWeek('+w+')" title="Tuần '+w+(has?' — đã có LBG':'')+'">'+(w<10?('0'+w):w)+'</button>';
+    b+='<button class="wk-btn'+(w===cur?' active':'')+(has?' has':'')+'" onclick="BX_pickWeek('+w+')" title="Tuần '+w+(has?' — đã có LBG':'')+'">'+BX_wkPad(w)+'</button>';
   }
-  box.innerHTML='<span class="wk-pk-label">Chọn tuần để xem / soạn:</span><div class="wk-btns">'+b+'</div>';
+  box.innerHTML=
+    '<div class="wk-sel">'+
+      '<button class="wk-nav" onclick="BX_stepWeek(-1)" title="Tuần trước"'+(cur<=1?' disabled':'')+'>‹</button>'+
+      '<button class="wk-cur" onclick="BX_toggleWkPop(event)" title="Bấm để chọn tuần">'+
+        '<span class="wk-cur-lbl">Tuần '+BX_wkPad(cur)+'</span>'+
+        '<span class="wk-cur-rng">'+d.from+' – '+d.to+'</span>'+
+        '<span class="wk-caret">▾</span>'+
+      '</button>'+
+      '<button class="wk-nav" onclick="BX_stepWeek(1)" title="Tuần sau"'+(cur>=35?' disabled':'')+'>›</button>'+
+    '</div>'+
+    '<div class="wk-pop"><span class="wk-pk-label">Chọn tuần để xem / soạn:</span><div class="wk-btns">'+b+'</div></div>';
 };
+window.BX_stepWeek=function(delta){ var w=(parseInt(state.week,10)||1)+delta; if(w<1)w=1; if(w>35)w=35; BX_setWeek(w); };
+window.BX_pickWeek=function(w){ var p=document.getElementById('wk-picker'); if(p)p.classList.remove('open'); BX_setWeek(w); };
+window.BX_toggleWkPop=function(e){ if(e){e.preventDefault();e.stopPropagation();} var p=document.getElementById('wk-picker'); if(p)p.classList.toggle('open'); };
+if(!window.__bxWkOutside){ window.__bxWkOutside=true; document.addEventListener('click',function(e){ var p=document.getElementById('wk-picker'); if(p&&p.classList.contains('open')&&!p.contains(e.target)) p.classList.remove('open'); }); }
 /* Nạp lại state từ localStorage rồi render (đồng bộ "mượt", không reload trang) */
 window.BX_reloadFromStorage=function(){
   try{ if(typeof loadKHBD==='function') state.khbd=loadKHBD(); }catch(e){}
