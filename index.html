@@ -2051,6 +2051,9 @@ function _tietNo(s){ const m=/ti[eế]t\s*0*(\d+)/i.exec(s||''); return m?+m[1]:
 function _words(s){ return (s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').split(/[^a-z0-9]+/).filter(Boolean); }
 /* độ giống tên bài (Jaccard trên tập từ) — "số TP" vs "số thập phân" vẫn cao */
 function _simTitle(a,b){ const A=new Set(_words(a)),B=new Set(_words(b)); if(!A.size||!B.size) return 0; let it=0; A.forEach(x=>{if(B.has(x))it++;}); return it/(A.size+B.size-it); }
+/* độ "chứa trong" (overlap coefficient) — tên ngắn ở lịch (vd "Luyện tập về danh từ…")
+   nằm trong tên kho dài (vd "Bài 01: … – Tiết 2: LUYỆN TỪ VÀ CÂU – LUYỆN TẬP VỀ DANH TỪ…") vẫn ≈1 */
+function _simContain(a,b){ const A=new Set(_words(a)),B=new Set(_words(b)); if(!A.size||!B.size) return 0; let it=0; A.forEach(x=>{if(B.has(x))it++;}); return it/Math.min(A.size,B.size); }
 /* dòng tiêu đề tên bài: nếu tên đã có sẵn "Bài N…" thì KHÔNG thêm nhãn "Bài:" (tránh lặp "Bài: Bài 12:") */
 function _baiTitle(bai){ bai=(bai||'').toString().trim(); const n=bai.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(); return /^bai\b/.test(n)?bai:('Bài: '+bai); }
 /* tìm giáo án trong kho khớp 1 tiết của lịch */
@@ -3257,19 +3260,41 @@ function BX_resolveBankMatch(row){
     var byCp=all.filter(function(L){ return BX_cpidOfBank(L)===cp; });
     if(byCp.length>=1) return {status:'ok', lesson:byCp[0], candidates:byCp, via:'cpid'};
   }
-  // 2) Tiết KH/PPCT + môn + khối (định danh ngầm; hỗ trợ học phần "4+5")
+  // 2) Tiết KH/PPCT THẬT (chỉ khớp khi giáo án trong kho CÓ trường period_in_year).
+  //    Kho hiện định danh bằng tuần + tiết-trong-tuần (1..7, lặp mỗi tuần), KHÔNG có period_in_year.
+  //    Nếu lấy 'tiet' làm PPCT thì mọi tiết cùng số (vd tiết 1 của 34 tuần) sẽ gom thành "trùng tên".
+  //    → Bỏ qua bước này khi kho thiếu period_in_year, để rơi xuống khớp theo tên + tuần (chính xác).
   var rowKeys = BX_ppctKeys({mon:row.mon, khoi:row.khoi||state.khoi, ppct:row.ppct||row.period_in_year});
   if(rowKeys.length){
-    var byPpct=all.filter(function(L){ var lk=BX_ppctKeysOfBank(L); return lk.some(function(k){return rowKeys.indexOf(k)>=0;}); });
+    var byPpct=all.filter(function(L){
+      if(L.period_in_year==null || L.period_in_year==='') return false;
+      var lk=BX_ppctKeys({mon:L.mon, khoi:L.khoi||L.lop, ppct:L.period_in_year});
+      return lk.some(function(k){return rowKeys.indexOf(k)>=0;});
+    });
     if(byPpct.length===1) return {status:'ok', lesson:byPpct[0], candidates:byPpct, via:'ppct'};
     if(byPpct.length>1)  return {status:'ambiguous', lesson:null, candidates:byPpct, via:'ppct'};
   }
-  // 3) Fallback: tên bài (tương thích ngược)
+  // 3) Khớp theo tên bài (chuẩn hóa). Khác cách viết → dự phòng: cùng Môn + số "Bài N" + số "Tiết M"
+  //    + ưu tiên cùng Tuần, chọn giáo án trùng từ khóa nhất (overlap≥0.6) ⇒ "Bài 1"≈"Bài 01",
+  //    tên ngắn ở lịch nằm trong tên kho dài vẫn khớp đúng.
   var k=bankKey(row.mon,row.bai);
   var byName=all.filter(function(L){ return bankKey(L.mon,L.bai)===k; });
+  if(!byName.length){
+    var mon=_normTxt(row.mon), bn=_baiNo(row.bai), tn=_tietNo(row.bai), wk0=String(row.tuan||state.week);
+    var pool=all.filter(function(L){ return _normTxt(L.mon)===mon; }).filter(function(L){
+      if(bn!=null){ var lb=_baiNo(L.bai); if(lb!=null && lb!==bn) return false; }
+      if(tn!=null){ var lt=_tietNo(L.bai); if(lt!=null && lt!==tn) return false; }
+      return true;
+    });
+    var byWk0=pool.filter(function(L){ return String(L.tuan)===wk0; });
+    var search=byWk0.length?byWk0:pool;
+    var best=null, bestS=0;
+    search.forEach(function(L){ var s=_simContain(row.bai,L.bai); if(s>bestS){ bestS=s; best=L; } });
+    if(best && bestS>=0.6) byName=[best];
+  }
   if(!byName.length) return {status:'missing', lesson:null, candidates:[]};
   if(byName.length===1) return {status:'ok', lesson:byName[0], candidates:byName, via:'name'};
-  // còn nhiều → thu hẹp theo tuần rồi PPCT
+  // còn nhiều → thu hẹp theo tuần rồi PPCT/tiết
   var wk=String(row.tuan||state.week);
   var byWk=byName.filter(function(L){ return String(L.tuan)===wk; }); if(byWk.length) byName=byWk;
   var ti=String(row.ppct||row.tiet||'');
