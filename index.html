@@ -3287,7 +3287,8 @@ function BX_resolveBankMatch(row){
       return true;
     });
     var byWk0=pool.filter(function(L){ return String(L.tuan)===wk0; });
-    var search=byWk0.length?byWk0:pool;
+    var search=byWk0; // CHỈ khớp dự phòng trong CÙNG TUẦN — không có thì để "Chưa có trong kho",
+                      // tránh vớ nhầm bài cùng "Tiết N" ở tuần khác (thà sót còn hơn khớp sai).
     var best=null, bestS=0;
     search.forEach(function(L){ var s=_simContain(row.bai,L.bai); if(s>bestS){ bestS=s; best=L; } });
     if(best && bestS>=0.6) byName=[best];
