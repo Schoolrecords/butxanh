@@ -443,7 +443,7 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 .kd-tiet{flex:0 0 auto;width:50px;height:50px;border-radius:12px;background:var(--cs,#eef2f0);color:var(--c,#566);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
 .kd-tiet-n{font-size:19px;font-weight:800}
 .kd-tiet-l{font-size:8.5px;font-weight:700;opacity:.75;margin-top:2px;text-transform:uppercase;letter-spacing:.4px}
-.kd-body{min-width:0;flex:1 1 220px}
+.kd-body{min-width:0;flex:1 1 150px}
 .kd-mon{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:var(--c,#566);text-transform:uppercase;letter-spacing:.3px}
 .kd-bai{font-weight:700;font-size:14px;color:var(--ink);margin-top:2px;line-height:1.3}
 .kd-sub{font-size:11.5px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
@@ -452,6 +452,13 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 @media(max-width:760px){
   .kd-card{flex-wrap:wrap}
   .kd-act{width:100%;margin-left:63px;justify-content:flex-start}
+}
+/* LBG: máy tính dùng bảng, điện thoại dùng thẻ theo Thứ (giống KHBD) */
+.lbg-cards{display:none}
+@media(max-width:768px){
+  #v-lich .sched-wrap{display:none}
+  #v-lich .lbg-foot{display:none}
+  .lbg-cards{display:block}
 }
 .bank-tag{padding:9px 12px;border-radius:10px;font-size:13px;background:#eef6f1;border:1px solid #d7e9df;margin-bottom:10px}
 .bank-tag.ok{background:#f0fbf4;border-color:#bfe7cd;color:#136b3b}
@@ -866,6 +873,7 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
             <tbody id="sched-body-full"></tbody>
           </table>
         </div>
+        <div class="lbg-cards" id="lbg-cards"></div>
         <div class="lbg-foot">
           <div class="lf-left">PHÊ DUYỆT CỦA BGH-TTCM</div>
           <div class="lf-right"><div class="lf-place" id="lbg-place"></div><div class="lf-role">GIÁO VIÊN DẠY</div><div class="lf-sign" id="lbg-sign"></div></div>
@@ -880,8 +888,7 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
         <div class="ph-actions"><button class="btn solid" onclick="openWeekKhbdModal()">📦 Tạo KHBD Tuần <span id="khbd-week-btn">12</span></button></div>
       </div>
       <div class="card">
-        <div class="card-head"><h3 style="color:#1B3B6F">📚 Kế hoạch bài dạy theo LBG tuần <span id="khbd-week">12</span></h3></div>
-        <div class="muted-sm" style="margin:-4px 0 12px">Giáo án sắp xếp <b>theo từng ngày trong tuần</b> đúng lịch báo giảng — bấm <b>Tạo KHBD Tuần</b> để gộp cả tuần thành một file Word, hoặc tải lẻ từng tiết bên dưới.</div>
+        <div class="card-head" style="margin-bottom:12px"><h3 style="color:#1B3B6F">📚 Kế hoạch bài dạy theo LBG tuần <span id="khbd-week">12</span></h3></div>
         <div id="khbd-bank-list" class="bk-list"></div>
       </div>
       <div class="card">
@@ -1895,7 +1902,35 @@ function renderFullSchedule(){
     h+=`<td>${r.tiet}</td><td class="bai">${r.mon}</td><td>${r.lop||state.klass}</td><td class="bai">${r.bai}</td><td class="tbdh">${r.tbdh||''}</td>`;
     tr.innerHTML=h; tb.appendChild(tr);
   });
+  renderLbgCards();
   if(window.BX_renderWeekPicker){ try{ window.BX_renderWeekPicker(); }catch(e){} }
+}
+/* Thẻ LBG cho điện thoại — gom theo Thứ (chỉ hiện ở mobile qua CSS) */
+function _lbgCard(r){
+  var m=(typeof monMeta==='function')?monMeta(r.mon):{icon:'📘',c:'#15834A',cs:'#E7F5ED'};
+  var sub=[];
+  if(r.buoi) sub.push(_xe(r.buoi));
+  if((r.tbdh||'').trim()) sub.push('ĐDDH: '+_xe(r.tbdh));
+  return '<div class="kd-card" style="--c:'+m.c+';--cs:'+m.cs+'">'+
+    '<div class="kd-tiet"><span class="kd-tiet-n">'+_xe(String(r.tiet||'–'))+'</span><span class="kd-tiet-l">Tiết</span></div>'+
+    '<div class="kd-body"><div class="kd-mon">'+m.icon+' '+_xe(r.mon||'')+'</div>'+
+      '<div class="kd-bai">'+_xe(r.bai||'')+'</div>'+
+      (sub.length?'<div class="kd-sub">'+sub.join('<span class="kd-dot"></span>')+'</div>':'')+
+    '</div></div>';
+}
+function renderLbgCards(){
+  var box=el('lbg-cards'); if(!box) return;
+  var rows=state.schedule||[];
+  if(!rows.length){ box.innerHTML='<div class="empty-pad">Chưa có lịch báo giảng tuần này.</div>'; return; }
+  var groups=[], map={};
+  rows.forEach(function(r){ var key=(r.day||'?')+'§'+(r.date||''); if(map[key]==null){ map[key]=groups.length; groups.push({day:r.day||'',date:r.date||'',items:[]}); } groups[map[key]].items.push(r); });
+  box.innerHTML='<div class="kd-week">'+groups.map(function(g){
+    return '<div class="kd-day"><div class="kd-dayhead">'+
+      '<span class="kd-daypill">📅 '+_xe(g.day||'—')+'</span>'+
+      (g.date?'<span class="kd-daydate">'+_xe(g.date)+'</span>':'')+
+      '<span class="kd-daycount">'+g.items.length+' tiết</span></div>'+
+      '<div class="kd-cards">'+g.items.map(_lbgCard).join('')+'</div></div>';
+  }).join('')+'</div>';
 }
 
 /* ---------- 8b) XUẤT / TẢI MẪU EXCEL — .XLSX THẬT (OOXML/zip), khổ A4 dọc ----------
@@ -3850,9 +3885,8 @@ function _khbdCardM(r,idx){
     sub='<span class="bk-badge '+L.status+'">'+bankStatusLabel(L.status)+'</span>'+
         (ppct?'<span class="kd-dot"></span>PPCT '+_xe(String(ppct)):'')+
         '<span class="kd-dot"></span>Kho giáo án số';
-    act='<button class="btn-xs" onclick="KHBD_preview('+idx+')">Xem</button>'+
-        '<button class="btn-xs solid" onclick="exportBankWord('+idx+')">Xuất Word</button>'+
-        '<button class="btn-xs" onclick="makePptFromLesson('+idx+')">Tạo PPT</button>';
+    act='<button class="btn-xs solid" onclick="KHBD_preview('+idx+')">Xem</button>'+
+        '<button class="btn-xs" onclick="exportBankWord('+idx+')">Xuất Word</button>';
   } else if(m.status==='ambiguous'){
     cls+=' miss';
     var payload=JSON.stringify(m.candidates.map(function(L){return {bai:L.bai,tuan:L.tuan,period_in_year:L.period_in_year||L.tiet,unit_name:L.unit_name,knowledge_strand:L.knowledge_strand,status:L.status,curriculum_period_id:BX_cpidOfBank(L)};})).replace(/"/g,'&quot;');
