@@ -525,6 +525,10 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 .a4page table.hd th{background:#eef7f1;text-align:center;font-weight:800}
 .a4page table.hd td.gv{width:58%}
 .a4page .dotline{border-bottom:1px dotted #666;height:20px}
+.kho-img{max-width:100%;height:auto;display:block;margin:6px auto;border:1px solid #e3e3e3;border-radius:4px}
+.a4page table.hd td .kho-img{max-width:97%}
+.a4page.editing{outline:2px dashed #0f7a44;outline-offset:4px;background:#fffdf5}
+.a4page.editing:focus{outline:2px solid #0f7a44}
 @media(max-width:560px){
   .kho-prev-scroll{padding:12px 8px}
   .a4page{padding:26px 20px;font-size:14px}
@@ -1054,6 +1058,8 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
     <div class="kho-prev-bar">
       <h3 id="kho-prev-title">Xem trước giáo án</h3>
       <div class="pb-act">
+        <button class="btn-xs" id="kho-prev-edit" style="display:none" onclick="KHBD_edit()">✏️ Sửa</button>
+        <button class="btn-xs solid" id="kho-prev-saveedit" style="display:none" onclick="KHBD_saveEdit()">💾 Lưu</button>
         <button class="btn-xs solid" id="kho-prev-dl">⬇ Tải tiết này (Word)</button>
         <button class="btn-xs pb-close" onclick="closeModal('kho-prev-overlay')">✕ Đóng</button>
       </div>
@@ -1213,12 +1219,12 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 .wx-acts{display:flex;gap:14px;flex-wrap:wrap}
 .wx-acts .btn{font-size:15px;padding:13px 22px;border-radius:13px}
 @media(max-width:640px){.wx-card{flex-direction:column;text-align:center;padding:28px 22px}.wx-mascot{flex-basis:140px;height:150px;width:100%}.wx-acts{justify-content:center}.wx-title{font-size:25px}}
-#preview-overlay{z-index:70;background:rgba(18,28,22,.62);padding:0;align-items:stretch}
-.pv-wrap{display:flex;flex-direction:column;width:100%;min-height:100%}
-.pv-bar{position:sticky;top:0;z-index:2;background:var(--green-dark,#1f6b3a);color:#fff;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 18px;flex-wrap:wrap}
+#preview-overlay{z-index:70;background:rgba(18,28,22,.62);padding:0;align-items:stretch;overflow:hidden}
+.pv-wrap{display:flex;flex-direction:column;width:100%;height:100vh;height:100dvh}
+.pv-bar{flex:0 0 auto;z-index:2;background:var(--green-dark,#1f6b3a);color:#fff;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 18px;flex-wrap:wrap}
 .pv-ttl{font-weight:700;font-size:15px}
 .pv-bar .btn{background:#fff;color:#1f6b3a}.pv-bar .btn.ghost{background:rgba(255,255,255,.16);color:#fff}
-.pv-scroll{flex:1;background:#606b64;padding:22px 10px}
+.pv-scroll{flex:1 1 auto;overflow-y:auto;background:#606b64;padding:22px 10px}
 .a4{width:794px;max-width:100%;min-height:1080px;background:#fff;margin:0 auto 22px;padding:54px 62px;box-shadow:0 4px 22px rgba(0,0,0,.35);font-family:'Times New Roman',Georgia,serif;color:#111;font-size:15px;line-height:1.5;box-sizing:border-box}
 .a4 h1{text-align:center;font-size:17px;margin:0 0 4px;font-weight:700}
 .a4 .a4-meta{text-align:center;margin:2px 0}
@@ -1447,6 +1453,8 @@ function _docP(text,opt){
   const sz=`<w:sz w:val="${(opt.size||13)*2}"/><w:szCs w:val="${(opt.size||13)*2}"/>`;
   const b=opt.bold?'<w:b/>':'', it=opt.italic?'<w:i/>':'', col=opt.color?`<w:color w:val="${opt.color}"/>`:'';
   const jc=opt.center?'<w:jc w:val="center"/>':'';
+  /* Bước này (xuất Word) tạm thay token ảnh bằng nhãn; bước 3 sẽ NHÚNG ảnh thật vào .docx */
+  text=String(text==null?'':text).replace(/〖IMG:[^〗]*〗/g,'【Hình minh hoạ】');
   const run=(text==='')?'':`<w:r><w:rPr>${f}${b}${it}${sz}${col}</w:rPr><w:t xml:space="preserve">${_xe(text)}</w:t></w:r>`;
   return `<w:p><w:pPr>${jc}</w:pPr>${run}</w:p>`;
 }
@@ -1544,7 +1552,9 @@ function downloadKHBD(){
     const L=bankAll().find(x=>x.id===l.bankId);
     if(L && el('khbd-text').value===l.bankPristine){
       const safe=(L.mon||'KHBD').replace(/[^A-Za-zÀ-ỹ0-9]/g,'');
-      _downloadBlob(`KHBD_${safe}_Lop${(l.bankRow&&l.bankRow.lop)||state.klass}.docx`, buildKhbdDocxFromLesson(L,l.bankRow));
+      const fname=`KHBD_${safe}_Lop${(l.bankRow&&l.bankRow.lop)||state.klass}.docx`;
+      if(typeof window.dlLessonImg==='function') window.dlLessonImg(L,l.bankRow,fname);
+      else _downloadBlob(fname, buildKhbdDocxFromLesson(L,l.bankRow));
       return;
     }
   }
@@ -2011,194 +2021,7 @@ function renderKHBDList(){
    - Ghép theo (môn + tên bài) đã chuẩn hóa; cá nhân hóa nhẹ (GV/lớp/tuần/ngày).
    - GV sửa -> lưu BẢN CÁ NHÂN (state.khbd), KHÔNG ghi đè bản gốc trong kho.
    ====================================================================== */
-const LESSON_BANK=[
-  {
-    "id": "TV5-2026-P001",
-    "khoi": 5,
-    "mon": "Tiếng Việt",
-    "tuan": 1,
-    "tiet": 1,
-    "bai": "Đọc: Thanh âm của gió",
-    "yccd": "1. Năng lực đặc thù (Ngôn ngữ – Văn học):\n   - Đọc đúng, đọc diễn cảm bài \"Thanh âm của gió\"; hiểu nội dung, nêu được chi tiết, hình ảnh đẹp trong bài.\n   - Cảm nhận được vẻ đẹp của thiên nhiên và tuổi thơ qua bài đọc.\n2. Năng lực chung: tự học, giao tiếp – hợp tác khi trao đổi nhóm.\n3. Phẩm chất: yêu thiên nhiên, trân trọng kỉ niệm tuổi thơ.",
-    "dodung": "1. Giáo viên: tranh minh họa bài đọc, màn hình trình chiếu.\n2. Học sinh: SGK Tiếng Việt 5 (tập 1).",
-    "hoatdong": [
-      {
-        "ten": "1. Khởi động (5 phút)",
-        "gv": "- Cho HS nghe/nói về âm thanh của gió quen thuộc.\n- Giới thiệu bài đọc.",
-        "hs": "- Chia sẻ cảm nhận về tiếng gió.\n- Vào bài."
-      },
-      {
-        "ten": "2. Khám phá – Luyện đọc & tìm hiểu bài (25 phút)",
-        "gv": "- Đọc mẫu, hướng dẫn chia đoạn, luyện đọc từ khó.\n- Tổ chức đọc nối tiếp đoạn theo nhóm.\n- Nêu câu hỏi tìm hiểu nội dung từng đoạn.\n- Chốt nội dung, ý nghĩa bài đọc.",
-        "hs": "- Luyện đọc từ khó, đọc nối tiếp đoạn.\n- Đọc thầm, trả lời câu hỏi.\n- Trao đổi nhóm, nêu chi tiết yêu thích.\n- Rút ra ý nghĩa bài."
-      },
-      {
-        "ten": "3. Luyện đọc diễn cảm – Củng cố (5 phút)",
-        "gv": "- Hướng dẫn đọc diễn cảm đoạn tiêu biểu.\n- Liên hệ giáo dục tình yêu thiên nhiên.",
-        "hs": "- Luyện đọc diễn cảm.\n- Liên hệ bản thân."
-      }
-    ],
-    "hotro": "- Cho đọc nối tiếp câu trước khi đọc cả đoạn; khen ngợi kịp thời.",
-    "hoanhap": "- Chỉ yêu cầu đọc 1–2 câu/đoạn ngắn, trả lời câu hỏi nhận biết; hỗ trợ đọc mẫu.",
-    "source": "Re-seed theo chương trình 2026-2027",
-    "status": "draft"
-  },
-  {
-    "id": "TV5-2026-P002",
-    "khoi": 5,
-    "mon": "Tiếng Việt",
-    "tuan": 1,
-    "tiet": 2,
-    "bai": "Luyện từ và câu: Luyện tập về danh từ, động từ, tính từ",
-    "yccd": "1. Năng lực đặc thù: nhận biết, phân loại được danh từ, động từ, tính từ; đặt câu có sử dụng các từ loại đã học.\n2. Năng lực chung: tự học, hợp tác nhóm.\n3. Phẩm chất: chăm chỉ, có ý thức dùng từ đúng.",
-    "dodung": "1. Giáo viên: phiếu bài tập, bảng nhóm, màn hình.\n2. Học sinh: SGK Tiếng Việt 5, vở.",
-    "hoatdong": [
-      {
-        "ten": "1. Khởi động (5 phút)",
-        "gv": "- Trò chơi tìm nhanh danh từ/động từ/tính từ.\n- Vào bài.",
-        "hs": "- Nêu nhanh ví dụ từ loại.\n- Vào bài."
-      },
-      {
-        "ten": "2. Luyện tập (25 phút)",
-        "gv": "- Bài 1: xếp các từ vào nhóm danh từ, động từ, tính từ.\n- Bài 2: tìm từ loại trong đoạn văn.\n- Bài 3: đặt câu với từ cho trước.\n- Nhận xét, chốt dấu hiệu nhận biết từ loại.",
-        "hs": "- Xếp từ theo nhóm.\n- Gạch chân từ loại trong đoạn.\n- Đặt câu, đọc trước lớp.\n- Nhận xét, sửa bài."
-      },
-      {
-        "ten": "3. Vận dụng – Củng cố (5 phút)",
-        "gv": "- Liên hệ dùng từ khi viết câu.\n- Chốt bài.",
-        "hs": "- Nêu ví dụ câu có đủ từ loại.\n- Ghi nhớ."
-      }
-    ],
-    "hotro": "- Cung cấp bảng dấu hiệu nhận biết từ loại; gợi ý mẫu câu.",
-    "hoanhap": "- Chỉ yêu cầu nhận biết danh từ chỉ người, vật; hỗ trợ trực tiếp.",
-    "source": "Re-seed theo chương trình 2026-2027",
-    "status": "draft"
-  },
-  {
-    "id": "TV5-2026-P003",
-    "khoi": 5,
-    "mon": "Tiếng Việt",
-    "tuan": 1,
-    "tiet": 3,
-    "bai": "Viết: Tìm hiểu cách viết bài văn kể chuyện sáng tạo",
-    "yccd": "1. Năng lực đặc thù: nhận biết được đặc điểm của bài văn kể chuyện sáng tạo; biết cách thêm chi tiết, lời thoại, suy nghĩ của nhân vật để câu chuyện sinh động.\n2. Năng lực chung: tự học, giải quyết vấn đề và sáng tạo.\n3. Phẩm chất: chăm chỉ, sáng tạo trong diễn đạt.",
-    "dodung": "1. Giáo viên: đoạn văn mẫu, bảng phụ, màn hình.\n2. Học sinh: SGK Tiếng Việt 5, vở.",
-    "hoatdong": [
-      {
-        "ten": "1. Khởi động (5 phút)",
-        "gv": "- Kể nhanh một câu chuyện quen thuộc.\n- Giới thiệu bài.",
-        "hs": "- Kể/nghe câu chuyện.\n- Vào bài."
-      },
-      {
-        "ten": "2. Khám phá cách viết (25 phút)",
-        "gv": "- Cho HS đọc bài/đoạn văn kể chuyện sáng tạo mẫu.\n- Hướng dẫn nhận xét: cách thêm chi tiết, lời thoại, cảm xúc nhân vật.\n- Tổ chức nhóm rút ra cách viết.\n- Chốt ghi nhớ về bài văn kể chuyện sáng tạo.",
-        "hs": "- Đọc đoạn mẫu.\n- Nhận xét chi tiết sáng tạo.\n- Thảo luận nhóm, rút ra cách viết.\n- Ghi nhớ."
-      },
-      {
-        "ten": "3. Vận dụng – Củng cố (5 phút)",
-        "gv": "- Gợi ý chọn câu chuyện sẽ kể sáng tạo.\n- Giao chuẩn bị cho tiết sau.",
-        "hs": "- Chọn ý tưởng câu chuyện.\n- Ghi nhận nhiệm vụ."
-      }
-    ],
-    "hotro": "- Cung cấp sơ đồ gợi ý (mở đầu – diễn biến – kết thúc); nêu câu hỏi dẫn dắt.",
-    "hoanhap": "- Chấp nhận kể lại 1–2 câu hoặc tranh kèm lời chú thích; hỗ trợ trực tiếp.",
-    "source": "Re-seed theo chương trình 2026-2027",
-    "status": "draft"
-  },
-  {
-    "id": "TV5-2026-P004",
-    "khoi": 5,
-    "mon": "Tiếng Việt",
-    "tuan": 1,
-    "tiet": "4+5",
-    "bai": "Đọc: Cánh đồng hoa",
-    "yccd": "1. Năng lực đặc thù: đọc trôi chảy, diễn cảm bài \"Cánh đồng hoa\"; hiểu nội dung, nêu được hình ảnh đẹp và thông điệp của bài.\n2. Năng lực chung: tự học, giao tiếp – hợp tác.\n3. Phẩm chất: yêu thiên nhiên, có ý thức giữ gìn môi trường.",
-    "dodung": "1. Giáo viên: tranh/ảnh cánh đồng hoa, màn hình.\n2. Học sinh: SGK Tiếng Việt 5.",
-    "hoatdong": [
-      {
-        "ten": "1. Khởi động (5 phút)",
-        "gv": "- Cho HS xem tranh cánh đồng hoa, nêu cảm nhận.\n- Giới thiệu bài đọc (học trong 2 tiết).",
-        "hs": "- Quan sát tranh, chia sẻ.\n- Vào bài."
-      },
-      {
-        "ten": "2. Luyện đọc & tìm hiểu bài (45 phút – 2 tiết)",
-        "gv": "- Đọc mẫu, chia đoạn, luyện đọc từ khó.\n- Tổ chức đọc nối tiếp, đọc trong nhóm.\n- Nêu câu hỏi tìm hiểu nội dung, hình ảnh, thông điệp.\n- Hướng dẫn đọc diễn cảm đoạn tiêu biểu.\n- Chốt nội dung, ý nghĩa.",
-        "hs": "- Luyện đọc từ khó, đọc nối tiếp đoạn.\n- Đọc thầm, trả lời câu hỏi.\n- Trao đổi nhóm về hình ảnh đẹp.\n- Luyện đọc diễn cảm.\n- Nêu ý nghĩa bài."
-      },
-      {
-        "ten": "3. Vận dụng – Củng cố (5 phút)",
-        "gv": "- Liên hệ bảo vệ cảnh đẹp thiên nhiên.\n- Chốt bài.",
-        "hs": "- Liên hệ bản thân.\n- Ghi nhớ."
-      }
-    ],
-    "hotro": "- Cho đọc đoạn ngắn, đọc nối tiếp câu; gợi ý câu hỏi nhận biết trước.",
-    "hoanhap": "- Chỉ yêu cầu đọc 1–2 câu và chỉ ra hình ảnh trong tranh; hỗ trợ đọc mẫu.",
-    "source": "Re-seed theo chương trình 2026-2027",
-    "status": "draft"
-  },
-  {
-    "id": "TV5-2026-P006",
-    "khoi": 5,
-    "mon": "Tiếng Việt",
-    "tuan": 1,
-    "tiet": 6,
-    "bai": "Viết: Tìm hiểu cách viết bài văn kể chuyện sáng tạo (tiếp theo)",
-    "yccd": "1. Năng lực đặc thù: tiếp tục nhận biết cách kể chuyện sáng tạo; biết lập ý và lựa chọn chi tiết sáng tạo cho câu chuyện định kể.\n2. Năng lực chung: tự học, giải quyết vấn đề và sáng tạo.\n3. Phẩm chất: chăm chỉ, sáng tạo, trung thực.",
-    "dodung": "1. Giáo viên: bảng phụ, phiếu gợi ý lập ý, màn hình.\n2. Học sinh: SGK Tiếng Việt 5, vở.",
-    "hoatdong": [
-      {
-        "ten": "1. Khởi động (5 phút)",
-        "gv": "- Nhắc lại đặc điểm bài văn kể chuyện sáng tạo.\n- Vào bài.",
-        "hs": "- Nhắc lại kiến thức tiết trước.\n- Vào bài."
-      },
-      {
-        "ten": "2. Luyện tập lập ý (25 phút)",
-        "gv": "- Hướng dẫn HS chọn câu chuyện và xác định chi tiết có thể sáng tạo.\n- Tổ chức lập ý theo sơ đồ.\n- Cho HS chia sẻ ý tưởng trước nhóm/lớp.\n- Nhận xét, góp ý.",
-        "hs": "- Chọn câu chuyện, ghi ý tưởng sáng tạo.\n- Lập ý theo sơ đồ.\n- Chia sẻ, lắng nghe góp ý.\n- Chỉnh sửa ý."
-      },
-      {
-        "ten": "3. Vận dụng – Củng cố (5 phút)",
-        "gv": "- Dặn HS hoàn thiện ý để viết bài.\n- Chốt bài.",
-        "hs": "- Ghi nhận nhiệm vụ.\n- Ghi nhớ."
-      }
-    ],
-    "hotro": "- Cung cấp sơ đồ lập ý và câu hỏi gợi mở; cho thêm thời gian.",
-    "hoanhap": "- Chấp nhận nêu 1–2 ý hoặc vẽ tranh kèm chú thích; hỗ trợ trực tiếp.",
-    "source": "Re-seed theo chương trình 2026-2027",
-    "status": "draft"
-  },
-  {
-    "id": "TV5-2026-P007",
-    "khoi": 5,
-    "mon": "Tiếng Việt",
-    "tuan": 1,
-    "tiet": 7,
-    "bai": "Đọc mở rộng",
-    "yccd": "1. Năng lực đặc thù: tự chọn và đọc được câu chuyện/bài viết về chủ điểm \"Thế giới tuổi thơ\"; chia sẻ được điều thú vị đã đọc.\n2. Năng lực chung: tự học, giao tiếp – hợp tác.\n3. Phẩm chất: yêu thích đọc sách; tôn trọng bản quyền, ghi nguồn tài liệu.",
-    "dodung": "1. Giáo viên: một số sách/truyện phù hợp lứa tuổi, phiếu đọc sách.\n2. Học sinh: sách/truyện tự chuẩn bị.",
-    "hoatdong": [
-      {
-        "ten": "1. Khởi động (5 phút)",
-        "gv": "- Giới thiệu góc đọc và yêu cầu đọc mở rộng.\n- Hướng dẫn ghi phiếu đọc.",
-        "hs": "- Chọn sách/truyện.\n- Nghe hướng dẫn ghi phiếu."
-      },
-      {
-        "ten": "2. Đọc và chia sẻ (25 phút)",
-        "gv": "- Cho HS đọc cá nhân, ghi phiếu đọc (tên sách, tác giả, nội dung yêu thích).\n- Tổ chức chia sẻ nhóm/lớp.\n- Nhắc HS ghi nguồn, không sao chép nhận xét mẫu.",
-        "hs": "- Đọc và ghi phiếu đọc.\n- Chia sẻ điều thú vị đã đọc.\n- Ghi tên sách/nguồn."
-      },
-      {
-        "ten": "3. Củng cố (5 phút)",
-        "gv": "- Khen ngợi, khuyến khích duy trì thói quen đọc.\n- Chốt bài.",
-        "hs": "- Lắng nghe.\n- Ghi nhớ."
-      }
-    ],
-    "hotro": "- Gợi ý sách dễ đọc, ít chữ; hỗ trợ ghi phiếu đọc.",
-    "hoanhap": "- Chấp nhận xem tranh truyện và kể lại 1 chi tiết; hỗ trợ trực tiếp.",
-    "source": "Re-seed theo chương trình 2026-2027",
-    "status": "draft"
-  }
-];
+const LESSON_BANK=[]; // đã xóa toàn bộ tiết Tiếng Việt nháp (14/6/2026) — dùng Kho thật trong kho-data.js
 /* --- chuẩn hóa khóa ghép (bỏ dấu, gộp "tiếp theo"≈"TT") --- */
 function _normTxt(s){
   return (s||'').toString().toLowerCase()
@@ -2318,8 +2141,8 @@ function renderBankSchedule(){
     if(L){ have++;
       return '<div class="bk-row ok"><div class="bk-main"><div class="bk-bai">'+_xe(r.mon)+' — '+_xe(r.bai)+'</div>'+
         '<div class="bk-meta">'+_xe(r.day||'')+' '+_xe(r.date||'')+' · Tiết '+_xe(String(r.tiet||''))+' · <span class="bk-badge '+L.status+'">'+bankStatusLabel(L.status)+'</span> · từ Kho giáo án số</div></div>'+
-        '<div class="bk-act"><button class="btn-xs" onclick="openKHBD('+idx+')">Xem</button>'+
-        '<button class="btn-xs" onclick="openKHBD('+idx+')">Chỉnh sửa</button>'+
+        '<div class="bk-act"><button class="btn-xs" onclick="KHBD_preview('+idx+')">Xem</button>'+
+        '<button class="btn-xs" onclick="KHBD_preview('+idx+')">Chỉnh sửa</button>'+
         '<button class="btn-xs solid" onclick="exportBankWord('+idx+')">Xuất Word</button>'+
         '<button class="btn-xs" onclick="makePptFromLesson('+idx+')">Tạo PPT</button></div></div>';
     }
@@ -2335,7 +2158,9 @@ function renderBankSchedule(){
 function exportBankWord(idx){
   const r=state.schedule[idx], L=findBankLesson(r); if(!L) return;
   const safe=((L.mon||'')+'_'+(L.bai||'')).replace(/[^A-Za-zÀ-ỹ0-9]/g,'').slice(0,40);
-  _downloadBlob('KHBD_'+safe+'_Lop'+(r.lop||state.klass)+'.docx', buildKhbdDocxFromLesson(L,r));
+  const fname='KHBD_'+safe+'_Lop'+(r.lop||state.klass)+'.docx';
+  if(typeof window.dlLessonImg==='function') window.dlLessonImg(L,r,fname);
+  else _downloadBlob(fname, buildKhbdDocxFromLesson(L,r));
 }
 /* Gộp TẤT CẢ giáo án trong tuần (theo lịch báo giảng) thành 1 file Word — mục tiêu lõi của Bút Xanh */
 /* Khung KHBD trống từ 1 tiết trong lịch (khi kho chưa có bài) — để nút "Tạo KHBD Tuần"
@@ -2371,7 +2196,13 @@ function openWeekKhbdModal(){
 function downloadWeekKHBD(){
   const rows=state.schedule||[];
   if(!rows.length){ alert('Tuần '+state.week+' chưa có tiết nào trong thời khoá biểu.'); return; }
-  _downloadBlob(`KHBD_Tuan${state.week}_Lop${state.klass}.docx`, buildWeekKhbdDocx(rows));
+  const fname=`KHBD_Tuan${state.week}_Lop${state.klass}.docx`;
+  /* Ưu tiên bản KÈM ẢNH (DOM->docx); lỗi thì fallback bản chữ */
+  if(typeof window.dlWeekImg==='function' && typeof _weekKhbdItems==='function'){
+    window.dlWeekImg(_weekKhbdItems(), fname);
+  } else {
+    _downloadBlob(fname, buildWeekKhbdDocx(rows));
+  }
   closeModal('week-overlay'); closeModal('preview-overlay');
 }
 /* HTML 1 giáo án dạng trang A4 (mục III = bảng 2 cột) cho trang xem trước */
@@ -2379,7 +2210,9 @@ function lessonPreviewHtml(L,row){
   row=row||{};
   const lop=row.lop||state.klass, tuan=L.tuan||row.tuan||state.week;
   const tiet=row.ppct||row.tiet||L.tiet||'', ngay=_ngayFull(row.date);
-  const esc=_xe, nl=s=>esc(s||'').replace(/\n/g,'<br>');
+  const esc=_xe, _IMGB=(window.KHO_MEDIA_BASE||'kho-media/');
+  const imgify=s=>esc(s==null?'':s).replace(/〖IMG:([^〗]+)〗/g,function(m,p){return '<img class="kho-img" loading="lazy" src="'+_IMGB+esc(p)+'">';});
+  const nl=s=>imgify(s).replace(/\n/g,'<br>');
   let h='<div class="a4">';
   if(L._blank) h+='<div style="background:#fff7e0;border:1px solid #f0d68a;color:#8a6d10;font-size:12px;border-radius:6px;padding:5px 9px;margin-bottom:8px">📝 Khung mẫu trống — tiết này chưa có trong Kho giáo án số; thầy cô soạn nội dung hoặc thêm vào kho.</div>';
   h+='<h1>KẾ HOẠCH BÀI DẠY</h1>';
@@ -3954,7 +3787,7 @@ window.renderBankSchedule=function(){
     if(m.status==='ok'){ have++; var L=m.lesson;
       return '<div class="bk-row ok"><div class="bk-main"><div class="bk-bai">'+_xe(r.mon)+' — '+_xe(r.bai)+'</div>'+
         '<div class="bk-meta">'+meta+' · <span class="bk-badge '+L.status+'">'+bankStatusLabel(L.status)+'</span> · từ Kho giáo án số</div></div>'+
-        '<div class="bk-act"><button class="btn-xs" onclick="openKHBD('+idx+')">Xem</button>'+
+        '<div class="bk-act"><button class="btn-xs" onclick="KHBD_preview('+idx+')">Xem</button>'+
         '<button class="btn-xs solid" onclick="exportBankWord('+idx+')">Xuất Word</button>'+
         '<button class="btn-xs" onclick="makePptFromLesson('+idx+')">Tạo PPT</button></div></div>';
     }
@@ -4628,21 +4461,26 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
   window.KHO_onTuan=function(v){ ST.tuan=parseInt(v,10); renderKhoBrowser(); };
 
   window.KHO_downloadTiet=function(key){
-    var L=findByKey(key); if(!L||typeof buildKhbdDocxFromLesson!=='function') return;
-    _downloadBlob('KHBD_Lop'+L.lop+'_'+safe(L.mon)+'_Tuan'+L._tuan+'_Tiet'+L._tiet+'.docx',
-      buildKhbdDocxFromLesson(L,rowOf(L)));
+    var L=findByKey(key); if(!L) return;
+    var fn='KHBD_Lop'+L.lop+'_'+safe(L.mon)+'_Tuan'+L._tuan+'_Tiet'+L._tiet+'.docx';
+    if(typeof window.dlLessonImg==='function') window.dlLessonImg(L,rowOf(L),fn);
+    else if(typeof buildKhbdDocxFromLesson==='function') _downloadBlob(fn,buildKhbdDocxFromLesson(L,rowOf(L)));
   };
   window.KHO_downloadTuan=function(){
     var rows=lessons().filter(function(L){return L.lop===ST.lop&&L.mon===ST.mon&&L._tuan===ST.tuan;})
                       .sort(function(a,b){return a._tiet-b._tiet;});
-    if(!rows.length||typeof _wrapDocx!=='function'||typeof _lessonBodyParas!=='function') return;
-    var body=rows.map(function(L,i){
-      return (i?'<w:p><w:r><w:br w:type="page"/></w:r></w:p>':'')+_lessonBodyParas(L,rowOf(L));
-    }).join('');
-    _downloadBlob('KHBD_Lop'+ST.lop+'_'+safe(ST.mon)+'_Tuan'+ST.tuan+'.docx', _wrapDocx(body));
+    if(!rows.length) return;
+    var fn='KHBD_Lop'+ST.lop+'_'+safe(ST.mon)+'_Tuan'+ST.tuan+'.docx';
+    if(typeof window.dlWeekImg==='function'){ window.dlWeekImg(rows.map(function(L){return {L:L,r:rowOf(L)};}), fn); return; }
+    if(typeof _wrapDocx!=='function'||typeof _lessonBodyParas!=='function') return;
+    var body=rows.map(function(L,i){return (i?'<w:p><w:r><w:br w:type="page"/></w:r></w:p>':'')+_lessonBodyParas(L,rowOf(L));}).join('');
+    _downloadBlob(fn, _wrapDocx(body));
   };
   /* Dựng giáo án dạng trang A4 (HTML phẳng) — khớp bố cục bản Word */
-  function mline(t){ return esc((t==null?'':String(t)).replace(/\r/g,'')).split('\n').join('<br>'); }
+  var KHO_MEDIA_BASE=(window.KHO_MEDIA_BASE||'kho-media/');   // đổi sang URL Firebase Storage khi lên production
+  function _khoImg(p){ return '<img class="kho-img" loading="lazy" src="'+esc(KHO_MEDIA_BASE+p)+'" alt="Hình minh hoạ trong giáo án">'; }
+  function _richSeg(line){ return String(line).split(/(〖IMG:[^〗]+〗)/).map(function(part){ var m=part.match(/^〖IMG:(.+)〗$/); return m?_khoImg(m[1]):esc(part); }).join(''); }
+  function mline(t){ return String(t==null?'':t).replace(/\r/g,'').split('\n').map(_richSeg).join('<br>'); }
   function para(t){ return '<p>'+mline(t)+'</p>'; }
   function khoLessonToHtml(L,row){
     row=row||{};
@@ -4678,12 +4516,138 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
     if(t) t.textContent='Lớp '+L.lop+' · '+L.mon+' · Tuần '+L._tuan+' · Tiết '+L._tiet+' — '+L.bai;
     if(b){ b.innerHTML=khoLessonToHtml(L,rowOf(L)); b.scrollTop=0; }
     var sc=document.querySelector('#kho-prev-overlay .kho-prev-scroll'); if(sc) sc.scrollTop=0;
-    var dl=document.getElementById('kho-prev-dl'); if(dl) dl.onclick=function(){ KHO_downloadTiet(key); };
+    var dl=document.getElementById('kho-prev-dl'); if(dl){ dl.textContent='⬇ Tải tiết này (Word)'; dl.onclick=function(){ KHO_downloadTiet(key); }; }
+    /* chế độ Kho: ẩn nút Sửa/Lưu (chỉ KHBD mới cho sửa, không đụng bản gốc) */
+    var be=document.getElementById('kho-prev-edit'), bs=document.getElementById('kho-prev-saveedit');
+    if(be) be.style.display='none'; if(bs) bs.style.display='none';
+    var bd=document.getElementById('kho-prev-body'); if(bd){ bd.contentEditable='false'; bd.classList.remove('editing'); }
     var ov=document.getElementById('kho-prev-overlay'); if(ov) ov.classList.add('show');
   };
+  window.khoLessonToHtml=khoLessonToHtml; window.rowOf=rowOf;
 
   /* render lần đầu nếu đang ở view kho */
   try{ if(document.getElementById('v-kho') && document.getElementById('v-kho').classList.contains('active')) renderKhoBrowser(); }catch(e){}
+})();
+</script>
+
+<!-- ====== ENGINE: Xuất Word KÈM ẢNH (DOM .a4page -> .docx) + Modal KHBD xem/sửa/lưu ====== -->
+<script>
+window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
+(function(){
+  /* ----- đọc kích thước ảnh PNG/JPEG ----- */
+  function imgDims(u8){
+    if(u8[0]===0x89&&u8[1]===0x50){var w=(u8[16]<<24|u8[17]<<16|u8[18]<<8|u8[19])>>>0,h=(u8[20]<<24|u8[21]<<16|u8[22]<<8|u8[23])>>>0;return{w:w,h:h};}
+    if(u8[0]===0xFF&&u8[1]===0xD8){var i=2;while(i<u8.length-8){if(u8[i]!==0xFF){i++;continue;}var mk=u8[i+1];if(mk>=0xC0&&mk<=0xCF&&mk!==0xC4&&mk!==0xC8&&mk!==0xCC){return{w:(u8[i+7]<<8)|u8[i+8],h:(u8[i+5]<<8)|u8[i+6]};}var len=(u8[i+2]<<8)|u8[i+3];i+=2+len;}}
+    return{w:300,h:200};
+  }
+  var EMU=9525, MAXCX=3200000;
+  function drawingXml(rId,wpx,hpx,did){
+    var cx=Math.round(wpx*EMU),cy=Math.round(hpx*EMU);
+    if(cx>MAXCX){cy=Math.round(cy*MAXCX/cx);cx=MAXCX;}
+    return '<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="'+cx+'" cy="'+cy+'"/><wp:docPr id="'+did+'" name="img'+did+'"/><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic><pic:nvPicPr><pic:cNvPr id="'+did+'" name="img'+did+'"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="'+rId+'"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="'+cx+'" cy="'+cy+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>';
+  }
+  function xe(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  async function buildImgCtx(srcs){
+    var ctx={map:{},list:[],seq:1,did:1};
+    for(var k=0;k<srcs.length;k++){var src=srcs[k]; if(ctx.map[src])continue;
+      try{ var res=await fetch(src); var ab=await res.arrayBuffer(); var u8=new Uint8Array(ab);
+        var ext=(src.split('?')[0].split('.').pop()||'png').toLowerCase(); if(ext==='jpg')ext='jpeg';
+        var d=imgDims(u8);
+        var o={rId:'rIdImg'+ctx.seq, media:'media/img'+ctx.seq+'.'+ext, ext:ext, data:u8, w:d.w, h:d.h, seq:ctx.seq};
+        ctx.map[src]=o; ctx.list.push(o); ctx.seq++;
+      }catch(e){ ctx.map[src]=null; }
+    }
+    return ctx;
+  }
+  /* ----- DOM .a4page -> body XML ----- */
+  function rpr(o){o=o||{};var s='<w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>';if(o.bold)s+='<w:b/>';s+='<w:sz w:val="'+((o.size||13)*2)+'"/><w:szCs w:val="'+((o.size||13)*2)+'"/></w:rPr>';return s;}
+  function runT(text,o){if(text==='')return'';return '<w:r>'+rpr(o)+'<w:t xml:space="preserve">'+xe(text)+'</w:t></w:r>';}
+  function runImg(ctx,src){var im=ctx.map[src];if(!im)return runT('【Hình minh hoạ】',{});return drawingXml(im.rId,im.w,im.h,ctx.did++);}
+  function inlineRuns(node,ctx,base){var s='';node.childNodes.forEach(function(ch){
+    if(ch.nodeType===3){s+=runT(ch.nodeValue,base);}
+    else if(ch.nodeType===1){var t=ch.tagName.toLowerCase();
+      if(t==='img'){s+=runImg(ctx,ch.getAttribute('src'));}
+      else if(t==='br'){s+='<w:r>'+rpr(base)+'<w:br/></w:r>';}
+      else if(t==='b'||t==='strong'){var b2={size:base.size,bold:true};s+=inlineRuns(ch,ctx,b2);}
+      else{s+=inlineRuns(ch,ctx,base);}
+    }});return s;}
+  function pX(runs,opt){opt=opt||{};return '<w:p><w:pPr>'+(opt.center?'<w:jc w:val="center"/>':'')+'</w:pPr>'+runs+'</w:p>';}
+  function cellX(td,ctx,w){var inner=inlineRuns(td,ctx,{size:12});return '<w:tc><w:tcPr><w:tcW w:w="'+w+'" w:type="dxa"/></w:tcPr>'+pX(inner,{})+'</w:tc>';}
+  function tableX(tbl,ctx){
+    var bd='<w:tblBorders>'+['top','left','bottom','right','insideH','insideV'].map(function(s){return '<w:'+s+' w:val="single" w:sz="4" w:color="000000"/>';}).join('')+'</w:tblBorders>';
+    var trs='';Array.prototype.forEach.call(tbl.querySelectorAll('tr'),function(tr){var c=tr.children;if(!c.length)return;
+      trs+='<w:tr>'+cellX(c[0],ctx,5400)+(c[1]?cellX(c[1],ctx,3954):'<w:tc><w:tcPr><w:tcW w:w="3954" w:type="dxa"/></w:tcPr><w:p/></w:tc>')+'</w:tr>';});
+    return '<w:tbl><w:tblPr><w:tblW w:w="9354" w:type="dxa"/>'+bd+'<w:tblLayout w:type="fixed"/></w:tblPr><w:tblGrid><w:gridCol w:w="5400"/><w:gridCol w:w="3954"/></w:tblGrid>'+trs+'</w:tbl>';
+  }
+  function a4Body(root,ctx){var out='';Array.prototype.forEach.call(root.children,function(node){
+    var cls=node.className||'',tag=node.tagName.toLowerCase();
+    if(tag==='table'){out+=tableX(node,ctx);}
+    else if(/doc-title/.test(cls)){out+=pX(inlineRuns(node,ctx,{bold:true,size:14}),{center:true});}
+    else if(/doc-meta/.test(cls)){out+=pX(inlineRuns(node,ctx,{size:12}),{center:true});}
+    else if(/doc-bai/.test(cls)){out+=pX(inlineRuns(node,ctx,{bold:true}),{center:true});}
+    else if(tag==='h4'){out+=pX(inlineRuns(node,ctx,{bold:true}),{});}
+    else if(/dotline/.test(cls)){out+=pX(runT(new Array(93).join('.'),{}),{});}
+    else if(tag==='p'||tag==='div'){out+=pX(inlineRuns(node,ctx,{}),{});}
+    else{var t=(node.textContent||'').trim();if(t)out+=pX(runT(t,{}),{});}
+  });return out;}
+  function wrapMedia(body,imgs){
+    var enc=new TextEncoder();
+    var NS='xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"';
+    var sect='<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1418"/></w:sectPr>';
+    var doc='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document '+NS+'><w:body>'+body+sect+'</w:body></w:document>';
+    var relImgs=imgs.map(function(im){return '<Relationship Id="'+im.rId+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="'+im.media+'"/>';}).join('');
+    var docRels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'+relImgs+'</Relationships>';
+    var exts={};imgs.forEach(function(im){exts[im.ext]=1;});
+    var ctDef=Object.keys(exts).map(function(e){return '<Default Extension="'+e+'" ContentType="'+(e==='png'?'image/png':'image/jpeg')+'"/>';}).join('');
+    var ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>'+ctDef+'<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>';
+    var styles='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/><w:sz w:val="26"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="120" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults></w:styles>';
+    var rels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>';
+    var files=[{name:'[Content_Types].xml',data:enc.encode(ct)},{name:'_rels/.rels',data:enc.encode(rels)},{name:'word/_rels/document.xml.rels',data:enc.encode(docRels)},{name:'word/styles.xml',data:enc.encode(styles)},{name:'word/document.xml',data:enc.encode(doc)}];
+    imgs.forEach(function(im){files.push({name:'word/'+im.media,data:im.data});});
+    return _zipStore(files);
+  }
+  async function elsToDocxBlob(els){
+    var srcs=[];els.forEach(function(el){Array.prototype.forEach.call(el.querySelectorAll('img'),function(im){var s=im.getAttribute('src');if(s&&srcs.indexOf(s)<0)srcs.push(s);});});
+    var ctx=await buildImgCtx(srcs);
+    var pb='<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+    var body=els.map(function(el,i){return (i?pb:'')+a4Body(el,ctx);}).join('');
+    return wrapMedia(body,ctx.list);
+  }
+  function lessonEl(L,row){var d=document.createElement('div');d.className='a4page';d.style.cssText='position:absolute;left:-99999px;top:0;width:794px';d.innerHTML=window.khoLessonToHtml(L,row||{});document.body.appendChild(d);return d;}
+
+  /* ====== API tải Word có ảnh ====== */
+  window.dlLessonImg=async function(L,row,fname){var el=lessonEl(L,row);try{var blob=await elsToDocxBlob([el]);_downloadBlob(fname,blob);}catch(e){console.error('dlLessonImg',e);try{_downloadBlob(fname,buildKhbdDocxFromLesson(L,row));}catch(e2){alert('Lỗi tạo Word: '+e.message);}}finally{el.remove();}};
+  window.dlWeekImg=async function(items,fname){var els=items.map(function(it){return lessonEl(it.L,it.r);});try{var blob=await elsToDocxBlob(els);_downloadBlob(fname,blob);}catch(e){console.error('dlWeekImg',e);try{_downloadBlob(fname,buildWeekKhbdDocx());}catch(e2){alert('Lỗi tạo Word: '+e.message);}}finally{els.forEach(function(e){e.remove();});}};
+  window.dlElImg=async function(el,fname){try{var blob=await elsToDocxBlob([el]);_downloadBlob(fname,blob);}catch(e){console.error('dlElImg',e);alert('Lỗi tạo Word: '+e.message);}};
+
+  /* ====== Modal KHBD: Xem (như Kho) + Sửa + Lưu ====== */
+  function editKey(L,row){return 'khbd|'+(row.lop||'')+'|'+(L.tuan||row.tuan||'')+'|'+(row.tiet||L.tiet||'')+'|'+(L.mon||'')+'|'+(L.bai||'');}
+  function loadEdits(){try{return JSON.parse(localStorage.getItem('butxanh_khbd_edits')||'{}');}catch(e){return{};}}
+  function saveEditHtml(key,html){var m=loadEdits();m[key]=html;try{localStorage.setItem('butxanh_khbd_edits',JSON.stringify(m));}catch(e){}}
+  function safeName(s){return String(s||'').replace(/[^A-Za-zÀ-ỹ0-9]/g,'').slice(0,40);}
+  var _cur=null;
+  window.KHBD_preview=function(idx){
+    var row=(state.schedule||[])[idx]; if(!row)return;
+    var L=(typeof findBankLesson==='function')?findBankLesson(row):null;
+    if(!L){ if(typeof openKHBD==='function')openKHBD(idx); return; }
+    var key=editKey(L,row); _cur={L:L,row:row,key:key};
+    var t=document.getElementById('kho-prev-title'),b=document.getElementById('kho-prev-body');
+    if(t)t.textContent='KHBD: '+L.mon+' · Tuần '+(L.tuan||row.tuan||'')+' · Tiết '+(row.tiet||L.tiet||'')+' — '+L.bai;
+    var edits=loadEdits();
+    if(b){b.innerHTML=(edits[key]!=null)?edits[key]:window.khoLessonToHtml(L,row);b.contentEditable='false';b.classList.remove('editing');b.scrollTop=0;}
+    var be=document.getElementById('kho-prev-edit'),bs=document.getElementById('kho-prev-saveedit');
+    if(be)be.style.display=''; if(bs)bs.style.display='none';
+    var dl=document.getElementById('kho-prev-dl');
+    if(dl){dl.textContent='⬇ Tải tiết này (Word)';dl.onclick=function(){window.dlElImg(b,'KHBD_'+safeName(L.mon)+'_Tuan'+(L.tuan||row.tuan||'')+'_Lop'+(row.lop||'')+'.docx');};}
+    var sc=document.querySelector('#kho-prev-overlay .kho-prev-scroll'); if(sc)sc.scrollTop=0;
+    var ov=document.getElementById('kho-prev-overlay'); if(ov)ov.classList.add('show');
+  };
+  window.KHBD_edit=function(){var b=document.getElementById('kho-prev-body');if(!b)return;b.contentEditable='true';b.classList.add('editing');b.focus();
+    var be=document.getElementById('kho-prev-edit'),bs=document.getElementById('kho-prev-saveedit');if(be)be.style.display='none';if(bs)bs.style.display='';};
+  window.KHBD_saveEdit=function(){var b=document.getElementById('kho-prev-body');if(!b||!_cur)return;saveEditHtml(_cur.key,b.innerHTML);b.contentEditable='false';b.classList.remove('editing');
+    var be=document.getElementById('kho-prev-edit'),bs=document.getElementById('kho-prev-saveedit');if(bs)bs.style.display='none';if(be)be.style.display='';
+    _bxToast('✅ Đã lưu bản của bạn (hiển thị & tải Word đều theo bản đã sửa).');};
+  function _bxToast(msg){var d=document.createElement('div');d.textContent=msg;d.style.cssText='position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:#1f6b3a;color:#fff;padding:11px 18px;border-radius:10px;z-index:9999;box-shadow:0 6px 20px rgba(0,0,0,.3);font-size:14px';document.body.appendChild(d);setTimeout(function(){d.style.transition='opacity .4s';d.style.opacity='0';setTimeout(function(){d.remove();},450);},2200);}
 })();
 </script>
 
