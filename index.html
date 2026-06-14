@@ -87,7 +87,8 @@ svg{display:block}
 .header h2{font-size:20px;font-weight:700;display:flex;align-items:center;gap:8px;letter-spacing:-.3px}
 .header .role{font-size:13px;color:var(--muted);margin-top:2px}
 .header-right{display:flex;align-items:center;gap:20px}
-.bell{position:relative;color:#5A6C61;display:grid;place-items:center}
+.bell{position:relative;color:#5A6C61;display:grid;place-items:center;background:none;border:0;cursor:pointer;padding:4px;border-radius:50%;transition:.15s}
+.bell:hover{color:var(--green-dark);background:var(--green-soft)}
 .bell .dot{position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;font-size:10px;font-weight:700;min-width:17px;height:17px;border-radius:9px;display:grid;place-items:center;padding:0 4px;border:2px solid #fff}
 .help{display:flex;align-items:center;gap:7px;color:#5A6C61;font-size:13.5px;font-weight:500;cursor:pointer}
 .help:hover{color:var(--green-dark)}
@@ -429,6 +430,29 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 .bk-badge.approved{background:#cfe8ff;color:#0a5aa8}
 .bk-badge.needs-update{background:#ffe0e0;color:#b03636}
 .bk-badge.none{background:#eee;color:#777}
+/* === KHBD: giáo án gom theo Thứ (lịch báo giảng) === */
+.kd-week{display:flex;flex-direction:column;gap:20px}
+.kd-dayhead{display:flex;align-items:center;gap:11px;margin:0 0 11px;padding:0 1px}
+.kd-daypill{display:inline-flex;align-items:center;gap:7px;font-weight:800;font-size:13.5px;color:var(--green-dark);background:var(--green-soft);border:1px solid var(--green-line);padding:6px 14px;border-radius:999px;white-space:nowrap}
+.kd-daydate{font-size:12.5px;color:var(--muted);font-weight:600}
+.kd-daycount{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:700;background:var(--page);border:1px solid var(--line);padding:3px 11px;border-radius:999px;white-space:nowrap}
+.kd-cards{display:flex;flex-direction:column;gap:9px}
+.kd-card{display:flex;align-items:center;gap:13px;padding:11px 14px 11px 11px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--c,#cbd5d0);border-radius:14px;box-shadow:var(--shadow-sm);transition:transform .14s,box-shadow .14s,border-color .14s}
+.kd-card:hover{box-shadow:var(--shadow);border-color:var(--green-line);transform:translateY(-1px)}
+.kd-card.miss{background:#fcfdfc}
+.kd-tiet{flex:0 0 auto;width:50px;height:50px;border-radius:12px;background:var(--cs,#eef2f0);color:var(--c,#566);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.kd-tiet-n{font-size:19px;font-weight:800}
+.kd-tiet-l{font-size:8.5px;font-weight:700;opacity:.75;margin-top:2px;text-transform:uppercase;letter-spacing:.4px}
+.kd-body{min-width:0;flex:1 1 220px}
+.kd-mon{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:var(--c,#566);text-transform:uppercase;letter-spacing:.3px}
+.kd-bai{font-weight:700;font-size:14px;color:var(--ink);margin-top:2px;line-height:1.3}
+.kd-sub{font-size:11.5px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.kd-dot{width:3px;height:3px;border-radius:50%;background:#c8d2cc;flex:0 0 auto}
+.kd-act{display:flex;gap:6px;flex-wrap:wrap;flex:0 0 auto}
+@media(max-width:760px){
+  .kd-card{flex-wrap:wrap}
+  .kd-act{width:100%;margin-left:63px;justify-content:flex-start}
+}
 .bank-tag{padding:9px 12px;border-radius:10px;font-size:13px;background:#eef6f1;border:1px solid #d7e9df;margin-bottom:10px}
 .bank-tag.ok{background:#f0fbf4;border-color:#bfe7cd;color:#136b3b}
 .bank-tag.warn{background:#fff7ea;border-color:#f0dcb0;color:#8a5a00}
@@ -678,7 +702,7 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
         <div class="role">Giáo viên Tiểu học</div>
       </div>
       <div class="header-right">
-        <button class="bell" aria-label="Thông báo"><svg class="icn" style="width:23px;height:23px" viewBox="0 0 24 24"><path d="M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M10.5 21a1.8 1.8 0 003 0"/></svg><span class="dot">3</span></button>
+        <button class="bell" aria-label="Bút Xanh nhắc thầy cô" title="Bút Xanh nhắc thầy cô" onclick="showView('nhac')"><svg class="icn" style="width:23px;height:23px" viewBox="0 0 24 24"><path d="M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M10.5 21a1.8 1.8 0 003 0"/></svg><span class="dot" id="bell-dot">3</span></button>
         <div class="help"><svg class="icn" style="width:18px;height:18px" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 014 1.8c0 1.7-2.5 2-2.5 3.7"/><path d="M12 17.5h.01"/></svg> Hướng dẫn</div>
         <div id="fb-auth" class="fb-auth"></div>
       </div>
@@ -856,8 +880,8 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
         <div class="ph-actions"><button class="btn solid" onclick="openWeekKhbdModal()">📦 Tạo KHBD Tuần <span id="khbd-week-btn">12</span></button></div>
       </div>
       <div class="card">
-        <div class="card-head"><h3>📚 Giáo án theo lịch báo giảng tuần <span id="khbd-week">12</span></h3><span class="muted-sm">Đã có trong kho: <b id="khbd-bank-count">0/0</b> tiết</span></div>
-        <div class="muted-sm" style="margin:-4px 0 10px">Một file Word gồm <b>toàn bộ giáo án trong tuần</b> (theo thứ tự lịch báo giảng), hoặc tải lẻ từng tiết ở danh sách dưới.</div>
+        <div class="card-head"><h3 style="color:#1B3B6F">📚 Kế hoạch bài dạy theo LBG tuần <span id="khbd-week">12</span></h3></div>
+        <div class="muted-sm" style="margin:-4px 0 12px">Giáo án sắp xếp <b>theo từng ngày trong tuần</b> đúng lịch báo giảng — bấm <b>Tạo KHBD Tuần</b> để gộp cả tuần thành một file Word, hoặc tải lẻ từng tiết bên dưới.</div>
         <div id="khbd-bank-list" class="bk-list"></div>
       </div>
       <div class="card">
@@ -1821,6 +1845,16 @@ function showView(v){
   window.scrollTo({top:0});
   const r={dashboard:renderDashboard,lich:renderFullSchedule,khbd:renderKHBDView,kho:renderKho,nhac:renderNhac,hocsinh:renderHocSinh,hoclieu:renderHocLieu,ppt:renderPPTOptions,thongke:renderThongKe,caidat:loadSettings}[v];
   if(r) r();
+  updateBellCount();
+}
+/* Chuông thông báo = số "Bút Xanh nhắc thầy cô" hiện có (bám lịch/HS) */
+function updateBellCount(){
+  try{
+    const d=el('bell-dot'); if(!d) return;
+    const n=(typeof buildReminders==='function')?buildReminders(9).length:0;
+    if(n>0){ d.textContent=n>9?'9+':String(n); d.style.display=''; }
+    else d.style.display='none';
+  }catch(e){}
 }
 document.querySelector('.nav').addEventListener('click',function(e){
   const a=e.target.closest('a[data-view]'); if(!a) return; showView(a.dataset.view);
@@ -2139,28 +2173,27 @@ function serveBankIntoModal(row){
     empty.innerHTML='<div class="mascot" aria-hidden="true"></div>Kho chưa có bài <b>'+_xe(row.bai||'')+'</b>.<br>Bấm <b>📝 Dùng mẫu trống</b> để soạn tay, hoặc <b>✨ Tạo bản nháp</b> (AI hỗ trợ).';
   }
 }
-/* danh sách "Giáo án theo lịch báo giảng" trong view KHBD */
-function renderBankSchedule(){
-  const box=el('khbd-bank-list'); if(!box) return;
-  const rows=state.schedule||[]; let have=0;
-  const html=rows.map((r,idx)=>{
-    const L=findBankLesson(r);
-    if(L){ have++;
-      return '<div class="bk-row ok"><div class="bk-main"><div class="bk-bai">'+_xe(r.mon)+' — '+_xe(r.bai)+'</div>'+
-        '<div class="bk-meta">'+_xe(r.day||'')+' '+_xe(r.date||'')+' · Tiết '+_xe(String(r.tiet||''))+' · <span class="bk-badge '+L.status+'">'+bankStatusLabel(L.status)+'</span> · từ Kho giáo án số</div></div>'+
-        '<div class="bk-act"><button class="btn-xs" onclick="KHBD_preview('+idx+')">Xem</button>'+
-        '<button class="btn-xs" onclick="KHBD_preview('+idx+')">Chỉnh sửa</button>'+
-        '<button class="btn-xs solid" onclick="exportBankWord('+idx+')">Xuất Word</button>'+
-        '<button class="btn-xs" onclick="makePptFromLesson('+idx+')">Tạo PPT</button></div></div>';
-    }
-    return '<div class="bk-row warn"><div class="bk-main"><div class="bk-bai">'+_xe(r.mon)+' — '+_xe(r.bai)+'</div>'+
-      '<div class="bk-meta">'+_xe(r.day||'')+' '+_xe(r.date||'')+' · Tiết '+_xe(String(r.tiet||''))+' · <span class="bk-badge none">Chưa có trong kho</span></div></div>'+
-      '<div class="bk-act"><button class="btn-xs" onclick="showView(\'kho\')">Thêm giáo án</button>'+
-      '<button class="btn-xs" onclick="openKHBD('+idx+')">Dùng AI / mẫu</button></div></div>';
-  }).join('');
-  const cnt=el('khbd-bank-count'); if(cnt) cnt.textContent=have+'/'+rows.length;
-  box.innerHTML=rows.length?html:'<div class="empty-pad">Chưa có lịch báo giảng. Vào mục <b>Lịch báo giảng</b> để tải/nhập lịch tuần.</div>';
+/* màu + biểu tượng theo môn — để màn KHBD bắt mắt, dễ nhận diện môn */
+function monMeta(mon){
+  const n=_normTxt(mon||'');
+  const M=[
+    [/tienganh|nntienganh|anhvan|english/,'🔤','#7C5AC2','#F0EBFA'],
+    [/tiengviet|tviet/,                    '📖','#E0871C','#FCF0DC'],
+    [/toan/,                               '🔢','#2C7BD6','#E7F1FC'],
+    [/khoahoc/,                            '🔬','#1FA45C','#E7F5ED'],
+    [/lichsu|diali|lsdl|lsva/,             '🗺️','#C2410C','#FBE7DC'],
+    [/daoduc/,                             '💗','#DB2777','#FCE4F1'],
+    [/trainghiem|hdtn|hoatdong/,           '🎒','#0EA5A5','#DEF5F4'],
+    [/amnhac/,                             '🎵','#9333EA','#F1E8FB'],
+    [/mithuat|mythuat/,                    '🎨','#DB2777','#FCE4F1'],
+    [/congnghe/,                           '⚙️','#0E7A6B','#DCF2EE'],
+    [/tinhoc/,                             '💻','#2563EB','#E5EEFD'],
+    [/thechat|theduc|gdtc/,                '🤸','#16A34A','#E3F6E9']
+  ];
+  for(const it of M){ if(it[0].test(n)) return {icon:it[1],c:it[2],cs:it[3]}; }
+  return {icon:'📘',c:'#15834A',cs:'#E7F5ED'};
 }
+/* renderBankSchedule + thẻ tiết được định nghĩa ở bản OVERRIDE bên dưới (gom theo Thứ) */
 /* Xuất Word trực tiếp từ kho (không cần mở modal) */
 function exportBankWord(idx){
   const r=state.schedule[idx], L=findBankLesson(r); if(!L) return;
@@ -3807,33 +3840,56 @@ window.BX_checkDupPlan=function(){
   alert('Bảng Xanh phát hiện tên bài trùng (đã định danh bằng PPCT, AN TOÀN):\n\n'+msg+'\n\n→ Hệ thống vẫn phân biệt đúng nhờ mã PPCT.');
 };
 
-/* OVERRIDE renderBankSchedule: 3 trạng thái ok / trùng-tên / thiếu */
+/* 1 thẻ tiết (gom theo Thứ) — 3 trạng thái: ok / trùng-tên / thiếu */
+function _khbdCardM(r,idx){
+  var m=BX_resolveBankMatch(r), meta=monMeta(r.mon);
+  var tiet=r.tiet||'', ppct=r.ppct||r.tiet||'';
+  var style='--c:'+meta.c+';--cs:'+meta.cs;
+  var sub, act, cls='kd-card';
+  if(m.status==='ok'){ var L=m.lesson;
+    sub='<span class="bk-badge '+L.status+'">'+bankStatusLabel(L.status)+'</span>'+
+        (ppct?'<span class="kd-dot"></span>PPCT '+_xe(String(ppct)):'')+
+        '<span class="kd-dot"></span>Kho giáo án số';
+    act='<button class="btn-xs" onclick="KHBD_preview('+idx+')">Xem</button>'+
+        '<button class="btn-xs solid" onclick="exportBankWord('+idx+')">Xuất Word</button>'+
+        '<button class="btn-xs" onclick="makePptFromLesson('+idx+')">Tạo PPT</button>';
+  } else if(m.status==='ambiguous'){
+    cls+=' miss';
+    var payload=JSON.stringify(m.candidates.map(function(L){return {bai:L.bai,tuan:L.tuan,period_in_year:L.period_in_year||L.tiet,unit_name:L.unit_name,knowledge_strand:L.knowledge_strand,status:L.status,curriculum_period_id:BX_cpidOfBank(L)};})).replace(/"/g,'&quot;');
+    sub='<span class="bk-badge none" style="background:#fff3d6;color:#a86a00">Trùng tên — cần xác nhận PPCT</span>'+(ppct?'<span class="kd-dot"></span>PPCT '+_xe(String(ppct)):'');
+    act='<button class="btn-xs solid" onclick=\'BX_openChooserIdx('+idx+', "'+payload+'")\'>Chọn đúng tiết</button>';
+  } else {
+    cls+=' miss';
+    sub='<span class="bk-badge none">Đang cập nhật kho</span>'+(ppct?'<span class="kd-dot"></span>PPCT '+_xe(String(ppct)):'');
+    act='<button class="btn-xs" onclick="showView(\'kho\')">Thêm giáo án</button>'+
+        '<button class="btn-xs" onclick="openKHBD('+idx+')">Dùng AI / mẫu</button>';
+  }
+  return '<div class="'+cls+'" style="'+style+'">'+
+    '<div class="kd-tiet"><span class="kd-tiet-n">'+_xe(String(tiet||'–'))+'</span><span class="kd-tiet-l">Tiết</span></div>'+
+    '<div class="kd-body">'+
+      '<div class="kd-mon">'+meta.icon+' '+_xe(r.mon||'')+'</div>'+
+      '<div class="kd-bai">'+_xe(r.bai||'')+'</div>'+
+      '<div class="kd-sub">'+sub+'</div></div>'+
+    '<div class="kd-act">'+act+'</div></div>';
+}
+/* OVERRIDE renderBankSchedule: gom theo Thứ, 3 trạng thái ok / trùng-tên / thiếu */
 window.renderBankSchedule=function(){
   var box=el('khbd-bank-list'); if(!box) return;
-  var rows=state.schedule||[]; var have=0;
-  var html=rows.map(function(r,idx){
-    var m=BX_resolveBankMatch(r);
-    var meta=_xe(r.day||'')+' '+_xe(r.date||'')+' · Tiết '+_xe(String(r.tiet||''))+(r.ppct?(' · PPCT '+_xe(String(r.ppct))):'');
-    if(m.status==='ok'){ have++; var L=m.lesson;
-      return '<div class="bk-row ok"><div class="bk-main"><div class="bk-bai">'+_xe(r.mon)+' — '+_xe(r.bai)+'</div>'+
-        '<div class="bk-meta">'+meta+' · <span class="bk-badge '+L.status+'">'+bankStatusLabel(L.status)+'</span> · từ Kho giáo án số</div></div>'+
-        '<div class="bk-act"><button class="btn-xs" onclick="KHBD_preview('+idx+')">Xem</button>'+
-        '<button class="btn-xs solid" onclick="exportBankWord('+idx+')">Xuất Word</button>'+
-        '<button class="btn-xs" onclick="makePptFromLesson('+idx+')">Tạo PPT</button></div></div>';
-    }
-    if(m.status==='ambiguous'){
-      var payload=JSON.stringify(m.candidates.map(function(L){return {bai:L.bai,tuan:L.tuan,period_in_year:L.period_in_year||L.tiet,unit_name:L.unit_name,knowledge_strand:L.knowledge_strand,status:L.status,curriculum_period_id:BX_cpidOfBank(L)};})).replace(/"/g,'&quot;');
-      return '<div class="bk-row warn"><div class="bk-main"><div class="bk-bai">'+_xe(r.mon)+' — '+_xe(r.bai)+'</div>'+
-        '<div class="bk-meta">'+meta+' · <span class="bk-badge none" style="background:#fff3d6;color:#a86a00">Trùng tên — cần xác nhận PPCT</span></div></div>'+
-        '<div class="bk-act"><button class="btn-xs solid" onclick=\'BX_openChooserIdx('+idx+', "'+payload+'")\'>Chọn đúng tiết</button></div></div>';
-    }
-    return '<div class="bk-row warn"><div class="bk-main"><div class="bk-bai">'+_xe(r.mon)+' — '+_xe(r.bai)+'</div>'+
-      '<div class="bk-meta">'+meta+' · <span class="bk-badge none">Chưa có trong kho</span></div></div>'+
-      '<div class="bk-act"><button class="btn-xs" onclick="showView(\'kho\')">Thêm giáo án</button>'+
-      '<button class="btn-xs" onclick="openKHBD('+idx+')">Dùng AI / mẫu</button></div></div>';
-  }).join('');
-  var cnt=el('khbd-bank-count'); if(cnt) cnt.textContent=have+'/'+rows.length;
-  box.innerHTML=rows.length?html:'<div class="empty-pad">Chưa có lịch báo giảng. Vào mục <b>Lịch báo giảng</b> để tải/nhập lịch tuần.</div>';
+  var rows=state.schedule||[];
+  if(!rows.length){ box.innerHTML='<div class="empty-pad">Chưa có lịch báo giảng. Vào mục <b>Lịch báo giảng</b> để tải/nhập lịch tuần.</div>'; return; }
+  var groups=[], map={};
+  rows.forEach(function(r,idx){
+    var key=(r.day||'?')+'§'+(r.date||'');
+    if(map[key]==null){ map[key]=groups.length; groups.push({day:r.day||'',date:r.date||'',items:[]}); }
+    groups[map[key]].items.push(idx);
+  });
+  box.innerHTML='<div class="kd-week">'+groups.map(function(g){
+    return '<div class="kd-day"><div class="kd-dayhead">'+
+      '<span class="kd-daypill">📅 '+_xe(g.day||'—')+'</span>'+
+      (g.date?'<span class="kd-daydate">'+_xe(g.date)+'</span>':'')+
+      '<span class="kd-daycount">'+g.items.length+' tiết</span></div>'+
+      '<div class="kd-cards">'+g.items.map(function(i){return _khbdCardM(rows[i],i);}).join('')+'</div></div>';
+  }).join('')+'</div>';
 };
 window.BX_openChooserIdx=function(idx, payloadStr){
   var row=state.schedule[idx]; var cands=[]; try{ cands=JSON.parse(payloadStr.replace(/&quot;/g,'"')); }catch(e){}
