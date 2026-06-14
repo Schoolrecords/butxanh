@@ -4724,7 +4724,7 @@ window.BX_confirm=function(opts,onOk,onCancel){
   };
   /* Khóa đồng bộ — phần chữ (bỏ butxanh_khofiles vì tệp Word nặng, để v2 dùng Storage) */
   var KEYS=['butxanh_profile','butxanh_lbg_weeks','butxanh_lbg_meta','butxanh_khbd','butxanh_hocsinh','butxanh_hoclieu','butxanh_bank'];
-  var auth=null, db=null, user=null, lastPushed=null, loopT=null, busy=false, seeded=false, reloadT=null, curRef=null;
+  var auth=null, db=null, user=null, lastPushed=null, loopT=null, busy=false, seeded=false, reloadT=null, curRef=null, lastVals={};
   var box=document.getElementById('fb-auth');
 
   function gather(){ var o={}; KEYS.forEach(function(k){ var v=localStorage.getItem(k); if(v!=null) o[k]=v; }); return o; }
@@ -4746,19 +4746,40 @@ window.BX_confirm=function(opts,onOk,onCancel){
     box.innerHTML='<button class="fb-btn in" onclick="FBX.toggleMenu(event)">'+ava+'<span class="fb-name">'+esc(name)+'</span><span class="fb-dot '+st+'" title="'+(status==='synced'?'Đã đồng bộ':status==='syncing'?'Đang đồng bộ…':status==='error'?'Lỗi đồng bộ':'')+'"></span></button>'+
       '<div class="fb-menu" id="fb-menu" style="display:none"><div class="fb-info">'+esc(user.email||'')+'<br>'+(status==='synced'?'✓ Đã đồng bộ đám mây':status==='syncing'?'⏳ Đang đồng bộ…':status==='error'?'⚠ Lỗi đồng bộ — kiểm tra mạng':'Đồng bộ đám mây')+'</div>'+
       '<button class="fb-mi" onclick="FBX.syncNow()">↻ Đồng bộ ngay</button>'+
+      '<button class="fb-mi" onclick="FBX.restore()">⟲ Khôi phục bản trước</button>'+
       '<button class="fb-mi" onclick="FBX.logout()">↩ Đăng xuất</button></div>';
+  }
+
+  /* ----- Mốc thời gian sửa theo TỪNG phần (để trộn tự động, giữ bản mới nhất mỗi phần) ----- */
+  function loadTs(){ try{ var t=JSON.parse(localStorage.getItem('butxanh_sync_ts')||'{}'); return (t&&typeof t==='object'&&!Array.isArray(t))?t:{}; }catch(e){ return {}; } }
+  function saveTs(t){ try{ localStorage.setItem('butxanh_sync_ts',JSON.stringify(t)); }catch(e){} }
+  function ensureInitTs(){ var t=loadTs(), ch=false, now=Date.now(); KEYS.forEach(function(k){ if(localStorage.getItem(k)!=null && t[k]==null){ t[k]=now; ch=true; } }); if(ch) saveTs(t); }
+  function snapVals(){ lastVals={}; KEYS.forEach(function(k){ lastVals[k]=localStorage.getItem(k); }); }
+  // Phát hiện phần nào vừa đổi → đóng dấu thời gian phần đó. Trả về true nếu có thay đổi.
+  function stampChanges(){ var t=loadTs(), ch=false, now=Date.now(); KEYS.forEach(function(k){ var v=localStorage.getItem(k); if(v!==lastVals[k]){ lastVals[k]=v; t[k]=now; ch=true; } }); if(ch) saveTs(t); return ch; }
+
+  /* ----- Lưới an toàn: sao lưu cục bộ trước khi áp dữ liệu trộn (để khôi phục được) ----- */
+  function backupLocal(data){
+    try{
+      var arr; try{ arr=JSON.parse(localStorage.getItem('butxanh_sync_bak')||'[]'); }catch(e){ arr=[]; }
+      if(!Array.isArray(arr)) arr=[];
+      arr.unshift({ at:new Date().toLocaleString('vi-VN'), data:data }); arr=arr.slice(0,3);
+      try{ localStorage.setItem('butxanh_sync_bak',JSON.stringify(arr)); }
+      catch(e){ try{ localStorage.setItem('butxanh_sync_bak',JSON.stringify(arr.slice(0,1))); }catch(_){ } }
+    }catch(e){}
   }
 
   function startLoop(){ stopLoop(); loopT=setInterval(function(){
     if(!user||busy||!seeded) return;
-    if(JSON.stringify(gather())!==lastPushed) push();
+    if(stampChanges()) pushCurrent();
   }, 4000); }
   function stopLoop(){ if(loopT){ clearInterval(loopT); loopT=null; } }
 
-  function push(){
+  function pushCurrent(){ pushData(gather(), loadTs()); }
+  function pushData(data, ts){
     if(!db||!user) return; busy=true; setStatus('syncing');
-    var data=gather(), dataStr=JSON.stringify(data);
-    db.ref('users/'+user.uid).set({ data:data, updatedAt:firebase.database.ServerValue.TIMESTAMP, app:'butxanh' })
+    var dataStr=JSON.stringify(data);
+    db.ref('users/'+user.uid).set({ data:data, ts:ts, updatedAt:firebase.database.ServerValue.TIMESTAMP, app:'butxanh' })
       .then(function(){ lastPushed=dataStr; busy=false; setStatus('synced'); })
       .catch(function(e){
         console.warn('[ĐB] push lỗi',e); busy=false; setStatus('error');
@@ -4769,37 +4790,73 @@ window.BX_confirm=function(opts,onOk,onCancel){
         }
       });
   }
-  function localHasLBG(){ try{ var m=JSON.parse(localStorage.getItem('butxanh_lbg_weeks')||'{}'); return m&&Object.keys(m).length>0; }catch(e){ return false; } }
-  function applyCloud(data){
+  function _pj(s,d){ try{ var v=JSON.parse(s); return v==null?d:v; }catch(e){ return d; } }
+  function _vnDate(s){ if(!s||typeof s!=='string') return 0; var m=s.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/); if(!m) return 0; return new Date(+m[3],(+m[2])-1,+m[1]).getTime()||0; }
+  function _khbdTime(it){ if(!it) return 0; var d=_vnDate(it.updated)||_vnDate(it.created); if(d) return d; if(typeof it.id==='string'){ var m=it.id.match(/(\d{10,})/); if(m) return parseInt(m[1],10)||0; } return 0; }
+
+  // Trộn 1 phần dữ liệu → {str,ts}. Mảng (giáo án/học sinh/học liệu/kho) hợp nhất theo id (không mất mục mới);
+  // bản đồ tuần (LBG) hợp nhất theo tuần; phần còn lại lấy bản mới hơn theo mốc thời gian.
+  window.BX_mergeKey=function(key,lstr,cstr,lts,cts){
+    lts=lts||0; cts=cts||0;
+    if(lstr==null&&cstr==null) return null;
+    if(lstr==null) return {str:cstr,ts:cts};
+    if(cstr==null) return {str:lstr,ts:lts};
+    if(lstr===cstr) return {str:lstr,ts:Math.max(lts,cts)};
+    if(key==='butxanh_lbg_weeks'){
+      var lm=_pj(lstr,{}), cm=_pj(cstr,{}); if(!lm||typeof lm!=='object') lm={}; if(!cm||typeof cm!=='object') cm={};
+      var out={}, seen={}, lw=lts>=cts;
+      Object.keys(lm).forEach(function(w){ seen[w]=1; }); Object.keys(cm).forEach(function(w){ seen[w]=1; });
+      Object.keys(seen).forEach(function(w){
+        var hl=Object.prototype.hasOwnProperty.call(lm,w), hc=Object.prototype.hasOwnProperty.call(cm,w);
+        out[w]= (hl&&hc) ? (lw?lm[w]:cm[w]) : (hl?lm[w]:cm[w]);
+      });
+      return {str:JSON.stringify(out),ts:Math.max(lts,cts)};
+    }
+    if(key==='butxanh_khbd'||key==='butxanh_hocsinh'||key==='butxanh_hoclieu'||key==='butxanh_bank'){
+      var la=_pj(lstr,[]), ca=_pj(cstr,[]);
+      if(!Array.isArray(la)||!Array.isArray(ca)) return {str:(lts>=cts?lstr:cstr),ts:Math.max(lts,cts)};
+      var map={}, order=[], isKhbd=(key==='butxanh_khbd'), cloudWins=cts>lts;
+      function take(arr,win){ arr.forEach(function(it){
+        var id=(it&&it.id!=null)?it.id:JSON.stringify(it);
+        if(!(id in map)){ map[id]=it; order.push(id); return; }
+        if(isKhbd){ if(_khbdTime(it)>=_khbdTime(map[id])) map[id]=it; }
+        else if(win){ map[id]=it; }
+      }); }
+      take(la,!cloudWins); take(ca,cloudWins);
+      return {str:JSON.stringify(order.map(function(id){return map[id];})),ts:Math.max(lts,cts)};
+    }
+    return {str:(lts>=cts?lstr:cstr),ts:Math.max(lts,cts)};
+  };
+  // Trộn toàn bộ → {data:{key:str}, ts:{key:ms}}
+  function mergeAll(local,cloud,lts,cts){
+    var data={}, ts={};
+    KEYS.forEach(function(k){
+      var r=window.BX_mergeKey(k, (local&&local[k]!=null)?local[k]:null, (cloud&&cloud[k]!=null)?cloud[k]:null, lts[k], cts[k]);
+      if(r){ data[k]=r.str; ts[k]=r.ts; }
+    });
+    return {data:data, ts:ts};
+  }
+  function applyData(data,ts){
     try{ KEYS.forEach(function(k){ if(data&&data[k]!=null) localStorage.setItem(k,data[k]); else localStorage.removeItem(k); }); }catch(e){}
+    if(ts) saveTs(ts);
     var soft=false;
     if(typeof window.BX_reloadFromStorage==='function'){ try{ window.BX_reloadFromStorage(); soft=true; }catch(e){} }
-    lastPushed=JSON.stringify(gather()); setStatus('synced');
+    snapVals(); lastPushed=JSON.stringify(gather()); setStatus('synced');
     if(!soft){ if(reloadT) clearTimeout(reloadT); reloadT=setTimeout(function(){ try{ location.reload(); }catch(e){} }, 700); }
   }
-  /* Một listener xử lý cả lần đầu (đối chiếu) lẫn cập nhật realtime từ thiết bị khác */
+  /* Một listener xử lý cả lần đầu lẫn cập nhật realtime — TRỘN tự động theo từng phần, giữ bản mới nhất, KHÔNG hỏi. */
   function onCloud(snap){
-    var v=snap.val(), cloud=(v&&v.data)?v.data:null, localStr=JSON.stringify(gather());
-    if(!seeded){
-      seeded=true;
-      if(!cloud){ busy=false; push(); return; }                       // đám mây trống → đẩy local lên
-      if(JSON.stringify(cloud)===localStr){ lastPushed=localStr; busy=false; setStatus('synced'); return; }
-      if(!localHasLBG()){ applyCloud(cloud); return; }                 // máy chưa có LBG thật → lấy đám mây (im lặng)
-      if(typeof window.BX_confirm==='function'){
-        window.BX_confirm({
-          title:'Bút Xanh thông báo!',
-          html:'Đã có dữ liệu mới cần cập nhật lên thiết bị này!<br>Bấm <b>OK</b> để đồng ý, nếu không bấm <b>Hủy</b>.',
-          okText:'OK', cancelText:'Hủy'
-        }, function(){ applyCloud(cloud); }, function(){ busy=false; push(); });
-      } else {
-        if(confirm('Đã có dữ liệu mới cần cập nhật lên thiết bị này! Bấm OK để đồng ý, nếu không bấm Hủy.')){ applyCloud(cloud); } else { busy=false; push(); }
-      }
-      return;
-    }
-    // realtime: thiết bị khác vừa cập nhật → nếu khác dữ liệu hiện tại thì lấy về
-    if(cloud && JSON.stringify(cloud)!==localStr){ setStatus('syncing'); applyCloud(cloud); }
+    var v=snap.val(), cloud=(v&&v.data)?v.data:null, cts=(v&&v.ts&&typeof v.ts==='object')?v.ts:{};
+    seeded=true;
+    var local=gather(), lts=loadTs();
+    if(!cloud){ busy=false; pushData(local,lts); return; }   // đám mây trống → đẩy local lên
+    var m=mergeAll(local,cloud,lts,cts), mStr=JSON.stringify(m.data), lStr=JSON.stringify(local), cStr=JSON.stringify(cloud);
+    if(mStr!==lStr){ backupLocal(local); applyData(m.data,m.ts); }   // máy có phần cũ hơn → cập nhật mượt (im lặng)
+    else if(m.ts){ saveTs(m.ts); }
+    if(mStr!==cStr){ pushData(m.data,m.ts); }                        // đám mây thiếu phần nào → đẩy bản trộn lên
+    else { lastPushed=cStr; busy=false; setStatus('synced'); }
   }
-  function startSync(){ if(!db||!user) return; seeded=false; busy=true; setStatus('syncing'); curRef=db.ref('users/'+user.uid); curRef.on('value', onCloud); }
+  function startSync(){ if(!db||!user) return; seeded=false; busy=true; setStatus('syncing'); ensureInitTs(); snapVals(); curRef=db.ref('users/'+user.uid); curRef.on('value', onCloud); }
   function stopSync(){ if(curRef){ try{ curRef.off('value', onCloud); }catch(e){} curRef=null; } }
   function onAuth(u){
     user=u; renderUI();
@@ -4820,7 +4877,21 @@ window.BX_confirm=function(opts,onOk,onCancel){
       });
     },
     logout:function(){ if(auth) auth.signOut(); var m=document.getElementById('fb-menu'); if(m)m.style.display='none'; },
-    syncNow:function(){ var m=document.getElementById('fb-menu'); if(m)m.style.display='none'; if(user) push(); },
+    syncNow:function(){ var m=document.getElementById('fb-menu'); if(m)m.style.display='none'; if(user) pushCurrent(); },
+    restore:function(){
+      var mm=document.getElementById('fb-menu'); if(mm)mm.style.display='none';
+      var arr; try{ arr=JSON.parse(localStorage.getItem('butxanh_sync_bak')||'[]'); }catch(e){ arr=[]; }
+      if(!arr||!arr.length){ alert('Chưa có bản sao lưu tự động nào để khôi phục.'); return; }
+      var b=arr[0], doRestore=function(){
+        var d=b.data||{}, now=Date.now(), t=loadTs();
+        KEYS.forEach(function(k){ if(d[k]!=null) localStorage.setItem(k,d[k]); else localStorage.removeItem(k); t[k]=now; });
+        saveTs(t); snapVals();
+        if(typeof window.BX_reloadFromStorage==='function'){ try{ window.BX_reloadFromStorage(); }catch(e){ location.reload(); } } else { location.reload(); }
+        if(user) pushCurrent();
+      };
+      if(typeof window.BX_confirm==='function'){ window.BX_confirm({title:'Khôi phục dữ liệu',html:'Khôi phục về bản đã lưu lúc <b>'+esc(b.at||'')+'</b>?<br>Bản này sẽ thay cho dữ liệu hiện trên máy và được đồng bộ lên đám mây.',okText:'Khôi phục',cancelText:'Hủy'}, doRestore); }
+      else if(confirm('Khôi phục về bản lúc '+(b.at||'')+'?')){ doRestore(); }
+    },
     toggleMenu:function(ev){ ev.stopPropagation(); var m=document.getElementById('fb-menu'); if(m) m.style.display=(m.style.display==='none')?'block':'none'; }
   };
   document.addEventListener('click',function(){ var m=document.getElementById('fb-menu'); if(m) m.style.display='none'; });
