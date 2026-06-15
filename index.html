@@ -705,7 +705,7 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
     <!-- Header -->
     <div class="header">
       <div>
-        <h2>Xin chào, <span id="hdr-greet">Cô Phan Thị Thương</span> <span aria-hidden="true">🌼</span></h2>
+        <h2>Xin chào, <span id="hdr-greet">Bút Xanh</span> <span aria-hidden="true">🌼</span></h2>
         <div class="role">Giáo viên Tiểu học</div>
       </div>
       <div class="header-right">
@@ -1040,7 +1040,7 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
         <div class="card-head"><h3>Hồ sơ giáo viên</h3></div>
         <div class="form-grid">
           <label class="fld"><span>Xưng hô</span><select id="set-xung"><option value="Cô">Cô</option><option value="Thầy">Thầy</option></select></label>
-          <label class="fld"><span>Họ và tên</span><input id="set-name" value="Phan Thị Thương"></label>
+          <label class="fld"><span>Họ và tên</span><input id="set-name" value="Bút Xanh"></label>
           <label class="fld"><span>Cấp / Khối</span><input id="set-grade" value="Giáo viên Tiểu học — Lớp 5A"></label>
           <label class="fld"><span>Trường</span><input id="set-school" placeholder="Tên trường…"></label>
           <label class="fld"><span>Năm học</span><input id="set-year" value="2026 - 2027"></label>
@@ -1309,7 +1309,7 @@ window.KHO_MEDIA_BASE = 'https://storage.googleapis.com/but-xanh.firebasestorage
 
 /* ---------- 1) DỮ LIỆU LỊCH (mẫu chuẩn Tuần 12 - Lớp 5A) ---------- */
 const state = {
-  klass:"5A", week:"1", khoi:"5", gvcn:"Phan Thị Thương", xung:"Cô",
+  klass:"5A", week:"1", khoi:"5", gvcn:"Bút Xanh", xung:"Cô",
   year:"2026 - 2027", from:"07/09/2026", to:"13/09/2026", place:"Nghệ An",
   schedule:[
     {day:"Thứ 2", date:"11/11", buoi:"Sáng", tiet:1, mon:"HĐTN",            ppct:12,  bai:"Sinh hoạt dưới cờ",                    tbdh:"Loa, micro"},
@@ -2976,9 +2976,9 @@ function syncStaticLabels(){
   const w=state.week,l=state.klass;
   [['dash-week1',w],['dash-week2',w],['tk-week',w],['khbd-week',w],['khbd-week-btn',w],['tk-lop',l]].forEach(p=>{const e=el(p[0]); if(e)e.textContent=p[1];});
   const full=(state.gvcn||'').trim(), short=full.split(/\s+/).slice(-1)[0]||full;
-  const xg=(state.xung||'Cô').trim();
-  const g=el('hdr-greet'); if(g&&full) g.textContent=xg+' '+full;
-  const pn=el('hdr-pname'); if(pn&&full) pn.textContent=xg+' '+short;
+  const xg=(full==='Bút Xanh')?'':(state.xung||'Cô').trim();   // mặc định thương hiệu "Bút Xanh" -> không thêm "Cô/Thầy"
+  const g=el('hdr-greet'); if(g&&full) g.textContent=(xg?xg+' ':'')+full;
+  const pn=el('hdr-pname'); if(pn&&full) pn.textContent=(xg?xg+' ':'')+short;
 }
 el('set-save').onclick=function(){
   const p={xung:el('set-xung').value,name:el('set-name').value,grade:el('set-grade').value,school:el('set-school').value,year:el('set-year').value,team:el('set-team').value,
