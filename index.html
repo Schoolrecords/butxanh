@@ -964,8 +964,6 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
         </div>
       </div>
       <div class="toolbar" id="hs-toolbar" style="display:none">
-        <label class="search"><svg class="icn" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-          <input id="hs-search" placeholder="Tìm theo tên, môn, ghi chú…" oninput="renderHocSinh()"></label>
         <div class="pills" id="hs-pills"></div>
       </div>
       <div class="card-grid" id="hocsinh-list"></div>
@@ -1056,6 +1054,18 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
           <button class="btn" id="set-save">Lưu hồ sơ</button>
           <span class="muted-sm" id="set-msg"></span>
         </div>
+      </div>
+      <div class="card set-card">
+        <div class="card-head"><h3>Mục IV — Điều chỉnh, hỗ trợ học sinh (trong KHBD)</h3></div>
+        <div class="muted-sm" style="margin-bottom:10px">Chọn cách hiển thị <b>Mục IV</b> trong giáo án. Chế độ <b>Tự động</b> sẽ lấy nội dung từ menu <b>“Học sinh cần hỗ trợ”</b> theo đúng <b>môn của tiết</b> để cá nhân hóa, và <b>tự ẩn Mục IV</b> nếu lớp chưa khai báo nhóm nào — tránh khung trống thừa, không phù hợp.</div>
+        <label class="fld" style="max-width:520px"><span>Chế độ Mục IV</span>
+          <select id="set-khbd-iv" onchange="bxSaveKhbdIV()">
+            <option value="auto">Tự động theo lớp (khuyến nghị) — có dữ liệu thì hiện, không thì ẩn</option>
+            <option value="always">Luôn hiện khung trống (giáo viên tự điền tay)</option>
+            <option value="never">Luôn ẩn Mục IV</option>
+          </select>
+        </label>
+        <div class="muted-sm" style="margin-top:8px">💡 Khai báo nhóm HS cần hỗ trợ / khuyết tật hòa nhập ở menu <b>“Học sinh cần hỗ trợ”</b> để Mục IV tự điền nội dung của lớp mình.</div>
       </div>
       <div class="card set-card">
         <div class="card-head"><h3>Sao lưu &amp; Khôi phục dữ liệu</h3></div>
@@ -1309,7 +1319,7 @@ window.KHO_MEDIA_BASE = 'https://storage.googleapis.com/but-xanh.firebasestorage
 
 /* ---------- 1) DỮ LIỆU LỊCH (mẫu chuẩn Tuần 12 - Lớp 5A) ---------- */
 const state = {
-  klass:"5A", week:"1", khoi:"5", gvcn:"Bút Xanh", xung:"Cô",
+  klass:"5A", week:"1", khoi:"5", gvcn:"Bút Xanh", xung:"Cô", khbdIV:"auto",
   year:"2026 - 2027", from:"07/09/2026", to:"13/09/2026", place:"Nghệ An",
   schedule:[
     {day:"Thứ 2", date:"11/11", buoi:"Sáng", tiet:1, mon:"HĐTN",            ppct:12,  bai:"Sinh hoạt dưới cờ",                    tbdh:"Loa, micro"},
@@ -1532,6 +1542,47 @@ function hoatdongTableXml(blocks){
   const rows=(blocks||[]).map(b=>'<w:tr>'+_docTc(_cellParas(b.gv,b.ten),5400)+_docTc(_cellParas(b.hs),3954)+'</w:tr>').join('');
   return `<w:tbl><w:tblPr><w:tblW w:w="9354" w:type="dxa"/>${bd}<w:tblLayout w:type="fixed"/></w:tblPr><w:tblGrid><w:gridCol w:w="5400"/><w:gridCol w:w="3954"/></w:tblGrid>${hdr}${rows}</w:tbl>`;
 }
+/* ===== Mục I (tô đậm tiêu đề con) & Mục IV (cá nhân hóa + ẩn/hiện theo chế độ) ===== */
+/* Chuẩn hóa chuỗi để so khớp môn (bỏ dấu, đ->d, chỉ giữ chữ-số) */
+function _bxNorm(s){ return String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').replace(/[^a-z0-9]/g,''); }
+/* Dòng tiêu đề con trong YCCD cần tô đậm: "1. Năng lực đặc thù", "2. Năng lực chung", "3. Phẩm chất" */
+function _isYccdHead(s){ return /^\s*\d+\s*[.\)]\s*(năng lực|phẩm chất)/i.test(String(s||'')); }
+/* Một dòng mô tả 1 nhóm HS (cá nhân hóa từ menu "Học sinh cần hỗ trợ") */
+function _bxIVGroupLine(g){
+  var head=((g.name||'').trim())||hsTypeLabel(g), meta=[];
+  if(g.count) meta.push(g.count+' HS');
+  if(hsIsKT(g)){
+    if(g.disability) meta.push(hsDisabilityLabel(g.disability));
+    if(g.severity) meta.push('mức '+(hsSeverityLabel(g.severity)||'').toLowerCase());
+  }
+  var pre=head+(meta.length?(' ('+meta.join(', ')+')'):''), notes=(g.notes||[]).join('; ');
+  return '- '+pre+(notes?(': '+notes):'');
+}
+/* Trả {show, items:[{label,lines[]}], note} cho mục IV theo chế độ state.khbdIV (auto|always|never) */
+function bxSectionIV(L){
+  var mode=(typeof state!=='undefined'&&state&&state.khbdIV)||'auto';
+  if(mode==='never') return {show:false, items:[], note:false};
+  var nm=_bxNorm(L&&L.mon), support=[], kt=[];
+  ((typeof state!=='undefined'&&state&&state.hocsinh)||[]).forEach(function(g){
+    var gs=_bxNorm(g.subject);
+    if(gs && gs!==nm) return;            /* GV khai môn khác -> bỏ; rỗng = áp dụng mọi môn */
+    if(hsIsKT(g)) kt.push(g); else support.push(g);
+  });
+  var l1=support.map(_bxIVGroupLine); if(!l1.length && L && L.hotro)   l1=[L.hotro];
+  var l2=kt.map(_bxIVGroupLine);      if(!l2.length && L && L.hoanhap) l2=[L.hoanhap];
+  if(mode==='always'){
+    return {show:true, note:kt.length>0, items:[
+      {label:'Học sinh cần hỗ trợ:', lines:l1.length?l1:['…']},
+      {label:'Học sinh khuyết tật học hòa nhập:', lines:l2.length?l2:['…']}
+    ]};
+  }
+  /* auto: chỉ hiện mục con có nội dung; không có gì -> ẩn cả mục IV */
+  var items=[];
+  if(l1.length) items.push({label:'Học sinh cần hỗ trợ:', lines:l1});
+  if(l2.length) items.push({label:'Học sinh khuyết tật học hòa nhập:', lines:l2});
+  return {show:items.length>0, items:items, note:kt.length>0};
+}
+var _BX_KT_NOTE='Ghi chú: HS khuyết tật học hòa nhập được đánh giá theo Kế hoạch giáo dục cá nhân (KHGDCN) — TT 03/2018/TT-BGDĐT, TT 27/2020/TT-BGDĐT.';
 /* ----- Dựng KHBD .docx trực tiếp từ 1 giáo án trong kho (mục III = bảng) ----- */
 function _lessonBodyParas(L,row){
   row=row||{};
@@ -1544,7 +1595,7 @@ function _lessonBodyParas(L,row){
   if(ngay) P.push(_docP('Ngày dạy: '+ngay,{center:true,size:12}));
   P.push(_docP(''));
   P.push(_docP('I. YÊU CẦU CẦN ĐẠT',{bold:true}));
-  (L.yccd||'(Thầy cô đối chiếu SGK/SGV)').split('\n').forEach(l=>P.push(_docP(l)));
+  (L.yccd||'(Thầy cô đối chiếu SGK/SGV)').split('\n').forEach(l=>P.push(_docP(l, _isYccdHead(l)?{bold:true}:undefined)));
   P.push(_docP(''));
   P.push(_docP('II. ĐỒ DÙNG DẠY HỌC',{bold:true}));
   (L.dodung||'…').split('\n').forEach(l=>P.push(_docP(l)));
@@ -1553,13 +1604,17 @@ function _lessonBodyParas(L,row){
   if(Array.isArray(L.hoatdong)) P.push(hoatdongTableXml(L.hoatdong));
   else (L.hoatdong||'…').split('\n').forEach(l=>P.push(_docP(l)));
   P.push(_docP(''));
-  P.push(_docP('IV. ĐIỀU CHỈNH, HỖ TRỢ HỌC SINH',{bold:true}));
-  P.push(_docP('1. Học sinh cần hỗ trợ:',{bold:true,size:12}));
-  (L.hotro||'…').split('\n').forEach(l=>P.push(_docP(l)));
-  P.push(_docP('2. Học sinh khuyết tật học hòa nhập:',{bold:true,size:12}));
-  (L.hoanhap||'…').split('\n').forEach(l=>P.push(_docP(l)));
-  P.push(_docP(''));
-  P.push(_docP('V. ĐIỀU CHỈNH SAU BÀI DẠY',{bold:true}));
+  const iv=bxSectionIV(L);
+  if(iv.show){
+    P.push(_docP('IV. ĐIỀU CHỈNH, HỖ TRỢ HỌC SINH',{bold:true}));
+    iv.items.forEach((it,i)=>{
+      P.push(_docP((iv.items.length>1?((i+1)+'. '):'')+it.label,{bold:true,size:12}));
+      it.lines.forEach(s=>String(s).split('\n').forEach(l=>P.push(_docP(l))));
+    });
+    if(iv.note) P.push(_docP(_BX_KT_NOTE,{italic:true,size:11,color:'5b6b61'}));
+    P.push(_docP(''));
+  }
+  P.push(_docP((iv.show?'V':'IV')+'. ĐIỀU CHỈNH SAU BÀI DẠY',{bold:true}));
   P.push(_docP(_DOTLINE)); P.push(_docP(_DOTLINE));
   return P.join('');
 }
@@ -2183,10 +2238,14 @@ function bankLessonToText(L,row){
   ln.push('III. CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU');
   if(Array.isArray(L.hoatdong)) ln.push('(Khi xuất Word sẽ trình bày dạng bảng 2 cột: Hoạt động của GV | Hoạt động của HS)');
   ln.push(hoatdongToText(L.hoatdong)); ln.push('');
-  ln.push('IV. ĐIỀU CHỈNH, HỖ TRỢ HỌC SINH');
-  ln.push('1. Học sinh cần hỗ trợ:'); ln.push(L.hotro||'…');
-  ln.push('2. Học sinh khuyết tật học hòa nhập:'); ln.push(L.hoanhap||'…'); ln.push('');
-  ln.push('V. ĐIỀU CHỈNH SAU BÀI DẠY'); ln.push(_DOTLINE); ln.push(_DOTLINE);
+  const iv=bxSectionIV(L);
+  if(iv.show){
+    ln.push('IV. ĐIỀU CHỈNH, HỖ TRỢ HỌC SINH');
+    iv.items.forEach((it,i)=>{ ln.push((iv.items.length>1?((i+1)+'. '):'')+it.label); it.lines.forEach(s=>ln.push(s)); });
+    if(iv.note) ln.push(_BX_KT_NOTE);
+    ln.push('');
+  }
+  ln.push((iv.show?'V':'IV')+'. ĐIỀU CHỈNH SAU BÀI DẠY'); ln.push(_DOTLINE); ln.push(_DOTLINE);
   return ln.join('\n');
 }
 /* rót giáo án vào modal soạn KHBD (gọi cuối openKHBD) */
@@ -2288,13 +2347,14 @@ function lessonPreviewHtml(L,row){
   const esc=_xe, _IMGB=(window.KHO_MEDIA_BASE||'kho-media/');
   const imgify=s=>esc(s==null?'':s).replace(/〖IMG:([^〗]+)〗/g,function(m,p){return '<img class="kho-img" loading="lazy" src="'+_IMGB+esc(p)+'">';});
   const nl=s=>imgify(s).replace(/\n/g,'<br>');
+  const nlYccd=s=>String(s==null?'':s).split('\n').map(line=>{const seg=imgify(line); return _isYccdHead(line)?('<b>'+seg+'</b>'):seg;}).join('<br>');
   let h='<div class="a4">';
   if(L._blank) h+='<div style="background:#fff7e0;border:1px solid #f0d68a;color:#8a6d10;font-size:12px;border-radius:6px;padding:5px 9px;margin-bottom:8px">📝 Khung mẫu trống — tiết này chưa có trong Kho giáo án số; thầy cô soạn nội dung hoặc thêm vào kho.</div>';
   h+='<h1>KẾ HOẠCH BÀI DẠY</h1>';
   h+='<div class="a4-meta">Môn: '+esc(L.mon)+' &nbsp;|&nbsp; Lớp: '+esc(lop)+' &nbsp;|&nbsp; Tuần: '+esc(tuan)+(tiet?(' &nbsp;|&nbsp; Tiết (PPCT): '+esc(tiet)):'')+'</div>';
   h+='<div class="a4-bai">'+esc(_baiTitle(L.bai))+'</div>';
   if(ngay) h+='<div class="a4-meta">Ngày dạy: '+esc(ngay)+'</div>';
-  h+='<h2>I. YÊU CẦU CẦN ĐẠT</h2><div class="ln">'+nl(L.yccd||'(Thầy cô đối chiếu SGK/SGV)')+'</div>';
+  h+='<h2>I. YÊU CẦU CẦN ĐẠT</h2><div class="ln">'+nlYccd(L.yccd||'(Thầy cô đối chiếu SGK/SGV)')+'</div>';
   h+='<h2>II. ĐỒ DÙNG DẠY HỌC</h2><div class="ln">'+nl(L.dodung||'…')+'</div>';
   h+='<h2>III. CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU</h2>';
   if(Array.isArray(L.hoatdong)){
@@ -2302,10 +2362,13 @@ function lessonPreviewHtml(L,row){
     L.hoatdong.forEach(b=>{ h+='<tr><td><b>'+esc(b.ten||'')+'</b><br>'+nl(b.gv)+'</td><td>'+nl(b.hs)+'</td></tr>'; });
     h+='</tbody></table>';
   }else h+='<div class="ln">'+nl(L.hoatdong||'…')+'</div>';
-  h+='<h2>IV. ĐIỀU CHỈNH, HỖ TRỢ HỌC SINH</h2>';
-  h+='<div class="ln"><b>1. Học sinh cần hỗ trợ:</b><br>'+nl(L.hotro||'…')+'</div>';
-  h+='<div class="ln" style="margin-top:6px"><b>2. Học sinh khuyết tật học hòa nhập:</b><br>'+nl(L.hoanhap||'…')+'</div>';
-  h+='<h2>V. ĐIỀU CHỈNH SAU BÀI DẠY</h2><div class="ln dots">'+_DOTLINE+'<br>'+_DOTLINE+'</div>';
+  const iv=bxSectionIV(L);
+  if(iv.show){
+    h+='<h2>IV. ĐIỀU CHỈNH, HỖ TRỢ HỌC SINH</h2>';
+    iv.items.forEach((it,i)=>{ h+='<div class="ln"'+(i?' style="margin-top:6px"':'')+'><b>'+(iv.items.length>1?((i+1)+'. '):'')+esc(it.label)+'</b><br>'+it.lines.map(nl).join('<br>')+'</div>'; });
+    if(iv.note) h+='<div class="ln" style="font-style:italic;font-size:12px;color:#5b6b61">'+esc(_BX_KT_NOTE)+'</div>';
+  }
+  h+='<h2>'+(iv.show?'V':'IV')+'. ĐIỀU CHỈNH SAU BÀI DẠY</h2><div class="ln dots">'+_DOTLINE+'<br>'+_DOTLINE+'</div>';
   h+='</div>';
   return h;
 }
@@ -2612,11 +2675,14 @@ function hsDisabilityLabel(k){ const x=HS_DISABILITY.find(d=>d.key===k); return 
 function hsSeverityLabel(k){ const x=HS_SEVERITY.find(d=>d.key===k); return x?x.label:''; }
 function hsIepLabel(k){ const x=HS_IEP.find(d=>d.key===k); return x?x.label:'Chưa có'; }
 function hsIsKT(s){ return s.type==='hoa-nhap'; }
-const HS_SEED=[
-  {id:'h1',type:'doc-cham',count:3,subject:'Tiếng Việt',name:'Nhóm đọc chậm',notes:['Cho đọc nối tiếp câu trước khi đọc cả đoạn.','Gọi đọc đoạn ngắn, khen ngợi kịp thời.','Tiết Tiếng Việt thứ 3 cần hỗ trợ thêm.']},
-  {id:'h2',type:'cung-co',count:2,subject:'Toán',name:'Cần củng cố Toán',notes:['Bài nhiều bước giải — chuẩn bị bảng phụ.','Dành thêm thời gian trình bày cách làm.','Ghép cặp với bạn khá để hỗ trợ.']},
-  {id:'h3',type:'mo-rong',count:4,subject:'',name:'Hoàn thành tốt — mở rộng',notes:['Giao thêm bài nâng cao, câu hỏi mở.','Khuyến khích hỗ trợ bạn trong nhóm.','Mở rộng vận dụng vào thực tế.']},
-  {id:'h4',type:'hoa-nhap',count:1,subject:'',name:'Em N.V.A — học hòa nhập',disability:'trltue',severity:'nhe',iep:'dang',notes:['Giao nhiệm vụ ngắn, chia nhỏ từng bước, làm mẫu trước.','Đánh giá theo KHGDCN, ưu tiên động viên sự tiến bộ.','Sắp xếp chỗ ngồi gần GV, ghép bạn hỗ trợ.']}
+/* MẶC ĐỊNH TRỐNG — tính năng tùy chọn. KHÔNG seed demo (tránh chèn nhầm vào Mục IV giáo án của GV chưa khai báo). */
+const HS_SEED=[];
+/* Nhóm ví dụ mẫu — chỉ nạp khi GV bấm "Xem ví dụ mẫu" (opt-in) để hình dung cách dùng. */
+const HS_SAMPLE=[
+  {type:'doc-cham',count:3,subject:'Tiếng Việt',name:'Nhóm đọc chậm',notes:['Cho đọc nối tiếp câu trước khi đọc cả đoạn.','Gọi đọc đoạn ngắn, khen ngợi kịp thời.','Tiết Tiếng Việt thứ 3 cần hỗ trợ thêm.']},
+  {type:'cung-co',count:2,subject:'Toán',name:'Cần củng cố Toán',notes:['Bài nhiều bước giải — chuẩn bị bảng phụ.','Dành thêm thời gian trình bày cách làm.','Ghép cặp với bạn khá để hỗ trợ.']},
+  {type:'mo-rong',count:4,subject:'',name:'Hoàn thành tốt — mở rộng',notes:['Giao thêm bài nâng cao, câu hỏi mở.','Khuyến khích hỗ trợ bạn trong nhóm.','Mở rộng vận dụng vào thực tế.']},
+  {type:'hoa-nhap',count:1,subject:'',name:'Em N.V.A — học hòa nhập (ví dụ)',disability:'trltue',severity:'nhe',iep:'dang',notes:['Giao nhiệm vụ ngắn, chia nhỏ từng bước, làm mẫu trước.','Đánh giá theo KHGDCN, ưu tiên động viên sự tiến bộ.','Sắp xếp chỗ ngồi gần GV, ghép bạn hỗ trợ.']}
 ];
 function loadHocSinh(){ try{const v=JSON.parse(localStorage.getItem('butxanh_hocsinh')); return Array.isArray(v)?v:HS_SEED.slice();}catch(e){return HS_SEED.slice();} }
 function persistHocSinh(){ try{localStorage.setItem('butxanh_hocsinh',JSON.stringify(state.hocsinh));}catch(e){} }
@@ -2630,15 +2696,32 @@ function setHsFilter(v){ hsFilter=v; renderHocSinh(); }
 function renderHocSinh(){
   const box=el('hocsinh-list'); if(!box)return;
   const tb=el('hs-toolbar');
-  if(!state.hocsinh.length){ if(tb)tb.style.display='none'; if(el('hs-count'))el('hs-count').textContent=''; box.innerHTML='<div class="empty-pad">Chưa có nhóm nào. Bấm <b>➕ Thêm nhóm/HS</b> để tạo.</div>'; return; }
-  if(tb)tb.style.display='';
+  if(!state.hocsinh.length){
+    if(tb)tb.style.display='none'; if(el('hs-count'))el('hs-count').textContent='';
+    box.innerHTML='<div class="card" style="text-align:center;padding:34px 22px;max-width:680px;margin:0 auto">'+
+      '<div style="font-size:46px;line-height:1;margin-bottom:6px">🧩</div>'+
+      '<h3 style="margin:0 0 8px">Lớp chưa khai báo học sinh cần hỗ trợ</h3>'+
+      '<p style="margin:0 auto 8px;max-width:548px;color:#42514a">Đây là <b>tính năng tùy chọn</b>. Nếu lớp có HS cần quan tâm thêm (đọc chậm, cần củng cố, khuyết tật học hòa nhập…), hãy thêm vào đây — Bút Xanh sẽ tự đưa phần <b>điều chỉnh phù hợp</b> vào <b>Mục IV</b> của giáo án theo đúng môn.</p>'+
+      '<p style="margin:0 auto 16px;max-width:548px;font-size:13px;color:#7a8a82">Lớp không có đối tượng này? Cứ để trống — <b>Mục IV sẽ tự ẩn</b> khỏi giáo án (có thể đổi ở Cài đặt → Mục IV).</p>'+
+      '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">'+
+        '<button class="btn" onclick="openHsEditor()">➕ Thêm nhóm/HS</button>'+
+        '<button class="btn ghost" onclick="loadHsSample()">👁 Xem ví dụ mẫu</button>'+
+      '</div></div>';
+    return;
+  }
   const totalHS=state.hocsinh.reduce((a,x)=>a+(parseInt(x.count,10)||0),0);
   if(el('hs-count')) el('hs-count').textContent=`· ${state.hocsinh.length} nhóm${totalHS?(' · ~'+totalHS+' HS'):''}`;
-  const labels=['Tất cả'].concat([...new Set(state.hocsinh.map(hsTypeLabel))]);
-  if(!labels.includes(hsFilter)) hsFilter='Tất cả';
-  const pb=el('hs-pills'); if(pb) pb.innerHTML=labels.map(l=>`<span class="pill ${l===hsFilter?'active':''}" data-l="${l}" onclick="setHsFilter(this.dataset.l)">${l}</span>`).join('');
-  const q=((el('hs-search')&&el('hs-search').value)||'').toLowerCase().trim();
-  const list=state.hocsinh.filter(s=> (hsFilter==='Tất cả'||hsTypeLabel(s)===hsFilter) && (!q || (s.name+' '+(s.subject||'')+' '+(s.notes||[]).join(' ')).toLowerCase().includes(q)));
+  /* Bộ lọc pills chỉ hiện khi có >2 loại nhóm (ít hơn thì nhìn phát thấy, không cần lọc) */
+  const types=[...new Set(state.hocsinh.map(hsTypeLabel))];
+  const showPills=types.length>2;
+  if(tb) tb.style.display=showPills?'':'none';
+  const pb=el('hs-pills');
+  if(showPills){
+    const labels=['Tất cả'].concat(types);
+    if(!labels.includes(hsFilter)) hsFilter='Tất cả';
+    if(pb) pb.innerHTML=labels.map(l=>`<span class="pill ${l===hsFilter?'active':''}" data-l="${l}" onclick="setHsFilter(this.dataset.l)">${l}</span>`).join('');
+  } else { hsFilter='Tất cả'; if(pb) pb.innerHTML=''; }
+  const list=state.hocsinh.filter(s=> hsFilter==='Tất cả'||hsTypeLabel(s)===hsFilter);
   if(!list.length){ box.innerHTML='<div class="empty-pad">Không tìm thấy nhóm phù hợp.</div>'; return; }
   box.innerHTML=list.map(s=>{const c=HS_COLORS[hsColorKey(s)]||HS_COLORS.blue;
     return `<div class="card hs-card"><div class="hs-top"><span class="hs-ic" style="background:${c[1]};color:${c[0]};font-size:20px">${hsIconOf(s)}</span><div style="flex:1"><div class="hs-name">${s.name}</div><div class="hs-tag">${hsTypeLabel(s)}${hsTag(s)?(' · '+hsTag(s)):''}</div>${hsKtInfoHtml(s)}</div></div><ul>${(s.notes||[]).map(n=>`<li>${n}</li>`).join('')}</ul><div class="kact" style="margin-top:10px"><button class="btn-xs" onclick="openHsEditor('${s.id}')">Sửa</button><button class="btn-xs danger" onclick="delHs('${s.id}')">Xoá</button></div></div>`;
@@ -2684,6 +2767,13 @@ function saveHs(){
   if(el('v-dashboard')&&el('v-dashboard').classList.contains('active')) renderDashboard();
 }
 function delHs(id){ if(!confirm('Xoá nhóm này?'))return; state.hocsinh=state.hocsinh.filter(x=>x.id!==id); persistHocSinh(); renderHocSinh(); }
+/* Nạp nhóm ví dụ mẫu (opt-in) — để GV hình dung cách dùng; có thể sửa/xoá tự do */
+function loadHsSample(){
+  if(state.hocsinh.length && !confirm('Nạp các nhóm ví dụ mẫu để xem cách hoạt động? (Không xoá nhóm hiện có)')) return;
+  HS_SAMPLE.forEach((s,i)=>state.hocsinh.push(Object.assign({},s,{notes:(s.notes||[]).slice(),id:'h'+Date.now()+'_'+i})));
+  persistHocSinh(); renderHocSinh();
+  if(el('v-dashboard')&&el('v-dashboard').classList.contains('active')) renderDashboard();
+}
 /* Đóng gói .docx dùng chung (cho danh sách HS) */
 function _docxBlob(bodyParas){
   const sect='<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1418" w:header="709" w:footer="709" w:gutter="0"/></w:sectPr>';
@@ -2954,6 +3044,14 @@ function loadSettings(){
   if(p.team)el('set-team').value=p.team;
   el('set-class').value=p.klass||state.klass; el('set-week').value=p.week||state.week; el('set-place').value=p.place||state.place;
   el('set-from').value=p.from||state.from; el('set-to').value=p.to||state.to;
+  if(el('set-khbd-iv')) el('set-khbd-iv').value=p.khbdIV||state.khbdIV||'auto';
+}
+/* Đổi chế độ Mục IV: lưu ngay + làm mới bản xem KHBD nếu đang mở */
+function bxSaveKhbdIV(){
+  var v=(el('set-khbd-iv')&&el('set-khbd-iv').value)||'auto'; state.khbdIV=v;
+  var p={}; try{p=JSON.parse(localStorage.getItem('butxanh_profile')||'{}');}catch(e){}
+  p.khbdIV=v; try{localStorage.setItem('butxanh_profile',JSON.stringify(p));}catch(e){}
+  try{ if(el('v-khbd')&&el('v-khbd').classList.contains('active')&&typeof renderKHBDView==='function') renderKHBDView(); }catch(e){}
 }
 function applyProfile(p){
   if(!p||typeof p!=='object') return;
@@ -2965,6 +3063,7 @@ function applyProfile(p){
   if(p.place) state.place=p.place;
   if(p.from) state.from=p.from;
   if(p.to) state.to=p.to;
+  if(p.khbdIV) state.khbdIV=p.khbdIV;
   const m=String(state.klass).match(/\d+/); if(m) state.khoi=m[0];
   syncStaticLabels();
   renderSchedule();
@@ -2983,7 +3082,8 @@ function syncStaticLabels(){
 el('set-save').onclick=function(){
   const p={xung:el('set-xung').value,name:el('set-name').value,grade:el('set-grade').value,school:el('set-school').value,year:el('set-year').value,team:el('set-team').value,
     klass:el('set-class').value.trim(),week:el('set-week').value.trim(),place:el('set-place').value.trim(),
-    from:el('set-from').value.trim(),to:el('set-to').value.trim()};
+    from:el('set-from').value.trim(),to:el('set-to').value.trim(),
+    khbdIV:(el('set-khbd-iv')&&el('set-khbd-iv').value)||state.khbdIV||'auto'};
   try{localStorage.setItem('butxanh_profile',JSON.stringify(p));}catch(e){}
   applyProfile(p);
   el('set-msg').textContent='✓ Đã lưu hồ sơ — đã cập nhật lịch, KHBD, thống kê.'; setTimeout(()=>el('set-msg').textContent='',2800);
@@ -4602,6 +4702,8 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
   function _richSeg(line){ return String(line).split(/(〖IMG:[^〗]+〗)/).map(function(part){ var m=part.match(/^〖IMG:(.+)〗$/); return m?_khoImg(m[1]):esc(part); }).join(''); }
   function mline(t){ return String(t==null?'':t).replace(/\r/g,'').split('\n').map(_richSeg).join('<br>'); }
   function para(t){ return '<p>'+mline(t)+'</p>'; }
+  /* Mục I: tô đậm các tiêu đề con "1. Năng lực đặc thù / 2. Năng lực chung / 3. Phẩm chất" */
+  function yccdPara(t){ return '<p>'+String(t==null?'':t).replace(/\r/g,'').split('\n').map(function(line){ var seg=_richSeg(line); return _isYccdHead(line)?('<b>'+seg+'</b>'):seg; }).join('<br>')+'</p>'; }
   function khoLessonToHtml(L,row){
     row=row||{};
     var lop=row.lop||L.lop||'', tuan=L._tuan||L.tuan||row.tuan||'', tiet=row.ppct||row.tiet||L._tiet||L.tiet||'';
@@ -4611,7 +4713,7 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
     H.push('<div class="doc-meta">Môn: '+esc(L.mon)+'&nbsp;&nbsp;|&nbsp;&nbsp;Lớp: '+esc(lop)+'&nbsp;&nbsp;|&nbsp;&nbsp;Tuần: '+esc(tuan)+(tiet?('&nbsp;&nbsp;|&nbsp;&nbsp;Tiết (PPCT): '+esc(tiet)):'')+'</div>');
     H.push('<div class="doc-bai">'+esc(_baiTitle(L.bai))+'</div>');
     if(ngay) H.push('<div class="doc-meta" style="font-size:13.5px">Ngày dạy: '+esc(ngay)+'</div>');
-    H.push('<h4>I. YÊU CẦU CẦN ĐẠT</h4>'+para(L.yccd||'(Thầy cô đối chiếu SGK/SGV)'));
+    H.push('<h4>I. YÊU CẦU CẦN ĐẠT</h4>'+yccdPara(L.yccd||'(Thầy cô đối chiếu SGK/SGV)'));
     H.push('<h4>II. ĐỒ DÙNG DẠY HỌC</h4>'+para(L.dodung||'…'));
     H.push('<h4>III. CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU</h4>');
     if(Array.isArray(L.hoatdong)){
@@ -4623,10 +4725,16 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
     } else {
       H.push(para(L.hoatdong||'…'));
     }
-    H.push('<h4>IV. ĐIỀU CHỈNH, HỖ TRỢ HỌC SINH</h4>');
-    H.push('<p><b>1. Học sinh cần hỗ trợ:</b></p>'+para(L.hotro||'…'));
-    H.push('<p><b>2. Học sinh khuyết tật học hòa nhập:</b></p>'+para(L.hoanhap||'…'));
-    H.push('<h4>V. ĐIỀU CHỈNH SAU BÀI DẠY</h4>');
+    var iv=(typeof bxSectionIV==='function')?bxSectionIV(L):{show:true,items:[{label:'Học sinh cần hỗ trợ:',lines:[L.hotro||'…']},{label:'Học sinh khuyết tật học hòa nhập:',lines:[L.hoanhap||'…']}],note:false};
+    if(iv.show){
+      H.push('<h4>IV. ĐIỀU CHỈNH, HỖ TRỢ HỌC SINH</h4>');
+      iv.items.forEach(function(it,i){
+        H.push('<p style="margin-bottom:2px"><b>'+(iv.items.length>1?((i+1)+'. '):'')+esc(it.label)+'</b></p>');
+        H.push('<div class="ln">'+it.lines.map(mline).join('<br>')+'</div>');
+      });
+      if(iv.note) H.push('<p style="font-style:italic;font-size:13px;color:#5b6b61">'+esc(_BX_KT_NOTE)+'</p>');
+    }
+    H.push('<h4>'+(iv.show?'V':'IV')+'. ĐIỀU CHỈNH SAU BÀI DẠY</h4>');
     H.push('<div class="dotline"></div><div class="dotline"></div>');
     return H.join('');
   }
