@@ -387,8 +387,11 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
   .header h2{font-size:19px}
   .header-right{gap:14px}
   .filters .btn-upload{margin-left:0;width:100%;justify-content:center}
-  .banner{padding:18px 20px;min-height:auto}
-  .banner h3{font-size:20px}
+  /* MOBILE: đưa Lịch dạy lên trước, đẩy banner khẩu hiệu xuống dưới + thu gọn */
+  .work-grid{order:0}
+  .banner{order:2;padding:14px 18px;min-height:auto}
+  .banner h3{font-size:18px}
+  .banner p{margin-top:5px}
   .banner .hero{width:42%;opacity:.85}
   .steps{flex-wrap:wrap;gap:18px 4px}.arrow{display:none}.step{flex:1 1 28%}
   .nhac-grid{grid-template-columns:minmax(0,1fr)}
@@ -402,8 +405,10 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
   .header .help span,.profile .pname{display:none}
   .filters .select{padding:9px 11px;font-size:12.5px}
   .banner .hero{display:none}
-  .banner h3{font-size:18px;line-height:1.3}
-  .banner p,.banner .moto{font-size:13px}
+  .banner{padding:13px 16px}
+  .banner h3{font-size:16px;line-height:1.3}
+  .banner p{font-size:12.5px;margin-top:4px}
+  .banner .moto{font-size:12.5px;margin-top:7px}
   .card-head h3{font-size:15px}
   .stats{grid-template-columns:1fr 1fr}
   .work-grid table.sched{font-size:12.5px}
