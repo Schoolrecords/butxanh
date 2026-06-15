@@ -386,6 +386,9 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
   .header{gap:10px;margin-bottom:14px}
   .header h2{font-size:19px}
   .header-right{gap:14px}
+  /* Bỏ chữ nhỏ lặp lại cho gọn, chuyên nghiệp hơn */
+  .brand small{display:none}
+  .header .role{display:none}
   .filters .btn-upload{margin-left:0;width:100%;justify-content:center}
   /* MOBILE: đưa Lịch dạy lên trước, đẩy banner khẩu hiệu xuống dưới + thu gọn */
   .work-grid{order:0}
@@ -411,8 +414,11 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
   .banner .moto{font-size:12.5px;margin-top:7px}
   .card-head h3{font-size:15px}
   .stats{grid-template-columns:1fr 1fr}
-  .work-grid table.sched{font-size:12.5px}
+  .work-grid table.sched{font-size:13px}
   table.sched th,table.sched td{padding:7px 7px}
+  .work-grid table.sched td{padding:10px 8px}
+  .work-grid table.sched td.day{font-size:12.5px}
+  .work-grid .sched-foot{display:none}
   .step{flex:1 1 44%}
   .quick .qhead{flex-direction:column;gap:10px}
   .footer{flex-direction:column;gap:8px;text-align:center}
