@@ -2188,6 +2188,16 @@ function bankAll(){
   loadBankImport().forEach(L=>{ if(L&&L.mon&&L.bai){ byId[L.id||('imp-'+_normTxt(L.mon)+'-'+_normTxt(L.bai))]=L; } });
   return Object.keys(byId).map(k=>byId[k]);
 }
+/* ---- LỌC KHO THEO KHỐI (LỚP) ----
+   GV Lớp 4 không được khớp nhầm giáo án Lớp 5 (và ngược lại). Khối của 1 dòng lịch:
+   ưu tiên grade ghi trên dòng (row.khoi / số trong row.lop "4A"→4), fallback hồ sơ GV (state.khoi).
+   Kho lưu khối ở trường `lop`; seed LESSON_BANK dùng `khoi`. */
+function _bxRowGrade(row){
+  var g=(row&&row.khoi)||(row&&(String(row.lop||'').match(/\d+/)||[])[0])||state.khoi;
+  return String(g||'').trim();
+}
+function _bxGradeOf(L){ return String((L&&(L.khoi!=null?L.khoi:L.lop))||'').trim(); }
+function bankAllForRow(row){ var g=_bxRowGrade(row); var all=bankAll(); return g?all.filter(function(L){return _bxGradeOf(L)===g;}):all; }
 function bankStatusLabel(s){ return ({draft:'Bản nháp',checked:'Đã kiểm tra',approved:'Đã duyệt','needs-update':'Cần cập nhật'})[s]||'Bản nháp'; }
 /* tách số "Bài N" / "Tiết M" và token từ trong tên bài (cho khớp dự phòng) */
 function _baiNo(s){ const m=/b[aà]i\s*0*(\d+)/i.exec(s||''); return m?+m[1]:null; }
@@ -2203,7 +2213,7 @@ function _baiTitle(bai){ bai=(bai||'').toString().trim(); const n=bai.normalize(
 /* tìm giáo án trong kho khớp 1 tiết của lịch */
 function findBankLesson(row){
   if(!row) return null;
-  const all=bankAll(), k=bankKey(row.mon,row.bai);
+  const all=bankAllForRow(row), k=bankKey(row.mon,row.bai);
   let cands=all.filter(L=>bankKey(L.mon,L.bai)===k);
   /* Dự phòng: tên bài viết khác nhau (vd LBG "số TP" ≠ kho "số thập phân").
      Khớp theo Môn + số "Bài N" + số "Tiết M" (nếu có) + ưu tiên cùng Tuần,
@@ -3441,7 +3451,7 @@ function resolveScheduleRowToCurriculumPeriod(row, context){
  * ----------------------------------------------------------- */
 function BX_resolveBankMatch(row){
   if(!row) return {status:'missing', lesson:null, candidates:[]};
-  var all=bankAll();
+  var all=bankAllForRow(row);   // CHỈ giáo án cùng KHỐI với GV/dòng lịch (tránh GV Lớp 4 vớ giáo án Lớp 5)
   // 1) cpid đã ghim trên dòng lịch
   var cp = row.cpid||row.curriculum_period_id;
   if(cp){
