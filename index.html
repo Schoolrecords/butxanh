@@ -663,6 +663,7 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 .bxc-btn.cancel:hover{background:#f0f7f3}
 </style>
 <script src="kho-data.js?v=20260624-toan4"></script>
+<script src="khgd-lop4.js"></script>
 </head>
 <body>
 <div id="splash">
@@ -4137,7 +4138,10 @@ window.BX_visibleCols=function(DATA){
 };
 
 function buildKHGDMonDocx(){
-  var SUBJ=window.BX_curSubject||'Tiếng Việt'; var DATA=(window.BX_KHGD&&window.BX_KHGD[SUBJ])||TV5;
+  var SUBJ=window.BX_curSubject||'Tiếng Việt';
+  var LOP=window.BX_curLop||'5';
+  var GROOT=window.BX_KHGD_G||{'5':window.BX_KHGD};
+  var DATA=((GROOT[LOP]||{})[SUBJ])||(window.BX_KHGD&&window.BX_KHGD[SUBJ])||TV5;
   var ALLCOLS=[700,1800,1300,1450,3300,750,950,4150], totalW=14400;
   var ALLHEAD=['Tuần','Chủ đề/ Mạch nội dung','Tên bài','Tên hoạt động','Nội dung hoạt động','Thời lượng (tiết)','Tiết theo KH môn học','Nội dung điều chỉnh, bổ sung / tích hợp dự kiến'];
   var VIS=window.BX_visibleCols(DATA), NC=VIS.length;
@@ -4151,7 +4155,7 @@ function buildKHGDMonDocx(){
   var prevHK='',prevChu='',prevTuan='',prevBai='';
   for(var i=0;i<DATA.length;i++){
     var r=DATA[i], tuan=r[0],chude=r[1],bai=r[2],hd=r[3],nd=r[4],tl=r[5],tiet=r[6],tich=r[7];
-    var _v=window.BX_khgdVal; if(_v){ nd=_v(SUBJ,i,4,nd); tl=_v(SUBJ,i,5,tl); tiet=_v(SUBJ,i,6,tiet); tich=_v(SUBJ,i,7,tich); } /* bản trường, theo môn */
+    var _v=window.BX_khgdVal; if(_v){ nd=_v(LOP,SUBJ,i,4,nd); tl=_v(LOP,SUBJ,i,5,tl); tiet=_v(LOP,SUBJ,i,6,tiet); tich=_v(LOP,SUBJ,i,7,tich); } /* bản trường, theo lớp + môn */
     var hk=(parseInt(tuan,10)<=18)?'HỌC KÌ I':'HỌC KÌ II';
     if(hk!==prevHK){ prevHK=hk; prevChu='';prevTuan='';prevBai='';
       rows.push('<w:tr>'+bxTc(hk,totalW,{span:NC,color:NAVY,b:true,jc:'center',sz:20,bb:'solid'})+'</w:tr>'); }
@@ -4205,7 +4209,7 @@ function buildKHGDMonDocx(){
     bxPara('UBND XÃ '+xa,{jc:'left',sz:20})+
     bxPara('TRƯỜNG TIỂU HỌC '+truong,{b:true,jc:'left',sz:20,sp:120})+
     bxPara('KẾ HOẠCH GIÁO DỤC MÔN HỌC',{b:true,jc:'center',sz:28,color:NAVY})+
-    bxPara('MÔN '+SUBJ.toUpperCase()+' – LỚP 5',{b:true,jc:'center',sz:26,color:NAVY})+
+    bxPara('MÔN '+SUBJ.toUpperCase()+' – LỚP '+LOP,{b:true,jc:'center',sz:26,color:NAVY})+
     bxPara('NĂM HỌC '+nam,{b:true,jc:'center',sz:24,sp:60,color:NAVY})+
     bxPara('(Lập theo định hướng Phụ lục II Công văn 2345/BGDĐT-GDTH; tích hợp Năng lực số/AI theo Thông tư 02/2025/TT-BGDĐT và Công văn 3456/BGDĐT-GDPT)',{i:true,jc:'center',sz:18,sp:160});
   var after=
@@ -4231,7 +4235,7 @@ window.exportKHGDMonWord=function(){
     var slug=SUBJ.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D').replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,'');
     var yr=(state.year||'2026-2027').replace(/[^0-9]/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,'');
     var blob=buildKHGDMonDocx();
-    _downloadBlob('KHGD_mon_'+slug+'_5_'+yr+'.docx', blob);
+    _downloadBlob('KHGD_mon_'+slug+'_'+(window.BX_curLop||'5')+'_'+yr+'.docx', blob);
   }catch(e){ alert('Không xuất được KHGD: '+e.message); }
 };
 window.buildKHGDMonDocx=buildKHGDMonDocx; /* expose để kiểm thử / sinh lại file Word */
@@ -4276,31 +4280,49 @@ window.BX_KHGD = Object.assign({'Tiếng Việt': (window.TV5_KHGD||[])}, (windo
     }
   });
 })(window.BX_KHGD);
-window.BX_SUBJECTS = ['Tiếng Việt','Toán','Khoa học','Lịch sử & Địa lí','Đạo đức','Tin học','Công nghệ','HĐTN','Âm nhạc','Mĩ thuật','GDTC','Tiếng Anh']
-  .filter(function(s){ return window.BX_KHGD[s] && window.BX_KHGD[s].length; });
-if(!window.BX_curSubject) window.BX_curSubject='Tiếng Việt';
+// === KHDH ĐA LỚP — ĐA MÔN ===
+window.BX_KHGD_G = window.BX_KHGD_G || {};
+window.BX_KHGD_G['5'] = window.BX_KHGD;                              // lớp 5: TV5 + 11 môn (giữ nguyên)
+if(window.BX_KHGD_L4) window.BX_KHGD_G['4'] = window.BX_KHGD_L4;     // lớp 4: dữ liệu mới (khgd-lop4.js)
+var SUBJ_ORDER=['Tiếng Việt','Toán','Khoa học','Lịch sử & Địa lí','Đạo đức','Tin học','Công nghệ','HĐTN','Âm nhạc','Mĩ thuật','GDTC','Tiếng Anh'];
+function subjectsOf(lop){ var KH=window.BX_KHGD_G[lop]||{}; var has=function(s){return KH[s]&&KH[s].length;};
+  return SUBJ_ORDER.filter(has).concat(Object.keys(KH).filter(function(s){return SUBJ_ORDER.indexOf(s)<0&&has(s);})); }
+window.BX_LOPS = ['1','2','3','4','5'].filter(function(l){ return subjectsOf(l).length; });
+if(!window.BX_curLop || subjectsOf(window.BX_curLop).length===0) window.BX_curLop = window.BX_LOPS[window.BX_LOPS.length-1]||'5';
 var NAVY='#002060';
-function cur(){ return window.BX_curSubject||'Tiếng Việt'; }
-function data(){ return window.BX_KHGD[cur()]||[]; }
+function curLop(){ return window.BX_curLop||'5'; }
+window.BX_SUBJECTS = subjectsOf('5');                               // CỐ ĐỊNH = môn lớp 5 (module Bản đồ chương trình/dashboard dựa vào, gắn với window.BX_KHGD lớp 5). Dropdown KHDH dùng subjectsOf(curLop()) cục bộ.
+if(!window.BX_curSubject || subjectsOf(curLop()).indexOf(window.BX_curSubject)<0) window.BX_curSubject = subjectsOf(curLop())[0]||'Tiếng Việt';
+function cur(){ return window.BX_curSubject||subjectsOf(curLop())[0]||'Tiếng Việt'; }
+function data(){ return (window.BX_KHGD_G[curLop()]||{})[cur()]||[]; }
 
 var EKEY='butxanh_khgd_edits';
 function loadE(){ try{ var v=JSON.parse(localStorage.getItem(EKEY)); if(v&&typeof v==='object') return v; }catch(e){} return {}; }
+function migE(o){ if(!o||typeof o!=='object') return {}; var L={'1':1,'2':1,'3':1,'4':1,'5':1};
+  return Object.keys(o).every(function(k){return L[k];}) ? o : {'5':o}; }   // di trú {môn:..} cũ -> {"5":{môn:..}}
 function saveE(){ try{ localStorage.setItem(EKEY,JSON.stringify(window.BX_khgdEdit||{})); }catch(e){} }
-window.BX_khgdEdit=loadE();  // { subject: { i: { col:val } } }
-window.BX_khgdVal=function(subj,i,col,base){ var s=window.BX_khgdEdit[subj]; var e=s&&s[i]; return (e&&e[col]!=null)?e[col]:base; };
+window.BX_khgdEdit=migE(loadE());  // { lớp: { môn: { i: { col:val } } } }
+window.BX_khgdVal=function(lop,subj,i,col,base){ var L=window.BX_khgdEdit[lop]; var s=L&&L[subj]; var e=s&&s[i]; return (e&&e[col]!=null)?e[col]:base; };
 function baseV(i,col){ return (data()[i]&&data()[i][col])||''; }
-function val(i,col){ return window.BX_khgdVal(cur(),i,col,baseV(i,col)); }
-function isEdited(i,col){ var s=window.BX_khgdEdit[cur()]; var e=s&&s[i]; return !!(e&&e[col]!=null&&e[col]!==baseV(i,col)); }
+function val(i,col){ return window.BX_khgdVal(curLop(),cur(),i,col,baseV(i,col)); }
+function isEdited(i,col){ var L=window.BX_khgdEdit[curLop()]; var s=L&&L[cur()]; var e=s&&s[i]; return !!(e&&e[col]!=null&&e[col]!==baseV(i,col)); }
 function rowEdited(i){ return [4,5,6,7].some(function(c){return isEdited(i,c);}); }
 function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function hkLabel(t){ return parseInt(t,10)<=18?'HỌC KÌ I':'HỌC KÌ II'; }
 
 var EDIT=false, ECOLS={4:1,5:1,6:1,7:1}, FK={hk:'',tuan:'',q:''};
 
-window.BX_khgdSetSubject=function(s){ window.BX_curSubject=s; EDIT=false;
+function titleText(){ return '📚 Kế hoạch giáo dục môn '+cur()+' — Lớp '+curLop(); }
+function clearEditUI(){ EDIT=false;
   var b=document.getElementById('khdh-edit-btn'); if(b){b.innerHTML='✏️ Chỉnh sửa KHDH';b.className='btn';}
   var h=document.getElementById('khdh-edit-hint'); if(h)h.style.display='none';
-  var t=document.getElementById('khdh-title'); if(t)t.textContent='📚 Kế hoạch giáo dục môn '+s+' — Lớp 5';
+}
+window.BX_khgdSetLop=function(l){ window.BX_curLop=l;
+  var subs=subjectsOf(l); if(subs.indexOf(window.BX_curSubject)<0) window.BX_curSubject=subs[0]||'';
+  clearEditUI(); rebuild();   // đổi lớp -> dựng lại cả danh sách môn
+};
+window.BX_khgdSetSubject=function(s){ window.BX_curSubject=s; clearEditUI();
+  var t=document.getElementById('khdh-title'); if(t)t.textContent=titleText();
   renderKHDH();
 };
 window.BX_khgdSetFilter=function(){
@@ -4362,22 +4384,22 @@ function tableHtml(forPrint){
   return out;
 }
 window.BX_khgdSaveCell=function(div){
-  var i=+div.getAttribute('data-i'), c=+div.getAttribute('data-c'), s=cur();
+  var i=+div.getAttribute('data-i'), c=+div.getAttribute('data-c'), L=curLop(), s=cur();
   var v=(div.innerText||'').replace(/ /g,' ').trim(), b=baseV(i,c).trim();
-  window.BX_khgdEdit[s]=window.BX_khgdEdit[s]||{}; window.BX_khgdEdit[s][i]=window.BX_khgdEdit[s][i]||{};
-  if(v===b){ delete window.BX_khgdEdit[s][i][c]; if(!Object.keys(window.BX_khgdEdit[s][i]).length) delete window.BX_khgdEdit[s][i]; }
-  else { window.BX_khgdEdit[s][i][c]=v; }
+  var E=window.BX_khgdEdit; E[L]=E[L]||{}; E[L][s]=E[L][s]||{}; E[L][s][i]=E[L][s][i]||{};
+  if(v===b){ delete E[L][s][i][c]; if(!Object.keys(E[L][s][i]).length) delete E[L][s][i]; }
+  else { E[L][s][i][c]=v; }
   saveE(); renderKHDH();
 };
-window.BX_khgdResetRow=function(i){ var s=cur(); if(window.BX_khgdEdit[s]) delete window.BX_khgdEdit[s][i]; saveE(); renderKHDH(); return false; };
+window.BX_khgdResetRow=function(i){ var E=window.BX_khgdEdit, L=curLop(), s=cur(); if(E[L]&&E[L][s]) delete E[L][s][i]; saveE(); renderKHDH(); return false; };
 
 window.renderKHDH=function(){
   var box=document.getElementById('khdh-table'); if(!box) return;
   box.innerHTML=tableHtml(false);
   var D=data(), tiet=0; D.forEach(function(r){ if(r[6]) tiet++; });
-  var s=window.BX_khgdEdit[cur()], ne=s?Object.keys(s).length:0;
+  var L=window.BX_khgdEdit[curLop()], s=L&&L[cur()], ne=s?Object.keys(s).length:0;
   var info=document.getElementById('khdh-info');
-  if(info) info.innerHTML='Môn <b>'+esc(cur())+'</b> · <b>'+D.length+'</b> dòng / ~'+tiet+' tiết · bám SGK lớp 5 + tích hợp NLS/AI (TT02·CV3456)'+(ne?(' · <b style="color:'+NAVY+'">'+ne+' dòng trường đã chỉnh</b>'):'');
+  if(info) info.innerHTML='Môn <b>'+esc(cur())+'</b> · Lớp <b>'+esc(curLop())+'</b> · <b>'+D.length+'</b> dòng / ~'+tiet+' tiết · bám SGK + tích hợp NLS/AI (TT02·CV3456)'+(ne?(' · <b style="color:'+NAVY+'">'+ne+' dòng trường đã chỉnh</b>'):'');
 };
 window.BX_khgdToggleEdit=function(){
   EDIT=!EDIT;
@@ -4412,16 +4434,18 @@ function rebuild(){
   var v=document.getElementById('v-khdh'); if(!v) return;
   styleOnce();
   var weeks=''; for(var t=1;t<=35;t++) weeks+='<option value="'+t+'">Tuần '+t+'</option>';
-  var subs=window.BX_SUBJECTS.map(function(s){return '<option'+(s===cur()?' selected':'')+'>'+esc(s)+'</option>';}).join('');
+  var subs=subjectsOf(curLop()).map(function(s){return '<option'+(s===cur()?' selected':'')+'>'+esc(s)+'</option>';}).join('');
+  var lops=window.BX_LOPS.map(function(l){return '<option value="'+l+'"'+(l===curLop()?' selected':'')+'>Lớp '+l+'</option>';}).join('');
   v.innerHTML='<div class="card">'+
     '<div class="khdh-bar">'+
-      '<h3 id="khdh-title" style="margin:0;color:'+NAVY+'">📚 Kế hoạch giáo dục môn '+esc(cur())+' — Lớp 5</h3>'+
+      '<h3 id="khdh-title" style="margin:0;color:'+NAVY+'">'+esc(titleText())+'</h3>'+
       '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
         '<button class="btn solid" onclick="exportKHGDMonWord()">📄 Tải KHDH về máy</button>'+
         '<button class="btn" id="khdh-edit-btn" onclick="BX_khgdToggleEdit()">✏️ Chỉnh sửa KHDH</button>'+
       '</div>'+
     '</div>'+
     '<div class="khdh-filters">'+
+      '<label class="select"><span>Lớp</span><select id="khdh-lop" onchange="BX_khgdSetLop(this.value)">'+lops+'</select></label>'+
       '<label class="select"><span>Môn học</span><select id="khdh-subject" onchange="BX_khgdSetSubject(this.value)">'+subs+'</select></label>'+
       '<label class="select"><span>Học kì</span><select id="khdh-hk" onchange="BX_khgdSetFilter()"><option value="">Cả năm</option><option>HỌC KÌ I</option><option>HỌC KÌ II</option></select></label>'+
       '<label class="select"><span>Tuần</span><select id="khdh-tuan" onchange="BX_khgdSetFilter()"><option value="">Tất cả tuần</option>'+weeks+'</select></label>'+
