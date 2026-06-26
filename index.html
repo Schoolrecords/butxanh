@@ -662,8 +662,9 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 .bxc-btn.cancel{background:#fff;color:#5b6b61;border-color:var(--line)}
 .bxc-btn.cancel:hover{background:#f0f7f3}
 </style>
-<script src="kho-data.js?v=20260626-cn4tv5"></script>
-<script src="khgd-lop4.js?v=20260626-cn4tv5"></script>
+<script src="kho-data.js?v=20260626-dd4tv3"></script>
+<script src="khgd-lop4.js?v=20260626-dd4tv3"></script>
+<script src="khgd-lop3.js?v=20260626-dd4tv3"></script>
 </head>
 <body>
 <div id="splash">
@@ -4284,6 +4285,7 @@ window.BX_KHGD = Object.assign({'Tiếng Việt': (window.TV5_KHGD||[])}, (windo
 window.BX_KHGD_G = window.BX_KHGD_G || {};
 window.BX_KHGD_G['5'] = window.BX_KHGD;                              // lớp 5: TV5 + 11 môn (giữ nguyên)
 if(window.BX_KHGD_L4) window.BX_KHGD_G['4'] = window.BX_KHGD_L4;     // lớp 4: dữ liệu mới (khgd-lop4.js)
+if(window.BX_KHGD_L3) window.BX_KHGD_G['3'] = window.BX_KHGD_L3;     // lớp 3: Tiếng Việt 3 (khgd-lop3.js)
 var SUBJ_ORDER=['Tiếng Việt','Toán','Khoa học','Lịch sử & Địa lí','Đạo đức','Tin học','Công nghệ','HĐTN','Âm nhạc','Mĩ thuật','GDTC','Tiếng Anh'];
 function subjectsOf(lop){ var KH=window.BX_KHGD_G[lop]||{}; var has=function(s){return KH[s]&&KH[s].length;};
   return SUBJ_ORDER.filter(has).concat(Object.keys(KH).filter(function(s){return SUBJ_ORDER.indexOf(s)<0&&has(s);})); }
