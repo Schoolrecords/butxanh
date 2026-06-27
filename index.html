@@ -880,8 +880,10 @@ if(window.KHO_DATA_L2&&window.KHO_DATA_L2.length){ window.KHO_DATA=(window.KHO_D
         <div><h2 class="ph-title">Lịch báo giảng</h2><div class="wk-picker" id="wk-picker"></div></div>
         <div class="ph-actions">
           <input type="file" id="lbg-file" accept=".xlsx" style="display:none" onchange="lbgRead(this)">
+          <button class="btn-xs" onclick="bxOpenTKB()">🗓️ Thời khoá biểu của tôi</button>
+          <button class="btn-xs solid" onclick="bxRegenCurrentWeek()">✨ Sinh LBG từ TKB</button>
           <button class="btn-xs" onclick="downloadScheduleTemplate()">📥 Tải mẫu LBG</button>
-          <button class="btn-xs solid" onclick="lbgPick()">⤴ Đưa LBG lên</button>
+          <button class="btn-xs" onclick="lbgPick()">⤴ Đưa LBG lên</button>
           <button class="btn-xs" onclick="openSchedEditor()">✏️ Sửa LBG</button>
           <button class="btn-xs" onclick="exportScheduleXls()">📤 Xuất Mẫu có dữ liệu</button>
         </div>
@@ -3128,7 +3130,7 @@ el('set-save').onclick=function(){
 };
 
 /* ---------- 16b) SAO LƯU / KHÔI PHỤC DỮ LIỆU (JSON) ---------- */
-const BACKUP_KEYS=['butxanh_profile','butxanh_schedule','butxanh_khbd','butxanh_hocsinh','butxanh_hoclieu','butxanh_khofiles','butxanh_bank'];
+const BACKUP_KEYS=['butxanh_profile','butxanh_schedule','butxanh_tkb','butxanh_khbd','butxanh_hocsinh','butxanh_hoclieu','butxanh_khofiles','butxanh_bank'];
 function buildBackupPayload(){
   const data={}; BACKUP_KEYS.forEach(k=>{ const v=localStorage.getItem(k); if(v!==null) data[k]=v; });
   return {app:'butxanh', version:1, exportedAt:new Date().toISOString(), data};
@@ -4980,7 +4982,7 @@ window.BX_confirm=function(opts,onOk,onCancel){
     appId:"1:288012765675:web:a07f84a69f16a17352b1ae"
   };
   /* Khóa đồng bộ — phần chữ (bỏ butxanh_khofiles vì tệp Word nặng, để v2 dùng Storage) */
-  var KEYS=['butxanh_profile','butxanh_lbg_weeks','butxanh_lbg_meta','butxanh_khbd','butxanh_hocsinh','butxanh_hoclieu','butxanh_bank'];
+  var KEYS=['butxanh_profile','butxanh_tkb','butxanh_lbg_weeks','butxanh_lbg_meta','butxanh_khbd','butxanh_hocsinh','butxanh_hoclieu','butxanh_bank'];
   var auth=null, db=null, user=null, lastPushed=null, loopT=null, busy=false, seeded=false, reloadT=null, curRef=null, lastVals={};
   var box=document.getElementById('fb-auth');
 
@@ -5164,6 +5166,156 @@ window.BX_confirm=function(opts,onOk,onCancel){
     }catch(e){ console.warn('[ĐB] init lỗi',e); renderUI(); }
   }
   if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded',init);
+})();
+</script>
+
+<!-- ============ MODAL: THỜI KHOÁ BIỂU CỦA TÔI (Phase 1 TKB→LBG) ============ -->
+<div class="overlay" id="tkb-overlay">
+  <div class="modal" style="max-width:860px">
+    <div class="modal-head">
+      <div><h3>🗓️ Thời khoá biểu của tôi</h3><div class="sub">Khai báo TKB cố định một lần — Bút Xanh tự sinh Lịch báo giảng cho mọi tuần theo Kho giáo án.</div></div>
+      <button class="close" onclick="closeModal('tkb-overlay')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="notice" style="margin-bottom:10px">Mỗi dòng = một tiết cố định trong tuần: <b>Thứ · Buổi · Tiết · Môn · Lớp</b>. <b>Không cần điền tên bài</b> — Bút Xanh tự lấy bài đúng theo tuần từ <b>Kho giáo án số</b>. Tiết của môn chưa có trong Kho (GDTC, Mĩ thuật, Tiếng Anh…) sẽ để trống tên bài cho thầy cô tự ghi.</div>
+      <div id="tkb-editor" style="overflow:auto"></div>
+      <div id="tkb-addrow" style="margin-top:10px"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="bxTKBresetDefault()">↺ Lấy từ LBG đang xem</button>
+      <button class="btn save" onclick="bxTKBsave()">💾 Lưu TKB</button>
+      <button class="btn solid" onclick="bxTKBsaveAndGen()">✨ Lưu &amp; sinh LBG tuần này</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ====================================================================
+   PHASE 1 — THỜI KHOÁ BIỂU CÁ NHÂN  →  TỰ SINH LỊCH BÁO GIẢNG
+   GV khai báo TKB cố định (Thứ/Buổi/Tiết/Môn/Lớp) một lần → mỗi tuần
+   Bút Xanh tự sinh LBG bằng cách tra Kho (KHO_DATA) theo (lớp, môn, tuần),
+   gán lần lượt các tiết của môn vào các ô TKB. Cá nhân hoá theo từng GV.
+   Lưu localStorage 'butxanh_tkb' (đã thêm vào BACKUP_KEYS + FBX KEYS → đồng bộ).
+   Tích hợp KHÔNG phá luồng cũ: chỉ ghi đè BX_weekSchedule KHI GV đã có TKB riêng.
+   ==================================================================== */
+(function(){
+  var TKB_KEY='butxanh_tkb';
+  var DAYS=['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'];
+  var BUOIS=['Sáng','Chiều'];
+  var SUBJECTS=(typeof SUBJ_ORDER!=='undefined'&&SUBJ_ORDER.length)?SUBJ_ORDER.slice()
+      :['Toán','Tiếng Việt','HĐTN','Đạo đức','Tự nhiên và Xã hội','Khoa học','Lịch sử & Địa lí','Công nghệ','Tin học','Âm nhạc','Mĩ thuật','GDTC','Tiếng Anh'];
+  var DOWm={'Thứ 2':2,'Thứ 3':3,'Thứ 4':4,'Thứ 5':5,'Thứ 6':6,'Thứ 7':7,'CN':8};
+  var BUOIm={'Sáng':0,'Chiều':1,'Tối':2};
+  function _n(s){ return (typeof _normTxt==='function')?_normTxt(s):String(s||'').toLowerCase(); }
+  function _digits(s){ var m=String(s||'').match(/\d+/); return m?m[0]:''; }
+  function _sortSlots(a){ return a.slice().sort(function(x,y){ return (DOWm[x.day]||9)-(DOWm[y.day]||9)||(BUOIm[x.buoi]||0)-(BUOIm[y.buoi]||0)||(+x.tiet||0)-(+y.tiet||0); }); }
+
+  /* ---------- lưu trữ ---------- */
+  function loadTKBraw(){ try{ var v=JSON.parse(localStorage.getItem(TKB_KEY)); return (v&&Array.isArray(v.slots))?v.slots:null; }catch(e){ return null; } }
+  function defaultTKB(){
+    var base=(typeof TKB!=='undefined'&&TKB.length)?TKB:(state.schedule||[]);
+    return base.map(function(r){ return {day:r.day,buoi:r.buoi||'Sáng',tiet:r.tiet,mon:r.mon,lop:r.lop||state.klass}; });
+  }
+  function loadTKB(){ var s=loadTKBraw(); return (s&&s.length)?s:defaultTKB(); }
+  function hasUserTKB(){ var s=loadTKBraw(); return !!(s&&s.length); }
+  function saveTKB(slots){
+    try{ localStorage.setItem(TKB_KEY,JSON.stringify({slots:slots,updated:new Date().toISOString()})); }catch(e){}
+  }
+  window.bxLoadTKB=loadTKB; window.bxHasUserTKB=hasUserTKB;
+
+  /* ---------- sinh LBG từ TKB + Kho ---------- */
+  function lessonsForWeek(lop, mon, w){
+    var K=window.KHO_DATA||[]; var lopN=_digits(lop)||_digits(state.klass);
+    var canon=(typeof _bxCanonSubject==='function')?(_bxCanonSubject(mon)||mon):mon;
+    var nm=_n(mon), ncanon=_n(canon);
+    return K.filter(function(r){
+      if(String(r.lop)!==String(lopN)) return false;
+      if(String(r.tuan)!==String(w)) return false;
+      var rn=_n(r.mon); return rn===nm||rn===ncanon;
+    }).sort(function(a,b){ return (+a.tiet||0)-(+b.tiet||0); });
+  }
+  function shortTBDH(dodung){
+    if(!dodung) return '';
+    var line=String(dodung).split('\n')[0].replace(/^[-••\s]+/,'').replace(/^GV\s*:?\s*/i,'').trim();
+    return line.length>56?line.slice(0,56)+'…':line;
+  }
+  function genForWeek(w){
+    var slots=_sortSlots(loadTKB());
+    var dates=(typeof BX_weekDates==='function')?BX_weekDates(w):{byDay:{}};
+    var cur={};
+    return slots.map(function(s){
+      var lop=s.lop||state.klass, key=_n(s.mon)+'|'+_digits(lop);
+      if(!cur[key]){ cur[key]={list:lessonsForWeek(lop,s.mon,w),i:0}; }
+      var L=cur[key].list[cur[key].i++];
+      return {day:s.day,date:(dates.byDay&&dates.byDay[s.day])||'',buoi:s.buoi,tiet:s.tiet,mon:s.mon,lop:lop,
+        bai:L?(L.bai||''):'',tbdh:L?shortTBDH(L.dodung):'',ppct:(L&&L.tiet)||'',_gen:true,_nokho:!L};
+    });
+  }
+  window.bxGenLBGForWeek=genForWeek;
+
+  /* ---------- ghi đè BX_weekSchedule: GV có TKB riêng → tự sinh từ Kho ---------- */
+  var _origWS=window.BX_weekSchedule;
+  window.BX_weekSchedule=function(w){
+    if(hasUserTKB()){ try{ return genForWeek(w); }catch(e){ console.warn('[TKB] sinh lỗi, dùng bản mẫu',e); } }
+    return _origWS?_origWS(w):[];
+  };
+
+  /* ---------- nút "Sinh LBG từ TKB" cho tuần đang xem ---------- */
+  window.bxRegenCurrentWeek=function(){
+    var w=parseInt(state.week,10)||1;
+    if(!hasUserTKB()){
+      if(confirm('Thầy cô chưa khai báo Thời khoá biểu riêng.\nMở trình khai báo TKB ngay bây giờ?')) bxOpenTKB();
+      return;
+    }
+    var saved=(typeof getLBGForWeek==='function')?getLBGForWeek(w):null;
+    if(saved && saved.length && !confirm('Tuần '+w+' đã có Lịch báo giảng (có thể đã chỉnh tay).\nSinh lại từ TKB sẽ GHI ĐÈ tuần này. Tiếp tục?')) return;
+    var sch=genForWeek(w);
+    state.schedule=sch;
+    try{ if(typeof fillScheduleDates==='function') fillScheduleDates(); }catch(e){}
+    try{ if(typeof persistSchedule==='function') persistSchedule(); }catch(e){}
+    try{ if(typeof renderFullSchedule==='function') renderFullSchedule(); }catch(e){}
+    var noko=sch.filter(function(r){return r._nokho;}).length;
+    alert('✓ Đã sinh Lịch báo giảng Tuần '+w+' từ Thời khoá biểu: '+sch.length+' tiết.'+
+      (noko?('\n• '+noko+' tiết môn chưa có trong Kho — để trống tên bài cho thầy cô tự ghi.'):''));
+  };
+
+  /* ---------- trình soạn TKB ---------- */
+  var _work=null;
+  window.bxOpenTKB=function(){
+    _work=loadTKB().map(function(r){ return {day:r.day,buoi:r.buoi||'Sáng',tiet:r.tiet,mon:r.mon,lop:r.lop||state.klass}; });
+    renderEditor();
+    var ov=document.getElementById('tkb-overlay'); if(ov) ov.classList.add('show');
+  };
+  function opts(list,val){ return list.map(function(o){ return '<option'+(String(o)===String(val)?' selected':'')+'>'+String(o).replace(/</g,'&lt;')+'</option>'; }).join(''); }
+  function renderEditor(){
+    var box=document.getElementById('tkb-editor'); if(!box) return;
+    _work=_sortSlots(_work);
+    var h='<table class="se-table"><thead><tr><th>Thứ</th><th>Buổi</th><th>Tiết</th><th>Môn</th><th>Lớp</th><th></th></tr></thead><tbody>';
+    _work.forEach(function(r,i){
+      h+='<tr>'+
+        '<td><select onchange="bxTKBset('+i+',&quot;day&quot;,this.value)">'+opts(DAYS,r.day)+'</select></td>'+
+        '<td><select onchange="bxTKBset('+i+',&quot;buoi&quot;,this.value)">'+opts(BUOIS,r.buoi)+'</select></td>'+
+        '<td><input type="number" min="1" max="10" value="'+(r.tiet||'')+'" style="width:54px" onchange="bxTKBset('+i+',&quot;tiet&quot;,this.value)"></td>'+
+        '<td><select onchange="bxTKBset('+i+',&quot;mon&quot;,this.value)">'+opts(SUBJECTS,r.mon)+'</select></td>'+
+        '<td><input value="'+String(r.lop||'').replace(/"/g,'&quot;')+'" style="width:66px" onchange="bxTKBset('+i+',&quot;lop&quot;,this.value)"></td>'+
+        '<td><button class="btn-xs" onclick="bxTKBdel('+i+')" title="Xoá tiết">🗑</button></td>'+
+      '</tr>';
+    });
+    h+='</tbody></table>';
+    box.innerHTML=h;
+    var add=document.getElementById('tkb-addrow');
+    if(add) add.innerHTML='<button class="btn-xs solid" onclick="bxTKBadd()">➕ Thêm tiết</button> <span style="color:var(--muted);font-size:12.5px;margin-left:8px">'+_work.length+' tiết/tuần</span>';
+  }
+  window.bxTKBset=function(i,k,v){ if(_work[i]){ _work[i][k]=(k==='tiet')?(parseInt(v,10)||1):v; } };
+  window.bxTKBdel=function(i){ _work.splice(i,1); renderEditor(); };
+  window.bxTKBadd=function(){ _work.push({day:'Thứ 2',buoi:'Sáng',tiet:1,mon:SUBJECTS[0],lop:state.klass}); renderEditor(); };
+  window.bxTKBresetDefault=function(){
+    if(!confirm('Lấy lại Thời khoá biểu từ Lịch báo giảng đang hiển thị?')) return;
+    _work=(state.schedule||[]).map(function(r){ return {day:r.day,buoi:r.buoi||'Sáng',tiet:r.tiet,mon:r.mon,lop:r.lop||state.klass}; });
+    renderEditor();
+  };
+  window.bxTKBsave=function(){ saveTKB(_work.slice()); closeModal('tkb-overlay'); alert('✓ Đã lưu Thời khoá biểu ('+_work.length+' tiết/tuần).\nTừ giờ Bút Xanh tự sinh Lịch báo giảng theo TKB này khi thầy cô chuyển tuần.'); };
+  window.bxTKBsaveAndGen=function(){ saveTKB(_work.slice()); closeModal('tkb-overlay'); bxRegenCurrentWeek(); };
 })();
 </script>
 </body>
