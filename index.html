@@ -891,22 +891,26 @@ if(window.KHO_DATA_L2&&window.KHO_DATA_L2.length){ window.KHO_DATA=(window.KHO_D
     .tkb-bz .nm{font-weight:800;color:#0f7a43;font-size:13px;letter-spacing:.1em}
     .tkb-buoi.pm .tkb-bz .nm{color:#1f5fa0}
     .tkb-bz .tm{font-size:10px;color:#8a978f;font-weight:600;letter-spacing:.01em}
-    .tkb-grid .tkb-tiet{background:#f7fbf8;font-weight:700;color:#3a7a57;width:38px;border-right:1px solid #dcebe2}
-    .tkb-grid td.tkb-cell{padding:5px;min-width:120px;background:#fff}
-    .tkb-grid tr.tkb-sep td{border-top:2px solid #cde6d8}
-    .tkb-grid tr.tkb-sep td.tkb-buoi{border-top-color:#d7e3f1}
+    .tkb-grid .tkb-tiet{background:#f7fbf8;width:42px;border-right:1px solid #dcebe2}
+    .tkb-grid .tkb-tiet .tn{display:inline-flex;width:28px;height:28px;align-items:center;justify-content:center;border-radius:50%;background:#e7f3ec;color:#2c7a52;font-weight:700;font-size:13px}
+    .tkb-grid td.tkb-cell{padding:4px;min-width:118px;background:#fff}
     .tkb-grid tbody tr:last-child td{border-bottom:none}
-    .tkb-msel{width:100%;border:1px solid #cfe2d5;border-radius:8px;padding:6px 4px;background:#fff;font-size:12.5px;cursor:pointer;transition:.15s;font-weight:600}
-    .tkb-msel:hover{border-color:#15834a;box-shadow:0 0 0 2px rgba(21,131,74,.08)}
-    .tkb-msel.empty{color:#c2cdc6;background:#fbfdfc;font-weight:400}
-    .tkb-lop{width:100%;max-width:80px;margin-top:5px;border:1px solid #e2e8e4;border-radius:7px;padding:3px 4px;font-size:11px;text-align:center;color:#5a6b60;background:#fbfdfb}
-    .tkb-lop::placeholder{color:#c8d2cb}
+    .tkb-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:46px;padding:6px;border-radius:10px;border:1px solid transparent;transition:.15s;cursor:pointer}
+    .tkb-card:hover{filter:brightness(.975);box-shadow:0 1px 5px rgba(0,0,0,.07)}
+    .tkb-card.empty{background:#fcfdfc;border:1px dashed #d3ddd6}
+    .tkb-card.empty:hover{border-color:#9fc7af;background:#f7fbf8;box-shadow:none;filter:none}
+    .tkb-msel{appearance:none;-webkit-appearance:none;border:none;background:transparent;width:100%;text-align:center;text-align-last:center;font-weight:700;font-size:12.5px;color:inherit;cursor:pointer;padding:0;outline:none}
+    .tkb-card.empty .tkb-msel{color:#b7c3bb;font-weight:500}
+    .tkb-lop{width:auto;min-width:30px;max-width:64px;border:1px solid rgba(0,0,0,.07);border-radius:999px;padding:1px 9px;font-size:10.5px;text-align:center;color:#54655c;background:rgba(255,255,255,.72);font-weight:600}
+    .tkb-lop::placeholder{color:#aeb9b1}
+    .tkb-lunch td{background:#fff7e8;color:#b07d16;font-weight:700;font-size:11.5px;letter-spacing:.02em;padding:7px 6px;text-align:center;border-top:1px solid #f1e2bf;border-bottom:1px solid #f1e2bf}
     .tkb-addtiet td{background:#fafdfb;border-bottom:none}
-    @media (max-width:760px){ .tkb-grid{font-size:11px} .tkb-grid td.tkb-cell{min-width:78px;padding:3px} .tkb-msel{font-size:10.5px;padding:4px 2px;border-radius:6px} .tkb-grid .tkb-buoi{width:54px;padding:6px 2px} .tkb-bz .nm{font-size:11px} .tkb-bz .tm{font-size:8.5px} .tkb-bz svg{width:18px;height:18px} .tkb-grid .tkb-tiet{width:30px} }
+    .th-in{border:1px solid #cfe2d5;border-radius:7px;padding:3px 6px;font-size:12px;color:#2c6b48;background:#fff;font-weight:600}
+    @media (max-width:760px){ .tkb-grid{font-size:11px} .tkb-grid td.tkb-cell{min-width:80px;padding:3px} .tkb-card{min-height:40px;padding:5px 3px} .tkb-msel{font-size:10.5px} .tkb-grid .tkb-buoi{width:54px;padding:6px 2px} .tkb-bz .nm{font-size:11px} .tkb-bz .tm{font-size:8.5px} .tkb-bz svg{width:18px;height:18px} .tkb-grid .tkb-tiet{width:32px} .tkb-grid .tkb-tiet .tn{width:24px;height:24px;font-size:11px} }
     </style>
     <section class="view" id="v-tkb">
       <div class="page-head">
-        <div><h2 class="ph-title">Thời khóa biểu của tôi</h2><div class="ph-sub">Lập <b>TKB</b> mỗi lần — Bút Xanh tự sinh <b>Lịch báo giảng</b> đồng thời <b>Xây dựng Kế hoạch bài dạy</b> theo tuần.</div></div>
+        <div><h2 class="ph-title">Thời khóa biểu của tôi</h2><div class="ph-sub">Lập <b>TKB</b> mỗi lần — Bút Xanh tự tạo <b>Lịch báo giảng</b> đồng thời <b>Xây dựng Kế hoạch bài dạy</b> theo tuần.</div></div>
         <div class="ph-actions">
           <input type="file" id="tkb-file" accept=".xlsx" style="display:none" onchange="bxTKBupload(this)">
           <button class="btn-xs" onclick="bxTKBdownloadTemplate()">📥 Tải mẫu TKB</button>
@@ -924,12 +928,20 @@ if(window.KHO_DATA_L2&&window.KHO_DATA_L2.length){ window.KHO_DATA=(window.KHO_D
           <label style="font-size:13px;color:#5a6b60;display:inline-flex;align-items:center;gap:6px;cursor:pointer">
             <input type="checkbox" id="tkb-thu7" onchange="bxTKBtoggleThu7(this.checked)"> Có học Thứ 7
           </label>
-          <span style="font-size:12.5px;color:#8aa093;flex:1;min-width:200px">💡 Chọn môn cho từng ô. Ô để trống = tiết nghỉ. Môn ngoài Kho (GDTC, Mĩ thuật…) sẽ để trống tên bài khi sinh LBG.</span>
+          <button type="button" class="btn-xs" onclick="bxTkbToggleHours()">🕐 Khung giờ</button>
+          <span style="font-size:12.5px;color:#8aa093;flex:1;min-width:200px">💡 Chọn môn cho từng ô. Ô để trống = tiết nghỉ. Môn ngoài Kho (GDTC, Mĩ thuật…) sẽ để trống tên bài khi tạo LBG.</span>
+        </div>
+        <div id="tkb-hours-panel" style="display:none;margin:-4px 0 14px;padding:11px 14px;background:#f3f9f5;border:1px solid #d6ebde;border-radius:10px;font-size:12.5px;color:#2c6b48;display:none;align-items:center;gap:10px;flex-wrap:wrap">
+          <b style="color:#0f6e3c">🕐 Khung giờ học (theo trường):</b>
+          <span style="display:inline-flex;align-items:center;gap:5px">☀️ Sáng <input type="time" id="th-sf" class="th-in" onchange="bxTkbApplyHours()"> – <input type="time" id="th-st" class="th-in" onchange="bxTkbApplyHours()"></span>
+          <span style="display:inline-flex;align-items:center;gap:5px">🌙 Chiều <input type="time" id="th-cf" class="th-in" onchange="bxTkbApplyHours()"> – <input type="time" id="th-ct" class="th-in" onchange="bxTkbApplyHours()"></span>
+          <span style="color:#b9821a">🍽️ Nghỉ trưa tự tính (hết sáng → vào chiều)</span>
+          <button type="button" class="btn-xs" onclick="bxTkbResetHours()">↺ Mặc định</button>
         </div>
         <div id="tkb-view-grid" style="overflow-x:auto"></div>
         <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid #e6efe9;padding-top:16px">
           <button class="btn save" onclick="bxTKBsave()">💾 Lưu thời khóa biểu</button>
-          <button class="btn solid" onclick="bxTKBsaveAndGen()">✨ Lưu &amp; sinh LBG tuần này</button>
+          <button class="btn solid" onclick="bxTKBsaveAndGen()">✨ Lưu &amp; tạo LBG tuần này</button>
         </div>
       </div>
     </section>
@@ -939,7 +951,7 @@ if(window.KHO_DATA_L2&&window.KHO_DATA_L2.length){ window.KHO_DATA=(window.KHO_D
         <div><h2 class="ph-title">Lịch báo giảng</h2><div class="wk-picker" id="wk-picker"></div></div>
         <div class="ph-actions">
           <input type="file" id="lbg-file" accept=".xlsx" style="display:none" onchange="lbgRead(this)">
-          <button class="btn-xs solid" onclick="bxRegenCurrentWeek()">✨ Sinh LBG tuần này</button>
+          <button class="btn-xs solid" onclick="bxRegenCurrentWeek()">✨ Tạo LBG tuần này</button>
           <button class="btn-xs" onclick="bxOpenExc()">📅 Nghỉ lễ / dạy bù</button>
           <button class="btn-xs" onclick="downloadScheduleTemplate()">📥 Tải mẫu LBG</button>
           <button class="btn-xs" onclick="lbgPick()">⤴ Đưa LBG lên</button>
@@ -3189,7 +3201,7 @@ el('set-save').onclick=function(){
 };
 
 /* ---------- 16b) SAO LƯU / KHÔI PHỤC DỮ LIỆU (JSON) ---------- */
-const BACKUP_KEYS=['butxanh_profile','butxanh_schedule','butxanh_tkb','butxanh_tkb_exc','butxanh_khbd','butxanh_hocsinh','butxanh_hoclieu','butxanh_khofiles','butxanh_bank'];
+const BACKUP_KEYS=['butxanh_profile','butxanh_schedule','butxanh_tkb','butxanh_tkb_exc','butxanh_tkb_hours','butxanh_khbd','butxanh_hocsinh','butxanh_hoclieu','butxanh_khofiles','butxanh_bank'];
 function buildBackupPayload(){
   const data={}; BACKUP_KEYS.forEach(k=>{ const v=localStorage.getItem(k); if(v!==null) data[k]=v; });
   return {app:'butxanh', version:1, exportedAt:new Date().toISOString(), data};
@@ -5041,7 +5053,7 @@ window.BX_confirm=function(opts,onOk,onCancel){
     appId:"1:288012765675:web:a07f84a69f16a17352b1ae"
   };
   /* Khóa đồng bộ — phần chữ (bỏ butxanh_khofiles vì tệp Word nặng, để v2 dùng Storage) */
-  var KEYS=['butxanh_profile','butxanh_tkb','butxanh_tkb_exc','butxanh_lbg_weeks','butxanh_lbg_meta','butxanh_khbd','butxanh_hocsinh','butxanh_hoclieu','butxanh_bank'];
+  var KEYS=['butxanh_profile','butxanh_tkb','butxanh_tkb_exc','butxanh_tkb_hours','butxanh_lbg_weeks','butxanh_lbg_meta','butxanh_khbd','butxanh_hocsinh','butxanh_hoclieu','butxanh_bank'];
   var auth=null, db=null, user=null, lastPushed=null, loopT=null, busy=false, seeded=false, reloadT=null, curRef=null, lastVals={};
   var box=document.getElementById('fb-auth');
 
@@ -5464,7 +5476,7 @@ window.BX_confirm=function(opts,onOk,onCancel){
     try{ if(typeof renderFullSchedule==='function') renderFullSchedule(); }catch(e){}
     var noko=sch.filter(function(r){return r._nokho;}).length;
     var ovf=sch.filter(function(r){return r._overflow;}).length;
-    alert('✓ Đã sinh Lịch báo giảng Tuần '+w+' từ Thời khoá biểu: '+sch.length+' tiết.'+
+    alert('✓ Đã tạo Lịch báo giảng Tuần '+w+' từ Thời khoá biểu: '+sch.length+' tiết.'+
       (noko?('\n• '+noko+' tiết môn chưa có trong Kho — để trống tên bài cho thầy cô tự ghi.'):'')+
       (ovf?('\n• '+ovf+' ô trống: tuần này ít bài hơn số ô (tuần ôn tập/kiểm tra) hoặc đã hết bài trong Kho — mời thầy cô tự ghi. (Tiết lỡ do nghỉ ngày đã tự dồn sang tuần sau.)'):''));
   };
@@ -5491,16 +5503,26 @@ window.BX_confirm=function(opts,onOk,onCancel){
   function renderStatus(){
     var s=document.getElementById('tkb-view-status'); if(!s) return;
     if(hasUserTKB()){
-      s.innerHTML='<div class="notice" style="margin:0;background:#eaf6ef;border-color:#cdeed9;color:#127a45">✓ Thầy cô đã có Thời khóa biểu riêng. Bút Xanh tự sinh Lịch báo giảng theo TKB này mỗi tuần. Chỉnh ở lưới rồi bấm <b>💾 Lưu</b> để cập nhật.</div>';
+      s.innerHTML='<div class="notice" style="margin:0;background:#eaf6ef;border-color:#cdeed9;color:#127a45">✓ Thầy cô đã có Thời khóa biểu riêng. Bút Xanh tự tạo Lịch báo giảng theo TKB này mỗi tuần. Chỉnh ở lưới rồi bấm <b>💾 Lưu</b> để cập nhật.</div>';
     } else {
       s.innerHTML='<div class="notice" style="margin:0;background:#fff7e6;border-color:#f0d9a8;color:#8a5a00">⚑ Đây là bước <b>thiết lập đầu tiên</b> để cá nhân hoá Bút Xanh. Lưới dưới đang gợi ý theo lịch mẫu — thầy cô chỉnh cho đúng lớp mình (hoặc bấm <b>📥 Tải mẫu TKB</b> điền rồi <b>⤴ Đưa TKB lên</b>) rồi bấm <b>💾 Lưu thời khóa biểu</b>.</div>';
     }
   }
   function monStyle(mon){ var m=(typeof monMeta==='function')?monMeta(mon):null; return m?('background:'+m.cs+';color:'+m.c+';border-color:'+m.cs):''; }
+  // ---- Khung giờ học (CHỈNH theo từng trường, lưu + đồng bộ) ----
+  var HOURS_KEY='butxanh_tkb_hours';
+  var _HOURS_DEF={sf:'07:00',st:'11:20',cf:'13:30',ct:'16:50'};
+  function loadHours(){ try{ var v=JSON.parse(localStorage.getItem(HOURS_KEY)); if(v&&v.sf&&v.st&&v.cf&&v.ct) return {sf:v.sf,st:v.st,cf:v.cf,ct:v.ct}; }catch(e){} return {sf:_HOURS_DEF.sf,st:_HOURS_DEF.st,cf:_HOURS_DEF.cf,ct:_HOURS_DEF.ct}; }
+  function saveHours(o){ try{ localStorage.setItem(HOURS_KEY,JSON.stringify(o)); }catch(e){} }
+  function _rng(a,b){ return (a||'…')+' – '+(b||'…'); }
   // Thẻ buổi: icon (mặt trời / mặt trăng) + tên + khung giờ — KHÔNG xoay chữ
-  var _BUOI_META={'Sáng':{tm:'07:00 – 11:20',ico:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#e3a317" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6"/></svg>'},
-    'Chiều':{tm:'13:30 – 16:50',ico:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3b7ec4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.6A8 8 0 0 1 9.4 3.5 7 7 0 1 0 20.5 14.6Z"/></svg>'}};
-  function _buoiCellHTML(buoi){ var m=_BUOI_META[buoi]||{tm:'',ico:''}; return '<div class="tkb-bz">'+m.ico+'<div class="nm">'+buoi.toUpperCase()+'</div><div class="tm">'+m.tm+'</div></div>'; }
+  var _BUOI_ICO={'Sáng':'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#e3a317" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6"/></svg>',
+    'Chiều':'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3b7ec4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.6A8 8 0 0 1 9.4 3.5 7 7 0 1 0 20.5 14.6Z"/></svg>'};
+  function _buoiCellHTML(buoi){ var H=loadHours(), tm=(buoi==='Sáng')?_rng(H.sf,H.st):_rng(H.cf,H.ct), ico=_BUOI_ICO[buoi]||''; return '<div class="tkb-bz">'+ico+'<div class="nm">'+buoi.toUpperCase()+'</div><div class="tm">'+tm+'</div></div>'; }
+  function _lunchHTML(ncol){ var H=loadHours(); return '<tr class="tkb-lunch"><td colspan="'+ncol+'">🍽️ NGHỈ TRƯA · '+_rng(H.st,H.cf)+'</td></tr>'; }
+  window.bxTkbToggleHours=function(){ var p=document.getElementById('tkb-hours-panel'); if(!p) return; if(p.style.display==='flex'){ p.style.display='none'; return; } var H=loadHours(), set=function(id,v){ var e=document.getElementById(id); if(e) e.value=v; }; set('th-sf',H.sf); set('th-st',H.st); set('th-cf',H.cf); set('th-ct',H.ct); p.style.display='flex'; };
+  window.bxTkbApplyHours=function(){ var g=function(id){ var e=document.getElementById(id); return e?e.value:''; }; var o={sf:g('th-sf'),st:g('th-st'),cf:g('th-cf'),ct:g('th-ct')}; if(o.sf&&o.st&&o.cf&&o.ct){ saveHours(o); renderGrid(); } };
+  window.bxTkbResetHours=function(){ saveHours({sf:_HOURS_DEF.sf,st:_HOURS_DEF.st,cf:_HOURS_DEF.cf,ct:_HOURS_DEF.ct}); var set=function(id,v){ var e=document.getElementById(id); if(e) e.value=v; }; set('th-sf',_HOURS_DEF.sf); set('th-st',_HOURS_DEF.st); set('th-cf',_HOURS_DEF.cf); set('th-ct',_HOURS_DEF.ct); renderGrid(); };
   function monOpts(val){ var h='<option value="">—</option>'; SUBJECTS.forEach(function(o){ h+='<option'+(o===val?' selected':'')+'>'+String(o).replace(/</g,'&lt;')+'</option>'; }); return h; }
   function renderGrid(){
     var box=document.getElementById('tkb-view-grid'); if(!box) return;
@@ -5508,15 +5530,18 @@ window.BX_confirm=function(opts,onOk,onCancel){
     var h='<table class="tkb-grid"><thead><tr><th>Buổi</th><th>Tiết</th>'+days.map(function(d){return '<th>'+d+'</th>';}).join('')+'</tr></thead><tbody>';
     [['Sáng'],['Chiều']].forEach(function(bb,bi){
       var buoi=bb[0], rows=_rowsFor(buoi);
+      if(bi>0) h+=_lunchHTML(2+days.length);  // dải nghỉ trưa ngăn Sáng/Chiều
       for(var t=1;t<=rows;t++){
-        h+='<tr'+(bi>0&&t===1?' class="tkb-sep"':'')+'>';
+        h+='<tr>';
         if(t===1) h+='<td class="tkb-buoi'+(buoi==='Chiều'?' pm':'')+'" rowspan="'+rows+'">'+_buoiCellHTML(buoi)+'</td>';
-        h+='<td class="tkb-tiet">'+t+'</td>';
+        h+='<td class="tkb-tiet"><span class="tn">'+t+'</span></td>';
         days.forEach(function(d){
           var s=_cell(d,buoi,t), mon=s?s.mon:'';
           h+='<td class="tkb-cell">'+
-             '<select class="tkb-msel'+(mon?'':' empty')+'" style="'+(mon?monStyle(mon):'')+'" onchange="bxTkbCell(this,&quot;'+d+'&quot;,&quot;'+buoi+'&quot;,'+t+')">'+monOpts(mon)+'</select>'+
-             (mon?('<input class="tkb-lop" value="'+String((s&&s.lop)||'').replace(/"/g,'&quot;')+'" placeholder="Lớp" onchange="bxTkbCellLop(this,&quot;'+d+'&quot;,&quot;'+buoi+'&quot;,'+t+')">'):'')+
+             '<div class="tkb-card'+(mon?'':' empty')+'" style="'+(mon?monStyle(mon):'')+'">'+
+               '<select class="tkb-msel" onchange="bxTkbCell(this,&quot;'+d+'&quot;,&quot;'+buoi+'&quot;,'+t+')">'+monOpts(mon)+'</select>'+
+               (mon?('<input class="tkb-lop" value="'+String((s&&s.lop)||'').replace(/"/g,'&quot;')+'" placeholder="Lớp" onchange="bxTkbCellLop(this,&quot;'+d+'&quot;,&quot;'+buoi+'&quot;,'+t+')">'):'')+
+             '</div>'+
              '</td>';
         });
         h+='</tr>';
@@ -5545,7 +5570,7 @@ window.BX_confirm=function(opts,onOk,onCancel){
     renderGrid(); renderStatus();
   };
   function _validSlots(){ return (_work||[]).filter(function(s){ return s.mon; }).map(_clone); }
-  window.bxTKBsave=function(){ var sl=_validSlots(); saveTKB(sl); renderStatus(); alert('✓ Đã lưu Thời khóa biểu ('+sl.length+' tiết/tuần).\nTừ giờ Bút Xanh tự sinh Lịch báo giảng theo TKB này khi thầy cô chuyển tuần.'); };
+  window.bxTKBsave=function(){ var sl=_validSlots(); saveTKB(sl); renderStatus(); alert('✓ Đã lưu Thời khóa biểu ('+sl.length+' tiết/tuần).\nTừ giờ Bút Xanh tự tạo Lịch báo giảng theo TKB này khi thầy cô chuyển tuần.'); };
   window.bxTKBsaveAndGen=function(){ var sl=_validSlots(); saveTKB(sl); bxRegenCurrentWeek(); if(typeof showView==='function') showView('lich'); };
 
   /* ---------- 📥 Tải mẫu TKB (.xlsx lưới) ---------- */
