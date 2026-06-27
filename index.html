@@ -699,6 +699,7 @@ if(window.KHO_DATA_L2&&window.KHO_DATA_L2.length){ window.KHO_DATA=(window.KHO_D
       <div class="nav-grp">Tổng quan</div>
       <a class="active" data-view="dashboard"><svg class="icn ic" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg> Bảng điều khiển</a>
       <div class="nav-grp">Soạn giảng</div>
+      <a data-view="tkb"><svg class="icn ic" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9h18M8 2.5v4M16 2.5v4M8 13h3M13 13h3M8 16.5h3"/></svg> Thời khóa biểu</a>
       <a data-view="lich"><svg class="icn ic" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg> Lịch báo giảng</a>
       <a data-view="khbd"><svg class="icn ic" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg> Kế hoạch bài dạy</a>
       <a data-view="kho"><svg class="icn ic" viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg> Kho giáo án</a>
@@ -875,13 +876,33 @@ if(window.KHO_DATA_L2&&window.KHO_DATA_L2.length){ window.KHO_DATA=(window.KHO_D
     </section><!-- /v-dashboard -->
 
     <!-- ============ VIEW: LỊCH BÁO GIẢNG ============ -->
+    <!-- ============ VIEW: THỜI KHÓA BIỂU (thiết lập đầu tiên → tự sinh LBG) ============ -->
+    <section class="view" id="v-tkb">
+      <div class="page-head">
+        <div><h2 class="ph-title">Thời khóa biểu của tôi</h2><div class="ph-sub">Lập <b>một lần</b> đầu năm — Bút Xanh tự sinh <b>Lịch báo giảng</b> mỗi tuần và lấy <b>Kế hoạch bài dạy</b> từ Kho cho cả năm.</div></div>
+        <div class="ph-actions">
+          <button class="btn-xs" onclick="bxTKBresetDefault()">↺ Lấy từ LBG đang xem</button>
+          <button class="btn-xs solid" onclick="bxTKBsaveAndGen()">✨ Lưu &amp; sinh LBG tuần này</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="notice" style="margin-bottom:12px">📌 Mỗi dòng là <b>một tiết cố định trong tuần</b>: chọn <b>Thứ · Buổi · Tiết · Môn · Lớp</b>. <b>Không cần nhập tên bài</b> — Bút Xanh tự điền bài đúng theo tuần từ <b>Kho giáo án số</b>. Môn chưa có trong Kho (GDTC, Mĩ thuật, Tiếng Anh…) sẽ để trống cho thầy cô tự ghi.</div>
+        <div id="tkb-view-status" style="margin-bottom:10px"></div>
+        <div id="tkb-view-editor" style="overflow:auto"></div>
+        <div id="tkb-view-addrow" style="margin-top:10px"></div>
+        <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid #e6efe9;padding-top:14px">
+          <button class="btn save" onclick="bxTKBsave()">💾 Lưu thời khóa biểu</button>
+          <button class="btn solid" onclick="bxTKBsaveAndGen()">✨ Lưu &amp; sinh LBG tuần này</button>
+        </div>
+      </div>
+    </section>
+
     <section class="view" id="v-lich">
       <div class="page-head">
         <div><h2 class="ph-title">Lịch báo giảng</h2><div class="wk-picker" id="wk-picker"></div></div>
         <div class="ph-actions">
           <input type="file" id="lbg-file" accept=".xlsx" style="display:none" onchange="lbgRead(this)">
-          <button class="btn-xs" onclick="bxOpenTKB()">🗓️ Thời khoá biểu của tôi</button>
-          <button class="btn-xs solid" onclick="bxRegenCurrentWeek()">✨ Sinh LBG từ TKB</button>
+          <button class="btn-xs solid" onclick="bxRegenCurrentWeek()">✨ Sinh LBG tuần này</button>
           <button class="btn-xs" onclick="downloadScheduleTemplate()">📥 Tải mẫu LBG</button>
           <button class="btn-xs" onclick="lbgPick()">⤴ Đưa LBG lên</button>
           <button class="btn-xs" onclick="openSchedEditor()">✏️ Sửa LBG</button>
@@ -1928,14 +1949,14 @@ document.getElementById("remind-refresh").onclick=async function(){
 
 /* ---------- 7) ĐIỀU HƯỚNG SPA ---------- */
 function el(id){return document.getElementById(id);}
-const ALLVIEWS=['dashboard','lich','khbd','kho','nhac','hocsinh','hoclieu','ppt','thongke','caidat'];
+const ALLVIEWS=['dashboard','tkb','lich','khbd','kho','nhac','hocsinh','hoclieu','ppt','thongke','caidat'];
 function showView(v){
   if(!ALLVIEWS.includes(v)) v='dashboard';
   document.querySelectorAll('.view').forEach(s=>s.classList.toggle('active', s.id==='v-'+v));
   document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('active', a.dataset.view===v));
   if(('#'+v)!==location.hash){ try{history.replaceState(null,'','#'+v);}catch(e){} }
   window.scrollTo({top:0});
-  const r={dashboard:renderDashboard,lich:renderFullSchedule,khbd:renderKHBDView,kho:renderKho,nhac:renderNhac,hocsinh:renderHocSinh,hoclieu:renderHocLieu,ppt:renderPPTOptions,thongke:renderThongKe,caidat:loadSettings}[v];
+  const r={dashboard:renderDashboard,tkb:window.bxRenderTKBView,lich:renderFullSchedule,khbd:renderKHBDView,kho:renderKho,nhac:renderNhac,hocsinh:renderHocSinh,hoclieu:renderHocLieu,ppt:renderPPTOptions,thongke:renderThongKe,caidat:loadSettings}[v];
   if(r) r();
   updateBellCount();
 }
@@ -5169,34 +5190,14 @@ window.BX_confirm=function(opts,onOk,onCancel){
 })();
 </script>
 
-<!-- ============ MODAL: THỜI KHOÁ BIỂU CỦA TÔI (Phase 1 TKB→LBG) ============ -->
-<div class="overlay" id="tkb-overlay">
-  <div class="modal" style="max-width:860px">
-    <div class="modal-head">
-      <div><h3>🗓️ Thời khoá biểu của tôi</h3><div class="sub">Khai báo TKB cố định một lần — Bút Xanh tự sinh Lịch báo giảng cho mọi tuần theo Kho giáo án.</div></div>
-      <button class="close" onclick="closeModal('tkb-overlay')">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="notice" style="margin-bottom:10px">Mỗi dòng = một tiết cố định trong tuần: <b>Thứ · Buổi · Tiết · Môn · Lớp</b>. <b>Không cần điền tên bài</b> — Bút Xanh tự lấy bài đúng theo tuần từ <b>Kho giáo án số</b>. Tiết của môn chưa có trong Kho (GDTC, Mĩ thuật, Tiếng Anh…) sẽ để trống tên bài cho thầy cô tự ghi.</div>
-      <div id="tkb-editor" style="overflow:auto"></div>
-      <div id="tkb-addrow" style="margin-top:10px"></div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn ghost" onclick="bxTKBresetDefault()">↺ Lấy từ LBG đang xem</button>
-      <button class="btn save" onclick="bxTKBsave()">💾 Lưu TKB</button>
-      <button class="btn solid" onclick="bxTKBsaveAndGen()">✨ Lưu &amp; sinh LBG tuần này</button>
-    </div>
-  </div>
-</div>
-
 <script>
 /* ====================================================================
    PHASE 1 — THỜI KHOÁ BIỂU CÁ NHÂN  →  TỰ SINH LỊCH BÁO GIẢNG
-   GV khai báo TKB cố định (Thứ/Buổi/Tiết/Môn/Lớp) một lần → mỗi tuần
-   Bút Xanh tự sinh LBG bằng cách tra Kho (KHO_DATA) theo (lớp, môn, tuần),
-   gán lần lượt các tiết của môn vào các ô TKB. Cá nhân hoá theo từng GV.
+   GV khai báo TKB cố định (Thứ/Buổi/Tiết/Môn/Lớp) một lần ở VIEW riêng
+   "Thời khóa biểu" (#v-tkb) → mỗi tuần Bút Xanh tự sinh LBG bằng cách tra
+   Kho (KHO_DATA) theo (lớp, môn, tuần), gán lần lượt tiết vào các ô TKB.
    Lưu localStorage 'butxanh_tkb' (đã thêm vào BACKUP_KEYS + FBX KEYS → đồng bộ).
-   Tích hợp KHÔNG phá luồng cũ: chỉ ghi đè BX_weekSchedule KHI GV đã có TKB riêng.
+   KHÔNG phá luồng cũ: chỉ ghi đè BX_weekSchedule KHI GV đã có TKB riêng.
    ==================================================================== */
 (function(){
   var TKB_KEY='butxanh_tkb';
@@ -5279,16 +5280,27 @@ window.BX_confirm=function(opts,onOk,onCancel){
       (noko?('\n• '+noko+' tiết môn chưa có trong Kho — để trống tên bài cho thầy cô tự ghi.'):''));
   };
 
-  /* ---------- trình soạn TKB ---------- */
+  /* ---------- trình soạn TKB (render thẳng vào VIEW #v-tkb) ---------- */
   var _work=null;
-  window.bxOpenTKB=function(){
-    _work=loadTKB().map(function(r){ return {day:r.day,buoi:r.buoi||'Sáng',tiet:r.tiet,mon:r.mon,lop:r.lop||state.klass}; });
-    renderEditor();
-    var ov=document.getElementById('tkb-overlay'); if(ov) ov.classList.add('show');
+  function _clone(r){ return {day:r.day,buoi:r.buoi||'Sáng',tiet:r.tiet,mon:r.mon,lop:r.lop||state.klass}; }
+  // Mở trang TKB (tương thích chỗ gọi cũ bxOpenTKB)
+  window.bxOpenTKB=function(){ if(typeof showView==='function') showView('tkb'); };
+  // showView('tkb') gọi hàm này để dựng trang
+  window.bxRenderTKBView=function(){
+    _work=loadTKB().map(_clone);
+    renderEditor(); renderStatus();
   };
+  function renderStatus(){
+    var s=document.getElementById('tkb-view-status'); if(!s) return;
+    if(hasUserTKB()){
+      s.innerHTML='<div class="notice" style="margin:0;background:var(--green-soft,#eaf6ef);border-color:#cdeed9;color:var(--green-dark,#127a45)">✓ Thầy cô đã có Thời khóa biểu riêng. Bút Xanh tự sinh Lịch báo giảng theo TKB này mỗi tuần. Chỉnh ở dưới rồi bấm <b>💾 Lưu</b> để cập nhật.</div>';
+    } else {
+      s.innerHTML='<div class="notice" style="margin:0;background:#fff7e6;border-color:#f0d9a8;color:#8a5a00">⚑ Đây là bước <b>thiết lập đầu tiên</b> để cá nhân hoá Bút Xanh. Bảng dưới đang gợi ý sẵn theo lịch mẫu — thầy cô chỉnh cho đúng lớp mình rồi bấm <b>💾 Lưu thời khóa biểu</b>.</div>';
+    }
+  }
   function opts(list,val){ return list.map(function(o){ return '<option'+(String(o)===String(val)?' selected':'')+'>'+String(o).replace(/</g,'&lt;')+'</option>'; }).join(''); }
   function renderEditor(){
-    var box=document.getElementById('tkb-editor'); if(!box) return;
+    var box=document.getElementById('tkb-view-editor'); if(!box) return;
     _work=_sortSlots(_work);
     var h='<table class="se-table"><thead><tr><th>Thứ</th><th>Buổi</th><th>Tiết</th><th>Môn</th><th>Lớp</th><th></th></tr></thead><tbody>';
     _work.forEach(function(r,i){
@@ -5303,19 +5315,19 @@ window.BX_confirm=function(opts,onOk,onCancel){
     });
     h+='</tbody></table>';
     box.innerHTML=h;
-    var add=document.getElementById('tkb-addrow');
+    var add=document.getElementById('tkb-view-addrow');
     if(add) add.innerHTML='<button class="btn-xs solid" onclick="bxTKBadd()">➕ Thêm tiết</button> <span style="color:var(--muted);font-size:12.5px;margin-left:8px">'+_work.length+' tiết/tuần</span>';
   }
   window.bxTKBset=function(i,k,v){ if(_work[i]){ _work[i][k]=(k==='tiet')?(parseInt(v,10)||1):v; } };
   window.bxTKBdel=function(i){ _work.splice(i,1); renderEditor(); };
   window.bxTKBadd=function(){ _work.push({day:'Thứ 2',buoi:'Sáng',tiet:1,mon:SUBJECTS[0],lop:state.klass}); renderEditor(); };
   window.bxTKBresetDefault=function(){
-    if(!confirm('Lấy lại Thời khoá biểu từ Lịch báo giảng đang hiển thị?')) return;
-    _work=(state.schedule||[]).map(function(r){ return {day:r.day,buoi:r.buoi||'Sáng',tiet:r.tiet,mon:r.mon,lop:r.lop||state.klass}; });
+    if(!confirm('Lấy lại Thời khóa biểu từ Lịch báo giảng đang hiển thị?')) return;
+    _work=(state.schedule||[]).map(_clone);
     renderEditor();
   };
-  window.bxTKBsave=function(){ saveTKB(_work.slice()); closeModal('tkb-overlay'); alert('✓ Đã lưu Thời khoá biểu ('+_work.length+' tiết/tuần).\nTừ giờ Bút Xanh tự sinh Lịch báo giảng theo TKB này khi thầy cô chuyển tuần.'); };
-  window.bxTKBsaveAndGen=function(){ saveTKB(_work.slice()); closeModal('tkb-overlay'); bxRegenCurrentWeek(); };
+  window.bxTKBsave=function(){ if(!_work)_work=loadTKB().map(_clone); saveTKB(_work.slice()); renderStatus(); alert('✓ Đã lưu Thời khóa biểu ('+_work.length+' tiết/tuần).\nTừ giờ Bút Xanh tự sinh Lịch báo giảng theo TKB này khi thầy cô chuyển tuần.'); };
+  window.bxTKBsaveAndGen=function(){ if(!_work)_work=loadTKB().map(_clone); saveTKB(_work.slice()); bxRegenCurrentWeek(); if(typeof showView==='function') showView('lich'); };
 })();
 </script>
 </body>
