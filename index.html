@@ -1527,7 +1527,7 @@ Cấu trúc: I. YÊU CẦU CẦN ĐẠT (năng lực, phẩm chất) · II. Đ�
 function khbdTemplateText(l){
   l=l||{};
   return `KẾ HOẠCH BÀI DẠY
-Môn: ${l.mon||'…'}   |   Lớp: ${l.lop||state.klass}   |   Tuần: ${l.tuan||state.week}
+Môn: ${_bxSubjectFull(l.mon)||'…'}   |   Lớp: ${l.lop||state.klass}   |   Tuần: ${l.tuan||state.week}
 Bài: ${l.bai||'…'}
 
 I. YÊU CẦU CẦN ĐẠT
@@ -1598,7 +1598,7 @@ function _khbdItemParas(it){
   const out=[], content=(it.content||'').replace(/\r/g,'');
   if(!/^\s*KẾ HOẠCH BÀI DẠY/.test(content)){
     out.push(_docP('KẾ HOẠCH BÀI DẠY',{bold:true,center:true,size:14}));
-    out.push(_docP(`Môn: ${it.mon||''}     Lớp: ${it.lop||''}     Tuần: ${it.tuan||''}`,{center:true}));
+    out.push(_docP(`Môn: ${_bxSubjectFull(it.mon)||''}     Lớp: ${it.lop||''}     Tuần: ${it.tuan||''}`,{center:true}));
     if(it.bai) out.push(_docP(`Bài: ${it.bai}`,{bold:true,center:true}));
     out.push(_docP(''));
   }
@@ -1681,7 +1681,7 @@ function _lessonBodyParas(L,row){
   const tiet=row.ppct||row.tiet||L.tiet||'', ngay=_ngayFull(row.date);
   const P=[];
   P.push(_docP('KẾ HOẠCH BÀI DẠY',{bold:true,center:true,size:14}));
-  P.push(_docP('Môn: '+L.mon+'   |   Lớp: '+lop+'   |   Tuần: '+tuan+(tiet?('   |   Tiết (PPCT): '+tiet):''),{center:true}));
+  P.push(_docP('Môn: '+_bxSubjectFull(L.mon)+'   |   Lớp: '+lop+'   |   Tuần: '+tuan+(tiet?('   |   Tiết (PPCT): '+tiet):''),{center:true}));
   P.push(_docP(_baiTitle(L.bai),{bold:true,center:true}));
   if(ngay) P.push(_docP('Ngày dạy: '+ngay,{center:true,size:12}));
   P.push(_docP(''));
@@ -1928,6 +1928,10 @@ function _bxCanonSubject(s){
   };
   return A[k]||null;
 }
+// Tên ĐẦY ĐỦ của môn để ghi vào GIÁO ÁN (KHBD). GV ghi tắt trên TKB/LBG ("HĐTN", "GDTC")
+// nhưng giáo án cần tên đầy đủ. CHỈ dùng cho giáo án — KHÔNG đổi hiển thị TKB/LBG.
+var _BX_SUBJ_FULL={'HĐTN':'Hoạt động trải nghiệm','GDTC':'Giáo dục thể chất','TNXH':'Tự nhiên và Xã hội','ĐĐ':'Đạo đức','TV':'Tiếng Việt'};
+function _bxSubjectFull(m){ if(m==null) return m; var s=String(m).trim(); return _BX_SUBJ_FULL[s]||s; }
 function _bxPpctMap(){
   /* PPCT số tiết/tuần Lớp 5 (dựng sẵn để luôn chạy); ưu tiên CURRICULUM_MASTER_SEED nếu truy cập được. */
   const m={'Toán':5,'Tiếng Việt':7,'Khoa học':2,'Lịch sử & Địa lí':2,'Tin học':1,'Công nghệ':1,'Đạo đức':1,'HĐTN':3,'Tiếng Anh':4,'Âm nhạc':1,'Mĩ thuật':1,'GDTC':2};
@@ -2333,7 +2337,7 @@ function bankLessonToText(L,row){
   const tiet=row.ppct||row.tiet||L.tiet||'', ngay=_ngayFull(row.date);
   const ln=[];
   ln.push('KẾ HOẠCH BÀI DẠY');
-  ln.push('Môn: '+L.mon+'   |   Lớp: '+lop+'   |   Tuần: '+tuan+(tiet?('   |   Tiết (PPCT): '+tiet):''));
+  ln.push('Môn: '+_bxSubjectFull(L.mon)+'   |   Lớp: '+lop+'   |   Tuần: '+tuan+(tiet?('   |   Tiết (PPCT): '+tiet):''));
   ln.push(_baiTitle(L.bai));
   if(ngay) ln.push('Ngày dạy: '+ngay);
   ln.push('');
@@ -2455,7 +2459,7 @@ function lessonPreviewHtml(L,row){
   let h='<div class="a4">';
   if(L._blank) h+='<div style="background:#fff7e0;border:1px solid #f0d68a;color:#8a6d10;font-size:12px;border-radius:6px;padding:5px 9px;margin-bottom:8px">📝 Khung mẫu trống — tiết này chưa có trong Kho giáo án số; thầy cô soạn nội dung hoặc thêm vào kho.</div>';
   h+='<h1>KẾ HOẠCH BÀI DẠY</h1>';
-  h+='<div class="a4-meta">Môn: '+esc(L.mon)+' &nbsp;|&nbsp; Lớp: '+esc(lop)+' &nbsp;|&nbsp; Tuần: '+esc(tuan)+(tiet?(' &nbsp;|&nbsp; Tiết (PPCT): '+esc(tiet)):'')+'</div>';
+  h+='<div class="a4-meta">Môn: '+esc(_bxSubjectFull(L.mon))+' &nbsp;|&nbsp; Lớp: '+esc(lop)+' &nbsp;|&nbsp; Tuần: '+esc(tuan)+(tiet?(' &nbsp;|&nbsp; Tiết (PPCT): '+esc(tiet)):'')+'</div>';
   h+='<div class="a4-bai">'+esc(_baiTitle(L.bai))+'</div>';
   if(ngay) h+='<div class="a4-meta">Ngày dạy: '+esc(ngay)+'</div>';
   h+='<h2>I. YÊU CẦU CẦN ĐẠT</h2><div class="ln">'+nlYccd(L.yccd||'(Thầy cô đối chiếu SGK/SGV)')+'</div>';
@@ -2491,7 +2495,7 @@ function previewWeekKhbd(){
 function pptOutlineFromBank(L){
   const pick=(t,n)=>(t||'').split('\n').map(x=>x.trim()).filter(Boolean).filter(x=>!/^\d+\.\s|^[a-zàâ]/i.test(x)===false||true).slice(0,n);
   const clean=x=>x.replace(/^[-•*]\s*/,'').replace(/^\d+\.\s*/,'');
-  let s='# '+(L.bai||'')+'\nMôn '+L.mon+' · Lớp '+state.klass+' · Tuần '+(L.tuan||state.week)+'\n';
+  let s='# '+(L.bai||'')+'\nMôn '+_bxSubjectFull(L.mon)+' · Lớp '+state.klass+' · Tuần '+(L.tuan||state.week)+'\n';
   s+='\n# Yêu cầu cần đạt\n'+pick(L.yccd,5).map(x=>'- '+clean(x)).join('\n')+'\n';
   s+='\n# Đồ dùng dạy học\n'+pick(L.dodung,4).map(x=>'- '+clean(x)).join('\n')+'\n';
   s+='\n# Hoạt động dạy học\n'+pick(hoatdongFlat(L.hoatdong),8).map(x=>'- '+clean(x)).join('\n')+'\n';
@@ -4841,7 +4845,7 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
     var ngay=(typeof _ngayFull==='function')?_ngayFull(row.date):'';
     var H=[];
     H.push('<div class="doc-title">Kế hoạch bài dạy</div>');
-    H.push('<div class="doc-meta">Môn: '+esc(L.mon)+'&nbsp;&nbsp;|&nbsp;&nbsp;Lớp: '+esc(lop)+'&nbsp;&nbsp;|&nbsp;&nbsp;Tuần: '+esc(tuan)+(tiet?('&nbsp;&nbsp;|&nbsp;&nbsp;Tiết (PPCT): '+esc(tiet)):'')+'</div>');
+    H.push('<div class="doc-meta">Môn: '+esc(_bxSubjectFull(L.mon))+'&nbsp;&nbsp;|&nbsp;&nbsp;Lớp: '+esc(lop)+'&nbsp;&nbsp;|&nbsp;&nbsp;Tuần: '+esc(tuan)+(tiet?('&nbsp;&nbsp;|&nbsp;&nbsp;Tiết (PPCT): '+esc(tiet)):'')+'</div>');
     H.push('<div class="doc-bai">'+esc(_baiTitle(L.bai))+'</div>');
     if(ngay) H.push('<div class="doc-meta" style="font-size:13.5px">Ngày dạy: '+esc(ngay)+'</div>');
     H.push('<h4>I. YÊU CẦU CẦN ĐẠT</h4>'+yccdPara(L.yccd||'(Thầy cô đối chiếu SGK/SGV)'));
@@ -4991,7 +4995,7 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
     if(!L){ if(typeof openKHBD==='function')openKHBD(idx); return; }
     var key=editKey(L,row); _cur={L:L,row:row,key:key};
     var t=document.getElementById('kho-prev-title'),b=document.getElementById('kho-prev-body');
-    if(t)t.textContent='KHBD: '+L.mon+' · Tuần '+(L.tuan||row.tuan||'')+' · Tiết '+(row.tiet||L.tiet||'')+' — '+L.bai;
+    if(t)t.textContent='KHBD: '+_bxSubjectFull(L.mon)+' · Tuần '+(L.tuan||row.tuan||'')+' · Tiết '+(row.tiet||L.tiet||'')+' — '+L.bai;
     var edits=loadEdits();
     if(b){b.innerHTML=(edits[key]!=null)?edits[key]:window.khoLessonToHtml(L,row);b.contentEditable='false';b.classList.remove('editing');b.scrollTop=0;}
     var be=document.getElementById('kho-prev-edit'),bs=document.getElementById('kho-prev-saveedit');
