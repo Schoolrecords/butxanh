@@ -884,12 +884,17 @@ if(window.KHO_DATA_L2&&window.KHO_DATA_L2.length){ window.KHO_DATA=(window.KHO_D
     .tkb-grid th:last-child,.tkb-grid td:last-child{border-right:none}
     .tkb-grid thead th{background:linear-gradient(180deg,#23a35e,#15834a);color:#fff;font-weight:700;padding:11px 4px;font-size:12.5px;letter-spacing:.02em;border-right-color:rgba(255,255,255,.25)}
     .tkb-grid thead th:first-child,.tkb-grid thead th:nth-child(2){background:#0f6e3c}
-    .tkb-grid .tkb-buoi{background:#e8f5ee;font-weight:800;color:#0f5a34;width:34px;font-size:13px;border-right:2px solid #bcd9c7}
-    .tkb-grid .tkb-buoi.pm{background:#e6eef9;color:#1c4e84;border-right-color:#bcccea}
-    .tkb-grid .tkb-buoi span{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;display:inline-block;letter-spacing:.14em}
-    .tkb-grid .tkb-tiet{background:#f4faf6;font-weight:700;color:#2c6b48;width:48px;border-right:2px solid #cfe2d5}
+    .tkb-grid .tkb-buoi{width:84px;padding:8px 4px;border-right:1px solid #d9e8df;background:#f5faf6}
+    .tkb-grid .tkb-buoi.pm{background:#f1f6fc;border-right-color:#d7e3f1}
+    .tkb-bz{display:flex;flex-direction:column;align-items:center;gap:3px;line-height:1.15}
+    .tkb-bz svg{display:block}
+    .tkb-bz .nm{font-weight:800;color:#0f7a43;font-size:13px;letter-spacing:.1em}
+    .tkb-buoi.pm .tkb-bz .nm{color:#1f5fa0}
+    .tkb-bz .tm{font-size:10px;color:#8a978f;font-weight:600;letter-spacing:.01em}
+    .tkb-grid .tkb-tiet{background:#f7fbf8;font-weight:700;color:#3a7a57;width:38px;border-right:1px solid #dcebe2}
     .tkb-grid td.tkb-cell{padding:5px;min-width:120px;background:#fff}
-    .tkb-grid tr.tkb-sep td{border-top:3px solid #15834a}
+    .tkb-grid tr.tkb-sep td{border-top:2px solid #cde6d8}
+    .tkb-grid tr.tkb-sep td.tkb-buoi{border-top-color:#d7e3f1}
     .tkb-grid tbody tr:last-child td{border-bottom:none}
     .tkb-msel{width:100%;border:1px solid #cfe2d5;border-radius:8px;padding:6px 4px;background:#fff;font-size:12.5px;cursor:pointer;transition:.15s;font-weight:600}
     .tkb-msel:hover{border-color:#15834a;box-shadow:0 0 0 2px rgba(21,131,74,.08)}
@@ -897,11 +902,11 @@ if(window.KHO_DATA_L2&&window.KHO_DATA_L2.length){ window.KHO_DATA=(window.KHO_D
     .tkb-lop{width:100%;max-width:80px;margin-top:5px;border:1px solid #e2e8e4;border-radius:7px;padding:3px 4px;font-size:11px;text-align:center;color:#5a6b60;background:#fbfdfb}
     .tkb-lop::placeholder{color:#c8d2cb}
     .tkb-addtiet td{background:#fafdfb;border-bottom:none}
-    @media (max-width:760px){ .tkb-grid{font-size:11px} .tkb-grid td.tkb-cell{min-width:78px;padding:3px} .tkb-msel{font-size:10.5px;padding:4px 2px;border-radius:6px} .tkb-grid .tkb-buoi{width:22px} }
+    @media (max-width:760px){ .tkb-grid{font-size:11px} .tkb-grid td.tkb-cell{min-width:78px;padding:3px} .tkb-msel{font-size:10.5px;padding:4px 2px;border-radius:6px} .tkb-grid .tkb-buoi{width:54px;padding:6px 2px} .tkb-bz .nm{font-size:11px} .tkb-bz .tm{font-size:8.5px} .tkb-bz svg{width:18px;height:18px} .tkb-grid .tkb-tiet{width:30px} }
     </style>
     <section class="view" id="v-tkb">
       <div class="page-head">
-        <div><h2 class="ph-title">Thời khóa biểu của tôi</h2><div class="ph-sub">Lập <b>một lần</b> đầu năm — Bút Xanh tự sinh <b>Lịch báo giảng</b> mỗi tuần &amp; lấy <b>Kế hoạch bài dạy</b> từ Kho cả năm.</div></div>
+        <div><h2 class="ph-title">Thời khóa biểu của tôi</h2><div class="ph-sub">Lập <b>TKB</b> mỗi lần — Bút Xanh tự sinh <b>Lịch báo giảng</b> đồng thời <b>Xây dựng Kế hoạch bài dạy</b> theo tuần.</div></div>
         <div class="ph-actions">
           <input type="file" id="tkb-file" accept=".xlsx" style="display:none" onchange="bxTKBupload(this)">
           <button class="btn-xs" onclick="bxTKBdownloadTemplate()">📥 Tải mẫu TKB</button>
@@ -5492,6 +5497,10 @@ window.BX_confirm=function(opts,onOk,onCancel){
     }
   }
   function monStyle(mon){ var m=(typeof monMeta==='function')?monMeta(mon):null; return m?('background:'+m.cs+';color:'+m.c+';border-color:'+m.cs):''; }
+  // Thẻ buổi: icon (mặt trời / mặt trăng) + tên + khung giờ — KHÔNG xoay chữ
+  var _BUOI_META={'Sáng':{tm:'07:00 – 11:20',ico:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#e3a317" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6"/></svg>'},
+    'Chiều':{tm:'13:30 – 16:50',ico:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3b7ec4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.6A8 8 0 0 1 9.4 3.5 7 7 0 1 0 20.5 14.6Z"/></svg>'}};
+  function _buoiCellHTML(buoi){ var m=_BUOI_META[buoi]||{tm:'',ico:''}; return '<div class="tkb-bz">'+m.ico+'<div class="nm">'+buoi.toUpperCase()+'</div><div class="tm">'+m.tm+'</div></div>'; }
   function monOpts(val){ var h='<option value="">—</option>'; SUBJECTS.forEach(function(o){ h+='<option'+(o===val?' selected':'')+'>'+String(o).replace(/</g,'&lt;')+'</option>'; }); return h; }
   function renderGrid(){
     var box=document.getElementById('tkb-view-grid'); if(!box) return;
@@ -5501,7 +5510,7 @@ window.BX_confirm=function(opts,onOk,onCancel){
       var buoi=bb[0], rows=_rowsFor(buoi);
       for(var t=1;t<=rows;t++){
         h+='<tr'+(bi>0&&t===1?' class="tkb-sep"':'')+'>';
-        if(t===1) h+='<td class="tkb-buoi'+(buoi==='Chiều'?' pm':'')+'" rowspan="'+rows+'"><span>'+buoi.toUpperCase()+'</span></td>';
+        if(t===1) h+='<td class="tkb-buoi'+(buoi==='Chiều'?' pm':'')+'" rowspan="'+rows+'">'+_buoiCellHTML(buoi)+'</td>';
         h+='<td class="tkb-tiet">'+t+'</td>';
         days.forEach(function(d){
           var s=_cell(d,buoi,t), mon=s?s.mon:'';
