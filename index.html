@@ -5501,7 +5501,7 @@ window.BX_confirm=function(opts,onOk,onCancel){
   function monStyle(mon){ var m=(typeof monMeta==='function')?monMeta(mon):null; return m?('background:'+m.cs+';color:'+m.c+';border-color:'+m.cs):''; }
   // Thẻ buổi: icon LỚN (mặt trời / mặt trăng) + tên — KHÔNG xoay chữ, KHÔNG khung giờ
   var _BUOI_ICO={'Sáng':'<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#e3a317" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.2v2.6M12 19.2v2.6M2.2 12h2.6M19.2 12h2.6M5.1 5.1l1.8 1.8M17.1 17.1l1.8 1.8M18.9 5.1 17.1 6.9M6.9 17.1 5.1 18.9"/></svg>',
-    'Chiều':'<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#3b7ec4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.6A8 8 0 0 1 9.4 3.5 7 7 0 1 0 20.5 14.6Z"/></svg>'};
+    'Chiều':'<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#3b7ec4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="M20 12h2"/><path d="m19.07 4.93-1.41 1.41"/><path d="M15.947 12.65a4 4 0 0 0-5.925-4.128"/><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"/></svg>'};
   function _buoiCellHTML(buoi){ var ico=_BUOI_ICO[buoi]||''; return '<div class="tkb-bz">'+ico+'<div class="nm">'+buoi.toUpperCase()+'</div></div>'; }
   function monOpts(val){ var h='<option value="">—</option>'; SUBJECTS.forEach(function(o){ h+='<option'+(o===val?' selected':'')+'>'+String(o).replace(/</g,'&lt;')+'</option>'; }); return h; }
   function renderGrid(){
