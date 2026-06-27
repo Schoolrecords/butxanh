@@ -884,10 +884,12 @@ if(window.KHO_DATA_L2&&window.KHO_DATA_L2.length){ window.KHO_DATA=(window.KHO_D
     .tkb-grid th:last-child,.tkb-grid td:last-child{border-right:none}
     .tkb-grid thead th{background:linear-gradient(180deg,#23a35e,#15834a);color:#fff;font-weight:700;padding:11px 4px;font-size:12.5px;letter-spacing:.02em;border-right-color:rgba(255,255,255,.25)}
     .tkb-grid thead th:first-child,.tkb-grid thead th:nth-child(2){background:#0f6e3c}
-    .tkb-grid .tkb-buoi{background:#e8f5ee;font-weight:800;color:#0f5a34;width:30px;font-size:13px}
-    .tkb-grid .tkb-buoi span{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;display:inline-block;letter-spacing:.12em}
-    .tkb-grid .tkb-tiet{background:#f4faf6;font-weight:700;color:#2c6b48;width:48px}
+    .tkb-grid .tkb-buoi{background:#e8f5ee;font-weight:800;color:#0f5a34;width:34px;font-size:13px;border-right:2px solid #bcd9c7}
+    .tkb-grid .tkb-buoi.pm{background:#e6eef9;color:#1c4e84;border-right-color:#bcccea}
+    .tkb-grid .tkb-buoi span{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;display:inline-block;letter-spacing:.14em}
+    .tkb-grid .tkb-tiet{background:#f4faf6;font-weight:700;color:#2c6b48;width:48px;border-right:2px solid #cfe2d5}
     .tkb-grid td.tkb-cell{padding:5px;min-width:120px;background:#fff}
+    .tkb-grid tr.tkb-sep td{border-top:3px solid #15834a}
     .tkb-grid tbody tr:last-child td{border-bottom:none}
     .tkb-msel{width:100%;border:1px solid #cfe2d5;border-radius:8px;padding:6px 4px;background:#fff;font-size:12.5px;cursor:pointer;transition:.15s;font-weight:600}
     .tkb-msel:hover{border-color:#15834a;box-shadow:0 0 0 2px rgba(21,131,74,.08)}
@@ -5495,11 +5497,11 @@ window.BX_confirm=function(opts,onOk,onCancel){
     var box=document.getElementById('tkb-view-grid'); if(!box) return;
     var days=_days();
     var h='<table class="tkb-grid"><thead><tr><th>Buổi</th><th>Tiết</th>'+days.map(function(d){return '<th>'+d+'</th>';}).join('')+'</tr></thead><tbody>';
-    [['Sáng'],['Chiều']].forEach(function(bb){
+    [['Sáng'],['Chiều']].forEach(function(bb,bi){
       var buoi=bb[0], rows=_rowsFor(buoi);
       for(var t=1;t<=rows;t++){
-        h+='<tr>';
-        if(t===1) h+='<td class="tkb-buoi" rowspan="'+rows+'"><span>'+buoi.toUpperCase()+'</span></td>';
+        h+='<tr'+(bi>0&&t===1?' class="tkb-sep"':'')+'>';
+        if(t===1) h+='<td class="tkb-buoi'+(buoi==='Chiều'?' pm':'')+'" rowspan="'+rows+'"><span>'+buoi.toUpperCase()+'</span></td>';
         h+='<td class="tkb-tiet">'+t+'</td>';
         days.forEach(function(d){
           var s=_cell(d,buoi,t), mon=s?s.mon:'';
@@ -5547,23 +5549,24 @@ window.BX_confirm=function(opts,onOk,onCancel){
     var _uniformLop=function(){ var ls=[]; (_work||[]).forEach(function(s){ if(s.mon && s.lop && ls.indexOf(s.lop)<0) ls.push(s.lop); }); return ls.length===1?ls[0]:''; };
     var rows=[], merges=[], uniLop=filled?_uniformLop():'', lop=filled?(uniLop||_defLop()):'';
     var multiLop=filled&&!uniLop;  // GV bộ môn nhiều lớp → ghi lớp kèm trong từng ô
-    var tc=[C(0,1,1,'THỜI KHÓA BIỂU')]; for(var c=1;c<ncol;c++) tc.push(C(c,1,1,'')); rows.push(ROW(1,26,tc)); merges.push('A1:'+lastL+'1');
+    var tc=[C(0,1,1,'THỜI KHÓA BIỂU')]; for(var c=1;c<ncol;c++) tc.push(C(c,1,1,'')); rows.push(ROW(1,30,tc)); merges.push('A1:'+lastL+'1');
     var subt=multiLop?('(Lớp ghi kèm trong từng ô, vd “Toán 5A”    —    Năm học '+(state.year||'…')+')'):('(Lớp: '+(lop||'……')+'    —    Năm học '+(state.year||'…')+')');
-    var sc=[C(0,2,2,subt)]; for(var c2=1;c2<ncol;c2++) sc.push(C(c2,2,2,'')); rows.push(ROW(2,18,sc)); merges.push('A2:'+lastL+'2');
-    rows.push(ROW(3,24,['Buổi','Tiết'].concat(days).map(function(t,i){return C(i,3,4,t);})));
+    var sc=[C(0,2,2,subt)]; for(var c2=1;c2<ncol;c2++) sc.push(C(c2,2,2,'')); rows.push(ROW(2,22,sc)); merges.push('A2:'+lastL+'2');
+    rows.push(ROW(3,30,['Buổi','Tiết'].concat(days).map(function(t,i){return C(i,3,4,t);})));
     var r=4;
     [['Sáng'],['Chiều']].forEach(function(bb){
       var buoi=bb[0], nrows=filled?_rowsFor(buoi):(buoi==='Sáng'?5:3), startR=r;
       for(var t=1;t<=nrows;t++){
         var cells=[C(0,r,6,t===1?buoi:''),C(1,r,8,t,true)];
         days.forEach(function(d,di){ var cv=''; if(filled){ var s=_cell(d,buoi,t); if(s&&s.mon){ cv=s.mon+((multiLop&&s.lop)?(' '+s.lop):''); } } cells.push(C(2+di,r,8,cv)); });
-        rows.push(ROW(r,26,cells)); r++;
+        rows.push(ROW(r,38,cells)); r++;
       }
       if(nrows>1) merges.push('A'+startR+':A'+(r-1));
     });
     var lastRow=r-1;
-    var cols='<cols><col min="1" max="1" width="8" customWidth="1"/><col min="2" max="2" width="6" customWidth="1"/><col min="3" max="'+ncol+'" width="16" customWidth="1"/></cols>';
-    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><dimension ref="A1:'+lastL+lastRow+'"/><sheetViews><sheetView showGridLines="0" workbookViewId="0"/></sheetViews><sheetFormatPr defaultRowHeight="15"/>'+cols+'<sheetData>'+rows.join('')+'</sheetData><mergeCells count="'+merges.length+'">'+merges.map(function(m){return '<mergeCell ref="'+m+'"/>';}).join('')+'</mergeCells><pageMargins left="0.4" right="0.4" top="0.5" bottom="0.5" header="0.3" footer="0.3"/><pageSetup paperSize="9" scale="92" orientation="landscape"/></worksheet>';
+    // cột rộng cân khổ A4 ngang: Buổi 9, Tiết 6, các ngày 21 (fitToWidth co lại nếu có Thứ 7)
+    var cols='<cols><col min="1" max="1" width="9" customWidth="1"/><col min="2" max="2" width="6" customWidth="1"/><col min="3" max="'+ncol+'" width="21" customWidth="1"/></cols>';
+    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><dimension ref="A1:'+lastL+lastRow+'"/><sheetViews><sheetView showGridLines="0" workbookViewId="0"/></sheetViews><sheetFormatPr defaultRowHeight="15"/>'+cols+'<sheetData>'+rows.join('')+'</sheetData><mergeCells count="'+merges.length+'">'+merges.map(function(m){return '<mergeCell ref="'+m+'"/>';}).join('')+'</mergeCells><printOptions horizontalCentered="1" verticalCentered="1"/><pageMargins left="0.5" right="0.5" top="0.6" bottom="0.6" header="0.3" footer="0.3"/><pageSetup paperSize="9" orientation="landscape" fitToWidth="1" fitToHeight="1"/></worksheet>';
   }
   function buildTKBxlsx(filled){
     var enc=new TextEncoder(), F=function(name,str){return {name:name,data:enc.encode(str)};};
