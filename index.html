@@ -1919,7 +1919,8 @@ function _bxCanonSubject(s){
     'tinhoc':'Tin học','tin':'Tin học',
     'congnghe':'Công nghệ','cn':'Công nghệ',
     'daoduc':'Đạo đức','dd':'Đạo đức',
-    'hdtn':'HĐTN','hoatdongtrainghiem':'HĐTN','hoatdongtrainghiemhuongnghiep':'HĐTN',
+    'tunhienvaxahoi':'Tự nhiên và Xã hội','tnxh':'Tự nhiên và Xã hội','tnvxh':'Tự nhiên và Xã hội',
+    'hdtn':'HĐTN','hoatdongtrainghiem':'HĐTN','hoatdongtrainghiemhuongnghiep':'HĐTN','hdtnhn':'HĐTN',
     'tienganh':'Tiếng Anh','ta':'Tiếng Anh','anhvan':'Tiếng Anh',
     'amnhac':'Âm nhạc','nhac':'Âm nhạc',
     'mithuat':'Mĩ thuật','mythuat':'Mĩ thuật','mt':'Mĩ thuật',
@@ -2248,7 +2249,9 @@ function _normTxt(s){
     .replace(/\(?\s*tiep theo\s*\)?/g,'tt')
     .replace(/[^a-z0-9]+/g,'');
 }
-function bankKey(mon,bai){ return _normTxt(mon)+'|'+_normTxt(bai); }
+// Canon hoá MÔN trước khi tạo khoá khớp: Kho lưu "HĐTN" còn LBG/TKB dùng "Hoạt động trải nghiệm"
+// (và mọi viết tắt khác) → đưa về cùng 1 dạng, tránh báo "missing" oan khi tạo KHBD.
+function bankKey(mon,bai){ var cm=(typeof _bxCanonSubject==='function'&&_bxCanonSubject(mon))||mon; return _normTxt(cm)+'|'+_normTxt(bai); }
 function loadBankImport(){ try{const v=JSON.parse(localStorage.getItem('butxanh_bank')); return Array.isArray(v)?v:[];}catch(e){return [];} }
 function persistBankImport(arr){ try{localStorage.setItem('butxanh_bank',JSON.stringify(arr)); return true;}catch(e){return false;} }
 function bankAll(){
@@ -3549,8 +3552,8 @@ function BX_resolveBankMatch(row){
   var k=bankKey(row.mon,row.bai);
   var byName=all.filter(function(L){ return bankKey(L.mon,L.bai)===k; });
   if(!byName.length){
-    var mon=_normTxt(row.mon), bn=_baiNo(row.bai), tn=_tietNo(row.bai), wk0=String(row.tuan||state.week);
-    var pool=all.filter(function(L){ return _normTxt(L.mon)===mon; }).filter(function(L){
+    var mon=_normTxt((_bxCanonSubject(row.mon)||row.mon)), bn=_baiNo(row.bai), tn=_tietNo(row.bai), wk0=String(row.tuan||state.week);
+    var pool=all.filter(function(L){ return _normTxt((_bxCanonSubject(L.mon)||L.mon))===mon; }).filter(function(L){
       if(bn!=null){ var lb=_baiNo(L.bai); if(lb!=null && lb!==bn) return false; }
       if(tn!=null){ var lt=_tietNo(L.bai); if(lt!=null && lt!==tn) return false; }
       return true;
