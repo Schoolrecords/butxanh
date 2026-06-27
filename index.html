@@ -5326,6 +5326,31 @@ window.BX_confirm=function(opts,onOk,onCancel){
     var line=String(dodung).split('\n')[0].replace(/^[-••\s]+/,'').replace(/^GV\s*:?\s*/i,'').trim();
     return line.length>56?line.slice(0,56)+'…':line;
   }
+  /* ---------- tiết GỘP: bài "Tiết a+b" dạy trong NHIỀU tiết → trải đủ số ô ----------
+     Kho đánh số tiết theo thứ tự trong tuần; bài gộp (vd TV5 "Tiết 1+2: ĐỌC") chỉ là
+     1 entry nhưng chiếm 2 ô trên TKB. Vì thế số entry Kho < số ô TKB → lệch. Ta trải
+     mỗi entry gộp thành đủ số tiết để khớp số ô (mỗi ô = 1 tiết). */
+  function _lessonSpan(L){
+    var m=String((L&&L.bai)||'').match(/Ti[eế]t\s*\d+(?:\s*\+\s*\d+)+/i);
+    return m?Math.max(1,(m[0].match(/\d+/g)||['1']).length):1;
+  }
+  function _expandLessons(list){
+    var out=[];
+    (list||[]).forEach(function(L){
+      var sp=_lessonSpan(L), base=parseInt(L.tiet,10)||0;
+      for(var k=0;k<sp;k++){ out.push({L:L,part:k+1,parts:sp,ppct:base?(base+k):(L.tiet||'')}); }
+    });
+    return out;
+  }
+  // Lấy 1 ô kế tiếp từ con trỏ (mon|lop). Trả {bai,tbdh,ppct,nokho,overflow}.
+  function _nextCell(cur,key,lop,mon,pw){
+    if(!cur[key]){ var lw=lessonsForWeek(lop,mon,pw); cur[key]={list:_expandLessons(lw),i:0,raw:lw.length}; }
+    var E=cur[key].list[cur[key].i++], L=E&&E.L;
+    var bai=L?(L.bai||''):'';
+    if(E&&E.parts>1&&E.part>1) bai=bai+' (tiết '+E.part+'/'+E.parts+')';
+    return { bai:bai, tbdh:L?shortTBDH(L.dodung):'', ppct:E?(E.ppct||''):'',
+             nokho:!L&&cur[key].raw===0, overflow:!L&&cur[key].raw>0 };
+  }
   /* ---------- Lịch nghỉ & dạy bù → CON TRỎ TIẾN ĐỘ PPCT ----------
      Tách "tuần lịch" (W) khỏi "tuần PPCT" (nội dung Kho). Nghỉ CẢ TUẦN làm con
      trỏ PPCT lùi lại (tuần sau dạy nội dung tuần trước). Nghỉ NGÀY lẻ → đánh dấu
@@ -5358,18 +5383,16 @@ window.BX_confirm=function(opts,onOk,onCancel){
       if(pw===null){ rows.push({day:s.day,date:_date(s.day),buoi:s.buoi,tiet:s.tiet,mon:s.mon,lop:lop,bai:'🏖️ NGHỈ — '+weekNote,tbdh:'',_gen:true,_nghi:true}); return; }
       if(daysOff[s.day]){ rows.push({day:s.day,date:_date(s.day),buoi:s.buoi,tiet:s.tiet,mon:s.mon,lop:lop,bai:'🏖️ Nghỉ — '+daysOff[s.day],tbdh:'',_gen:true,_nghi:true}); return; }
       var key=_n(s.mon)+'|'+_digits(lop);
-      if(!cur[key]){ cur[key]={list:lessonsForWeek(lop,s.mon,pw),i:0}; }
-      var L=cur[key].list[cur[key].i++];
+      var C=_nextCell(cur,key,lop,s.mon,pw);
       rows.push({day:s.day,date:_date(s.day),buoi:s.buoi,tiet:s.tiet,mon:s.mon,lop:lop,
-        bai:L?(L.bai||''):'',tbdh:L?shortTBDH(L.dodung):'',ppct:(L&&L.tiet)||'',_gen:true,_nokho:!L});
+        bai:C.bai,tbdh:C.tbdh,ppct:C.ppct,_gen:true,_nokho:C.nokho,_overflow:C.overflow});
     });
     if(pw!==null){
       exc.makeup.filter(function(m){return parseInt(m.tuan,10)===w;}).forEach(function(m){
         var lop=m.lop||state.klass, key=_n(m.mon)+'|'+_digits(lop);
-        if(!cur[key]){ cur[key]={list:lessonsForWeek(lop,m.mon,pw),i:0}; }
-        var L=cur[key].list[cur[key].i++];
+        var C=_nextCell(cur,key,lop,m.mon,pw);
         rows.push({day:m.day,date:_date(m.day),buoi:m.buoi||'Chiều',tiet:m.tiet||1,mon:m.mon,lop:lop,
-          bai:'↩️ Dạy bù: '+(L?(L.bai||''):(m.note||'')),tbdh:L?shortTBDH(L.dodung):'',ppct:(L&&L.tiet)||'',_gen:true,_bu:true,_nokho:!L});
+          bai:'↩️ Dạy bù: '+(C.bai||m.note||''),tbdh:C.tbdh,ppct:C.ppct,_gen:true,_bu:true,_nokho:C.nokho,_overflow:C.overflow});
       });
     }
     rows.sort(function(a,b){ return (_DOWg[a.day]||9)-(_DOWg[b.day]||9)||(_BUg[a.buoi]||0)-(_BUg[b.buoi]||0)||(+a.tiet||0)-(+b.tiet||0); });
@@ -5399,8 +5422,10 @@ window.BX_confirm=function(opts,onOk,onCancel){
     try{ if(typeof persistSchedule==='function') persistSchedule(); }catch(e){}
     try{ if(typeof renderFullSchedule==='function') renderFullSchedule(); }catch(e){}
     var noko=sch.filter(function(r){return r._nokho;}).length;
+    var ovf=sch.filter(function(r){return r._overflow;}).length;
     alert('✓ Đã sinh Lịch báo giảng Tuần '+w+' từ Thời khoá biểu: '+sch.length+' tiết.'+
-      (noko?('\n• '+noko+' tiết môn chưa có trong Kho — để trống tên bài cho thầy cô tự ghi.'):''));
+      (noko?('\n• '+noko+' tiết môn chưa có trong Kho — để trống tên bài cho thầy cô tự ghi.'):'')+
+      (ovf?('\n• '+ovf+' tiết dôi so với số bài trong Kho tuần này (có thể TKB nhiều ô hơn PPCT, hoặc do nghỉ ngày dồn tiết) — mời thầy cô chọn bài tay.'):''));
   };
 
   /* ---------- trình soạn TKB — LƯỚI chuyên nghiệp (cột Thứ × hàng Tiết) ---------- */
@@ -5451,7 +5476,7 @@ window.BX_confirm=function(opts,onOk,onCancel){
         });
         h+='</tr>';
       }
-      h+='<tr class="tkb-addtiet"><td class="tkb-tiet" style="background:#fafdfb">&nbsp;</td><td colspan="'+days.length+'" style="text-align:left"><button class="btn-xs" onclick="bxTkbAddTiet(&quot;'+buoi+'&quot;)">➕ Thêm tiết '+buoi.toLowerCase()+'</button></td></tr>';
+      if(buoi==='Chiều') h+='<tr class="tkb-addtiet"><td class="tkb-tiet" style="background:#fafdfb">&nbsp;</td><td colspan="'+days.length+'" style="text-align:left"><button class="btn-xs" onclick="bxTkbAddTiet(&quot;'+buoi+'&quot;)">➕ Thêm tiết '+buoi.toLowerCase()+'</button></td></tr>';
     });
     h+='</tbody></table>';
     box.innerHTML=h;
@@ -5486,16 +5511,18 @@ window.BX_confirm=function(opts,onOk,onCancel){
     var C=function(col,r,s,v,num){ var ref=COL[col]+r; if(v===''||v==null) return '<c r="'+ref+'" s="'+s+'"/>'; if(num&&!isNaN(v)) return '<c r="'+ref+'" s="'+s+'"><v>'+v+'</v></c>'; return '<c r="'+ref+'" s="'+s+'" t="inlineStr"><is><t xml:space="preserve">'+_xe(v)+'</t></is></c>'; };
     var ROW=function(r,h,cells){ return '<row r="'+r+'" ht="'+h+'" customHeight="1">'+cells.join('')+'</row>'; };
     var _uniformLop=function(){ var ls=[]; (_work||[]).forEach(function(s){ if(s.mon && s.lop && ls.indexOf(s.lop)<0) ls.push(s.lop); }); return ls.length===1?ls[0]:''; };
-    var rows=[], merges=[], lop=filled?(_uniformLop()||_defLop()):'';
+    var rows=[], merges=[], uniLop=filled?_uniformLop():'', lop=filled?(uniLop||_defLop()):'';
+    var multiLop=filled&&!uniLop;  // GV bộ môn nhiều lớp → ghi lớp kèm trong từng ô
     var tc=[C(0,1,1,'THỜI KHÓA BIỂU')]; for(var c=1;c<ncol;c++) tc.push(C(c,1,1,'')); rows.push(ROW(1,26,tc)); merges.push('A1:'+lastL+'1');
-    var sc=[C(0,2,2,'(Lớp: '+(lop||'……')+'    —    Năm học '+(state.year||'…')+')')]; for(var c2=1;c2<ncol;c2++) sc.push(C(c2,2,2,'')); rows.push(ROW(2,18,sc)); merges.push('A2:'+lastL+'2');
+    var subt=multiLop?('(Lớp ghi kèm trong từng ô, vd “Toán 5A”    —    Năm học '+(state.year||'…')+')'):('(Lớp: '+(lop||'……')+'    —    Năm học '+(state.year||'…')+')');
+    var sc=[C(0,2,2,subt)]; for(var c2=1;c2<ncol;c2++) sc.push(C(c2,2,2,'')); rows.push(ROW(2,18,sc)); merges.push('A2:'+lastL+'2');
     rows.push(ROW(3,24,['Buổi','Tiết'].concat(days).map(function(t,i){return C(i,3,4,t);})));
     var r=4;
     [['Sáng'],['Chiều']].forEach(function(bb){
       var buoi=bb[0], nrows=filled?_rowsFor(buoi):(buoi==='Sáng'?5:3), startR=r;
       for(var t=1;t<=nrows;t++){
         var cells=[C(0,r,6,t===1?buoi:''),C(1,r,8,t,true)];
-        days.forEach(function(d,di){ var mon=''; if(filled){ var s=_cell(d,buoi,t); mon=s?s.mon:''; } cells.push(C(2+di,r,8,mon)); });
+        days.forEach(function(d,di){ var cv=''; if(filled){ var s=_cell(d,buoi,t); if(s&&s.mon){ cv=s.mon+((multiLop&&s.lop)?(' '+s.lop):''); } } cells.push(C(2+di,r,8,cv)); });
         rows.push(ROW(r,26,cells)); r++;
       }
       if(nrows>1) merges.push('A'+startR+':A'+(r-1));
@@ -5544,9 +5571,13 @@ window.BX_confirm=function(opts,onOk,onCancel){
       var b=val(buoiCol,r2); if(b){ var nb=_n(b); lastBuoi=(nb.indexOf('chieu')>=0)?'Chiều':((nb.indexOf('sang')>=0)?'Sáng':lastBuoi); }
       var tiet=parseInt(val(tietCol,r2),10); if(!tiet) continue;
       Object.keys(dayCol).forEach(function(c){
-        var mon=val(+c,r2); if(!mon) return;
+        var raw=val(+c,r2); if(!raw) return;
+        // Tách lớp ghi kèm trong ô (GV bộ môn nhiều lớp): "Toán 5A" → môn "Toán", lớp "5A".
+        // Tên môn không kết thúc bằng chữ số nên token số ở cuối chắc chắn là lớp.
+        var mon=raw, cellLop=lop, lm2=raw.match(/^(.*[^\s\-–—])[\s\-–—]+([0-9][A-Za-z0-9]*)\s*$/);
+        if(lm2){ mon=lm2[1].trim(); cellLop=lm2[2]; }
         var cm=(typeof _bxCanonSubject==='function')?(_bxCanonSubject(mon)||mon):mon;
-        slots.push({day:dayCol[c],buoi:lastBuoi,tiet:tiet,mon:cm,lop:lop});
+        slots.push({day:dayCol[c],buoi:lastBuoi,tiet:tiet,mon:cm,lop:cellLop});
       });
     }
     return slots;
