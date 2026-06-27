@@ -1922,7 +1922,7 @@ function _bxCanonSubject(s){
     'tunhienvaxahoi':'Tự nhiên và Xã hội','tnxh':'Tự nhiên và Xã hội','tnvxh':'Tự nhiên và Xã hội',
     'hdtn':'HĐTN','hoatdongtrainghiem':'HĐTN','hoatdongtrainghiemhuongnghiep':'HĐTN','hdtnhn':'HĐTN',
     'tienganh':'Tiếng Anh','ta':'Tiếng Anh','anhvan':'Tiếng Anh',
-    'amnhac':'Âm nhạc','nhac':'Âm nhạc',
+    'amnhac':'Âm nhạc','nhac':'Âm nhạc','an':'Âm nhạc',
     'mithuat':'Mĩ thuật','mythuat':'Mĩ thuật','mt':'Mĩ thuật',
     'gdtc':'GDTC','giaoducthechat':'GDTC','theduc':'GDTC'
   };
@@ -1930,7 +1930,7 @@ function _bxCanonSubject(s){
 }
 // Tên ĐẦY ĐỦ của môn để ghi vào GIÁO ÁN (KHBD). GV ghi tắt trên TKB/LBG ("HĐTN", "GDTC")
 // nhưng giáo án cần tên đầy đủ. CHỈ dùng cho giáo án — KHÔNG đổi hiển thị TKB/LBG.
-var _BX_SUBJ_FULL={'HĐTN':'Hoạt động trải nghiệm','GDTC':'Giáo dục thể chất','TNXH':'Tự nhiên và Xã hội','ĐĐ':'Đạo đức','TV':'Tiếng Việt'};
+var _BX_SUBJ_FULL={'HĐTN':'Hoạt động trải nghiệm','GDTC':'Giáo dục thể chất','TNXH':'Tự nhiên và Xã hội','ĐĐ':'Đạo đức','TV':'Tiếng Việt','MT':'Mĩ thuật','ÂN':'Âm nhạc','AN':'Âm nhạc'};
 function _bxSubjectFull(m){ if(m==null) return m; var s=String(m).trim(); return _BX_SUBJ_FULL[s]||s; }
 function _bxPpctMap(){
   /* PPCT số tiết/tuần Lớp 5 (dựng sẵn để luôn chạy); ưu tiên CURRICULUM_MASTER_SEED nếu truy cập được. */
