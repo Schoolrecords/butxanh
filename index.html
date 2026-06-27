@@ -5239,7 +5239,7 @@ window.BX_confirm=function(opts,onOk,onCancel){
         <button class="btn-xs solid" onclick="bxExcAddWeekOff()">➕ Thêm</button>
       </div>
 
-      <h4 class="exc-h">📌 Nghỉ ngày lẻ <span>(lễ 30/4, 2/9, Giỗ Tổ… → đánh dấu NGHỈ trên LBG)</span></h4>
+      <h4 class="exc-h">📌 Nghỉ ngày lẻ <span>(lễ 30/4, 2/9, Giỗ Tổ… → ô đó NGHỈ; bài lỡ TỰ DỒN sang tuần sau)</span></h4>
       <div id="exc-dayoff" class="exc-list"></div>
       <div class="exc-form">
         <select id="exc-do-week" class="exc-inp"></select>
@@ -5331,8 +5331,13 @@ window.BX_confirm=function(opts,onOk,onCancel){
      1 entry nhưng chiếm 2 ô trên TKB. Vì thế số entry Kho < số ô TKB → lệch. Ta trải
      mỗi entry gộp thành đủ số tiết để khớp số ô (mỗi ô = 1 tiết). */
   function _lessonSpan(L){
-    var m=String((L&&L.bai)||'').match(/Ti[eế]t\s*\d+(?:\s*\+\s*\d+)+/i);
-    return m?Math.max(1,(m[0].match(/\d+/g)||['1']).length):1;
+    var s=String((L&&L.bai)||'');
+    // dạng cộng "Tiết 1+2(+3)" → đếm số; dạng range "Tiết 1 – 2" / "Tiết 1-2" → b−a+1
+    var mPlus=s.match(/Ti[eế]t\s*(\d+(?:\s*\+\s*\d+)+)/i);
+    if(mPlus) return Math.max(1,(mPlus[1].match(/\d+/g)||['1']).length);
+    var mRange=s.match(/Ti[eế]t\s*(\d+)\s*[–—-]\s*(\d+)/i);
+    if(mRange){ var a=+mRange[1], b=+mRange[2]; if(b>a&&b-a<=5) return b-a+1; }
+    return 1;
   }
   function _expandLessons(list){
     var out=[];
@@ -5342,20 +5347,23 @@ window.BX_confirm=function(opts,onOk,onCancel){
     });
     return out;
   }
-  // Lấy 1 ô kế tiếp từ con trỏ (mon|lop). Trả {bai,tbdh,ppct,nokho,overflow}.
-  function _nextCell(cur,key,lop,mon,pw){
-    if(!cur[key]){ var lw=lessonsForWeek(lop,mon,pw); cur[key]={list:_expandLessons(lw),i:0,raw:lw.length}; }
-    var E=cur[key].list[cur[key].i++], L=E&&E.L;
-    var bai=L?(L.bai||''):'';
-    if(E&&E.parts>1&&E.part>1) bai=bai+' (tiết '+E.part+'/'+E.parts+')';
-    return { bai:bai, tbdh:L?shortTBDH(L.dodung):'', ppct:E?(E.ppct||''):'',
-             nokho:!L&&cur[key].raw===0, overflow:!L&&cur[key].raw>0 };
+  // Môn (lop|mon) có bất kỳ bài nào trong Kho cả năm? → phân biệt _nokho (không có môn)
+  // với _overflow (có môn nhưng tuần này hết bài / dôi ô). Cache theo lớp+môn.
+  var _khoHasCache={};
+  function _subjHasKho(lop,mon){
+    var lopN=_digits(lop)||_digits(state.klass), nm=_n(mon), nc=_n((typeof _bxCanonSubject==='function')?(_bxCanonSubject(mon)||mon):mon);
+    var k=lopN+'|'+nm; if(k in _khoHasCache) return _khoHasCache[k];
+    var has=(window.KHO_DATA||[]).some(function(r){ return String(r.lop)===String(lopN) && (_n(r.mon)===nm||_n(r.mon)===nc); });
+    _khoHasCache[k]=has; return has;
   }
-  /* ---------- Lịch nghỉ & dạy bù → CON TRỎ TIẾN ĐỘ PPCT ----------
-     Tách "tuần lịch" (W) khỏi "tuần PPCT" (nội dung Kho). Nghỉ CẢ TUẦN làm con
-     trỏ PPCT lùi lại (tuần sau dạy nội dung tuần trước). Nghỉ NGÀY lẻ → đánh dấu
-     NGHỈ trên LBG. Dạy bù → thêm tiết (dạy tiếp nội dung kế). Không ngoại lệ =
-     y hệt Phase 1 (pptWeek = W). */
+  /* ---------- Lịch nghỉ & dạy bù → CON TRỎ TIẾN ĐỘ PPCT + HÀNG ĐỢI CARRY (Phase 4) ----------
+     Tách "tuần lịch" (W) khỏi "tuần PPCT" (nội dung Kho). Nghỉ CẢ TUẦN → pptWeekOf lùi
+     con trỏ (tuần sau dạy nội dung tuần trước). Nghỉ NGÀY lẻ → ô đó đánh dấu NGHỈ và
+     các BÀI bị lỡ KHÔNG mất mà ĐẨY SANG TUẦN SAU (carry queue per mon|lop): tuần kế
+     dạy bù phần lỡ TRƯỚC rồi mới tới bài mới. Dạy bù (makeup) lấy ngay bài kế trong
+     hàng đợi. Tuần PPCT nhẹ (ít bài hơn số ô) → ô dư để TRỐNG (_overflow), KHÔNG kéo
+     bài tuần sau lên (tránh lệch mốc PPCT). Không ngoại lệ = y hệt Phase 1/3.
+     genForWeek(W) MÔ PHỎNG tuần 1..W để dựng đúng hàng đợi (không lưu trạng thái → luôn nhất quán). */
   var EXC_KEY='butxanh_tkb_exc';
   function loadExc(){ try{ var v=JSON.parse(localStorage.getItem(EXC_KEY)); if(v&&typeof v==='object') return {weekOff:v.weekOff||[],dayOff:v.dayOff||[],makeup:v.makeup||[]}; }catch(e){} return {weekOff:[],dayOff:[],makeup:[]}; }
   function saveExc(x){ try{ localStorage.setItem(EXC_KEY,JSON.stringify(x)); }catch(e){} }
@@ -5369,31 +5377,57 @@ window.BX_confirm=function(opts,onOk,onCancel){
   }
   window.bxPptWeekOf=pptWeekOf; window.bxLoadExc=loadExc;
   var _DOWg={'Thứ 2':2,'Thứ 3':3,'Thứ 4':4,'Thứ 5':5,'Thứ 6':6,'Thứ 7':7,'CN':8}, _BUg={'Sáng':0,'Chiều':1,'Tối':2};
-  function genForWeek(w){
-    w=parseInt(w,10)||1;
-    var exc=loadExc(), pw=pptWeekOf(w);
-    var daysOff={}; exc.dayOff.forEach(function(e){ if(parseInt(e.tuan,10)===w) daysOff[e.day]=e.note||'Nghỉ'; });
-    var weekNote=''; if(pw===null){ var wo=exc.weekOff.filter(function(e){return parseInt(e.tuan,10)===w;})[0]; weekNote=(wo&&wo.note)||'Nghỉ'; }
+  function genForWeek(targetW){
+    targetW=parseInt(targetW,10)||1;
+    var exc=loadExc();
     var slots=_sortSlots(loadTKB());
-    var dates=(typeof BX_weekDates==='function')?BX_weekDates(w):{byDay:{}};
-    var cur={}, rows=[];
-    function _date(d){ return (dates.byDay&&dates.byDay[d])||''; }
-    slots.forEach(function(s){
-      var lop=s.lop||state.klass;
-      if(pw===null){ rows.push({day:s.day,date:_date(s.day),buoi:s.buoi,tiet:s.tiet,mon:s.mon,lop:lop,bai:'🏖️ NGHỈ — '+weekNote,tbdh:'',_gen:true,_nghi:true}); return; }
-      if(daysOff[s.day]){ rows.push({day:s.day,date:_date(s.day),buoi:s.buoi,tiet:s.tiet,mon:s.mon,lop:lop,bai:'🏖️ Nghỉ — '+daysOff[s.day],tbdh:'',_gen:true,_nghi:true}); return; }
-      var key=_n(s.mon)+'|'+_digits(lop);
-      var C=_nextCell(cur,key,lop,s.mon,pw);
-      rows.push({day:s.day,date:_date(s.day),buoi:s.buoi,tiet:s.tiet,mon:s.mon,lop:lop,
-        bai:C.bai,tbdh:C.tbdh,ppct:C.ppct,_gen:true,_nokho:C.nokho,_overflow:C.overflow});
-    });
-    if(pw!==null){
-      exc.makeup.filter(function(m){return parseInt(m.tuan,10)===w;}).forEach(function(m){
-        var lop=m.lop||state.klass, key=_n(m.mon)+'|'+_digits(lop);
-        var C=_nextCell(cur,key,lop,m.mon,pw);
-        rows.push({day:m.day,date:_date(m.day),buoi:m.buoi||'Chiều',tiet:m.tiet||1,mon:m.mon,lop:lop,
-          bai:'↩️ Dạy bù: '+(C.bai||m.note||''),tbdh:C.tbdh,ppct:C.ppct,_gen:true,_bu:true,_nokho:C.nokho,_overflow:C.overflow});
+    var carry={};            // mon|lop -> mảng bài bị lỡ chờ dạy (đẩy sang tuần sau)
+    var lwCache={};          // memo: key#pw -> bài đã trải của tuần PPCT đó
+    function _newLessons(key,lop,mon,pw){
+      var ck=key+'#'+pw; if(lwCache[ck]) return lwCache[ck];
+      var v=_expandLessons(lessonsForWeek(lop,mon,pw)); lwCache[ck]=v; return v;
+    }
+    function _mkRow(s,lop,date,E,opts){
+      var L=E&&E.L, bai=L?(L.bai||''):'';
+      if(E&&E.parts>1&&E.part>1) bai=bai+' (tiết '+E.part+'/'+E.parts+')';
+      var r={day:s.day,date:date,buoi:s.buoi,tiet:s.tiet,mon:s.mon,lop:lop,
+        bai:(opts&&opts.bu?('↩️ Dạy bù: '+(bai||(opts.note||''))):bai),
+        tbdh:L?shortTBDH(L.dodung):'',ppct:E?(E.ppct||''):'',_gen:true,
+        _nokho:!L&&!_subjHasKho(lop,s.mon), _overflow:!L&&_subjHasKho(lop,s.mon)};
+      if(opts&&opts.bu) r._bu=true;
+      return r;
+    }
+    var rows=[];
+    for(var w=1; w<=targetW; w++){
+      var isTarget=(w===targetW);
+      var pw=pptWeekOf(w);
+      var weekNote=''; if(pw===null){ var wo=exc.weekOff.filter(function(e){return parseInt(e.tuan,10)===w;})[0]; weekNote=(wo&&wo.note)||'Nghỉ'; }
+      var daysOff={}; exc.dayOff.forEach(function(e){ if(parseInt(e.tuan,10)===w) daysOff[e.day]=e.note||'Nghỉ'; });
+      var dates=isTarget&&(typeof BX_weekDates==='function')?BX_weekDates(w):{byDay:{}};
+      var _date=function(d){ return (dates.byDay&&dates.byDay[d])||''; };
+      var pending={};         // mon|lop -> hàng đợi tuần này = carry trước ++ bài mới tuần PPCT pw
+      var _pend=function(key,lop,mon){
+        if(pending[key]) return pending[key];
+        var arr=(carry[key]||[]).slice();
+        if(pw!==null) arr=arr.concat(_newLessons(key,lop,mon,pw));
+        pending[key]=arr; return arr;
+      };
+      slots.forEach(function(s){
+        var lop=s.lop||state.klass, key=_n(s.mon)+'|'+_digits(lop);
+        var arr=_pend(key,lop,s.mon);                 // đảm bảo carry tích luỹ kể cả tuần nghỉ
+        if(pw===null){ if(isTarget) rows.push({day:s.day,date:_date(s.day),buoi:s.buoi,tiet:s.tiet,mon:s.mon,lop:lop,bai:'🏖️ NGHỈ — '+weekNote,tbdh:'',_gen:true,_nghi:true}); return; }
+        if(daysOff[s.day]){ if(isTarget) rows.push({day:s.day,date:_date(s.day),buoi:s.buoi,tiet:s.tiet,mon:s.mon,lop:lop,bai:'🏖️ Nghỉ — '+daysOff[s.day],tbdh:'',_gen:true,_nghi:true}); return; }
+        var E=arr.shift();                              // tiêu thụ bài kế (lỡ trước → mới)
+        if(isTarget) rows.push(_mkRow(s,lop,_date(s.day),E));
       });
+      if(pw!==null){
+        exc.makeup.filter(function(m){return parseInt(m.tuan,10)===w;}).forEach(function(m){
+          var lop=m.lop||state.klass, key=_n(m.mon)+'|'+_digits(lop);
+          var arr=_pend(key,lop,m.mon), E=arr.shift();
+          if(isTarget) rows.push(_mkRow({day:m.day,buoi:m.buoi||'Chiều',tiet:m.tiet||1,mon:m.mon},lop,_date(m.day),E,{bu:true,note:m.note}));
+        });
+      }
+      Object.keys(pending).forEach(function(key){ carry[key]=pending[key]; }); // bài dôi → carry sang tuần sau
     }
     rows.sort(function(a,b){ return (_DOWg[a.day]||9)-(_DOWg[b.day]||9)||(_BUg[a.buoi]||0)-(_BUg[b.buoi]||0)||(+a.tiet||0)-(+b.tiet||0); });
     return rows;
@@ -5425,7 +5459,7 @@ window.BX_confirm=function(opts,onOk,onCancel){
     var ovf=sch.filter(function(r){return r._overflow;}).length;
     alert('✓ Đã sinh Lịch báo giảng Tuần '+w+' từ Thời khoá biểu: '+sch.length+' tiết.'+
       (noko?('\n• '+noko+' tiết môn chưa có trong Kho — để trống tên bài cho thầy cô tự ghi.'):'')+
-      (ovf?('\n• '+ovf+' tiết dôi so với số bài trong Kho tuần này (có thể TKB nhiều ô hơn PPCT, hoặc do nghỉ ngày dồn tiết) — mời thầy cô chọn bài tay.'):''));
+      (ovf?('\n• '+ovf+' ô trống: tuần này ít bài hơn số ô (tuần ôn tập/kiểm tra) hoặc đã hết bài trong Kho — mời thầy cô tự ghi. (Tiết lỡ do nghỉ ngày đã tự dồn sang tuần sau.)'):''));
   };
 
   /* ---------- trình soạn TKB — LƯỚI chuyên nghiệp (cột Thứ × hàng Tiết) ---------- */
