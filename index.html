@@ -890,8 +890,7 @@ if(window.KHO_DATA_L2&&window.KHO_DATA_L2.length){ window.KHO_DATA=(window.KHO_D
     .tkb-bz svg{display:block}
     .tkb-bz .nm{font-weight:800;color:#0f7a43;font-size:15.5px;letter-spacing:.12em}
     .tkb-buoi.pm .tkb-bz .nm{color:#1f5fa0}
-    .tkb-grid tr.tkb-sep td{border-top:2px solid #d9e7df}
-    .tkb-grid tr.tkb-sep td.tkb-buoi{border-top-color:#dae6f2}
+    .tkb-grid tr.tkb-divider td{background:#fff6e6;height:13px;padding:0;border-top:1px solid #f0e1bd;border-bottom:1px solid #f0e1bd}
     .tkb-grid .tkb-tiet{background:#f7fbf8;width:42px;border-right:1px solid #dcebe2}
     .tkb-grid .tkb-tiet .tn{display:inline-flex;width:28px;height:28px;align-items:center;justify-content:center;border-radius:50%;background:#e7f3ec;color:#2c7a52;font-weight:700;font-size:13px}
     .tkb-grid td.tkb-cell{padding:4px;min-width:118px;background:#fff}
@@ -5511,8 +5510,9 @@ window.BX_confirm=function(opts,onOk,onCancel){
     var h='<table class="tkb-grid"><thead><tr><th>Buổi</th><th>Tiết</th>'+days.map(function(d){return '<th>'+d+'</th>';}).join('')+'</tr></thead><tbody>';
     [['Sáng'],['Chiều']].forEach(function(bb,bi){
       var buoi=bb[0], rows=_rowsFor(buoi);
+      if(bi>0) h+='<tr class="tkb-divider"><td colspan="'+(2+days.length)+'"></td></tr>';  // dải ngăn Sáng/Chiều (trống, không chữ)
       for(var t=1;t<=rows;t++){
-        h+='<tr'+(bi>0&&t===1?' class="tkb-sep"':'')+'>';
+        h+='<tr>';
         if(t===1) h+='<td class="tkb-buoi'+(buoi==='Chiều'?' pm':'')+'" rowspan="'+rows+'">'+_buoiCellHTML(buoi)+'</td>';
         h+='<td class="tkb-tiet"><span class="tn">'+t+'</span></td>';
         days.forEach(function(d){
