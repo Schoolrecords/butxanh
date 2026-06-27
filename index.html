@@ -669,6 +669,7 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 <script src="khgd-lop4.js?v=20260626-dd4tv3"></script>
 <script src="khgd-lop3.js?v=20260626-l3full8mon"></script>
 <script src="khgd-lop2.js?v=20260626-l2khgd"></script>
+<script src="khgd-lop1.js?v=20260627-toan1"></script>
 <script>/* Gộp KHBD Lớp 3 + Lớp 2 (file riêng) vào kho chung — mọi nơi dùng window.KHO_DATA tự có */
 if(window.KHO_DATA_L3&&window.KHO_DATA_L3.length){ window.KHO_DATA=(window.KHO_DATA||[]).concat(window.KHO_DATA_L3); }
 if(window.KHO_DATA_L2&&window.KHO_DATA_L2.length){ window.KHO_DATA=(window.KHO_DATA||[]).concat(window.KHO_DATA_L2); }
@@ -4365,6 +4366,7 @@ window.BX_KHGD_G['5'] = window.BX_KHGD;                              // lớp 5:
 if(window.BX_KHGD_L4) window.BX_KHGD_G['4'] = window.BX_KHGD_L4;     // lớp 4: dữ liệu mới (khgd-lop4.js)
 if(window.BX_KHGD_L3) window.BX_KHGD_G['3'] = window.BX_KHGD_L3;     // lớp 3 (khgd-lop3.js)
 if(window.BX_KHGD_L2) window.BX_KHGD_G['2'] = window.BX_KHGD_L2;     // lớp 2 (khgd-lop2.js)
+if(window.BX_KHGD_L1) window.BX_KHGD_G['1'] = window.BX_KHGD_L1;     // lớp 1 (khgd-lop1.js)
 var SUBJ_ORDER=['Tiếng Việt','Toán','Khoa học','Lịch sử & Địa lí','Tự nhiên và Xã hội','Đạo đức','Tin học','Công nghệ','HĐTN','Âm nhạc','Mĩ thuật','GDTC','Tiếng Anh'];
 function subjectsOf(lop){ var KH=window.BX_KHGD_G[lop]||{}; var has=function(s){return KH[s]&&KH[s].length;};
   return SUBJ_ORDER.filter(has).concat(Object.keys(KH).filter(function(s){return SUBJ_ORDER.indexOf(s)<0&&has(s);})); }
