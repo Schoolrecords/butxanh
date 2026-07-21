@@ -664,6 +664,10 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 .sl-detail-head{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:18px;background:linear-gradient(135deg,#fff,var(--green-soft2));border:1px solid var(--line);border-left:5px solid var(--sc);margin-bottom:14px}
 .sl-detail-title{font-weight:800;font-size:19px;color:var(--ink)}
 .sl-detail-sub{font-size:13px;color:var(--ink2);margin-top:2px}
+.sl-subj-go{margin-top:2px;font-size:12.5px;font-weight:700;color:var(--sc);opacity:.92}
+.sl-detail-meta{flex:1;min-width:0}
+.sl-openall{margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;background:var(--green-soft);border:1px solid #bfe7cd;color:var(--green-dark);font-weight:600;font-size:13px;text-decoration:none;white-space:nowrap;transition:.14s}
+.sl-openall:hover{background:var(--green);border-color:var(--green);color:#fff}
 .sl-edit-btn{margin-left:auto;padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink2);font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap}
 .sl-edit-btn.on{background:var(--green);border-color:var(--green);color:#fff}
 .sl-folder-btn{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border-radius:12px;background:var(--green-soft);border:1px solid #bfe7cd;color:var(--green-dark);font-weight:600;font-size:14px;text-decoration:none;cursor:pointer;margin-bottom:12px}
@@ -2180,44 +2184,30 @@ window.BX_slideClearLink=function(){
 function BX_slideSubjGrid(lop){
   var subs = BX_SLIDE_SUBJECTS[lop]||[];
   var cards = subs.map(function(mon,i){
-    var m=BX_SLIDE_META[mon]||{ic:'📘',c:'#1FA45C'}, n=BX_slideCount(lop,mon), e=BX_slideEntry(lop,mon);
-    var badge = n>0 ? '<span class="sl-badge on">'+n+' tuần có bài</span>'
-                    : (e.folder ? '<span class="sl-badge on">Có link môn</span>' : '<span class="sl-badge">Sắp có</span>');
+    var m=BX_SLIDE_META[mon]||{ic:'📘',c:'#1FA45C'};
     return '<button class="sl-subj-card" style="--sc:'+m.c+'" onclick="BX_slideOpenIdx('+i+')">'+
       '<span class="sl-subj-ic">'+m.ic+'</span>'+
-      '<span class="sl-subj-name">'+mon+'</span>'+badge+'</button>';
+      '<span class="sl-subj-name">'+mon+'</span>'+
+      '<span class="sl-subj-go">Xem bài giảng →</span></button>';
   }).join('');
-  return '<div class="sl-intro">Chọn môn để xem bài giảng trình chiếu của <b>Lớp '+lop+'</b>. Mỗi bài giảng (.pptx) mở/tải trực tiếp từ Google Drive.</div>'+
+  return '<div class="sl-intro">Chọn môn để mở kho bài giảng PowerPoint <b>Lớp '+lop+'</b> theo tuần.</div>'+
     '<div class="sl-subj-grid">'+cards+'</div>';
 }
 function BX_slideDetail(lop,mon){
-  var m=BX_SLIDE_META[mon]||{ic:'📘',c:'#1FA45C'}, e=BX_slideEntry(lop,mon), edit=_slideSel.edit, h='';
+  var m=BX_SLIDE_META[mon]||{ic:'📘',c:'#1FA45C'}, e=BX_slideEntry(lop,mon), h='';
   h+='<button class="sl-back" onclick="BX_slideBack()">← Tất cả môn</button>';
   h+='<div class="sl-detail-head" style="--sc:'+m.c+'">'+
        '<span class="sl-subj-ic big">'+m.ic+'</span>'+
-       '<div><div class="sl-detail-title">'+mon+'</div><div class="sl-detail-sub">Lớp '+lop+' · Bài giảng trình chiếu (.pptx)</div></div>'+
-       '<button class="sl-edit-btn'+(edit?' on':'')+'" onclick="BX_slideToggleEdit()">'+(edit?'✓ Xong':'✏️ Quản lý link')+'</button>'+
+       '<div class="sl-detail-meta"><div class="sl-detail-title">'+mon+'</div><div class="sl-detail-sub">Lớp '+lop+' · Bài giảng trình chiếu (.pptx)</div></div>'+
+       (e.folder?'<a class="sl-openall" href="'+BX_escAttr(e.folder)+'" target="_blank" rel="noopener">📂 Mở cả môn</a>':'')+
      '</div>';
-  if(edit){
-    h+='<button class="sl-folder-btn edit'+(e.folder?' has':'')+'" onclick="BX_slideEditKey(\'folder\')">📂 Link cả môn: '+(e.folder?'đã có ✓ — bấm để sửa':'chưa có — bấm để gắn')+'</button>';
-  } else if(e.folder){
-    h+='<a class="sl-folder-btn" href="'+BX_escAttr(e.folder)+'" target="_blank" rel="noopener">📂 Mở thư mục cả môn trên Google Drive</a>';
-  }
-  if(edit && _slideSel.editKey){
-    var isF=_slideSel.editKey==='folder', w=isF?null:_slideSel.editKey.slice(1);
-    h+=BX_slideEditPanel(isF?'thư mục cả môn':('Tuần '+w), isF?e.folder:(e.weeks[w]||''));
-  }
-  h+='<div class="sl-note">Mỗi <b>tuần</b> là một thư mục trên Drive — mở ra để tải <b>từng tiết</b> hoặc tải <b>cả tuần</b>. '+
-     (edit?'Bấm từng ô tuần để dán link riêng.':'Bấm ô Tuần để mở trên Drive — ô <b style="color:var(--green-dark)">xanh</b> có link riêng, ô có 📂 mở qua thư mục môn.')+'</div>';
   var g='';
   for(var i=1;i<=BX_SLIDE_WEEKS;i++){
     var url=e.weeks[String(i)]||'';
-    if(edit){
-      g+='<button class="sl-week edit'+(url?' has':'')+'" onclick="BX_slideEditKey(\'w'+i+'\')"><span class="sl-week-n">Tuần '+i+'</span><span class="sl-week-ic">'+(url?'✏️':'＋')+'</span></button>';
-    } else if(url){
+    if(url){
       g+='<a class="sl-week has" href="'+BX_escAttr(url)+'" target="_blank" rel="noopener" title="Mở Tuần '+i+'"><span class="sl-week-n">Tuần '+i+'</span><span class="sl-week-ic">↗</span></a>';
     } else if(e.folder){
-      g+='<a class="sl-week soft" href="'+BX_escAttr(e.folder)+'" target="_blank" rel="noopener" title="Mở thư mục môn rồi vào Tuần '+i+'"><span class="sl-week-n">Tuần '+i+'</span><span class="sl-week-ic">📂</span></a>';
+      g+='<a class="sl-week soft" href="'+BX_escAttr(e.folder)+'" target="_blank" rel="noopener" title="Mở Tuần '+i+' trên Google Drive"><span class="sl-week-n">Tuần '+i+'</span></a>';
     } else {
       g+='<span class="sl-week muted"><span class="sl-week-n">Tuần '+i+'</span></span>';
     }
