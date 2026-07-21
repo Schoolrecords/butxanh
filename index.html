@@ -645,6 +645,54 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 .intg-tg.on .intg-ck{background:var(--green);border-color:var(--green)}
 .intg-tg.on .intg-ck::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
 @media(max-width:560px){ .intg-tg{padding:7px 11px;font-size:12px} }
+/* ===== Bài giảng trình chiếu (thư viện PPT theo lớp/môn) ===== */
+.sl-lop-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.sl-chip{padding:9px 18px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink2);font-weight:600;font-size:14px;cursor:pointer;transition:.15s}
+.sl-chip:hover{border-color:#bfe7cd;background:var(--green-soft2)}
+.sl-chip.on{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 6px 14px rgba(31,164,92,.28)}
+.sl-intro{color:var(--ink2);font-size:14px;margin-bottom:14px}
+.sl-subj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.sl-subj-card{display:flex;flex-direction:column;align-items:flex-start;gap:9px;padding:18px 16px;border-radius:18px;border:1px solid var(--line);background:var(--card);cursor:pointer;transition:.16s;text-align:left;position:relative;overflow:hidden}
+.sl-subj-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--sc)}
+.sl-subj-card:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(20,60,40,.12);border-color:transparent}
+.sl-subj-ic{font-size:30px;line-height:1}
+.sl-subj-ic.big{font-size:40px}
+.sl-subj-name{font-weight:700;color:var(--ink);font-size:15px;line-height:1.3}
+.sl-badge{font-size:12px;font-weight:600;color:var(--muted);background:#f1f4f2;padding:3px 10px;border-radius:999px}
+.sl-badge.on{color:var(--green-dark);background:var(--green-soft)}
+.sl-back{background:none;border:none;color:var(--green-dark);font-weight:600;font-size:14px;cursor:pointer;padding:4px 0;margin-bottom:10px}
+.sl-detail-head{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:18px;background:linear-gradient(135deg,#fff,var(--green-soft2));border:1px solid var(--line);border-left:5px solid var(--sc);margin-bottom:14px}
+.sl-detail-title{font-weight:800;font-size:19px;color:var(--ink)}
+.sl-detail-sub{font-size:13px;color:var(--ink2);margin-top:2px}
+.sl-edit-btn{margin-left:auto;padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink2);font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap}
+.sl-edit-btn.on{background:var(--green);border-color:var(--green);color:#fff}
+.sl-folder-btn{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border-radius:12px;background:var(--green-soft);border:1px solid #bfe7cd;color:var(--green-dark);font-weight:600;font-size:14px;text-decoration:none;cursor:pointer;margin-bottom:12px}
+.sl-folder-btn.edit{background:var(--card);border-style:dashed}
+.sl-note{font-size:13px;color:var(--ink2);background:#FBFAF4;border:1px solid #EEE4C8;border-radius:10px;padding:10px 12px;margin-bottom:14px}
+.sl-week-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:10px}
+.sl-week{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:11px 13px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-size:13.5px;font-weight:600;text-decoration:none;color:var(--ink2);cursor:default}
+.sl-week-n{white-space:nowrap}
+.sl-week.has{background:var(--green-soft);border-color:#bfe7cd;color:var(--green-dark);cursor:pointer;transition:.14s}
+.sl-week.has:hover{background:var(--green);border-color:var(--green);color:#fff;transform:translateY(-2px)}
+.sl-week.soft{cursor:pointer;color:var(--ink2);transition:.14s}
+.sl-week.soft:hover{border-color:var(--green);color:var(--green-dark);background:var(--green-soft2);transform:translateY(-2px)}
+.sl-week.muted{opacity:.55;background:#FAFBFA}
+.sl-week.edit{cursor:pointer;border-style:dashed;color:var(--ink2)}
+.sl-week.edit.has{border-style:solid;background:var(--green-soft);border-color:#bfe7cd;color:var(--green-dark)}
+.sl-week.edit:hover{border-color:var(--green);color:var(--green-dark)}
+.sl-week-ic{font-size:13px;opacity:.85}
+.sl-linkbox{background:var(--card);border:1px solid var(--green);border-radius:14px;padding:14px;margin-bottom:14px;box-shadow:0 8px 20px rgba(31,164,92,.12)}
+.sl-linkbox-label{font-size:14px;color:var(--ink);margin-bottom:8px}
+.sl-link-input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font-size:14px;box-sizing:border-box;margin-bottom:10px}
+.sl-link-input:focus{outline:none;border-color:var(--green)}
+.sl-linkbox-actions{display:flex;gap:8px;flex-wrap:wrap}
+.sl-linkbox-hint{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5}
+@media(max-width:560px){
+  .sl-subj-grid{grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:11px}
+  .sl-week-grid{grid-template-columns:repeat(auto-fill,minmax(94px,1fr));gap:8px}
+  .sl-detail-head{flex-wrap:wrap}
+  .sl-edit-btn{margin-left:0}
+}
 /* Hộp thông báo / xác nhận tùy biến của Bút Xanh (thay confirm() mặc định) */
 .bxc-overlay{position:fixed;inset:0;background:rgba(18,38,28,.46);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:9999;padding:16px}
 .bxc-overlay.show{display:flex}
@@ -706,7 +754,7 @@ if(window.KHO_DATA_L1&&window.KHO_DATA_L1.length){ window.KHO_DATA=(window.KHO_D
       <a data-view="lich"><svg class="icn ic" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg> Lịch báo giảng</a>
       <a data-view="khbd"><svg class="icn ic" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg> Kế hoạch bài dạy</a>
       <a data-view="kho"><svg class="icn ic" viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg> Kho giáo án</a>
-      <a data-view="ppt"><svg class="icn ic" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/><path d="M7 11l3-2 2 2 4-4"/></svg> Tạo bài giảng PPT </a>
+      <a data-view="ppt"><svg class="icn ic" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/><path d="M7 11l3-2 2 2 4-4"/></svg> Bài giảng trình chiếu</a>
       <div class="nav-grp">Chương trình</div>
       <a data-view="khdh"><svg class="icn ic" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg> KHDH môn học</a>
       <a data-view="map"><svg class="icn ic" viewBox="0 0 24 24"><path d="M9 4l6 2 6-2v14l-6 2-6-2-6 2V6z"/><path d="M9 4v14M15 6v14"/></svg> Bản đồ chương trình</a>
@@ -873,7 +921,7 @@ if(window.KHO_DATA_L1&&window.KHO_DATA_L1.length){ window.KHO_DATA=(window.KHO_D
         <svg class="arrow icn" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         <div class="step"><div class="circle c-blu">W</div><div class="lbl">Xuất Word &amp; sử dụng</div><div class="num">Bước 4</div></div>
         <svg class="arrow icn" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        <div class="step"><div class="circle c-org">P<span class="mini-new">MỚI</span></div><div class="lbl">Tạo bài giảng PPT</div><div class="num">Bước 5</div></div>
+        <div class="step"><div class="circle c-org">P<span class="mini-new">MỚI</span></div><div class="lbl">Bài giảng trình chiếu</div><div class="num">Bước 5</div></div>
       </div>
     </div>
     </section><!-- /v-dashboard -->
@@ -1043,7 +1091,7 @@ if(window.KHO_DATA_L1&&window.KHO_DATA_L1.length){ window.KHO_DATA=(window.KHO_D
         </div>
       </div>
       <div class="card">
-        <div class="card-head"><h3><svg class="icn ic" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg> Bút Xanh tuần này</h3><span class="muted-sm">6 nhóm lưu ý trọng tâm</span></div>
+        <div class="card-head"><h3><svg class="icn ic" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg> Bút Xanh tuần này</h3><span class="muted-sm" id="nhac-week-sub">6 nhóm lưu ý trọng tâm</span></div>
         <div class="nhac-cats" id="nhac-week"></div>
       </div>
     </section>
@@ -1078,23 +1126,13 @@ if(window.KHO_DATA_L1&&window.KHO_DATA_L1.length){ window.KHO_DATA=(window.KHO_D
       <div class="mat-grid" id="hl-grid"></div>
     </section>
 
-    <!-- ============ VIEW: TẠO BÀI GIẢNG PPT ============ -->
+    <!-- ============ VIEW: BÀI GIẢNG TRÌNH CHIẾU ============ -->
     <section class="view" id="v-ppt">
       <div class="page-head">
-        <div><h2 class="ph-title">Tạo bài giảng PPT </h2><div class="ph-sub">Soạn dàn ý slide rồi tải về file PowerPoint (.pptx) mở được thật</div></div>
+        <div><h2 class="ph-title">Bài giảng trình chiếu</h2><div class="ph-sub">Thư viện bài giảng PowerPoint theo lớp &amp; môn — mở/tải trực tiếp từ Google Drive</div></div>
       </div>
-      <div class="card">
-        <div class="card-head"><h3>Chọn tiết để tạo dàn ý slide</h3><span class="muted-sm" id="ppt-meta"></span></div>
-        <div class="ppt-row">
-          <select id="ppt-select" class="ppt-sel"></select>
-          <button class="btn ghost" id="ppt-tpl" onclick="pptFillTemplate()">📝 Tạo dàn ý mẫu</button>
-          <button class="btn ghost" id="ppt-gen">✨ Gợi ý bằng AI</button>
-          <button class="btn" id="ppt-download" onclick="downloadPptx()">📥 Tải PowerPoint (.pptx)</button>
-        </div>
-        <div class="notice" style="margin-top:12px">Mỗi slide bắt đầu bằng dòng <b># Tiêu đề</b>; mỗi ý một dòng bắt đầu bằng <b>-</b>. Thầy cô sửa thoải mái trước khi tải.</div>
-        <textarea class="box" id="ppt-text" rows="12" oninput="renderPptPreview()" placeholder="Bấm 📝 Tạo dàn ý mẫu để bắt đầu…"></textarea>
-        <div id="ppt-out" class="ppt-out"></div>
-      </div>
+      <div class="sl-lop-chips" id="sl-lop-chips"></div>
+      <div id="sl-body"></div>
     </section>
 
     <!-- ============ VIEW: THỐNG KÊ & BÁO CÁO ============ -->
@@ -1134,7 +1172,7 @@ if(window.KHO_DATA_L1&&window.KHO_DATA_L1.length){ window.KHO_DATA=(window.KHO_D
           <label class="fld"><span>Xưng hô</span><select id="set-xung"><option value="Cô">Cô</option><option value="Thầy">Thầy</option></select></label>
           <label class="fld"><span>Họ và tên</span><input id="set-name" value="Bút Xanh"></label>
           <label class="fld"><span>Cấp / Khối</span><input id="set-grade" value="Giáo viên Tiểu học — Lớp 5A"></label>
-          <label class="fld"><span>Trường</span><input id="set-school" placeholder="Tên trường…"></label>
+          <label class="fld"><span>Trường</span><input id="set-school" value="Tiểu học Diễn Liên" placeholder="Tên trường…"></label>
           <label class="fld"><span>Năm học</span><input id="set-year" value="2026 - 2027"></label>
           <label class="fld"><span>Tổ chuyên môn</span><input id="set-team" placeholder="Tổ…"></label>
           <label class="fld"><span>Lớp giảng dạy</span><input id="set-class" placeholder="VD: 5A"></label>
@@ -2004,7 +2042,7 @@ function showView(v){
   document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('active', a.dataset.view===v));
   if(('#'+v)!==location.hash){ try{history.replaceState(null,'','#'+v);}catch(e){} }
   window.scrollTo({top:0});
-  const r={dashboard:renderDashboard,tkb:window.bxRenderTKBView,lich:renderFullSchedule,khbd:renderKHBDView,kho:renderKho,nhac:renderNhac,hocsinh:renderHocSinh,hoclieu:renderHocLieu,ppt:renderPPTOptions,thongke:renderThongKe,caidat:loadSettings}[v];
+  const r={dashboard:renderDashboard,tkb:window.bxRenderTKBView,lich:renderFullSchedule,khbd:renderKHBDView,kho:renderKho,nhac:renderNhac,hocsinh:renderHocSinh,hoclieu:renderHocLieu,ppt:renderSlides,thongke:renderThongKe,caidat:loadSettings}[v];
   if(r) r();
   updateBellCount();
 }
@@ -2021,6 +2059,184 @@ document.querySelector('.nav').addEventListener('click',function(e){
   const a=e.target.closest('a[data-view]'); if(!a) return; showView(a.dataset.view);
 });
 window.addEventListener('hashchange',()=>showView((location.hash||'#dashboard').slice(1)));
+
+/* ================= BÀI GIẢNG TRÌNH CHIẾU (thư viện PPT theo lớp/môn) ================= */
+var BX_SLIDE_SUBJECTS = {
+  '1':['Tiếng Việt','Toán','Đạo đức','Tự nhiên và Xã hội','Hoạt động trải nghiệm','Âm nhạc','Mĩ thuật','Giáo dục thể chất'],
+  '2':['Tiếng Việt','Toán','Đạo đức','Tự nhiên và Xã hội','Hoạt động trải nghiệm','Âm nhạc','Mĩ thuật','Giáo dục thể chất'],
+  '3':['Tiếng Việt','Toán','Đạo đức','Tự nhiên và Xã hội','Tin học','Công nghệ','Tiếng Anh','Hoạt động trải nghiệm','Âm nhạc','Mĩ thuật','Giáo dục thể chất'],
+  '4':['Tiếng Việt','Toán','Đạo đức','Khoa học','Lịch sử và Địa lí','Tin học','Công nghệ','Tiếng Anh','Hoạt động trải nghiệm','Âm nhạc','Mĩ thuật','Giáo dục thể chất'],
+  '5':['Tiếng Việt','Toán','Đạo đức','Khoa học','Lịch sử và Địa lí','Tin học','Công nghệ','Tiếng Anh','Hoạt động trải nghiệm','Âm nhạc','Mĩ thuật','Giáo dục thể chất']
+};
+var BX_SLIDE_META = {
+  'Tiếng Việt':{ic:'📖',c:'#2C7BD6'}, 'Toán':{ic:'🔢',c:'#E5503B'}, 'Đạo đức':{ic:'💛',c:'#E0A81C'},
+  'Tự nhiên và Xã hội':{ic:'🌿',c:'#1FA45C'}, 'Khoa học':{ic:'🔬',c:'#159B8A'}, 'Lịch sử và Địa lí':{ic:'🗺️',c:'#B4681C'},
+  'Tin học':{ic:'💻',c:'#5A6BC2'}, 'Công nghệ':{ic:'⚙️',c:'#7C5AC2'}, 'Tiếng Anh':{ic:'🔤',c:'#D6478C'},
+  'Hoạt động trải nghiệm':{ic:'🎈',c:'#E0871C'}, 'Âm nhạc':{ic:'🎵',c:'#C2477C'},
+  'Mĩ thuật':{ic:'🎨',c:'#3AA0B0'}, 'Giáo dục thể chất':{ic:'⚽',c:'#4C7D2F'}
+};
+var BX_SLIDE_WEEKS = 35;
+/* Link công khai lấy TỰ ĐỘNG từ Google Drive (key 'L{lop}|{môn}' → {folder, weeks}).
+   folder = thư mục cả môn; weeks = link riêng từng tuần (bổ sung dần).
+   localStorage (anh tự dán) sẽ được ưu tiên đè lên link mặc định này. */
+var _D='https://drive.google.com/drive/folders/';
+var BX_SLIDE_SEED = {
+  'L1|Tiếng Việt':{folder:_D+'1qVYQOhTVbsAaoIJIH5qXZusI5H_Av6BK',weeks:{}},
+  'L1|Toán':{folder:_D+'1PPMJKGe2fa_-8OyT_28oZ5U_DTRPJPKW',weeks:{}},
+  'L1|Đạo đức':{folder:_D+'112c5DAwWFq70SiAeTuAYi7O8z7O9kG9e',weeks:{}},
+  'L1|Tự nhiên và Xã hội':{folder:_D+'1rzzSSTH116T5NB2ynMkAQ2i_w02O1pod',weeks:{}},
+  'L1|Hoạt động trải nghiệm':{folder:_D+'1stX6Cu-iHtGmlqlVkVxTDu9HJJsumA0i',weeks:{}},
+  'L1|Âm nhạc':{folder:_D+'1zCOszK35-zODWiXX3xH6QD07808sakd9',weeks:{}},
+  'L1|Mĩ thuật':{folder:_D+'1FN6MahsRne_3V0oxhYcKfVM7zlA7i8Ls',weeks:{}},
+  'L1|Giáo dục thể chất':{folder:_D+'1j90SRcL-fpm6KjeFOQxPR9lUrWWUkPwJ',weeks:{}},
+  'L2|Tiếng Việt':{folder:_D+'1KIy_Z2SBj3YN8fD9m-iv0QsNF9PSGwoU',weeks:{}},
+  'L2|Toán':{folder:_D+'1uq_Qd4xu8EJKwnf1tPgNO9gSLed5XRWv',weeks:{}},
+  'L2|Đạo đức':{folder:_D+'1lfE5j-JLa2hn5vO5wsqeQLZM3k_1j3Cw',weeks:{}},
+  'L2|Tự nhiên và Xã hội':{folder:_D+'19_2WbADiVzye5sl1t3cSF45uzPTyosvc',weeks:{}},
+  'L2|Hoạt động trải nghiệm':{folder:_D+'1FMFcxUNNDKxuXeCbi_TaGBAbxVh2tv6Y',weeks:{}},
+  'L2|Âm nhạc':{folder:_D+'1VTNZ4JhWkMKkNAv9mVwLO8yzJbztCZhi',weeks:{}},
+  'L2|Mĩ thuật':{folder:_D+'1DLw276S99v9byFiqvK7SUzcaaSDQ9CG8',weeks:{}},
+  'L2|Giáo dục thể chất':{folder:_D+'11EM8XUdstuNQaAdLPplNvm58efWJStaz',weeks:{}},
+  'L3|Tiếng Việt':{folder:_D+'1lQbMo1j_W5t_YR37L_0nwM852aE_JjQ3',weeks:{}},
+  'L3|Toán':{folder:_D+'1QuQheI-lfEDSLygN9IsY_l9HJcP8urx_',weeks:{}},
+  'L3|Đạo đức':{folder:_D+'1Fer3wXRWBnyMk9Fz6o_1_3h4DVGRfy4U',weeks:{}},
+  'L3|Tự nhiên và Xã hội':{folder:_D+'1qwqHXoD34aX69qNwZafvDU9eLNOr_z_n',weeks:{}},
+  'L3|Tin học':{folder:_D+'1U1JY2Zgc7Wyg0-5dyffEtEFXG_7mPSjp',weeks:{}},
+  'L3|Công nghệ':{folder:_D+'1bshuWdj6Q8_P2AM8suJdBJt4_4YOPcDO',weeks:{}},
+  'L3|Tiếng Anh':{folder:_D+'1k7LBJC6HnV_b80EFQnomE57R_oVyJuGk',weeks:{}},
+  'L3|Hoạt động trải nghiệm':{folder:_D+'1_dR3fXPg2zm2AR-aCt5QpZHfwddfamKx',weeks:{}},
+  'L3|Âm nhạc':{folder:_D+'1S0n0T7VTXDq7QqDDztheKg11bRgqrXDm',weeks:{}},
+  'L3|Mĩ thuật':{folder:_D+'113fNl6B__HKa7ao08lRjQK2ccfaqFJKa',weeks:{}},
+  'L3|Giáo dục thể chất':{folder:_D+'1bLszZbf7we0UAC92fBwpaGTwbBjfBUeh',weeks:{}},
+  'L4|Tiếng Việt':{folder:_D+'17lVSCNhWcix8uRNTIe0fQ1rrYZsr7crq',weeks:{}},
+  'L4|Toán':{folder:_D+'1p8a0pU8AglTOzu38jI5yqZp8_rP4peIq',weeks:{}},
+  'L4|Đạo đức':{folder:_D+'1RjVDoH1mZ7hZPmK1I3WuypWfbP_dyH_q',weeks:{}},
+  'L4|Khoa học':{folder:_D+'1AO8abWI7Yw8zuSaL3NLyzJnDTtTmWGyz',weeks:{}},
+  'L4|Lịch sử và Địa lí':{folder:_D+'1KYxaA2WOYsg-tQDKMCJqMIwyJTd4DZXE',weeks:{}},
+  'L4|Tin học':{folder:_D+'1qjCQjF2bcR-Vg6xOfEgpburcnvv6q_Eu',weeks:{}},
+  'L4|Công nghệ':{folder:_D+'1VxPUYgbhInIdAuJ9lRMm__eU_PWDBPyi',weeks:{}},
+  'L4|Tiếng Anh':{folder:_D+'1IwqgvfRd3GOr-tBj4Ap9SC7KOkHl-eI9',weeks:{}},
+  'L4|Hoạt động trải nghiệm':{folder:_D+'122sTOXm1lV6idnfzCzrzUcmmP86H6m7j',weeks:{}},
+  'L4|Âm nhạc':{folder:_D+'1OO3xPpQQKpUERNuSB8pWcs801yjuBuxU',weeks:{}},
+  'L4|Mĩ thuật':{folder:_D+'122SvqwBOgN8quwV8eQn4kSb0PpY60FJ6',weeks:{}},
+  'L4|Giáo dục thể chất':{folder:_D+'1Aiwmbh1S4GMqkUEi9hnl-cNhG_PnK8mf',weeks:{}},
+  'L5|Tiếng Việt':{folder:_D+'1l_hKfmCDA6e8psF1DJbfWZsIfvaspulC',weeks:{}},
+  'L5|Toán':{folder:_D+'1MZQBI4SC3JMpLydSd1_tuytJbQAFLB71',weeks:{}},
+  'L5|Đạo đức':{folder:_D+'1VLzSQvkYI1630guls3kr3yfV9D-O4mVj',weeks:{}},
+  'L5|Khoa học':{folder:_D+'1Invs3c35cTE782m06K98tCgw9XM741bU',weeks:{}},
+  'L5|Lịch sử và Địa lí':{folder:_D+'14rc80AX4RybqKjH349GjMds5FHyLFL9a',weeks:{}},
+  'L5|Tin học':{folder:_D+'1Y6f8mfZZCZ6o8s7xdAYzX5AUROcpAwJU',weeks:{}},
+  'L5|Công nghệ':{folder:_D+'1uvuBwtne3BvNl1hUgJ0qj9RDEARFVs4i',weeks:{}},
+  'L5|Tiếng Anh':{folder:_D+'1pQnlPS2SpWHYkuA4n0Q1AsPnUyeLaYYt',weeks:{}},
+  'L5|Hoạt động trải nghiệm':{folder:_D+'1UfodaMcE0gzjYA9R4CRJ-QjXpmzmxkyr',weeks:{}},
+  'L5|Âm nhạc':{folder:_D+'1Hy188Wc36XIZesIV2ZE8xKyt0hN1Omz5',weeks:{}},
+  'L5|Mĩ thuật':{folder:_D+'1owD02T09ftcerUyQz4Osgzq_Z8NLNwSU',weeks:{}},
+  'L5|Giáo dục thể chất':{folder:_D+'1YDqzmMvseBYuE0Xr9C4v9Lebzji1ysYU',weeks:{}}
+};
+var _slideSel = {lop:null, mon:null, edit:false, editKey:null};
+function BX_escAttr(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function BX_slideStore(){ try{ var v=JSON.parse(localStorage.getItem('butxanh_slides')||'{}'); return (v&&typeof v==='object')?v:{}; }catch(e){ return {}; } }
+function BX_slideSave(o){ try{ localStorage.setItem('butxanh_slides', JSON.stringify(o)); }catch(e){} }
+function BX_slideKey(lop,mon){ return 'L'+lop+'|'+mon; }
+function BX_slideEntry(lop,mon){
+  var k=BX_slideKey(lop,mon), sd=BX_SLIDE_SEED[k]||{}, ov=BX_slideStore()[k]||{};
+  return { folder:(ov.folder!=null&&ov.folder!=='')?ov.folder:(sd.folder||''),
+           weeks: Object.assign({}, sd.weeks||{}, ov.weeks||{}) };
+}
+function BX_slideCount(lop,mon){ var e=BX_slideEntry(lop,mon); return Object.keys(e.weeks).filter(function(k){return e.weeks[k];}).length; }
+function BX_slideSetLink(lop,mon,which,url){
+  var s=BX_slideStore(), k=BX_slideKey(lop,mon), e=s[k]||{folder:'',weeks:{}};
+  e.weeks=e.weeks||{}; url=(url||'').trim();
+  if(which==='folder'){ e.folder=url; }
+  else if(url){ e.weeks[String(which)]=url; }
+  else { delete e.weeks[String(which)]; }
+  s[k]=e; BX_slideSave(s);
+}
+function renderSlides(){
+  var chips = el('sl-lop-chips'); if(!chips) return;
+  if(!_slideSel.lop) _slideSel.lop = String((String(state.klass).match(/[1-5]/)||['5'])[0]);
+  chips.innerHTML = ['1','2','3','4','5'].map(function(l){
+    return '<button class="sl-chip'+(_slideSel.lop===l?' on':'')+'" onclick="BX_slideLop(\''+l+'\')">Lớp '+l+'</button>';
+  }).join('');
+  var body = el('sl-body'); if(!body) return;
+  body.innerHTML = _slideSel.mon ? BX_slideDetail(_slideSel.lop,_slideSel.mon) : BX_slideSubjGrid(_slideSel.lop);
+}
+window.BX_slideLop=function(l){ _slideSel.lop=l; _slideSel.mon=null; _slideSel.editKey=null; renderSlides(); };
+window.BX_slideOpenIdx=function(i){ var subs=BX_SLIDE_SUBJECTS[_slideSel.lop]||[]; if(subs[i]){ _slideSel.mon=subs[i]; _slideSel.editKey=null; renderSlides(); } };
+window.BX_slideBack=function(){ _slideSel.mon=null; _slideSel.editKey=null; renderSlides(); };
+window.BX_slideToggleEdit=function(){ _slideSel.edit=!_slideSel.edit; _slideSel.editKey=null; renderSlides(); };
+window.BX_slideEditKey=function(k){ _slideSel.editKey=k; renderSlides(); setTimeout(function(){ var i=el('sl-link-input'); if(i) i.focus(); },30); };
+window.BX_slideCancelEdit=function(){ _slideSel.editKey=null; renderSlides(); };
+window.BX_slideSaveLink=function(){
+  var i=el('sl-link-input'), key=_slideSel.editKey; if(!i||!key) return;
+  BX_slideSetLink(_slideSel.lop,_slideSel.mon, key==='folder'?'folder':key.slice(1), i.value);
+  _slideSel.editKey=null; renderSlides();
+};
+window.BX_slideClearLink=function(){
+  var key=_slideSel.editKey; if(!key) return;
+  BX_slideSetLink(_slideSel.lop,_slideSel.mon, key==='folder'?'folder':key.slice(1), '');
+  _slideSel.editKey=null; renderSlides();
+};
+function BX_slideSubjGrid(lop){
+  var subs = BX_SLIDE_SUBJECTS[lop]||[];
+  var cards = subs.map(function(mon,i){
+    var m=BX_SLIDE_META[mon]||{ic:'📘',c:'#1FA45C'}, n=BX_slideCount(lop,mon), e=BX_slideEntry(lop,mon);
+    var badge = n>0 ? '<span class="sl-badge on">'+n+' tuần có bài</span>'
+                    : (e.folder ? '<span class="sl-badge on">Có link môn</span>' : '<span class="sl-badge">Sắp có</span>');
+    return '<button class="sl-subj-card" style="--sc:'+m.c+'" onclick="BX_slideOpenIdx('+i+')">'+
+      '<span class="sl-subj-ic">'+m.ic+'</span>'+
+      '<span class="sl-subj-name">'+mon+'</span>'+badge+'</button>';
+  }).join('');
+  return '<div class="sl-intro">Chọn môn để xem bài giảng trình chiếu của <b>Lớp '+lop+'</b>. Mỗi bài giảng (.pptx) mở/tải trực tiếp từ Google Drive.</div>'+
+    '<div class="sl-subj-grid">'+cards+'</div>';
+}
+function BX_slideDetail(lop,mon){
+  var m=BX_SLIDE_META[mon]||{ic:'📘',c:'#1FA45C'}, e=BX_slideEntry(lop,mon), edit=_slideSel.edit, h='';
+  h+='<button class="sl-back" onclick="BX_slideBack()">← Tất cả môn</button>';
+  h+='<div class="sl-detail-head" style="--sc:'+m.c+'">'+
+       '<span class="sl-subj-ic big">'+m.ic+'</span>'+
+       '<div><div class="sl-detail-title">'+mon+'</div><div class="sl-detail-sub">Lớp '+lop+' · Bài giảng trình chiếu (.pptx)</div></div>'+
+       '<button class="sl-edit-btn'+(edit?' on':'')+'" onclick="BX_slideToggleEdit()">'+(edit?'✓ Xong':'✏️ Quản lý link')+'</button>'+
+     '</div>';
+  if(edit){
+    h+='<button class="sl-folder-btn edit'+(e.folder?' has':'')+'" onclick="BX_slideEditKey(\'folder\')">📂 Link cả môn: '+(e.folder?'đã có ✓ — bấm để sửa':'chưa có — bấm để gắn')+'</button>';
+  } else if(e.folder){
+    h+='<a class="sl-folder-btn" href="'+BX_escAttr(e.folder)+'" target="_blank" rel="noopener">📂 Mở thư mục cả môn trên Google Drive</a>';
+  }
+  if(edit && _slideSel.editKey){
+    var isF=_slideSel.editKey==='folder', w=isF?null:_slideSel.editKey.slice(1);
+    h+=BX_slideEditPanel(isF?'thư mục cả môn':('Tuần '+w), isF?e.folder:(e.weeks[w]||''));
+  }
+  h+='<div class="sl-note">Mỗi <b>tuần</b> là một thư mục trên Drive — mở ra để tải <b>từng tiết</b> hoặc tải <b>cả tuần</b>. '+
+     (edit?'Bấm từng ô tuần để dán link riêng.':'Bấm ô Tuần để mở trên Drive — ô <b style="color:var(--green-dark)">xanh</b> có link riêng, ô có 📂 mở qua thư mục môn.')+'</div>';
+  var g='';
+  for(var i=1;i<=BX_SLIDE_WEEKS;i++){
+    var url=e.weeks[String(i)]||'';
+    if(edit){
+      g+='<button class="sl-week edit'+(url?' has':'')+'" onclick="BX_slideEditKey(\'w'+i+'\')"><span class="sl-week-n">Tuần '+i+'</span><span class="sl-week-ic">'+(url?'✏️':'＋')+'</span></button>';
+    } else if(url){
+      g+='<a class="sl-week has" href="'+BX_escAttr(url)+'" target="_blank" rel="noopener" title="Mở Tuần '+i+'"><span class="sl-week-n">Tuần '+i+'</span><span class="sl-week-ic">↗</span></a>';
+    } else if(e.folder){
+      g+='<a class="sl-week soft" href="'+BX_escAttr(e.folder)+'" target="_blank" rel="noopener" title="Mở thư mục môn rồi vào Tuần '+i+'"><span class="sl-week-n">Tuần '+i+'</span><span class="sl-week-ic">📂</span></a>';
+    } else {
+      g+='<span class="sl-week muted"><span class="sl-week-n">Tuần '+i+'</span></span>';
+    }
+  }
+  h+='<div class="sl-week-grid">'+g+'</div>';
+  return h;
+}
+function BX_slideEditPanel(label,cur){
+  return '<div class="sl-linkbox">'+
+    '<div class="sl-linkbox-label">Dán link Google Drive cho <b>'+label+'</b>:</div>'+
+    '<input id="sl-link-input" class="sl-link-input" placeholder="https://drive.google.com/…" value="'+BX_escAttr(cur)+'">'+
+    '<div class="sl-linkbox-actions">'+
+      '<button class="btn-xs solid" onclick="BX_slideSaveLink()">Lưu link</button>'+
+      (cur?'<button class="btn-xs" onclick="BX_slideClearLink()">Xóa link</button>':'')+
+      '<button class="btn-xs" onclick="BX_slideCancelEdit()">Hủy</button>'+
+    '</div>'+
+    '<div class="sl-linkbox-hint">Mẹo lấy link: trên Google Drive, bấm chuột phải vào thư mục/tệp → <b>Chia sẻ</b> → chọn <b>"Bất kỳ ai có đường liên kết"</b> → <b>Sao chép liên kết</b>, rồi dán vào ô trên.</div>'+
+  '</div>';
+}
 
 /* ---------- 8) LỊCH BÁO GIẢNG (đầy đủ) ---------- */
 /* Gộp dòng: trả mảng {idx,row,thuSpan,buoiSpan} để dựng bảng gộp ô Thứ + Buổi */
@@ -2735,18 +2951,44 @@ function renderNhacPick(){
   const ls=pickKeyLessons(3);
   el('nhac-pick').innerHTML=ls.length?ls.map((r,i)=>`<div class="pick-item"><div class="pick-num">${i+1}</div><div><div class="pt">${r.mon} — ${r.bai}</div><div class="pr">${prepReason(r)}</div></div></div>`).join(''):'<div class="empty-pad">Chưa có tiết nào trong lịch.</div>';
 }
+/* Dựng nội dung 6 nhóm "Bút Xanh tuần này" từ lịch báo giảng THẬT của tuần (không còn thẻ tĩnh). */
+function weekNoteBodies(){
+  const sch=state.schedule||[], hs=state.hocsinh||[];
+  // 1) Nhắc chuẩn bị — gom đồ dùng thật của các tiết trong tuần
+  const mats=[...new Set(sch.filter(r=>(r.tbdh||'').trim()).map(r=>`${r.mon}: ${r.tbdh}`))].slice(0,3);
+  const bMats=mats.length ? mats.join(' · ')+'.'
+    : 'Đồ dùng, tranh ảnh, bảng phụ, phiếu học tập, thiết bị, học liệu số cho từng tiết.';
+  // 2) Gợi ý chuyên môn — 2 tiết đáng chuẩn bị kỹ nhất tuần
+  const keys=pickKeyLessons(2);
+  const bGoi=keys.length ? keys.map(r=>`${r.mon} — “${r.bai}”`).join(' · ')+'.'
+    : 'Phương pháp, hình thức tổ chức, hoạt động nhóm, câu hỏi gợi mở phù hợp bài dạy.';
+  // 3) Điểm cần quan tâm — bài khó/nhiều bước nhất tuần
+  const hard=keys[0];
+  const bHard=hard ? `Ưu tiên chuẩn bị kỹ: ${hard.mon} “${hard.bai}”. ${prepReason(hard)}`
+    : 'Bài khó, nội dung dễ nhầm, thời lượng dễ quá tải, kiến thức cần ôn trước.';
+  // 4) Lưu ý học sinh — theo danh sách HS cần hỗ trợ thật
+  const bHs=hs.length ? `${hs.length} nhóm/HS cần quan tâm — VD: ${hs[0].name}${(hs[0].notes&&hs[0].notes[0])?': '+hs[0].notes[0]:''}.`
+    : 'Nhóm cần hỗ trợ thêm, HS hoàn thành tốt cần mở rộng, HS học hoà nhập.';
+  // 5) Đánh giá thường xuyên — theo các môn có trong tuần
+  const mons=[...new Set(sch.map(r=>r.mon).filter(Boolean))];
+  const bDg=mons.length ? `Chuẩn bị câu hỏi/quan sát nhanh cuối tiết cho: ${mons.slice(0,4).join(', ')}${mons.length>4?'…':''}.`
+    : 'Câu hỏi nhanh cuối tiết, quan sát năng lực/phẩm chất, minh chứng học tập.';
+  return {mats:bMats, goi:bGoi, hard:bHard, hs:bHs, dg:bDg};
+}
 function renderNhac(){
   const dt=el('nhac-today-date'); if(dt) dt.textContent=todayLabel();
   renderNhacToday(); renderNhacPick();
+  const wk=weekNoteBodies();
   const cats=[
-    ['#1FA45C','var(--green-soft)','🎒','Nhắc chuẩn bị','Đồ dùng, tranh ảnh, bảng phụ, phiếu học tập, thiết bị, học liệu số cho từng tiết.'],
-    ['#2C7BD6','var(--blue-soft)','💡','Gợi ý chuyên môn','Phương pháp, hình thức tổ chức, hoạt động nhóm, câu hỏi gợi mở phù hợp bài dạy.'],
-    ['#E0871C','var(--org-soft)','🎯','Điểm cần quan tâm','Bài khó, nội dung dễ nhầm, thời lượng dễ quá tải, kiến thức cần ôn trước.'],
-    ['#7C5AC2','var(--pur-soft)','👥','Lưu ý học sinh','Nhóm cần hỗ trợ thêm, HS hoàn thành tốt cần mở rộng, HS học hoà nhập.'],
-    ['#159B8A','#DFF2EF','✅','Đánh giá thường xuyên','Câu hỏi nhanh cuối tiết, quan sát năng lực/phẩm chất, minh chứng học tập.'],
+    ['#1FA45C','var(--green-soft)','🎒','Nhắc chuẩn bị', wk.mats],
+    ['#2C7BD6','var(--blue-soft)','💡','Gợi ý chuyên môn', wk.goi],
+    ['#E0871C','var(--org-soft)','🎯','Điểm cần quan tâm', wk.hard],
+    ['#7C5AC2','var(--pur-soft)','👥','Lưu ý học sinh', wk.hs],
+    ['#159B8A','#DFF2EF','✅','Đánh giá thường xuyên', wk.dg],
     ['#E5503B','var(--red-soft)','📝','Ghi chú sau tiết dạy','Nhắc lưu nhanh điều chỉnh sau bài dạy: cần tăng luyện tập, bổ sung ví dụ…']
   ];
   el('nhac-week').innerHTML=cats.map(c=>`<div class="ncat"><div class="nh"><span class="ni" style="background:${c[1]};color:${c[0]};font-size:15px">${c[2]}</span>${c[3]}</div><div class="nb">${c[4]}</div></div>`).join('');
+  const wsub=el('nhac-week-sub'); if(wsub) wsub.textContent=`Tuần ${state.week} · ${(state.schedule||[]).length} tiết trong lịch`;
 }
 el('nhac-refresh').onclick=async function(){
   const box=el('nhac-today'), b=this; b.disabled=true;
@@ -3036,7 +3278,9 @@ function downloadPptx(){
   const safe=((l.mon||'BaiGiang')+'_'+(l.bai||'')).replace(/[^A-Za-zÀ-ỹ0-9]/g,'').slice(0,40);
   _downloadBlob(`BaiGiang_${safe}_Lop${state.klass}.pptx`, buildPptx(slides));
 }
-el('ppt-gen').onclick=async function(){
+/* (Đã bỏ chức năng "Gợi ý dàn ý bằng AI" — màn PPT thay bằng Thư viện bài giảng trình chiếu.
+   Giữ lại các hàm dựng .pptx bên dưới để dùng lại sau nếu cần; chỉ gán sự kiện khi nút còn tồn tại.) */
+(function(){ var _pg=el('ppt-gen'); if(!_pg) return; _pg.onclick=async function(){
   const l=pptCurrentLesson(); if(!l){ alert('Chưa có tiết nào trong lịch.'); return; }
   const out=el('ppt-out'); out.innerHTML='<div class="loading"><span class="spinner"></span> Bút Xanh đang phác dàn ý slide…</div>';
   const system='Bạn là trợ lý thiết kế bài giảng cho GV tiểu học VN (CT GDPT 2018). Chỉ trả JSON THUẦN: [{"title":"Tiêu đề slide","points":["ý 1","ý 2"]}]. 6-8 slide, súc tích.';
@@ -3045,7 +3289,7 @@ el('ppt-gen').onclick=async function(){
     el('ppt-text').value=`# ${l.bai}\nMôn ${l.mon} · Lớp ${state.klass} · Tuần ${state.week}\n`+slides.map(sl=>`\n# ${sl.title}\n`+(sl.points||[]).map(p=>'- '+p).join('\n')).join('\n');
     renderPptPreview();
   }catch(e){ pptFillTemplate(); }
-};
+}; })();
 /* ===== XUẤT POWERPOINT .PPTX THẬT (OOXML/zip) ===== */
 const PPTX_NS_A='xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"';
 const PPTX_NS_R='xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"';
@@ -3755,7 +3999,7 @@ var BX_LOCAL_RULE={
   tv:     'Liên hệ bài học với cảnh đẹp, di tích, danh nhân hoặc câu chuyện ở địa phương em; khuyến khích HS kể/giới thiệu bằng lời.',
   toan:   'Lồng số liệu thực tế của địa phương (dân số, diện tích, giá hàng ở chợ quê…) vào bài toán để HS vận dụng.',
   khoa:   'Liên hệ kiến thức với hiện tượng, tài nguyên, môi trường và việc bảo vệ thiên nhiên ở địa phương.',
-  lsdl:   'Liên hệ với di tích lịch sử, nhân vật, đặc điểm dân cư – địa lí của tỉnh/huyện nơi HS sinh sống.',
+  lsdl:   'Liên hệ với di tích lịch sử, nhân vật, đặc điểm dân cư – địa lí của tỉnh/xã nơi HS sinh sống.',
   daoduc: 'Liên hệ chuẩn mực đạo đức với tấm gương người tốt – việc tốt, phong tục, nếp sống văn hoá ở địa phương.',
   amnhac: 'Giới thiệu/cho HS nghe một làn điệu dân ca, bài hát gắn với quê hương địa phương.',
   mythuat:'Hướng HS quan sát, vẽ/tạo hình về cảnh vật, sản vật, lễ hội đặc trưng của quê hương.',
