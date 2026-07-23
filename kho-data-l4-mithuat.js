@@ -803,7 +803,7 @@ window.KHO_DATA_L4_MITHUAT = [
   "mon": "Mĩ thuật",
   "tuan": 22,
   "tiet": 22,
-  "bai": "Chủ đề 6: Môi trường yêu dấu (Tiết 1 - Quan sát, nhận biết)",
+  "bai": "Chủ đề 6: Mái trường yêu dấu (Tiết 1 - Quan sát, nhận biết)",
   "yccd": "1. Năng lực mĩ thuật\n- Quan sát, nhận biết được vẻ đẹp của thiên nhiên, cây cối, con vật trong môi trường sống.\n- Nêu được cảm nhận ban đầu về đối tượng thẩm mĩ của chủ đề.\n- Có ý thức khai thác hình ảnh, chất liệu để chuẩn bị cho thực hành sản phẩm.\n2. Năng lực chung\n- Tự chủ và tự học: chủ động chuẩn bị đồ dùng, quan sát và thực hiện nhiệm vụ học tập.\n- Giao tiếp và hợp tác: trao đổi, chia sẻ trong nhóm; giới thiệu sản phẩm trước lớp.\n- Giải quyết vấn đề và sáng tạo: lựa chọn cách thể hiện phù hợp, tạo sản phẩm theo ý tưởng riêng.\n3. Phẩm chất\n- yêu thiên nhiên, có ý thức bảo vệ môi trường.\n- Chăm chỉ, có ý thức hoàn thành nhiệm vụ học tập và giữ vệ sinh khi thực hành.",
   "dodung": "- Giáo viên: SGK, SGV Mĩ thuật 4; một số hình ảnh, clip minh hoạ chủ đề để trình chiếu; sản phẩm mĩ thuật mẫu; thiết bị trình chiếu học liệu số.\n- Học sinh: SGK Mĩ thuật 4, Vở bài tập Mĩ thuật 4; đồ dùng học tập: bút chì, tẩy, màu vẽ, giấy vẽ, giấy màu, kéo, keo dán; màu vẽ, giấy vẽ, giấy màu, lá cây, vật liệu tự nhiên (tuỳ điều kiện thực tế ở địa phương).",
   "hoatdong": [
@@ -841,7 +841,7 @@ window.KHO_DATA_L4_MITHUAT = [
   "mon": "Mĩ thuật",
   "tuan": 23,
   "tiet": 23,
-  "bai": "Chủ đề 6: Môi trường yêu dấu (Tiết 2 - Cách thực hiện sản phẩm)",
+  "bai": "Chủ đề 6: Mái trường yêu dấu (Tiết 2 - Cách thực hiện sản phẩm)",
   "yccd": "1. Năng lực mĩ thuật\n- Nêu được các bước cơ bản để thể hiện vẻ đẹp của thiên nhiên, cây cối, con vật trong môi trường sống thành sản phẩm mĩ thuật.\n- Lựa chọn được hình ảnh, chất liệu, cách thể hiện phù hợp với khả năng.\n- Biết vận dụng yếu tố và nguyên lí tạo hình đã học vào sản phẩm.\n2. Năng lực chung\n- Tự chủ và tự học: chủ động chuẩn bị đồ dùng, quan sát và thực hiện nhiệm vụ học tập.\n- Giao tiếp và hợp tác: trao đổi, chia sẻ trong nhóm; giới thiệu sản phẩm trước lớp.\n- Giải quyết vấn đề và sáng tạo: lựa chọn cách thể hiện phù hợp, tạo sản phẩm theo ý tưởng riêng.\n3. Phẩm chất\n- yêu thiên nhiên, có ý thức bảo vệ môi trường.\n- Chăm chỉ, có ý thức hoàn thành nhiệm vụ học tập và giữ vệ sinh khi thực hành.",
   "dodung": "- Giáo viên: SGK, SGV Mĩ thuật 4; một số hình ảnh, clip minh hoạ chủ đề để trình chiếu; sản phẩm mĩ thuật mẫu; thiết bị trình chiếu học liệu số.\n- Học sinh: SGK Mĩ thuật 4, Vở bài tập Mĩ thuật 4; đồ dùng học tập: bút chì, tẩy, màu vẽ, giấy vẽ, giấy màu, kéo, keo dán; màu vẽ, giấy vẽ, giấy màu, lá cây, vật liệu tự nhiên (tuỳ điều kiện thực tế ở địa phương).",
   "hoatdong": [
@@ -879,7 +879,7 @@ window.KHO_DATA_L4_MITHUAT = [
   "mon": "Mĩ thuật",
   "tuan": 24,
   "tiet": 24,
-  "bai": "Chủ đề 6: Môi trường yêu dấu (Tiết 3 - Thực hành, sáng tạo)",
+  "bai": "Chủ đề 6: Mái trường yêu dấu (Tiết 3 - Thực hành, sáng tạo)",
   "yccd": "1. Năng lực mĩ thuật\n- Tạo được sản phẩm mĩ thuật thể hiện vẻ đẹp của thiên nhiên, cây cối, con vật trong môi trường sống theo ý thích.\n- Vận dụng được hình, mảng, màu sắc, đậm nhạt để làm rõ nội dung.\n- Bước đầu thể hiện được sự sáng tạo trong sản phẩm.\n2. Năng lực chung\n- Tự chủ và tự học: chủ động chuẩn bị đồ dùng, quan sát và thực hiện nhiệm vụ học tập.\n- Giao tiếp và hợp tác: trao đổi, chia sẻ trong nhóm; giới thiệu sản phẩm trước lớp.\n- Giải quyết vấn đề và sáng tạo: lựa chọn cách thể hiện phù hợp, tạo sản phẩm theo ý tưởng riêng.\n3. Phẩm chất\n- yêu thiên nhiên, có ý thức bảo vệ môi trường.\n- Chăm chỉ, có ý thức hoàn thành nhiệm vụ học tập và giữ vệ sinh khi thực hành.",
   "dodung": "- Giáo viên: SGK, SGV Mĩ thuật 4; một số hình ảnh, clip minh hoạ chủ đề để trình chiếu; sản phẩm mĩ thuật mẫu; thiết bị trình chiếu học liệu số.\n- Học sinh: SGK Mĩ thuật 4, Vở bài tập Mĩ thuật 4; đồ dùng học tập: bút chì, tẩy, màu vẽ, giấy vẽ, giấy màu, kéo, keo dán; màu vẽ, giấy vẽ, giấy màu, lá cây, vật liệu tự nhiên (tuỳ điều kiện thực tế ở địa phương).",
   "hoatdong": [
@@ -917,7 +917,7 @@ window.KHO_DATA_L4_MITHUAT = [
   "mon": "Mĩ thuật",
   "tuan": 25,
   "tiet": 25,
-  "bai": "Chủ đề 6: Môi trường yêu dấu (Tiết 4 - Trưng bày, thảo luận và vận dụng)",
+  "bai": "Chủ đề 6: Mái trường yêu dấu (Tiết 4 - Trưng bày, thảo luận và vận dụng)",
   "yccd": "1. Năng lực mĩ thuật\n- Trưng bày, giới thiệu và nêu được cảm nhận về sản phẩm của mình, của bạn.\n- Nhận xét, đánh giá được sản phẩm dựa trên gợi ý.\n- Vận dụng được kiến thức, kĩ năng của chủ đề vào một sản phẩm gắn với cuộc sống.\n2. Năng lực chung\n- Tự chủ và tự học: chủ động chuẩn bị đồ dùng, quan sát và thực hiện nhiệm vụ học tập.\n- Giao tiếp và hợp tác: trao đổi, chia sẻ trong nhóm; giới thiệu sản phẩm trước lớp.\n- Giải quyết vấn đề và sáng tạo: lựa chọn cách thể hiện phù hợp, tạo sản phẩm theo ý tưởng riêng.\n3. Phẩm chất\n- yêu thiên nhiên, có ý thức bảo vệ môi trường.\n- Chăm chỉ, có ý thức hoàn thành nhiệm vụ học tập và giữ vệ sinh khi thực hành.",
   "dodung": "- Giáo viên: SGK, SGV Mĩ thuật 4; một số hình ảnh, clip minh hoạ chủ đề để trình chiếu; sản phẩm mĩ thuật mẫu; thiết bị trình chiếu học liệu số.\n- Học sinh: SGK Mĩ thuật 4, Vở bài tập Mĩ thuật 4; đồ dùng học tập: bút chì, tẩy, màu vẽ, giấy vẽ, giấy màu, kéo, keo dán; màu vẽ, giấy vẽ, giấy màu, lá cây, vật liệu tự nhiên (tuỳ điều kiện thực tế ở địa phương).",
   "hoatdong": [

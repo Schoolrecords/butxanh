@@ -325,7 +325,7 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 9,
     "tiet": 9,
-    "bai": "Chủ đề 3: Mái trường em yêu — Học hát: Học sinh lớp Hai chăm ngoan (Nhạc và lời: Hoàng Long)",
+    "bai": "Chủ đề 3: Mái trường thân yêu — Học hát: Học sinh lớp Hai chăm ngoan (Nhạc và lời: Hoàng Long)",
     "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Nêu được tên bài hát và tác giả; hát đúng giai điệu, lời ca bài Học sinh lớp Hai chăm ngoan.\n- Cảm nhận và thể hiện bài hát với tính chất vui tươi, trong sáng, tốc độ hơi nhanh ở nhịp 2/4; biết hát gõ đệm theo phách.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Chăm chỉ, trách nhiệm: Biết chăm ngoan, nghe lời ông bà, cha mẹ, thầy cô.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
     "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.",
     "hoatdong": [
@@ -365,7 +365,7 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 10,
     "tiet": 10,
-    "bai": "Chủ đề 3: Mái trường em yêu — Ôn tập bài hát: Học sinh lớp Hai chăm ngoan; Đọc nhạc theo kí hiệu bàn tay",
+    "bai": "Chủ đề 3: Mái trường thân yêu — Ôn tập bài hát: Học sinh lớp Hai chăm ngoan; Đọc nhạc theo kí hiệu bàn tay",
     "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Hát thuộc, đúng giai điệu bài Học sinh lớp Hai chăm ngoan; hát kết hợp vận động.\n- Đọc được các nốt Đô – Rê – Mi – Pha – Son – La kết hợp kí hiệu bàn tay.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Chăm chỉ, trách nhiệm.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
     "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.",
     "hoatdong": [
@@ -405,7 +405,7 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 11,
     "tiet": 11,
-    "bai": "Chủ đề 3: Mái trường em yêu — Đọc nhạc: Bài số 2",
+    "bai": "Chủ đề 3: Mái trường thân yêu — Đọc nhạc: Bài số 2",
     "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Nhớ tên nốt, đọc được cao độ và trường độ bài đọc nhạc số 2 kết hợp kí hiệu bàn tay và nhạc đệm.\n- Biết đọc nhạc kết hợp gõ đệm theo nhịp; cảm nhận yếu tố mạnh – nhẹ.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
     "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.",
     "hoatdong": [
@@ -445,7 +445,7 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 12,
     "tiet": 12,
-    "bai": "Chủ đề 3: Mái trường em yêu — Ôn tập: Hát và Đọc nhạc; Vận dụng – Sáng tạo",
+    "bai": "Chủ đề 3: Mái trường thân yêu — Ôn tập: Hát và Đọc nhạc; Vận dụng – Sáng tạo",
     "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Biểu diễn bài Học sinh lớp Hai chăm ngoan kết hợp vận động; thể hiện bài đọc nhạc số 2 kết hợp gõ đệm.\n- Tham gia trò chơi âm nhạc, sáng tạo động tác vận động đơn giản.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Chăm chỉ, trách nhiệm.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
     "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.",
     "hoatdong": [
@@ -725,28 +725,28 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 19,
     "tiet": 19,
-    "bai": "Chủ đề 5: Loài vật em yêu — Học hát: Chú ếch con (Nhạc và lời: Phan Nhân)",
-    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Hát đúng giai điệu, thuộc lời ca bài Chú ếch con; thể hiện tính chất vui tươi, hồn nhiên.\n- Biết hát kết hợp gõ đệm theo phách, theo tiết tấu lời ca.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Nhân ái, yêu thiên nhiên: Yêu quý và bảo vệ các loài vật; chăm chỉ học tập như chú ếch con.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
+    "bai": "Chủ đề 5: Mùa xuân — Học hát: Hoa lá mùa xuân (Nhạc và lời: Hoàng Hà)",
+    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Hát đúng giai điệu, thuộc lời ca bài Hoa lá mùa xuân; thể hiện được tính chất vui tươi, trong sáng của bài hát.\n- Biết hát kết hợp gõ đệm theo phách, theo nhịp.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Nhân ái, yêu thiên nhiên: Yêu vẻ đẹp mùa xuân, yêu cây cỏ hoa lá quê hương.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
     "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.",
     "hoatdong": [
       {
         "ten": "A. KHỞI ĐỘNG (5 phút)",
-        "gv": "- GV giới thiệu chủ đề Loài vật em yêu.\n- Trò chơi: bắt chước tiếng kêu các con vật (ếch, gà, mèo…) theo tiết tấu.",
-        "hs": "- HS tham gia trò chơi bắt chước tiếng con vật vui vẻ."
+        "gv": "- GV giới thiệu chủ đề Mùa xuân; cho HS xem tranh cảnh mùa xuân (hoa lá, cây cối đâm chồi).\n- Trò chơi: kể tên các loài hoa, cây mùa xuân mà em biết theo tiết tấu.",
+        "hs": "- HS quan sát tranh, kể tên hoa lá mùa xuân; tham gia trò chơi vui vẻ."
       },
       {
         "ten": "B. KHÁM PHÁ - HỌC HÁT (15 phút)",
-        "gv": "Mục tiêu: HS hát đúng bài Chú ếch con.\n- GV cho xem hình ảnh chú ếch con và giới thiệu bài hát của nhạc sĩ Phan Nhân.\n- GV hát mẫu; hỏi cảm nhận về tính chất bài hát (vui tươi, hồn nhiên).\n- Hướng dẫn đọc lời ca theo tiết tấu, chia câu, dạy hát nối tiếp từng câu; luyện hát cho thuộc.",
-        "hs": "- HS quan sát, nghe hát mẫu, nêu cảm nhận.\n- HS đọc lời ca, học hát từng câu, luyện hát cho thuộc."
+        "gv": "Mục tiêu: HS hát đúng bài Hoa lá mùa xuân.\n- GV giới thiệu bài hát của nhạc sĩ Hoàng Hà, nói về cảnh sắc thiên nhiên tươi đẹp khi mùa xuân về.\n- GV hát mẫu (hoặc mở file); hỏi cảm nhận về tính chất bài hát (vui tươi, trong sáng).\n- Hướng dẫn đọc lời ca theo tiết tấu, chia câu; dạy hát nối tiếp từng câu; nhắc HS lấy hơi đầu câu; luyện hát cho thuộc.",
+        "hs": "- HS nghe hát mẫu, nêu cảm nhận.\n- HS đọc lời ca, học hát từng câu, luyện hát cho thuộc."
       },
       {
         "ten": "C. THỰC HÀNH - LUYỆN TẬP (10 phút)",
-        "gv": "Mục tiêu: HS hát kết hợp gõ đệm.\n- GV hát và gõ đệm mẫu theo phách, theo tiết tấu lời ca.\n- HS hát kết hợp gõ đệm với các hình thức tập thể, tổ, cá nhân.\n- GV giáo dục HS chăm học, yêu quý loài vật.",
-        "hs": "- HS hát + gõ đệm theo phách và tiết tấu lời ca; các tổ, cá nhân thực hiện."
+        "gv": "Mục tiêu: HS hát kết hợp gõ đệm theo phách.\n- GV hát và gõ đệm mẫu theo phách.\n- HS hát kết hợp gõ đệm theo phách với các hình thức tập thể, tổ, cá nhân.\n- GV nhận xét, sửa sai; giáo dục HS yêu thiên nhiên, mùa xuân.",
+        "hs": "- HS hát + gõ đệm theo phách; các tổ, cá nhân thực hiện."
       },
       {
         "ten": "★ NĂNG LỰC SỐ & AI (mức nhận biết — GV kiểm soát) (3 phút)",
-        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở học liệu số bài Chú ếch con và hình ảnh/tiếng kêu các loài vật để HS nghe, xem; giúp HS làm quen khai thác bài hát và âm thanh loài vật trên môi trường số.\n- (Làm quen AI — mức nhận biết) GV cho HS nghe tiếng một con vật và dùng ứng dụng nhận diện âm thanh động vật (GV thao tác) để \"đoán\" con gì; HS nhận biết công nghệ có thể nhận ra tiếng con vật — ví dụ vui về AI.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
+        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở học liệu số bài Hoa lá mùa xuân và hình ảnh, video cảnh mùa xuân trên ti vi để HS nghe, xem và cảm nhận không khí mùa xuân; giúp HS làm quen khai thác bài hát và hình ảnh trên môi trường số.\n- (Làm quen AI — mức nhận biết) GV giới thiệu ứng dụng karaoke thiếu nhi hiển thị lời bài hát chạy theo nhạc để HS hát theo; HS nhận biết máy tính có thể \"tự khớp lời với nhạc\" giúp em hát đúng nhịp — một ví dụ về công nghệ hỗ trợ học nhạc.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
         "hs": "- HS lắng nghe, quan sát trên màn hình lớn và nêu cảm nhận, nhận xét theo gợi ý của GV.\n- HS hào hứng nhận biết công nghệ số hỗ trợ học nhạc; ghi nhớ chỉ dùng thiết bị khi có người lớn hướng dẫn."
       },
       {
@@ -765,28 +765,28 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 20,
     "tiet": 20,
-    "bai": "Chủ đề 5: Loài vật em yêu — Ôn tập bài hát: Chú ếch con; Đọc nhạc: Bài số 3",
-    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Hát thuộc bài Chú ếch con, hát kết hợp vận động phụ hoạ.\n- Đọc được cao độ, tên nốt bài đọc nhạc số 3 kết hợp kí hiệu bàn tay và nhạc đệm.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Nhân ái, chăm chỉ.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
+    "bai": "Chủ đề 5: Mùa xuân — Ôn tập bài hát: Hoa lá mùa xuân; Đọc nhạc: Bài số 3",
+    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Hát thuộc bài Hoa lá mùa xuân, hát kết hợp vận động phụ hoạ.\n- Đọc được cao độ, tên nốt bài đọc nhạc số 3 kết hợp kí hiệu bàn tay và nhạc đệm.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Nhân ái, chăm chỉ.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
     "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.",
     "hoatdong": [
       {
         "ten": "A. KHỞI ĐỘNG (4 phút)",
-        "gv": "- HS hát lại bài Chú ếch con để khởi động.",
+        "gv": "- HS hát lại bài Hoa lá mùa xuân để khởi động.",
         "hs": "- HS hát khởi động."
       },
       {
         "ten": "B. THỰC HÀNH - ÔN TẬP BÀI HÁT (11 phút)",
-        "gv": "Mục tiêu: HS ôn hát và vận động phụ hoạ.\n- HS ôn bài Chú ếch con với nhạc đệm, kết hợp vận động phụ hoạ đơn giản.\n- Trình bày theo nhóm hát, nhóm gõ, nhóm vận động; GV nhận xét.",
+        "gv": "Mục tiêu: HS ôn hát và vận động phụ hoạ.\n- HS ôn bài Hoa lá mùa xuân với nhạc đệm, kết hợp vận động phụ hoạ nhịp nhàng.\n- Trình bày theo nhóm hát, nhóm gõ, nhóm vận động; GV nhận xét, hoàn thiện.",
         "hs": "- HS ôn hát, vận động phụ hoạ; trình bày theo nhóm."
       },
       {
         "ten": "C. KHÁM PHÁ - ĐỌC NHẠC BÀI SỐ 3 (13 phút)",
-        "gv": "Mục tiêu: HS đọc đúng bài đọc nhạc số 3.\n- GV giới thiệu bài đọc nhạc số 3, đọc mẫu; đọc tên nốt từng câu, HS đọc theo.\n- Đọc kết hợp kí hiệu bàn tay và nhạc đệm; đọc với nhiều hình thức.",
+        "gv": "Mục tiêu: HS đọc đúng bài đọc nhạc số 3.\n- GV giới thiệu bài đọc nhạc số 3, đọc mẫu; đọc tên nốt từng câu, HS đọc theo.\n- Đọc kết hợp kí hiệu bàn tay và nhạc đệm; đọc với nhiều hình thức: cá nhân/nhóm/tổ/cả lớp.",
         "hs": "- HS nghe đọc mẫu, đọc theo từng câu, kết hợp kí hiệu bàn tay và nhạc đệm."
       },
       {
         "ten": "★ NĂNG LỰC SỐ & AI (mức nhận biết — GV kiểm soát) (3 phút)",
-        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở file nhạc đệm và bản đọc nhạc số 3 trên ti vi để HS nghe mẫu, quan sát nốt nhạc; giúp HS làm quen đọc nhạc theo học liệu số.\n- (Làm quen AI — mức nhận biết) GV dùng đàn phím ảo/ứng dụng luyện nốt (GV thao tác) bấm nốt để HS đoán và đọc theo; HS nhận biết công cụ số hỗ trợ luyện đọc nhạc.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
+        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở file nhạc đệm và bản đọc nhạc số 3 trên ti vi để HS nghe mẫu, quan sát nốt nhạc; giúp HS làm quen đọc nhạc theo học liệu số.\n- (Làm quen AI — mức nhận biết) GV dùng đàn phím ảo/ứng dụng luyện nốt (GV thao tác) bấm nốt để HS đoán và đọc theo kí hiệu bàn tay; HS nhận biết công cụ số hỗ trợ luyện đọc nhạc.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
         "hs": "- HS lắng nghe, quan sát trên màn hình lớn và nêu cảm nhận, nhận xét theo gợi ý của GV.\n- HS hào hứng nhận biết công nghệ số hỗ trợ học nhạc; ghi nhớ chỉ dùng thiết bị khi có người lớn hướng dẫn."
       },
       {
@@ -805,28 +805,28 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 21,
     "tiet": 21,
-    "bai": "Chủ đề 5: Loài vật em yêu — Thường thức âm nhạc: Giới thiệu nhạc cụ Kèn phím; Vận dụng – Sáng tạo",
-    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Nhận biết nhạc cụ kèn phím; biết hình dáng, âm sắc và cách chơi cơ bản của kèn phím.\n- Chăm chú nghe âm thanh kèn phím; vận dụng gõ đệm, vận động theo bài hát đã học.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Chăm chỉ, yêu âm nhạc.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
-    "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.\n- Nhạc cụ kèn phím (hoặc hình ảnh/video).",
+    "bai": "Chủ đề 5: Mùa xuân — Thường thức âm nhạc: Câu chuyện về bài hát Chú voi con ở Bản Đôn; Vận dụng – Sáng tạo",
+    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Nhớ và hiểu nội dung câu chuyện về bài hát Chú voi con ở Bản Đôn; chăm chú nghe và biểu hiện cảm xúc khi nghe bài hát.\n- Vận dụng gõ đệm, vận động theo bài hát đã học một cách sáng tạo.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Nhân ái, yêu thiên nhiên: Yêu vẻ đẹp mùa xuân, yêu cây cỏ hoa lá quê hương.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
+    "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.",
     "hoatdong": [
       {
         "ten": "A. KHỞI ĐỘNG (4 phút)",
-        "gv": "- HS hát lại bài Chú ếch con kết hợp gõ đệm để khởi động.",
+        "gv": "- HS hát lại bài Hoa lá mùa xuân kết hợp gõ đệm để khởi động.",
         "hs": "- HS hát và gõ đệm khởi động."
       },
       {
         "ten": "B. KHÁM PHÁ - THƯỜNG THỨC ÂM NHẠC (16 phút)",
-        "gv": "Mục tiêu: HS nhận biết nhạc cụ kèn phím.\n- GV cho HS xem hình ảnh/video giới thiệu kèn phím: có bàn phím như đàn, thổi hơi qua ống để phát ra âm thanh.\n- GV cho HS nghe một đoạn nhạc chơi bằng kèn phím; hỏi cảm nhận về âm sắc.\n- GV giới thiệu cách cầm, cách thổi và bấm phím cơ bản (mức nhận biết).",
-        "hs": "- HS quan sát, lắng nghe âm thanh kèn phím, nêu cảm nhận và ghi nhớ đặc điểm."
+        "gv": "Mục tiêu: HS nghe và hiểu câu chuyện về bài hát Chú voi con ở Bản Đôn.\n- GV kể câu chuyện về bài hát Chú voi con ở Bản Đôn theo tranh; gợi ý HS trả lời và kể lại các chi tiết.\n- GV cho HS nghe bài hát Chú voi con ở Bản Đôn; hỏi cảm nhận về tính chất bài hát (vui tươi, hồn nhiên).\n- Cho HS nghe lần 2 kết hợp vận động nhịp nhàng theo bài; giáo dục HS yêu quý loài vật, quê hương.",
+        "hs": "- HS nghe kể chuyện, trả lời và kể lại theo tranh.\n- HS nghe bài hát, nêu cảm nhận, vận động nhịp nhàng."
       },
       {
         "ten": "C. VẬN DỤNG - SÁNG TẠO (11 phút)",
-        "gv": "Mục tiêu: HS vận dụng gõ đệm, vận động theo bài hát.\n- HS ôn một bài hát đã học kết hợp gõ đệm, vận động.\n- Khuyến khích HS mô phỏng động tác chơi kèn phím theo nhạc; biểu diễn theo nhóm.",
-        "hs": "- HS gõ đệm, vận động và mô phỏng chơi kèn phím theo nhạc; biểu diễn nhóm."
+        "gv": "Mục tiêu: HS vận dụng gõ đệm, vận động sáng tạo.\n- HS ôn bài Hoa lá mùa xuân kết hợp gõ đệm và tự nghĩ vài động tác phụ hoạ đơn giản.\n- Tổ chức biểu diễn theo nhóm; GV khen ngợi ý tưởng sáng tạo.",
+        "hs": "- HS sáng tạo động tác, luyện tập và biểu diễn theo nhóm."
       },
       {
         "ten": "★ NĂNG LỰC SỐ & AI (mức nhận biết — GV kiểm soát) (3 phút)",
-        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở học liệu số (video, âm thanh) giới thiệu kèn phím và các đoạn độc tấu để HS quan sát cách chơi và nghe âm sắc; giúp HS khai thác tư liệu nhạc cụ trên môi trường số.\n- (Làm quen AI — mức nhận biết) GV mở ứng dụng kèn phím/đàn phím ảo trên máy tính bảng, ti vi (GV thao tác) để HS nghe âm thanh khi bấm phím; HS nhận biết công nghệ số có thể mô phỏng nhạc cụ.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
+        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở học liệu số bài Chú voi con ở Bản Đôn (âm thanh/video) và hình ảnh chú voi, Bản Đôn để HS nghe, xem và cảm nhận; giúp HS làm quen khai thác câu chuyện âm nhạc trên môi trường số.\n- (Làm quen AI — mức nhận biết) GV cho HS nghe một đoạn nhạc và dùng ứng dụng nhận diện giai điệu/bài hát (GV thao tác) để \"đoán\" tên bài; HS nhận biết công nghệ có thể nhận ra bài hát đang phát — một ví dụ về AI.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
         "hs": "- HS lắng nghe, quan sát trên màn hình lớn và nêu cảm nhận, nhận xét theo gợi ý của GV.\n- HS hào hứng nhận biết công nghệ số hỗ trợ học nhạc; ghi nhớ chỉ dùng thiết bị khi có người lớn hướng dẫn."
       },
       {
@@ -845,28 +845,28 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 22,
     "tiet": 22,
-    "bai": "Chủ đề 5: Loài vật em yêu — Ôn tập chủ đề 5; Vận dụng – Sáng tạo",
-    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Biểu diễn thuần thục bài Chú ếch con kết hợp gõ đệm, vận động; đọc thành thạo bài đọc nhạc số 3.\n- Củng cố hiểu biết về nhạc cụ kèn phím; tham gia trò chơi âm nhạc sáng tạo.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Nhân ái, chăm chỉ, hợp tác.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
+    "bai": "Chủ đề 5: Mùa xuân — Ôn tập chủ đề 5; Vận dụng – Sáng tạo",
+    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Biểu diễn thuần thục bài Hoa lá mùa xuân kết hợp gõ đệm, vận động; đọc thành thạo bài đọc nhạc số 3.\n- Củng cố nội dung chủ đề 5; tham gia trò chơi âm nhạc sáng tạo.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Chăm chỉ, hợp tác, tự tin biểu diễn.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
     "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.",
     "hoatdong": [
       {
         "ten": "A. KHỞI ĐỘNG (4 phút)",
-        "gv": "- Trò chơi nghe giai điệu đoán tên bài hát trong chủ đề.",
-        "hs": "- HS lắng nghe và đoán tên bài hát."
+        "gv": "- Trò chơi nghe giai điệu đoán tên bài hát, bài đọc nhạc đã học trong chủ đề.",
+        "hs": "- HS lắng nghe và đoán tên bài hát/bài đọc nhạc."
       },
       {
         "ten": "B. THỰC HÀNH - ÔN TẬP (14 phút)",
-        "gv": "Mục tiêu: HS ôn hát và ôn đọc nhạc.\n- HS biểu diễn bài Chú ếch con kết hợp gõ đệm, vận động theo nhóm.\n- Ôn đọc nhạc số 3 với kí hiệu bàn tay, nhạc đệm.\n- GV nhận xét, hoàn thiện.",
-        "hs": "- HS ôn hát, ôn đọc nhạc; các nhóm biểu diễn."
+        "gv": "Mục tiêu: HS ôn hát và ôn đọc nhạc.\n- HS biểu diễn bài Hoa lá mùa xuân kết hợp gõ đệm, vận động phụ hoạ theo nhóm.\n- Ôn đọc nhạc số 3 với nhạc đệm ở các hình thức nhóm đọc, nhóm gõ, nhóm vận động.\n- GV nhận xét, tuyên dương.",
+        "hs": "- HS ôn hát, ôn đọc nhạc; các nhóm biểu diễn và nhận xét lẫn nhau."
       },
       {
         "ten": "C. VẬN DỤNG - SÁNG TẠO (10 phút)",
-        "gv": "Mục tiêu: HS sáng tạo biểu diễn.\n- HS sáng tạo động tác vận động phụ hoạ cho bài hát; thi biểu diễn nhóm.\n- GV và HS bình chọn, khen ngợi.",
-        "hs": "- HS sáng tạo, luyện tập và thi biểu diễn."
+        "gv": "Mục tiêu: HS sáng tạo biểu diễn.\n- Tổ chức thi biểu diễn nhóm kết hợp hát, gõ đệm, vận động phụ hoạ.\n- GV và HS bình chọn, khen ngợi nhóm sáng tạo.",
+        "hs": "- HS luyện tập và thi biểu diễn theo nhóm."
       },
       {
         "ten": "★ NĂNG LỰC SỐ & AI (mức nhận biết — GV kiểm soát) (3 phút)",
-        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở kho học liệu số các bài hát về loài vật để HS nghe và hát theo; giúp HS làm quen chọn và nghe bài hát trên học liệu số.\n- (Làm quen AI — mức nhận biết) GV dùng ứng dụng karaoke thiếu nhi để tổ chức biểu diễn; HS nhận biết ứng dụng thông minh hỗ trợ hát, GV kiểm soát.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
+        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở kho học liệu số các bài hát về mùa xuân để cả lớp nghe lại và biểu diễn; giúp HS làm quen chọn và nghe bài hát trên học liệu số của GV.\n- (Làm quen AI — mức nhận biết) GV dùng ứng dụng karaoke/chấm điểm hát thiếu nhi để tổ chức biểu diễn; HS nhận biết ứng dụng thông minh có thể hỗ trợ phần biểu diễn, GV điều khiển.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
         "hs": "- HS lắng nghe, quan sát trên màn hình lớn và nêu cảm nhận, nhận xét theo gợi ý của GV.\n- HS hào hứng nhận biết công nghệ số hỗ trợ học nhạc; ghi nhớ chỉ dùng thiết bị khi có người lớn hướng dẫn."
       },
       {
@@ -885,28 +885,28 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 23,
     "tiet": 23,
-    "bai": "Chủ đề 6: Ngày Tết vui vẻ — Học hát: Sắp đến Tết rồi (Nhạc và lời: Hoàng Vân)",
-    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Hát đúng giai điệu, thuộc lời ca bài Sắp đến Tết rồi; thể hiện tính chất vui tươi, rộn ràng của ngày Tết.\n- Biết hát kết hợp gõ đệm theo phách và vận động.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Yêu quê hương, nhân ái: Yêu quý ngày Tết cổ truyền, kính trọng ông bà, cha mẹ.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
+    "bai": "Chủ đề 6: Gia đình yêu thương — Học hát: Mẹ ơi có biết (Nhạc và lời: Nguyễn Văn Chung)",
+    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Hát đúng giai điệu, thuộc lời ca bài Mẹ ơi có biết; thể hiện tình cảm tha thiết, trìu mến của bài hát.\n- Biết hát kết hợp gõ đệm theo phách, theo nhịp.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Nhân ái, biết ơn: Yêu thương, kính trọng và biết ơn ông bà, cha mẹ.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
     "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.",
     "hoatdong": [
       {
         "ten": "A. KHỞI ĐỘNG (5 phút)",
-        "gv": "- GV giới thiệu chủ đề Ngày Tết vui vẻ.\n- Trò chơi: kể tên những hoạt động, món ăn, hình ảnh của ngày Tết mà em biết.",
-        "hs": "- HS kể về ngày Tết theo hiểu biết của mình."
+        "gv": "- GV giới thiệu chủ đề Gia đình yêu thương; cho HS xem tranh về gia đình, trò chuyện về tình cảm với mẹ, với gia đình.",
+        "hs": "- HS quan sát tranh, chia sẻ về gia đình và tình cảm với mẹ."
       },
       {
         "ten": "B. KHÁM PHÁ - HỌC HÁT (15 phút)",
-        "gv": "Mục tiêu: HS hát đúng bài Sắp đến Tết rồi.\n- GV cho xem hình ảnh ngày Tết và giới thiệu bài hát của nhạc sĩ Hoàng Vân.\n- GV hát mẫu; hỏi cảm nhận (vui tươi, rộn ràng).\n- Hướng dẫn đọc lời ca theo tiết tấu, chia câu, dạy hát nối tiếp; luyện hát cho thuộc.",
-        "hs": "- HS quan sát, nghe hát mẫu, nêu cảm nhận.\n- HS đọc lời ca, học hát từng câu, luyện hát cho thuộc."
+        "gv": "Mục tiêu: HS hát đúng bài Mẹ ơi có biết.\n- GV giới thiệu bài hát của nhạc sĩ Nguyễn Văn Chung, nói về tình yêu thương của con dành cho mẹ.\n- GV hát mẫu (hoặc mở file); hỏi cảm nhận về tính chất bài hát (tha thiết, trìu mến).\n- Hướng dẫn đọc lời ca theo tiết tấu, chia câu; dạy hát nối tiếp từng câu; nhắc HS hát nhẹ nhàng, tình cảm; luyện hát cho thuộc.",
+        "hs": "- HS nghe hát mẫu, nêu cảm nhận.\n- HS đọc lời ca, học hát từng câu, luyện hát cho thuộc."
       },
       {
         "ten": "C. THỰC HÀNH - LUYỆN TẬP (10 phút)",
-        "gv": "Mục tiêu: HS hát kết hợp gõ đệm và vận động.\n- GV hát và gõ đệm mẫu theo phách.\n- HS hát kết hợp gõ đệm và vận động vui tươi; trình bày theo tổ, cá nhân.\n- GV giáo dục HS yêu quý ngày Tết, kính trọng người thân.",
-        "hs": "- HS hát + gõ đệm, vận động; các tổ, cá nhân biểu diễn."
+        "gv": "Mục tiêu: HS hát kết hợp gõ đệm theo phách.\n- GV hát và gõ đệm mẫu theo phách.\n- HS hát kết hợp gõ đệm theo phách với các hình thức tập thể, tổ, cá nhân.\n- GV nhận xét, sửa sai; giáo dục HS biết yêu thương, biết ơn ông bà, cha mẹ.",
+        "hs": "- HS hát + gõ đệm theo phách; các tổ, cá nhân thực hiện."
       },
       {
         "ten": "★ NĂNG LỰC SỐ & AI (mức nhận biết — GV kiểm soát) (3 phút)",
-        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở học liệu số bài Sắp đến Tết rồi và hình ảnh/video không khí ngày Tết để HS nghe, xem; giúp HS làm quen khai thác bài hát và tư liệu ngày Tết trên môi trường số.\n- (Làm quen AI — mức nhận biết) GV dùng ứng dụng karaoke thiếu nhi hiển thị lời bài hát ngày Tết để cả lớp hát theo; HS nhận biết ứng dụng \"chạy lời khớp nhạc\" giúp em hát đúng — ví dụ về công nghệ hỗ trợ.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
+        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở học liệu số bài Mẹ ơi có biết trên ti vi để HS nghe mẫu và hát theo lời chạy trên màn hình; HS làm quen khai thác bài hát số.\n- (Làm quen AI — mức nhận biết) GV giới thiệu ứng dụng karaoke thiếu nhi có lời bài hát chạy đồng bộ với nhạc; HS nhận biết máy tính \"tự khớp lời với nhạc\" giúp em hát đúng — ví dụ về công nghệ hỗ trợ.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
         "hs": "- HS lắng nghe, quan sát trên màn hình lớn và nêu cảm nhận, nhận xét theo gợi ý của GV.\n- HS hào hứng nhận biết công nghệ số hỗ trợ học nhạc; ghi nhớ chỉ dùng thiết bị khi có người lớn hướng dẫn."
       },
       {
@@ -925,28 +925,28 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 24,
     "tiet": 24,
-    "bai": "Chủ đề 6: Ngày Tết vui vẻ — Ôn tập bài hát: Sắp đến Tết rồi; Nghe nhạc: Ngày Tết quê em",
-    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Hát thuộc bài Sắp đến Tết rồi, biểu diễn kết hợp gõ đệm và vận động.\n- Chăm chú nghe và cảm nhận bài nghe nhạc về ngày Tết; nêu được cảm xúc, hình ảnh gợi ra từ bản nhạc.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Yêu quê hương, nhân ái.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
-    "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.\n- File bài nghe nhạc về ngày Tết.",
+    "bai": "Chủ đề 6: Gia đình yêu thương — Ôn tập bài hát: Mẹ ơi có biết; Nghe nhạc: Ru con",
+    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Hát thuộc bài Mẹ ơi có biết; hát kết hợp gõ đệm và vận động phụ hoạ.\n- Chăm chú nghe và biểu hiện cảm xúc khi nghe bài Ru con; nêu được cảm nhận về tính chất êm dịu của bài hát.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Nhân ái, biết ơn: Yêu thương, kính trọng và biết ơn ông bà, cha mẹ.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
+    "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.",
     "hoatdong": [
       {
         "ten": "A. KHỞI ĐỘNG (4 phút)",
-        "gv": "- HS hát lại bài Sắp đến Tết rồi để khởi động.",
+        "gv": "- HS hát lại bài Mẹ ơi có biết để khởi động.",
         "hs": "- HS hát khởi động."
       },
       {
         "ten": "B. THỰC HÀNH - ÔN TẬP BÀI HÁT (11 phút)",
-        "gv": "Mục tiêu: HS ôn hát và biểu diễn.\n- HS ôn bài Sắp đến Tết rồi với nhạc đệm, kết hợp gõ đệm và vận động.\n- Trình bày theo nhóm hát, nhóm gõ, nhóm vận động; GV nhận xét.",
-        "hs": "- HS ôn hát, gõ đệm, vận động; trình bày theo nhóm."
+        "gv": "Mục tiêu: HS ôn hát và vận động phụ hoạ.\n- HS ôn bài Mẹ ơi có biết với nhạc đệm, kết hợp gõ đệm và vận động phụ hoạ nhẹ nhàng.\n- Trình bày theo nhóm hát, nhóm gõ, nhóm vận động; GV nhận xét.",
+        "hs": "- HS ôn hát, gõ đệm, vận động phụ hoạ; trình bày theo nhóm."
       },
       {
         "ten": "C. KHÁM PHÁ - NGHE NHẠC (13 phút)",
-        "gv": "Mục tiêu: HS nghe và cảm nhận bản nhạc về ngày Tết.\n- GV giới thiệu bài nghe nhạc; cho HS nghe lần 1, hỏi cảm nhận về sắc thái, hình ảnh gợi ra.\n- Nghe lần 2 kết hợp vận động nhịp nhàng; trò chuyện về nét đẹp ngày Tết quê hương.",
-        "hs": "- HS nghe nhạc, nêu cảm nhận, vận động nhịp nhàng; chia sẻ về ngày Tết."
+        "gv": "Mục tiêu: HS nghe và cảm nhận bài Ru con.\n- GV giới thiệu bài Ru con (làn điệu ru quen thuộc); cho HS nghe lần 1, hỏi cảm nhận về tốc độ, sắc thái (êm dịu, nhẹ nhàng).\n- Nghe lần 2 kết hợp đung đưa nhịp nhàng theo bài.\n- GV trò chuyện về nội dung, giáo dục tình cảm gia đình, biết ơn cha mẹ.",
+        "hs": "- HS nghe nhạc, nêu cảm nhận, đung đưa nhịp nhàng theo bài."
       },
       {
         "ten": "★ NĂNG LỰC SỐ & AI (mức nhận biết — GV kiểm soát) (3 phút)",
-        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở học liệu số bản nhạc/bài hát về ngày Tết và hình ảnh Tết quê hương để HS nghe, xem; giúp HS làm quen nghe nhạc qua thiết bị số với hình ảnh minh hoạ sinh động.\n- (Làm quen AI — mức nhận biết) GV dùng ứng dụng nhận diện bài hát (GV thao tác) bật một đoạn nhạc Tết để ứng dụng \"đoán\" tên bài; HS nhận biết công nghệ có thể nhận ra bài hát đang phát — ví dụ về AI.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
+        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở học liệu số bài Ru con (âm thanh/video) để HS nghe rõ, xem hình ảnh minh hoạ; giúp HS làm quen nghe nhạc qua thiết bị số với chất lượng tốt.\n- (Làm quen AI — mức nhận biết) GV dùng ứng dụng nhận diện giai điệu/bài hát (GV thao tác): bật một đoạn nhạc và cho ứng dụng \"đoán\" tên bài; HS nhận biết công nghệ có thể nhận ra bài hát đang phát — ví dụ về AI.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
         "hs": "- HS lắng nghe, quan sát trên màn hình lớn và nêu cảm nhận, nhận xét theo gợi ý của GV.\n- HS hào hứng nhận biết công nghệ số hỗ trợ học nhạc; ghi nhớ chỉ dùng thiết bị khi có người lớn hướng dẫn."
       },
       {
@@ -965,28 +965,28 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 25,
     "tiet": 25,
-    "bai": "Chủ đề 6: Ngày Tết vui vẻ — Thường thức âm nhạc: Giới thiệu nhạc cụ Sáo trúc; Vận dụng – Sáng tạo",
-    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Nhận biết nhạc cụ sáo trúc là nhạc cụ dân tộc Việt Nam; biết hình dáng, âm sắc trong trẻo của sáo trúc.\n- Chăm chú nghe tiếng sáo trúc; vận dụng gõ đệm, vận động theo bài hát đã học.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Yêu quê hương, yêu nhạc cụ dân tộc.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
-    "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.\n- Nhạc cụ sáo trúc (hoặc hình ảnh/video).",
+    "bai": "Chủ đề 6: Gia đình yêu thương — Thường thức âm nhạc: Giới thiệu nhạc cụ Ma-ra-cát; Vận dụng – Sáng tạo",
+    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Nhận biết nhạc cụ gõ ma-ra-cát; biết cách cầm, cách chơi và dùng ma-ra-cát gõ đệm theo tiết tấu, theo bài hát.\n- Vận dụng gõ đệm bằng ma-ra-cát vào bài hát đã học.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Chăm chỉ, yêu âm nhạc, hợp tác.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
+    "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.\n- Nhạc cụ ma-ra-cát (thật hoặc hình ảnh/video).",
     "hoatdong": [
       {
         "ten": "A. KHỞI ĐỘNG (4 phút)",
-        "gv": "- HS hát lại bài Sắp đến Tết rồi kết hợp gõ đệm để khởi động.",
+        "gv": "- HS hát lại bài Mẹ ơi có biết kết hợp gõ đệm để khởi động.",
         "hs": "- HS hát và gõ đệm khởi động."
       },
       {
-        "ten": "B. KHÁM PHÁ - THƯỜNG THỨC ÂM NHẠC (16 phút)",
-        "gv": "Mục tiêu: HS nhận biết nhạc cụ sáo trúc.\n- GV cho HS xem hình ảnh/video giới thiệu sáo trúc: nhạc cụ dân tộc làm bằng trúc, thổi hơi qua lỗ để phát ra âm thanh trong trẻo, du dương.\n- Cho HS nghe một đoạn độc tấu sáo trúc; hỏi cảm nhận về âm sắc.\n- Trò chơi nghe giai điệu đoán nhạc cụ (sáo trúc, đàn bầu, kèn phím).",
-        "hs": "- HS quan sát, lắng nghe tiếng sáo trúc, nêu cảm nhận; tham gia trò chơi đoán nhạc cụ."
+        "ten": "B. KHÁM PHÁ - NHẠC CỤ MA-RA-CÁT (16 phút)",
+        "gv": "Mục tiêu: HS nhận biết và sử dụng nhạc cụ ma-ra-cát.\n- GV giới thiệu, hướng dẫn HS cách cầm, cách chơi và âm thanh của ma-ra-cát (lắc đều, đúng tư thế).\n- GV gõ/lắc âm thanh cho HS nghe, HD lắc tự do cho quen tay.\n- HS luyện gõ theo hình tiết tấu; dùng ma-ra-cát gõ đệm theo phách vào bài Mẹ ơi có biết.\n- Luyện tập/trình bày (gõ đệm, hát) theo cá nhân, cặp, nhóm.",
+        "hs": "- HS quan sát, lắng nghe, tập cầm và lắc ma-ra-cát.\n- HS luyện tiết tấu, gõ đệm vào bài hát; trình bày theo nhóm."
       },
       {
         "ten": "C. VẬN DỤNG - SÁNG TẠO (11 phút)",
-        "gv": "Mục tiêu: HS vận dụng gõ đệm, vận động.\n- HS ôn một bài hát đã học kết hợp gõ đệm, vận động.\n- Khuyến khích HS mô phỏng động tác thổi sáo theo nhạc; biểu diễn nhóm.",
-        "hs": "- HS gõ đệm, vận động, mô phỏng thổi sáo theo nhạc; biểu diễn nhóm."
+        "gv": "Mục tiêu: HS vận dụng ma-ra-cát gõ đệm và hoà tấu.\n- GV cho HS phối hợp ma-ra-cát với các nhạc cụ gõ đã học (thanh phách, song loan) để gõ đệm cho bài hát.\n- Chia nhóm hoà tấu; các nhóm biểu diễn, nhận xét lẫn nhau.",
+        "hs": "- HS phối hợp gõ đệm, hoà tấu theo nhóm và biểu diễn."
       },
       {
         "ten": "★ NĂNG LỰC SỐ & AI (mức nhận biết — GV kiểm soát) (3 phút)",
-        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở học liệu số (video, âm thanh) độc tấu sáo trúc và các nhạc cụ dân tộc để HS nghe, xem và cảm nhận; giúp HS khai thác tư liệu nhạc cụ dân tộc trên môi trường số.\n- (Làm quen AI — mức nhận biết) GV cho HS nghe các đoạn nhạc và dùng ứng dụng nhận diện nhạc cụ (GV thao tác) để đoán tiếng sáo trúc; HS nhận biết công nghệ có thể nghe và nhận ra nhạc cụ — ví dụ về AI.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
+        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở học liệu số (hình ảnh, video) về nhạc cụ ma-ra-cát và các nhạc cụ gõ để HS quan sát cách chơi và nghe âm sắc; giúp HS làm quen khai thác tư liệu nhạc cụ trên môi trường số.\n- (Làm quen AI — mức nhận biết) GV mở ứng dụng nhạc cụ gõ ảo (ma-ra-cát/trống ảo trên máy tính bảng, ti vi) để mô phỏng âm thanh; HS nhận biết công nghệ số có thể tạo lại âm thanh nhạc cụ, GV thao tác và kiểm soát.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
         "hs": "- HS lắng nghe, quan sát trên màn hình lớn và nêu cảm nhận, nhận xét theo gợi ý của GV.\n- HS hào hứng nhận biết công nghệ số hỗ trợ học nhạc; ghi nhớ chỉ dùng thiết bị khi có người lớn hướng dẫn."
       },
       {
@@ -1005,28 +1005,28 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 26,
     "tiet": 26,
-    "bai": "Chủ đề 6: Ngày Tết vui vẻ — Ôn tập chủ đề 6; Vận dụng – Sáng tạo",
-    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Biểu diễn thuần thục bài Sắp đến Tết rồi kết hợp gõ đệm, vận động phụ hoạ.\n- Củng cố hiểu biết về nhạc cụ sáo trúc; tham gia trò chơi âm nhạc sáng tạo về chủ đề ngày Tết.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Yêu quê hương, nhân ái, hợp tác.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
-    "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.",
+    "bai": "Chủ đề 6: Gia đình yêu thương — Ôn tập chủ đề 6; Vận dụng – Sáng tạo",
+    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Biểu diễn thuần thục bài Mẹ ơi có biết kết hợp gõ đệm, vận động phụ hoạ; sử dụng ma-ra-cát gõ đệm.\n- Củng cố nội dung chủ đề 6; tham gia trò chơi âm nhạc sáng tạo.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Chăm chỉ, hợp tác, tự tin biểu diễn.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
+    "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.\n- Nhạc cụ ma-ra-cát.",
     "hoatdong": [
       {
         "ten": "A. KHỞI ĐỘNG (4 phút)",
-        "gv": "- Trò chơi nghe giai điệu đoán tên bài hát trong chủ đề.",
+        "gv": "- Trò chơi nghe giai điệu đoán tên bài hát đã học trong chủ đề.",
         "hs": "- HS lắng nghe và đoán tên bài hát."
       },
       {
         "ten": "B. THỰC HÀNH - ÔN TẬP (14 phút)",
-        "gv": "Mục tiêu: HS ôn hát và củng cố nhạc cụ.\n- HS biểu diễn bài Sắp đến Tết rồi kết hợp gõ đệm, vận động phụ hoạ theo nhóm.\n- Ôn nhận biết sáo trúc, đàn bầu qua hình ảnh/âm thanh.\n- GV nhận xét, tuyên dương.",
-        "hs": "- HS ôn hát, biểu diễn; nhận biết nhạc cụ."
+        "gv": "Mục tiêu: HS biểu diễn bài Mẹ ơi có biết kết hợp gõ đệm, vận động.\n- HS ôn hát với nhiều hình thức; kết hợp vận động phụ hoạ và gõ đệm bằng ma-ra-cát, thanh phách.\n- Chia nhóm biểu diễn: nhóm hát, nhóm gõ đệm, nhóm vận động; luân phiên.\n- GV nhận xét, sửa sai, tuyên dương.",
+        "hs": "- HS ôn hát, gõ đệm, vận động; các nhóm biểu diễn và nhận xét lẫn nhau."
       },
       {
         "ten": "C. VẬN DỤNG - SÁNG TẠO (10 phút)",
-        "gv": "Mục tiêu: HS sáng tạo biểu diễn về ngày Tết.\n- HS sáng tạo động tác phụ hoạ; thi biểu diễn nhóm với không khí ngày Tết.\n- GV và HS bình chọn, khen ngợi.",
-        "hs": "- HS sáng tạo, luyện tập và thi biểu diễn."
+        "gv": "Mục tiêu: HS sáng tạo động tác và biểu diễn.\n- GV cho HS tự nghĩ và biểu diễn vài động tác phụ hoạ đơn giản cho bài hát.\n- Tổ chức thi biểu diễn nhóm; khen ngợi ý tưởng sáng tạo.",
+        "hs": "- HS sáng tạo động tác, luyện tập trong nhóm và lên biểu diễn."
       },
       {
         "ten": "★ NĂNG LỰC SỐ & AI (mức nhận biết — GV kiểm soát) (3 phút)",
-        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở kho học liệu số các bài hát về mùa xuân, ngày Tết để HS nghe và hát theo; giúp HS làm quen chọn và nghe bài hát trên học liệu số.\n- (Làm quen AI — mức nhận biết) GV dùng ứng dụng karaoke/quay video biểu diễn (GV thao tác) để lưu và xem lại phần trình bày ngày Tết; HS nhận biết công nghệ số hỗ trợ ghi lại và xem lại phần biểu diễn.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
+        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở kho học liệu số các bài hát về gia đình để cả lớp nghe lại và biểu diễn; giúp HS làm quen chọn và nghe bài hát trên học liệu số của GV.\n- (Làm quen AI — mức nhận biết) GV dùng ứng dụng karaoke/quay video biểu diễn (GV thao tác) để lưu lại phần trình bày cho cả lớp cùng xem; HS nhận biết công nghệ số hỗ trợ ghi lại và xem lại phần biểu diễn.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
         "hs": "- HS lắng nghe, quan sát trên màn hình lớn và nêu cảm nhận, nhận xét theo gợi ý của GV.\n- HS hào hứng nhận biết công nghệ số hỗ trợ học nhạc; ghi nhớ chỉ dùng thiết bị khi có người lớn hướng dẫn."
       },
       {
@@ -1045,28 +1045,28 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 27,
     "tiet": 27,
-    "bai": "Chủ đề 7: Giai điệu quê hương — Học hát: Xoè hoa (Dân ca Thái, lời mới: Phan Duy)",
-    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Hát đúng giai điệu, thuộc lời ca bài Xoè hoa; biết bài hát là dân ca Thái, lời mới của Phan Duy.\n- Biết hát kết hợp gõ đệm theo phách và vận động múa xoè đơn giản.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Yêu quê hương, nhân ái: Yêu các làn điệu dân ca, tự hào về bản sắc dân tộc.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
+    "bai": "Chủ đề 7: Những con vật quanh em — Học hát: Trang trại vui vẻ (Nhạc nước ngoài; lời Việt: CẦN SOI SGK GIẤY)",
+    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Hát đúng giai điệu, thuộc lời ca bài Trang trại vui vẻ; thể hiện tính chất vui nhộn, hồn nhiên của bài hát ở nhịp 2/4.\n- Biết hát kết hợp gõ đệm theo phách, theo tiết tấu lời ca.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Nhân ái, yêu thiên nhiên: Yêu quý, gần gũi và bảo vệ các loài vật.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
     "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.",
     "hoatdong": [
       {
         "ten": "A. KHỞI ĐỘNG (5 phút)",
-        "gv": "- GV giới thiệu chủ đề Giai điệu quê hương.\n- Cho HS xem hình ảnh điệu múa xoè của dân tộc Thái; giới thiệu vài nét về vùng Tây Bắc.",
-        "hs": "- HS quan sát hình ảnh, lắng nghe giới thiệu."
+        "gv": "- GV giới thiệu chủ đề Những con vật quanh em.\n- Trò chơi: bắt chước tiếng kêu các con vật trong trang trại (cừu, vịt, bò, gà…) theo tiết tấu.",
+        "hs": "- HS tham gia trò chơi bắt chước tiếng con vật vui vẻ."
       },
       {
         "ten": "B. KHÁM PHÁ - HỌC HÁT (15 phút)",
-        "gv": "Mục tiêu: HS hát đúng bài Xoè hoa.\n- GV giới thiệu bài Xoè hoa là dân ca Thái, lời mới của Phan Duy; hát mẫu.\n- Hỏi cảm nhận về tính chất bài hát (vui tươi, mềm mại).\n- Hướng dẫn đọc lời ca theo tiết tấu, chia câu, dạy hát nối tiếp; luyện hát cho thuộc.",
+        "gv": "Mục tiêu: HS hát đúng bài Trang trại vui vẻ.\n- GV giới thiệu bài hát nói về niềm vui khi đến thăm trang trại và làm quen các con vật; bài có tính chất vui nhộn ở nhịp 2/4.\n- GV hát mẫu (hoặc mở file); hỏi cảm nhận về tính chất bài hát.\n- Hướng dẫn đọc lời ca theo tiết tấu, chia câu; dạy hát nối tiếp từng câu; luyện hát cho thuộc.",
         "hs": "- HS nghe hát mẫu, nêu cảm nhận.\n- HS đọc lời ca, học hát từng câu, luyện hát cho thuộc."
       },
       {
         "ten": "C. THỰC HÀNH - LUYỆN TẬP (10 phút)",
-        "gv": "Mục tiêu: HS hát kết hợp gõ đệm và vận động múa xoè.\n- GV hát và gõ đệm mẫu theo phách.\n- HD HS vận động múa xoè đơn giản (nắm tay, nhún chân theo vòng tròn).\n- HS hát kết hợp gõ đệm và múa xoè theo nhóm; GV giáo dục tình yêu dân ca.",
-        "hs": "- HS hát + gõ đệm và múa xoè đơn giản; các nhóm biểu diễn."
+        "gv": "Mục tiêu: HS hát kết hợp gõ đệm theo phách và tiết tấu lời ca.\n- GV hát và gõ đệm mẫu theo phách, theo tiết tấu lời ca.\n- HS hát kết hợp gõ đệm với các hình thức tập thể, tổ, cá nhân.\n- GV nhận xét, sửa sai; giáo dục HS yêu quý, chăm sóc các con vật.",
+        "hs": "- HS hát + gõ đệm theo phách và tiết tấu lời ca; các tổ, cá nhân thực hiện."
       },
       {
         "ten": "★ NĂNG LỰC SỐ & AI (mức nhận biết — GV kiểm soát) (3 phút)",
-        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở học liệu số bài Xoè hoa và video điệu múa xoè của dân tộc Thái để HS nghe, xem và cảm nhận một làn điệu dân ca quê hương; giúp HS khai thác tư liệu dân ca trên môi trường số.\n- (Làm quen AI — mức nhận biết) GV dùng ứng dụng karaoke thiếu nhi hiển thị lời bài Xoè hoa để cả lớp hát theo; HS nhận biết ứng dụng thông minh giúp em hát đúng lời và nhịp, GV kiểm soát.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
+        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở học liệu số bài Trang trại vui vẻ và hình ảnh, tiếng kêu các con vật trong trang trại để HS nghe, xem và nhận biết; giúp HS làm quen khai thác bài hát và âm thanh loài vật trên môi trường số.\n- (Làm quen AI — mức nhận biết) GV cho HS nghe tiếng một con vật và dùng ứng dụng nhận diện âm thanh động vật (GV thao tác) để \"đoán\" con gì; HS nhận biết công nghệ có thể nhận ra tiếng con vật — ví dụ vui về AI.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
         "hs": "- HS lắng nghe, quan sát trên màn hình lớn và nêu cảm nhận, nhận xét theo gợi ý của GV.\n- HS hào hứng nhận biết công nghệ số hỗ trợ học nhạc; ghi nhớ chỉ dùng thiết bị khi có người lớn hướng dẫn."
       },
       {
@@ -1085,28 +1085,28 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 28,
     "tiet": 28,
-    "bai": "Chủ đề 7: Giai điệu quê hương — Ôn tập bài hát: Xoè hoa; Đọc nhạc: Bài số 4",
-    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Hát thuộc bài Xoè hoa, biểu diễn kết hợp múa xoè và gõ đệm.\n- Đọc được cao độ, tên nốt bài đọc nhạc số 4 kết hợp kí hiệu bàn tay và nhạc đệm.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Yêu quê hương, chăm chỉ.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
+    "bai": "Chủ đề 7: Những con vật quanh em — Ôn tập bài hát: Trang trại vui vẻ; Đọc nhạc: Bài số 4",
+    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Hát thuộc bài Trang trại vui vẻ, hát kết hợp vận động phụ hoạ.\n- Đọc được cao độ, tên nốt bài đọc nhạc số 4 kết hợp kí hiệu bàn tay và nhạc đệm.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Nhân ái, chăm chỉ.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
     "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.",
     "hoatdong": [
       {
         "ten": "A. KHỞI ĐỘNG (4 phút)",
-        "gv": "- HS hát lại bài Xoè hoa để khởi động.",
+        "gv": "- HS hát lại bài Trang trại vui vẻ để khởi động.",
         "hs": "- HS hát khởi động."
       },
       {
         "ten": "B. THỰC HÀNH - ÔN TẬP BÀI HÁT (11 phút)",
-        "gv": "Mục tiêu: HS ôn hát và múa xoè.\n- HS ôn bài Xoè hoa với nhạc đệm, kết hợp múa xoè và gõ đệm.\n- Trình bày theo nhóm hát, nhóm gõ, nhóm múa; GV nhận xét.",
-        "hs": "- HS ôn hát, múa xoè, gõ đệm; trình bày theo nhóm."
+        "gv": "Mục tiêu: HS ôn hát và vận động phụ hoạ.\n- HS ôn bài Trang trại vui vẻ với nhạc đệm, kết hợp vận động phụ hoạ, mô phỏng các con vật.\n- Trình bày theo nhóm hát, nhóm gõ, nhóm vận động; GV nhận xét.",
+        "hs": "- HS ôn hát, vận động phụ hoạ; trình bày theo nhóm."
       },
       {
         "ten": "C. KHÁM PHÁ - ĐỌC NHẠC BÀI SỐ 4 (13 phút)",
-        "gv": "Mục tiêu: HS đọc đúng bài đọc nhạc số 4.\n- GV giới thiệu bài đọc nhạc số 4, đọc mẫu; đọc tên nốt từng câu, HS đọc theo.\n- Đọc kết hợp kí hiệu bàn tay và nhạc đệm; đọc với nhiều hình thức.",
+        "gv": "Mục tiêu: HS đọc đúng bài đọc nhạc số 4.\n- GV giới thiệu bài đọc nhạc số 4, đọc mẫu; đọc tên nốt từng câu, HS đọc theo.\n- Đọc kết hợp kí hiệu bàn tay và nhạc đệm; đọc với nhiều hình thức: cá nhân/nhóm/tổ/cả lớp.",
         "hs": "- HS nghe đọc mẫu, đọc theo từng câu, kết hợp kí hiệu bàn tay và nhạc đệm."
       },
       {
         "ten": "★ NĂNG LỰC SỐ & AI (mức nhận biết — GV kiểm soát) (3 phút)",
-        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở file nhạc đệm và bản đọc nhạc số 4 trên ti vi để HS nghe mẫu, quan sát nốt nhạc; giúp HS làm quen đọc nhạc theo học liệu số.\n- (Làm quen AI — mức nhận biết) GV dùng đàn phím ảo/ứng dụng luyện nốt (GV thao tác) bấm nốt để HS đoán và đọc theo; HS nhận biết công cụ số hỗ trợ luyện đọc nhạc.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
+        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở file nhạc đệm và bản đọc nhạc số 4 trên ti vi để HS nghe mẫu, quan sát nốt nhạc; giúp HS làm quen đọc nhạc theo học liệu số.\n- (Làm quen AI — mức nhận biết) GV dùng đàn phím ảo/ứng dụng luyện nốt (GV thao tác) bấm nốt để HS đoán và đọc theo kí hiệu bàn tay; HS nhận biết công cụ số hỗ trợ luyện đọc nhạc.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
         "hs": "- HS lắng nghe, quan sát trên màn hình lớn và nêu cảm nhận, nhận xét theo gợi ý của GV.\n- HS hào hứng nhận biết công nghệ số hỗ trợ học nhạc; ghi nhớ chỉ dùng thiết bị khi có người lớn hướng dẫn."
       },
       {
@@ -1125,28 +1125,28 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 29,
     "tiet": 29,
-    "bai": "Chủ đề 7: Giai điệu quê hương — Nghe nhạc: Lí cây xanh (Dân ca Nam Bộ); Vận dụng – Sáng tạo",
-    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Chăm chú nghe và cảm nhận bài Lí cây xanh (dân ca Nam Bộ); nêu được cảm xúc, nhận biết tính chất mượt mà của dân ca.\n- Vận dụng gõ đệm theo tiết tấu, vận động theo bài dân ca.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Yêu quê hương, tự hào về dân ca Việt Nam.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
-    "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.\n- File bài nghe nhạc Lí cây xanh.",
+    "bai": "Chủ đề 7: Những con vật quanh em — Nghe nhạc: Vũ khúc đàn gà con; Ôn tập bài hát và Đọc nhạc",
+    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Chăm chú nghe và biểu hiện cảm xúc khi nghe bản nhạc Vũ khúc đàn gà con; nêu được cảm nhận về tính chất bản nhạc.\n- Ôn hát Trang trại vui vẻ và ôn đọc nhạc số 4 kết hợp gõ đệm, vận động.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Nhân ái, yêu thiên nhiên: Yêu quý, gần gũi và bảo vệ các loài vật.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
+    "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.\n- File bản nhạc Vũ khúc đàn gà con.",
     "hoatdong": [
       {
         "ten": "A. KHỞI ĐỘNG (4 phút)",
-        "gv": "- HS hát lại bài Xoè hoa kết hợp gõ đệm để khởi động.",
-        "hs": "- HS hát và gõ đệm khởi động."
+        "gv": "- HS hát lại bài Trang trại vui vẻ để khởi động.",
+        "hs": "- HS hát khởi động."
       },
       {
-        "ten": "B. KHÁM PHÁ - NGHE NHẠC (13 phút)",
-        "gv": "Mục tiêu: HS nghe và cảm nhận bài Lí cây xanh.\n- GV giới thiệu bài Lí cây xanh là dân ca Nam Bộ; cho HS nghe lần 1, hỏi cảm nhận về giai điệu (mượt mà, vui tươi).\n- Nghe lần 2 kết hợp vận động nhịp nhàng; trò chuyện về nét đẹp dân ca quê hương.",
-        "hs": "- HS nghe nhạc, nêu cảm nhận, vận động nhịp nhàng theo bài."
+        "ten": "B. KHÁM PHÁ - NGHE NHẠC (12 phút)",
+        "gv": "Mục tiêu: HS nghe và cảm nhận bản nhạc Vũ khúc đàn gà con.\n- GV giới thiệu bản nhạc Vũ khúc đàn gà con; cho HS nghe lần 1, hỏi cảm nhận về tốc độ, sắc thái (vui nhộn, ngộ nghĩnh).\n- Nghe lần 2 kết hợp vận động mô phỏng dáng đi của đàn gà con.\n- GV trò chuyện về nội dung, giáo dục HS yêu quý loài vật.",
+        "hs": "- HS nghe nhạc, nêu cảm nhận, vận động mô phỏng đàn gà con."
       },
       {
-        "ten": "C. VẬN DỤNG - SÁNG TẠO (11 phút)",
-        "gv": "Mục tiêu: HS vận dụng gõ đệm, vận động.\n- HD HS gõ đệm theo tiết tấu bài Lí cây xanh bằng thanh phách.\n- HS sáng tạo động tác vận động phụ hoạ; biểu diễn theo nhóm.",
-        "hs": "- HS gõ đệm, sáng tạo động tác và biểu diễn theo nhóm."
+        "ten": "C. THỰC HÀNH - ÔN TẬP (11 phút)",
+        "gv": "Mục tiêu: HS ôn hát và ôn đọc nhạc.\n- Ôn bài Trang trại vui vẻ kết hợp gõ đệm, vận động phụ hoạ.\n- Ôn đọc nhạc số 4 với nhạc đệm; trình bày theo nhóm đọc, nhóm gõ, nhóm vận động.\n- GV nhận xét, hoàn thiện.",
+        "hs": "- HS ôn hát, ôn đọc nhạc; các nhóm trình bày và nhận xét lẫn nhau."
       },
       {
         "ten": "★ NĂNG LỰC SỐ & AI (mức nhận biết — GV kiểm soát) (3 phút)",
-        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở học liệu số bài Lí cây xanh (dân ca Nam Bộ) và một số làn điệu dân ca ba miền để HS nghe, so sánh; giúp HS làm quen khai thác kho dân ca trên môi trường số.\n- (Làm quen AI — mức nhận biết) GV cho HS nghe các đoạn dân ca và dùng ứng dụng nhận diện bài hát (GV thao tác) để đoán tên bài; HS nhận biết công nghệ có thể nhận ra làn điệu — ví dụ về AI.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
+        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở học liệu số bản nhạc Vũ khúc đàn gà con (âm thanh/video) để HS nghe rõ, xem hình ảnh minh hoạ; giúp HS làm quen nghe nhạc qua thiết bị số với chất lượng tốt.\n- (Làm quen AI — mức nhận biết) GV cho HS nghe các đoạn nhạc và dùng ứng dụng nhận diện giai điệu (GV thao tác) để \"đoán\" bản nhạc; HS nhận biết công nghệ có thể nhận ra bản nhạc đang phát — ví dụ về AI.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
         "hs": "- HS lắng nghe, quan sát trên màn hình lớn và nêu cảm nhận, nhận xét theo gợi ý của GV.\n- HS hào hứng nhận biết công nghệ số hỗ trợ học nhạc; ghi nhớ chỉ dùng thiết bị khi có người lớn hướng dẫn."
       },
       {
@@ -1165,28 +1165,28 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 30,
     "tiet": 30,
-    "bai": "Chủ đề 7: Giai điệu quê hương — Ôn tập chủ đề 7; Vận dụng – Sáng tạo",
-    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Biểu diễn thuần thục bài Xoè hoa kết hợp múa xoè, gõ đệm; đọc thành thạo bài đọc nhạc số 4.\n- Củng cố cảm nhận về dân ca các vùng miền; tham gia trò chơi âm nhạc sáng tạo.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Yêu quê hương, nhân ái, hợp tác.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
+    "bai": "Chủ đề 7: Những con vật quanh em — Ôn tập chủ đề 7; Vận dụng – Sáng tạo",
+    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Biểu diễn thuần thục bài Trang trại vui vẻ kết hợp gõ đệm, vận động; đọc thành thạo bài đọc nhạc số 4.\n- Củng cố nội dung chủ đề 7; tham gia trò chơi âm nhạc sáng tạo về loài vật.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Chăm chỉ, hợp tác, tự tin biểu diễn.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
     "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.",
     "hoatdong": [
       {
         "ten": "A. KHỞI ĐỘNG (4 phút)",
-        "gv": "- Trò chơi nghe giai điệu đoán tên bài hát/dân ca trong chủ đề.",
-        "hs": "- HS lắng nghe và đoán tên bài hát."
+        "gv": "- Trò chơi nghe giai điệu đoán tên bài hát, bài đọc nhạc đã học trong chủ đề.",
+        "hs": "- HS lắng nghe và đoán tên bài hát/bài đọc nhạc."
       },
       {
         "ten": "B. THỰC HÀNH - ÔN TẬP (14 phút)",
-        "gv": "Mục tiêu: HS ôn hát và ôn đọc nhạc.\n- HS biểu diễn bài Xoè hoa kết hợp múa xoè, gõ đệm theo nhóm.\n- Ôn đọc nhạc số 4 với kí hiệu bàn tay, nhạc đệm.\n- GV nhận xét, hoàn thiện.",
-        "hs": "- HS ôn hát, múa xoè, ôn đọc nhạc; các nhóm biểu diễn."
+        "gv": "Mục tiêu: HS ôn hát và ôn đọc nhạc.\n- HS biểu diễn bài Trang trại vui vẻ kết hợp gõ đệm, vận động phụ hoạ theo nhóm.\n- Ôn đọc nhạc số 4 với nhạc đệm ở các hình thức nhóm đọc, nhóm gõ, nhóm vận động.\n- GV nhận xét, tuyên dương.",
+        "hs": "- HS ôn hát, ôn đọc nhạc; các nhóm biểu diễn và nhận xét lẫn nhau."
       },
       {
         "ten": "C. VẬN DỤNG - SÁNG TẠO (10 phút)",
-        "gv": "Mục tiêu: HS sáng tạo biểu diễn.\n- HS sáng tạo động tác múa dân gian đơn giản; thi biểu diễn nhóm.\n- GV và HS bình chọn, khen ngợi.",
-        "hs": "- HS sáng tạo, luyện tập và thi biểu diễn."
+        "gv": "Mục tiêu: HS sáng tạo động tác mô phỏng loài vật.\n- HS tự nghĩ và biểu diễn vài động tác mô phỏng các con vật phụ hoạ cho bài hát.\n- Tổ chức thi biểu diễn nhóm; khen ngợi ý tưởng sáng tạo.",
+        "hs": "- HS sáng tạo động tác, luyện tập trong nhóm và lên biểu diễn."
       },
       {
         "ten": "★ NĂNG LỰC SỐ & AI (mức nhận biết — GV kiểm soát) (3 phút)",
-        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở kho học liệu số các làn điệu dân ca và điệu múa dân gian để HS nghe, xem và biểu diễn theo; giúp HS làm quen chọn và khai thác tư liệu dân ca trên môi trường số.\n- (Làm quen AI — mức nhận biết) GV dùng ứng dụng karaoke/quay video biểu diễn (GV thao tác) để lưu và xem lại phần trình bày dân ca; HS nhận biết công nghệ số hỗ trợ ghi lại và xem lại.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
+        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở kho học liệu số các bài hát về loài vật và hình ảnh, tiếng kêu con vật để cả lớp nghe lại và biểu diễn; giúp HS làm quen chọn và nghe bài hát trên học liệu số của GV.\n- (Làm quen AI — mức nhận biết) GV dùng ứng dụng nhận diện âm thanh động vật hoặc karaoke thiếu nhi (GV thao tác) để tổ chức phần biểu diễn vui; HS nhận biết công nghệ số hỗ trợ học và biểu diễn.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
         "hs": "- HS lắng nghe, quan sát trên màn hình lớn và nêu cảm nhận, nhận xét theo gợi ý của GV.\n- HS hào hứng nhận biết công nghệ số hỗ trợ học nhạc; ghi nhớ chỉ dùng thiết bị khi có người lớn hướng dẫn."
       },
       {
@@ -1205,28 +1205,28 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 31,
     "tiet": 31,
-    "bai": "Chủ đề 8: Em yêu âm nhạc — Học hát: Chú voi con ở Bản Đôn (Nhạc và lời: Phạm Tuyên)",
-    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Hát đúng giai điệu, thuộc lời ca bài Chú voi con ở Bản Đôn; thể hiện tính chất vui tươi, khoẻ khoắn.\n- Biết hát kết hợp gõ đệm theo phách và vận động.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Nhân ái, yêu thiên nhiên: Yêu quý loài vật, yêu quê hương Tây Nguyên.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
+    "bai": "Chủ đề 8: Mùa hè vui — Học hát: Ngày hè vui (Nhạc và lời: Lê Bùi)",
+    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Hát đúng giai điệu, thuộc lời ca bài Ngày hè vui; thể hiện tính chất vui tươi, rộn ràng của bài hát.\n- Biết hát kết hợp gõ đệm theo phách, theo nhịp.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Nhân ái, lạc quan: Yêu thiên nhiên, vui tươi, giữ an toàn trong những ngày hè.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
     "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.",
     "hoatdong": [
       {
         "ten": "A. KHỞI ĐỘNG (5 phút)",
-        "gv": "- GV giới thiệu chủ đề Em yêu âm nhạc.\n- Cho HS xem hình ảnh chú voi và vùng Bản Đôn (Tây Nguyên); trò chơi bắt chước dáng đi của voi.",
-        "hs": "- HS quan sát, tham gia trò chơi vui vẻ."
+        "gv": "- GV giới thiệu chủ đề Mùa hè vui; cho HS xem tranh cảnh mùa hè (thả diều, bơi lội, sinh hoạt hè).\n- Trò chơi: kể tên các hoạt động vui chơi mùa hè mà em thích.",
+        "hs": "- HS quan sát tranh, kể tên hoạt động mùa hè; tham gia trò chơi vui vẻ."
       },
       {
         "ten": "B. KHÁM PHÁ - HỌC HÁT (15 phút)",
-        "gv": "Mục tiêu: HS hát đúng bài Chú voi con ở Bản Đôn.\n- GV giới thiệu bài hát của nhạc sĩ Phạm Tuyên; hát mẫu.\n- Hỏi cảm nhận về tính chất bài hát (vui tươi, khoẻ khoắn).\n- Hướng dẫn đọc lời ca theo tiết tấu, chia câu, dạy hát nối tiếp; luyện hát cho thuộc.",
+        "gv": "Mục tiêu: HS hát đúng bài Ngày hè vui.\n- GV giới thiệu bài hát của nhạc sĩ Lê Bùi, nói về niềm vui của các bạn nhỏ khi mùa hè đến sau một năm học.\n- GV hát mẫu (hoặc mở file); hỏi cảm nhận về tính chất bài hát (vui tươi, rộn ràng).\n- Hướng dẫn đọc lời ca theo tiết tấu, chia câu; dạy hát nối tiếp từng câu; luyện hát cho thuộc.",
         "hs": "- HS nghe hát mẫu, nêu cảm nhận.\n- HS đọc lời ca, học hát từng câu, luyện hát cho thuộc."
       },
       {
         "ten": "C. THỰC HÀNH - LUYỆN TẬP (10 phút)",
-        "gv": "Mục tiêu: HS hát kết hợp gõ đệm và vận động.\n- GV hát và gõ đệm mẫu theo phách.\n- HS hát kết hợp gõ đệm và vận động khoẻ khoắn; trình bày theo tổ, cá nhân.\n- GV giáo dục tình yêu loài vật, yêu quê hương.",
-        "hs": "- HS hát + gõ đệm, vận động; các tổ, cá nhân biểu diễn."
+        "gv": "Mục tiêu: HS hát kết hợp gõ đệm theo phách.\n- GV hát và gõ đệm mẫu theo phách.\n- HS hát kết hợp gõ đệm theo phách với các hình thức tập thể, tổ, cá nhân.\n- GV nhận xét, sửa sai; giáo dục HS giữ an toàn khi vui chơi trong hè.",
+        "hs": "- HS hát + gõ đệm theo phách; các tổ, cá nhân thực hiện."
       },
       {
         "ten": "★ NĂNG LỰC SỐ & AI (mức nhận biết — GV kiểm soát) (3 phút)",
-        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở học liệu số bài Chú voi con ở Bản Đôn và hình ảnh/video về voi, vùng Bản Đôn để HS nghe, xem; giúp HS làm quen khai thác bài hát và tư liệu vùng miền trên môi trường số.\n- (Làm quen AI — mức nhận biết) GV dùng ứng dụng karaoke thiếu nhi hiển thị lời bài hát để cả lớp hát theo; HS nhận biết ứng dụng thông minh giúp em hát đúng lời và nhịp, GV kiểm soát.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
+        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở học liệu số bài Ngày hè vui và hình ảnh, video hoạt động mùa hè trên ti vi để HS nghe, xem và cảm nhận không khí mùa hè; giúp HS làm quen khai thác bài hát và hình ảnh trên môi trường số.\n- (Làm quen AI — mức nhận biết) GV giới thiệu ứng dụng karaoke thiếu nhi hiển thị lời bài hát chạy theo nhạc để HS hát theo; HS nhận biết máy tính có thể \"tự khớp lời với nhạc\" giúp em hát đúng nhịp — ví dụ về công nghệ hỗ trợ học nhạc.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
         "hs": "- HS lắng nghe, quan sát trên màn hình lớn và nêu cảm nhận, nhận xét theo gợi ý của GV.\n- HS hào hứng nhận biết công nghệ số hỗ trợ học nhạc; ghi nhớ chỉ dùng thiết bị khi có người lớn hướng dẫn."
       },
       {
@@ -1245,28 +1245,28 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 32,
     "tiet": 32,
-    "bai": "Chủ đề 8: Em yêu âm nhạc — Ôn tập bài hát: Chú voi con ở Bản Đôn; Vận dụng – Sáng tạo",
-    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Hát thuộc bài Chú voi con ở Bản Đôn, biểu diễn kết hợp gõ đệm và vận động phụ hoạ.\n- Sáng tạo động tác vận động, cách gõ đệm đơn giản cho bài hát.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Nhân ái, chăm chỉ, hợp tác.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
-    "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.",
+    "bai": "Chủ đề 8: Mùa hè vui — Ôn tập bài hát: Ngày hè vui; Nhạc cụ: Dùng nhạc cụ gõ thể hiện hình tiết tấu",
+    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Hát thuộc bài Ngày hè vui; hát kết hợp gõ đệm và vận động phụ hoạ.\n- Biết dùng các nhạc cụ gõ (thanh phách, song loan, trống con, ma-ra-cát) thể hiện đúng hình tiết tấu và gõ đệm cho bài hát.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Chăm chỉ, hợp tác.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
+    "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.\n- Nhạc cụ gõ: thanh phách, song loan, trống con, ma-ra-cát.",
     "hoatdong": [
       {
         "ten": "A. KHỞI ĐỘNG (4 phút)",
-        "gv": "- HS hát lại bài Chú voi con ở Bản Đôn để khởi động.",
+        "gv": "- HS hát lại bài Ngày hè vui để khởi động.",
         "hs": "- HS hát khởi động."
       },
       {
-        "ten": "B. THỰC HÀNH - ÔN TẬP BÀI HÁT (13 phút)",
-        "gv": "Mục tiêu: HS ôn hát và biểu diễn.\n- HS ôn bài với nhạc đệm, kết hợp gõ đệm và vận động phụ hoạ.\n- Trình bày theo nhóm hát, nhóm gõ, nhóm vận động; GV nhận xét, hoàn thiện.",
-        "hs": "- HS ôn hát, gõ đệm, vận động; trình bày theo nhóm."
+        "ten": "B. THỰC HÀNH - ÔN TẬP BÀI HÁT (11 phút)",
+        "gv": "Mục tiêu: HS ôn hát và vận động phụ hoạ.\n- HS ôn bài Ngày hè vui với nhạc đệm, kết hợp vận động phụ hoạ rộn ràng.\n- Trình bày theo nhóm hát, nhóm gõ, nhóm vận động; GV nhận xét.",
+        "hs": "- HS ôn hát, vận động phụ hoạ; trình bày theo nhóm."
       },
       {
-        "ten": "C. VẬN DỤNG - SÁNG TẠO (11 phút)",
-        "gv": "Mục tiêu: HS sáng tạo biểu diễn.\n- HS sáng tạo động tác phụ hoạ, cách gõ đệm; thi biểu diễn nhóm.\n- GV và HS bình chọn, khen ngợi.",
-        "hs": "- HS sáng tạo, luyện tập và thi biểu diễn."
+        "ten": "C. KHÁM PHÁ - NHẠC CỤ GÕ THỂ HIỆN HÌNH TIẾT TẤU (13 phút)",
+        "gv": "Mục tiêu: HS dùng nhạc cụ gõ thể hiện hình tiết tấu.\n- GV giới thiệu hình tiết tấu; đọc mẫu và gõ mẫu bằng thanh phách; HS đọc và gõ theo.\n- HS luyện gõ tiết tấu bằng thanh phách, song loan, trống con, ma-ra-cát.\n- Dùng nhạc cụ gõ gõ đệm cho bài Ngày hè vui; chia nhóm hoà tấu; GV sửa sai.",
+        "hs": "- HS đọc và gõ hình tiết tấu bằng nhiều nhạc cụ; gõ đệm cho bài hát và hoà tấu theo nhóm."
       },
       {
         "ten": "★ NĂNG LỰC SỐ & AI (mức nhận biết — GV kiểm soát) (3 phút)",
-        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở kho học liệu số các bài hát thiếu nhi để HS nghe lại và biểu diễn; giúp HS làm quen chọn và nghe bài hát trên học liệu số.\n- (Làm quen AI — mức nhận biết) GV dùng ứng dụng karaoke/chấm điểm hát thiếu nhi để tổ chức biểu diễn; HS nhận biết ứng dụng thông minh hỗ trợ hát, GV kiểm soát.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
+        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở học liệu số hình ảnh/âm thanh các nhạc cụ gõ và mẫu tiết tấu để HS quan sát, nghe và làm theo; giúp HS làm quen khai thác tư liệu tiết tấu trên môi trường số.\n- (Làm quen AI — mức nhận biết) GV mở ứng dụng nhạc cụ gõ ảo hoặc bảng nhịp/máy đếm nhịp (metronome) (GV thao tác) để tạo và giữ tiết tấu; HS nhận biết công cụ số có thể tạo âm thanh gõ và giữ nhịp đều.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
         "hs": "- HS lắng nghe, quan sát trên màn hình lớn và nêu cảm nhận, nhận xét theo gợi ý của GV.\n- HS hào hứng nhận biết công nghệ số hỗ trợ học nhạc; ghi nhớ chỉ dùng thiết bị khi có người lớn hướng dẫn."
       },
       {
@@ -1285,28 +1285,28 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 33,
     "tiet": 33,
-    "bai": "Chủ đề 8: Em yêu âm nhạc — Nghe nhạc và Ôn tập tổng hợp; Trò chơi âm nhạc",
-    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Chăm chú nghe một bản nhạc thiếu nhi và nêu cảm nhận; ôn tập tổng hợp các bài hát, bài đọc nhạc đã học ở học kì II.\n- Tham gia tích cực trò chơi âm nhạc, thể hiện năng lực ca hát, đọc nhạc, gõ đệm.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Chăm chỉ, tự tin, hợp tác.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
-    "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.",
+    "bai": "Chủ đề 8: Mùa hè vui — Nghe nhạc: Mùa hè ước mong; Vận dụng – Sáng tạo",
+    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Chăm chú nghe và biểu hiện cảm xúc khi nghe bài Mùa hè ước mong; nêu được cảm nhận về tính chất bài hát.\n- Vận dụng hát, gõ đệm, vận động sáng tạo theo bài hát đã học.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Nhân ái, lạc quan: Yêu thiên nhiên, vui tươi, giữ an toàn trong những ngày hè.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
+    "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.\n- File bài nghe nhạc Mùa hè ước mong.",
     "hoatdong": [
       {
         "ten": "A. KHỞI ĐỘNG (4 phút)",
-        "gv": "- Trò chơi nghe giai điệu đoán tên bài hát các bài đã học ở học kì II.",
-        "hs": "- HS lắng nghe và đoán tên bài hát."
+        "gv": "- HS hát lại bài Ngày hè vui kết hợp gõ đệm để khởi động.",
+        "hs": "- HS hát và gõ đệm khởi động."
       },
       {
         "ten": "B. KHÁM PHÁ - NGHE NHẠC (12 phút)",
-        "gv": "Mục tiêu: HS nghe và cảm nhận một bản nhạc thiếu nhi.\n- GV cho HS nghe một bản nhạc thiếu nhi vui tươi; hỏi cảm nhận về sắc thái, hình ảnh gợi ra.\n- Nghe lần 2 kết hợp vận động nhịp nhàng.",
-        "hs": "- HS nghe nhạc, nêu cảm nhận, vận động nhịp nhàng."
+        "gv": "Mục tiêu: HS nghe và cảm nhận bài Mùa hè ước mong.\n- GV giới thiệu bài hát; cho HS nghe lần 1, hỏi cảm nhận về tốc độ, sắc thái (vui tươi, trong sáng).\n- Nghe lần 2 kết hợp vận động nhịp nhàng theo bài.\n- GV trò chuyện về nội dung, gợi ý HS chia sẻ ước mong của mình trong mùa hè.",
+        "hs": "- HS nghe nhạc, nêu cảm nhận, vận động nhịp nhàng; chia sẻ ước mong mùa hè."
       },
       {
-        "ten": "C. THỰC HÀNH - ÔN TẬP TỔNG HỢP (11 phút)",
-        "gv": "Mục tiêu: HS ôn tập tổng hợp học kì II.\n- HS ôn các bài hát Chú ếch con, Sắp đến Tết rồi, Xoè hoa, Chú voi con ở Bản Đôn kết hợp gõ đệm, vận động.\n- Ôn các bài đọc nhạc số 3, số 4 theo kí hiệu bàn tay.\n- Tổ chức trò chơi âm nhạc: thi hát, thi gõ tiết tấu.",
-        "hs": "- HS ôn hát, ôn đọc nhạc; tham gia trò chơi âm nhạc."
+        "ten": "C. VẬN DỤNG - SÁNG TẠO (11 phút)",
+        "gv": "Mục tiêu: HS vận dụng hát, gõ đệm, vận động sáng tạo.\n- HS ôn bài Ngày hè vui kết hợp gõ đệm và tự nghĩ vài động tác phụ hoạ đơn giản.\n- Tổ chức biểu diễn theo nhóm; GV khen ngợi ý tưởng sáng tạo.",
+        "hs": "- HS sáng tạo động tác, luyện tập và biểu diễn theo nhóm."
       },
       {
         "ten": "★ NĂNG LỰC SỐ & AI (mức nhận biết — GV kiểm soát) (3 phút)",
-        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở kho học liệu số các bài hát, bài đọc nhạc học kì II để HS nghe lại và ôn tập; giúp HS làm quen ôn tập qua học liệu số.\n- (Làm quen AI — mức nhận biết) GV dùng ứng dụng nhận diện bài hát/nhạc cụ (GV thao tác) để tổ chức trò chơi \"nghe và đoán\"; HS nhận biết công nghệ hỗ trợ trò chơi âm nhạc, GV điều khiển.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
+        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở học liệu số bài Mùa hè ước mong (âm thanh/video) để HS nghe rõ, xem hình ảnh minh hoạ; giúp HS làm quen nghe nhạc qua thiết bị số với chất lượng tốt.\n- (Làm quen AI — mức nhận biết) GV dùng ứng dụng nhận diện giai điệu/bài hát (GV thao tác): bật một đoạn nhạc và cho ứng dụng \"đoán\" tên bài; HS nhận biết công nghệ có thể nhận ra bài hát đang phát — ví dụ về AI.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
         "hs": "- HS lắng nghe, quan sát trên màn hình lớn và nêu cảm nhận, nhận xét theo gợi ý của GV.\n- HS hào hứng nhận biết công nghệ số hỗ trợ học nhạc; ghi nhớ chỉ dùng thiết bị khi có người lớn hướng dẫn."
       },
       {
@@ -1325,28 +1325,28 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 34,
     "tiet": 34,
-    "bai": "Ôn tập cuối năm học (Tiết 1)",
-    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Hát thuộc, biểu diễn được các bài hát tiêu biểu đã học trong năm; đọc được các bài đọc nhạc số 1–4.\n- Nhận biết được các nhạc cụ đã học: song loan, đàn bầu, kèn phím, sáo trúc.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Chăm chỉ, tự tin biểu diễn.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
+    "bai": "Ôn tập cuối năm (Tiết 1)",
+    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Hát thuộc, biểu diễn được các bài hát đã học ở học kì II: Hoa lá mùa xuân, Mẹ ơi có biết, Trang trại vui vẻ, Ngày hè vui.\n- Đọc được bài đọc nhạc số 3, số 4; nhận biết các nhạc cụ đã học (ma-ra-cát và các nhạc cụ đã giới thiệu).\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Chăm chỉ, tự tin biểu diễn.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
     "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.",
     "hoatdong": [
       {
         "ten": "A. KHỞI ĐỘNG (4 phút)",
-        "gv": "- Trò chơi nghe giai điệu đoán tên bài hát các bài đã học trong năm.",
+        "gv": "- Trò chơi nghe giai điệu đoán tên bài hát các bài đã học trong học kì II.",
         "hs": "- HS lắng nghe và đoán tên bài hát."
       },
       {
         "ten": "B. THỰC HÀNH - ÔN TẬP BÀI HÁT (14 phút)",
-        "gv": "Mục tiêu: HS ôn và biểu diễn các bài hát trong năm.\n- HS ôn lần lượt các bài hát tiêu biểu, kết hợp gõ đệm và vận động.\n- Chia nhóm biểu diễn từng bài; GV nhận xét, sửa sai.",
+        "gv": "Mục tiêu: HS ôn và biểu diễn các bài hát học kì II.\n- HS ôn lần lượt các bài hát đã học, kết hợp gõ đệm và vận động.\n- Chia nhóm biểu diễn từng bài; GV nhận xét, sửa sai.",
         "hs": "- HS ôn hát, gõ đệm, vận động; các nhóm biểu diễn."
       },
       {
         "ten": "C. THỰC HÀNH - ÔN ĐỌC NHẠC & NHẠC CỤ (10 phút)",
-        "gv": "Mục tiêu: HS ôn đọc nhạc và nhận biết nhạc cụ.\n- Ôn các bài đọc nhạc số 1–4 kết hợp kí hiệu bàn tay, nhạc đệm.\n- Ôn nhận biết song loan, đàn bầu, kèn phím, sáo trúc qua hình ảnh/âm thanh.",
-        "hs": "- HS ôn đọc nhạc; nhận biết các nhạc cụ đã học."
+        "gv": "Mục tiêu: HS ôn đọc nhạc và nhận biết nhạc cụ.\n- Ôn bài đọc nhạc số 3, số 4 kết hợp kí hiệu bàn tay, nhạc đệm.\n- Ôn nhận biết các nhạc cụ đã học qua hình ảnh/âm thanh.",
+        "hs": "- HS ôn đọc nhạc; nhận biết nhạc cụ."
       },
       {
         "ten": "★ NĂNG LỰC SỐ & AI (mức nhận biết — GV kiểm soát) (3 phút)",
-        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở kho học liệu số các bài hát, bài đọc nhạc và nhạc cụ đã học trong năm để HS nghe lại, ôn tập; giúp HS làm quen ôn tập qua học liệu số.\n- (Làm quen AI — mức nhận biết) GV dùng ứng dụng nhận diện nhạc cụ/giai điệu (GV thao tác) để ôn lại; HS nhận biết công nghệ hỗ trợ ôn tập, GV điều khiển.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
+        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở kho học liệu số các bài hát, bài đọc nhạc và nhạc cụ đã học trong học kì II để HS nghe lại, ôn tập; giúp HS làm quen ôn tập qua học liệu số.\n- (Làm quen AI — mức nhận biết) GV dùng ứng dụng nhận diện nhạc cụ/giai điệu (GV thao tác) để ôn lại: bật đoạn nhạc, cho HS đoán rồi ứng dụng xác nhận; HS nhận biết công nghệ hỗ trợ ôn tập.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
         "hs": "- HS lắng nghe, quan sát trên màn hình lớn và nêu cảm nhận, nhận xét theo gợi ý của GV.\n- HS hào hứng nhận biết công nghệ số hỗ trợ học nhạc; ghi nhớ chỉ dùng thiết bị khi có người lớn hướng dẫn."
       },
       {
@@ -1365,28 +1365,28 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 35,
     "tiet": 35,
-    "bai": "Ôn tập, đánh giá cuối năm học (Tiết 2)",
-    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Biểu diễn tự tin một tiết mục âm nhạc tự chọn (hát/đọc nhạc/gõ đệm) thể hiện năng lực đã hình thành trong năm.\n- Tự đánh giá và đánh giá bạn; nêu được điều em yêu thích và tiến bộ của mình ở môn Âm nhạc.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Chăm chỉ, tự tin, trung thực khi tự đánh giá.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
+    "bai": "Ôn tập, đánh giá cuối năm (Tiết 2)",
+    "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Biểu diễn tự tin một bài hát tự chọn ở học kì II kết hợp gõ đệm hoặc vận động; đọc được một bài đọc nhạc.\n- Tự đánh giá và đánh giá bạn về khả năng ca hát, đọc nhạc, gõ đệm.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Chăm chỉ, tự tin, trung thực khi tự đánh giá.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
     "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.",
     "hoatdong": [
       {
         "ten": "A. KHỞI ĐỘNG (4 phút)",
-        "gv": "- GV nêu yêu cầu tiết đánh giá cuối năm; cho HS hát khởi động một bài yêu thích.",
+        "gv": "- GV nêu yêu cầu tiết đánh giá; cho HS hát khởi động một bài đã học.",
         "hs": "- HS hát khởi động, nắm yêu cầu đánh giá."
       },
       {
         "ten": "B. THỰC HÀNH - BIỂU DIỄN ĐÁNH GIÁ (16 phút)",
-        "gv": "Mục tiêu: HS biểu diễn để GV đánh giá cuối năm.\n- GV tổ chức cho HS (cá nhân/nhóm) biểu diễn một tiết mục tự chọn: hát, đọc nhạc hoặc gõ đệm.\n- GV quan sát, ghi nhận mức độ đạt được của từng HS.",
-        "hs": "- HS biểu diễn tiết mục tự chọn; các bạn lắng nghe, cổ vũ."
+        "gv": "Mục tiêu: HS biểu diễn để GV đánh giá cuối năm.\n- GV tổ chức cho HS (cá nhân/nhóm) biểu diễn một bài hát tự chọn kết hợp gõ đệm hoặc vận động.\n- Mời một số HS đọc một bài đọc nhạc theo kí hiệu bàn tay.\n- GV quan sát, ghi nhận mức độ đạt được của từng HS.",
+        "hs": "- HS biểu diễn bài hát, đọc nhạc; các bạn lắng nghe, cổ vũ."
       },
       {
-        "ten": "C. VẬN DỤNG - ĐÁNH GIÁ TỔNG KẾT (10 phút)",
-        "gv": "Mục tiêu: HS tự đánh giá và tổng kết năm học.\n- GV hướng dẫn HS tự nhận xét sự tiến bộ của mình và của bạn trong năm học.\n- GV tổng kết môn học, khen ngợi, động viên HS tiếp tục yêu thích âm nhạc trong hè và năm học tới.",
-        "hs": "- HS tự đánh giá, chia sẻ điều yêu thích; lắng nghe tổng kết của GV."
+        "ten": "C. VẬN DỤNG - ĐÁNH GIÁ (10 phút)",
+        "gv": "Mục tiêu: HS tự đánh giá và đánh giá bạn.\n- GV hướng dẫn HS tự nhận xét phần biểu diễn của mình và của bạn (đúng giai điệu, gõ đệm đều, tự tin).\n- GV tổng kết cả năm học, khen ngợi, động viên HS giữ tình yêu âm nhạc trong dịp hè.",
+        "hs": "- HS tự đánh giá và nhận xét bạn; lắng nghe tổng kết của GV."
       },
       {
         "ten": "★ NĂNG LỰC SỐ & AI (mức nhận biết — GV kiểm soát) (3 phút)",
-        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở học liệu số danh mục bài hát cả năm để HS chọn tiết mục biểu diễn; giúp HS làm quen chọn học liệu trên môi trường số.\n- (Làm quen AI — mức nhận biết) GV dùng ứng dụng karaoke/quay video (GV thao tác) để ghi lại tiết mục cuối năm cho cả lớp cùng xem và lưu kỉ niệm; HS nhận biết công nghệ số hỗ trợ ghi lại và chia sẻ phần biểu diễn, GV kiểm soát.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
+        "gv": "Mục tiêu: HS bước đầu làm quen khai thác học liệu âm nhạc số và một vài công cụ có ứng dụng AI ở mức nhận biết, dưới sự điều khiển hoàn toàn của GV.\n- (Năng lực số — mức 1: Khai thác học liệu số) GV mở học liệu số danh mục bài hát học kì II để HS chọn bài biểu diễn; giúp HS làm quen chọn học liệu trên môi trường số.\n- (Làm quen AI — mức nhận biết) GV dùng ứng dụng karaoke thiếu nhi có chấm điểm (GV thao tác) để hỗ trợ đánh giá phần hát một cách vui vẻ; HS nhận biết ứng dụng thông minh có thể góp phần đánh giá, kết quả cuối cùng do GV quyết định.\n⚠ Lưu ý an toàn: GV thao tác và kiểm soát toàn bộ thiết bị; HS chỉ nghe, quan sát và trả lời, không tự nhập liệu hay dùng thiết bị cá nhân. Chọn học liệu, ứng dụng phù hợp lứa tuổi lớp 2.",
         "hs": "- HS lắng nghe, quan sát trên màn hình lớn và nêu cảm nhận, nhận xét theo gợi ý của GV.\n- HS hào hứng nhận biết công nghệ số hỗ trợ học nhạc; ghi nhớ chỉ dùng thiết bị khi có người lớn hướng dẫn."
       },
       {
