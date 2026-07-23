@@ -1045,7 +1045,7 @@ window.KHO_DATA_L2_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 27,
     "tiet": 27,
-    "bai": "Chủ đề 7: Những con vật quanh em — Học hát: Trang trại vui vẻ (Nhạc nước ngoài; lời Việt: CẦN SOI SGK GIẤY)",
+    "bai": "Chủ đề 7: Những con vật quanh em — Học hát: Trang trại vui vẻ (Nhạc nước ngoài, lời Việt)",
     "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Hát đúng giai điệu, thuộc lời ca bài Trang trại vui vẻ; thể hiện tính chất vui nhộn, hồn nhiên của bài hát ở nhịp 2/4.\n- Biết hát kết hợp gõ đệm theo phách, theo tiết tấu lời ca.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động tập luyện, mạnh dạn thể hiện bài hát/bài đọc nhạc; tự điều chỉnh khi hát/gõ chưa đúng.\n- Giao tiếp và hợp tác: Biết hát, gõ đệm, vận động theo nhóm; lắng nghe và phối hợp nhịp nhàng cùng bạn.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm hoặc ý tưởng biểu diễn đơn giản.\n3. Phẩm chất\n- Nhân ái, yêu thiên nhiên: Yêu quý, gần gũi và bảo vệ các loài vật.\n- Chăm chỉ: Tích cực tham gia các hoạt động ca hát, đọc nhạc, trò chơi âm nhạc.\n- Yêu thích môn Âm nhạc; cảm nhận được vẻ đẹp của âm thanh.",
     "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ cơ bản (thanh phách, song loan, trống con, ma-ra-cát).\n- HS: SGK Âm nhạc 2 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ cơ bản (thanh phách, song loan) nếu có.",
     "hoatdong": [

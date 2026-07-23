@@ -2,8 +2,9 @@
    Soạn theo mục lục SGK Âm nhạc 4 (Kết nối tri thức với cuộc sống) — 8 chủ đề, đã xác minh ≥2 nguồn.
    CĐ1 Âm thanh ngày mới · CĐ2 Giai điệu quê hương · CĐ3 Thầy cô với chúng em · CĐ4 Vui đón Tết ·
    CĐ5 Thiên nhiên tươi đẹp · CĐ6 Tình bạn tuổi thơ · CĐ7 Âm nhạc nước ngoài · CĐ8 Chào mùa hè.
-   Lưu ý CẦN SOI SGK GIẤY (chưa đủ 2 nguồn trích nguyên văn): chính tả phiên âm tác giả một số bài
-   (Prô-cô-phi-ép ở CĐ4; tác giả Khúc nhạc mở đầu CĐ7; người làm thơ 'Điều mong ước tặng thầy' CĐ3). */
+   Đã xác minh qua bản SGK online (sachgiaokhoa.online, giáo án KNTT): CĐ1 "Chuông gió leng keng" = Lê Vinh Phúc;
+   CĐ4 "Pi-tơ và chó sói" = Phỏng theo Séc-gây Pơ-rô-cô-phi-ép; CĐ7 "Khúc nhạc mở đầu" = Gio-a-chi-nô Rô-xi-ni.
+   Còn lại cần soi SGK giấy khi có: người làm thơ 'Điều mong ước tặng thầy' (CĐ3). */
 window.KHO_DATA_L4_AMNHAC = [
   {
     "lop": 4,
@@ -514,7 +515,7 @@ window.KHO_DATA_L4_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 15,
     "tiet": 15,
-    "bai": "Chủ đề 4: Vui đón Tết — Thường thức âm nhạc: Câu chuyện âm nhạc Pi-tơ và chó sói (Nhạc sĩ Prô-cô-phi-ép)",
+    "bai": "Chủ đề 4: Vui đón Tết — Thường thức âm nhạc: Câu chuyện âm nhạc Pi-tơ và chó sói (Phỏng theo: Séc-gây Pơ-rô-cô-phi-ép)",
     "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Nhận biết nội dung câu chuyện âm nhạc Pi-tơ và chó sói.\n- Bước đầu nhận biết một số nhạc cụ thể hiện nhân vật trong tác phẩm qua âm sắc.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động, tích cực luyện tập; mạnh dạn thể hiện và tự điều chỉnh khi hát/gõ/đọc nhạc chưa đúng.\n- Giao tiếp và hợp tác: Biết phối hợp nhịp nhàng cùng bạn trong hoạt động nhóm; lắng nghe, chia sẻ, nhận xét.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm, ý tưởng biểu diễn phù hợp.\n3. Phẩm chất\n- Yêu thích âm nhạc; biết lắng nghe, cảm thụ.\n- Dũng cảm, thông minh như nhân vật trong truyện.",
     "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ (thanh phách, song loan, trống con, tem-bơ-rin) và nhạc cụ giai điệu (ri-coóc-đơ hoặc kèn phím) nếu có.\n- HS: SGK Âm nhạc 4 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ tự tạo nếu có.",
     "hoatdong": [
@@ -525,7 +526,7 @@ window.KHO_DATA_L4_AMNHAC = [
       },
       {
         "ten": "B. KHÁM PHÁ – HÌNH THÀNH KIẾN THỨC (15 phút)",
-        "gv": "Mục tiêu: HS hình thành kiến thức, kĩ năng trọng tâm của tiết.\n- GV kể câu chuyện âm nhạc Pi-tơ và chó sói; giới thiệu ngắn về tác giả (nhạc sĩ Prô-cô-phi-ép).\n- GV cho HS nghe trích đoạn, gợi ý nhận ra âm sắc nhạc cụ ứng với từng nhân vật.",
+        "gv": "Mục tiêu: HS hình thành kiến thức, kĩ năng trọng tâm của tiết.\n- GV kể câu chuyện âm nhạc Pi-tơ và chó sói; giới thiệu ngắn về tác giả (nhạc sĩ Séc-gây Pơ-rô-cô-phi-ép, người Nga).\n- GV cho HS nghe trích đoạn, gợi ý nhận ra âm sắc nhạc cụ ứng với từng nhân vật.",
         "hs": "- HS lắng nghe, quan sát, thực hành theo hướng dẫn của GV."
       },
       {
@@ -1018,7 +1019,7 @@ window.KHO_DATA_L4_AMNHAC = [
     "mon": "Âm nhạc",
     "tuan": 29,
     "tiet": 29,
-    "bai": "Chủ đề 7: Âm nhạc nước ngoài — Thường thức âm nhạc: Giới thiệu kèn trumpet (trôm-pét); Nghe nhạc: Khúc nhạc mở đầu",
+    "bai": "Chủ đề 7: Âm nhạc nước ngoài — Thường thức âm nhạc: Giới thiệu kèn trumpet (trôm-pét); Nghe nhạc: Khúc nhạc mở đầu (Gio-a-chi-nô Rô-xi-ni)",
     "yccd": "1. Năng lực âm nhạc (đặc thù)\n- Nhận biết hình dáng, âm sắc của kèn trumpet (trôm-pét).\n- Lắng nghe, cảm nhận tính chất, sắc thái bản nhạc Khúc nhạc mở đầu; biết vận động theo nhạc.\n2. Năng lực chung\n- Tự chủ và tự học: Chủ động, tích cực luyện tập; mạnh dạn thể hiện và tự điều chỉnh khi hát/gõ/đọc nhạc chưa đúng.\n- Giao tiếp và hợp tác: Biết phối hợp nhịp nhàng cùng bạn trong hoạt động nhóm; lắng nghe, chia sẻ, nhận xét.\n- Giải quyết vấn đề và sáng tạo: Bước đầu nghĩ ra động tác vận động, cách gõ đệm, ý tưởng biểu diễn phù hợp.\n3. Phẩm chất\n- Trân trọng nhạc cụ và âm nhạc thế giới.\n- Biết lắng nghe, cảm thụ âm nhạc.",
     "dodung": "- GV: Máy tính, ti vi/máy chiếu, loa; bài giảng điện tử có file âm thanh, video, hình ảnh minh hoạ; đàn phím điện tử (organ); nhạc cụ gõ (thanh phách, song loan, trống con, tem-bơ-rin) và nhạc cụ giai điệu (ri-coóc-đơ hoặc kèn phím) nếu có.\n- HS: SGK Âm nhạc 4 (Kết nối tri thức với cuộc sống), vở ghi, đồ dùng học tập; nhạc cụ gõ tự tạo nếu có.",
     "hoatdong": [
