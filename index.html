@@ -5886,14 +5886,31 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
      mỗi entry gộp thành đủ số tiết để khớp số ô (mỗi ô = 1 tiết). */
   function _lessonSpan(L){
     var s=String((L&&L.bai)||'');
-    // dạng cộng "Tiết 1+2(+3)" → đếm số; dạng range "Tiết 1 – 2" / "Tiết 1-2" → b−a+1
-    var mPlus=s.match(/Ti[eế]t\s*(\d+(?:\s*\+\s*\d+)+)/i);
+    // BỎ DẤU + thường hoá để bắt mọi kiểu "tiết/TIẾT" (kể cả chữ có dấu tổ hợp unicode)
+    var sx=(s.normalize?s.normalize('NFD').replace(/[̀-ͯ]/g,''):s).toLowerCase();
+    // "tiết 1+2(+3)" → đếm số
+    var mPlus=sx.match(/tiet\s*(\d+(?:\s*\+\s*\d+)+)/);
     if(mPlus) return Math.max(1,(mPlus[1].match(/\d+/g)||['1']).length);
-    var mRange=s.match(/Ti[eế]t\s*(\d+)\s*[–—-]\s*(\d+)/i);
-    if(mRange){ var a=+mRange[1], b=+mRange[2]; if(b>a&&b-a<=5) return b-a+1; }
-    // dạng "Tiết 6 VÀ (tiết) 7" → chữ "và"
-    var mVa=s.match(/Ti[eế]t\s*(\d+)\s*v[àa]\s*(?:ti[eế]t\s*)?(\d+)/i);
-    if(mVa){ var av=+mVa[1], bv=+mVa[2]; if(bv>av&&bv-av<=5) return bv-av+1; }
+    // "tiết 1-2" / "1–2"
+    var mRange=sx.match(/tiet\s*(\d+)\s*[–—-]\s*(\d+)/);
+    if(mRange){ var a=+mRange[1], b=+mRange[2]; if(b>a&&b-a<=6) return b-a+1; }
+    // "tiết 6 và (tiết) 7"
+    var mVa=sx.match(/tiet\s*(\d+)\s*va\s*(?:tiet\s*)?(\d+)/);
+    if(mVa){ var av=+mVa[1], bv=+mVa[2]; if(bv>av&&bv-av<=6) return bv-av+1; }
+    // "tiết 1,2(,3)" liệt kê bằng dấu phẩy
+    var mList=sx.match(/tiet\s*(\d+(?:\s*,\s*\d+)+)/);
+    if(mList) return Math.max(1,(mList[1].match(/\d+/g)||['1']).length);
+    // "(4 tiết)" / "(02 tiết)" → N tiết
+    var mN=sx.match(/\(\s*(\d+)\s*tiet\s*\)/);
+    if(mN){ var n=+mN[1]; if(n>=1&&n<=8) return n; }
+    // nhiều tiết liệt kê bằng ";" (vd "TIẾT 3: VIẾT; TIẾT 4: NÓI; TIẾT 5-6: ...")
+    if(sx.indexOf(';')>=0){
+      var occ=sx.match(/tiet\s*\d+(?:\s*[-–—]\s*\d+)?/g);
+      if(occ&&occ.length>=2){
+        var tot=0; occ.forEach(function(o){ var mm=o.match(/(\d+)\s*[-–—]\s*(\d+)/); tot+=(mm&&+mm[2]>+mm[1]&&+mm[2]-+mm[1]<=6)?(+mm[2]-+mm[1]+1):1; });
+        if(tot>=2&&tot<=12) return tot;
+      }
+    }
     return 1;
   }
   function _expandLessons(list){
