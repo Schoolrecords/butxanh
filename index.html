@@ -2594,6 +2594,44 @@ function _tableModel(filled){
     groups.forEach(g=>{ let bFirst=true; g[1].forEach(t=>{ out.push({thu:dFirst?d:'',thuSpan:dFirst?7:0,buoi:bFirst?g[0]:'',buoiSpan:bFirst?g[1].length:0,tiet:t,mon:'',lop:'',bai:'',tbdh:''}); dFirst=false; bFirst=false; }); }); });
   return out;
 }
+/* Rút gọn nội dung cho Lịch báo giảng: viết tắt môn, rút gọn đồ dùng, gọn tên bài */
+function _lbgMon(m){
+  if(!m) return '';
+  const t=String(m).trim(), map={
+    'lịch sử và địa lí':'LS&ĐL','lịch sử và địa lý':'LS&ĐL','lịch sử & địa lí':'LS&ĐL','lịch sử & địa lý':'LS&ĐL',
+    'tự nhiên và xã hội':'TN&XH','tự nhiên & xã hội':'TN&XH',
+    'hoạt động trải nghiệm':'HĐTN','giáo dục thể chất':'GDTC'};
+  return map[t.toLowerCase()]||t;
+}
+function _lbgTbdh(s){
+  if(!s) return '';
+  s=String(s).replace(/\.{2,}/g,'…');
+  s=s.replace(/\b(III|IV|II|V)\s*[.)]\s*(PHƯƠNG TIỆN|ĐIỀU CHỈNH|HÌNH THỨC|TIẾN TRÌNH)[\s\S]*$/i,' ');
+  s=s.replace(/ĐIỀU CHỈNH SAU BÀI DẠY[\s\S]*$/i,' ');
+  s=s.replace(/\r?\n/g,' ').replace(/\s*[-–—•]\s+/g,' ').replace(/\s*\+\s*/g,' ');
+  s=s.replace(/(\d\s*[.)]?\s*)?(Đối với\s+)?Giáo\s*viên\s*:/gi,' ')
+     .replace(/(\d\s*[.)]?\s*)?(Đối với\s+)?Học\s*sinh\s*:/gi,' ')
+     .replace(/\bGV\s*(và\s*HS\s*)?(chuẩn bị\s*:?|:)/gi,' ')
+     .replace(/\bHS\s*(chuẩn bị\s*:?|:)/gi,' ');
+  [[/Kế hoạch bài dạy/gi,'KHBD'],[/Bài soạn/gi,'KHBD'],[/bài giảng\s*(điện tử|trình chiếu)/gi,'BGĐT'],
+   [/(bài giảng\s*)?power\s*point/gi,'PPT'],[/Sách giáo khoa/gi,'SGK'],[/Sách giáo viên/gi,'SGV'],
+   [/Vở\s*bài tập/gi,'VBT'],[/phiếu học tập/gi,'PHT'],[/thí nghiệm/gi,'TN'],[/máy vi tính/gi,'máy tính']
+  ].forEach(p=>s=s.replace(p[0],p[1]));
+  s=s.replace(/TN\s*\(TN\)/gi,'TN');
+  s=s.replace(/(và\s+)?(các\s+)?thiết bị,?\s*(và\s+)?(học liệu)?\s*(và\s*đồ dùng)?\s*(phục vụ)?\s*(cho)?\s*(tiết dạy|việc học tập|dạy học)?/gi,' ');
+  s=s.replace(/phục vụ\s*(cho)?\s*(tiết dạy|việc học tập|hoạt động[^,.;]*|dạy học)/gi,' ');
+  s=s.replace(/\s*[.;]+\s*/g,', ');
+  const parts=s.split(/\s*,\s*/).map(x=>x.replace(/^[\s\-–—•]+/,'').replace(/[\s\-–—•]+$/,'').replace(/\s{2,}/g,' ').trim()).filter(Boolean);
+  const seen=new Set(),uniq=[];
+  parts.forEach(p=>{const k=p.toLowerCase();if(!seen.has(k)){seen.add(k);uniq.push(p);}});
+  s=uniq.join(', ');
+  if(s.length>75) s=s.slice(0,73).replace(/[\s,;]+\S*$/,'')+'…';
+  return s?s.charAt(0).toUpperCase()+s.slice(1):'';
+}
+function _lbgBai(s){
+  if(!s) return '';
+  return String(s).replace(/\r?\n/g,' ').replace(/\s{2,}/g,' ').replace(/\(\s*Tiết\s*(\d+)\s*\)/gi,'(T$1)').trim();
+}
 function _scheduleSheetXml(filled){
   const COL=['A','B','C','D','E','F','G'];
   const yr=filled?state.year:'20… - 20…', wk=filled?state.week:'…', gvcn=state.gvcn||'',
@@ -2611,10 +2649,16 @@ function _scheduleSheetXml(filled){
   // r4 tiêu đề cột (xanh)
   const Hh=['Thứ','Buổi','Tiết','Môn','Lớp','Tên bài','Đồ dùng TBDH'];
   rows.push(ROW(4,26.1,Hh.map((t,i)=>C(i,4,i===1?5:4,t))));
-  // dữ liệu
+  // dữ liệu — chiều cao hàng TỰ TÍNH theo nội dung để KHÔNG đè chữ
+  // (cột F "Tên bài" ~42 ký tự/dòng, cột G "Đồ dùng" ~14 ký tự/dòng)
+  const _nLines=(txt,cpl)=>{ if(txt==null||txt==='') return 1; let n=0;
+    String(txt).split('\n').forEach(s=>{ n+=Math.max(1,Math.ceil(((s.trim().length)||1)/cpl)); }); return n; };
   let r=5;
   model.forEach(m=>{
-    rows.push(ROW(r,18,[C(0,r,6,m.thu),C(1,r,7,m.buoi),C(2,r,7,m.tiet,true),C(3,r,9,m.mon),C(4,r,8,m.lop),C(5,r,9,m.bai),C(6,r,10,m.tbdh)]));
+    const mon=_lbgMon(m.mon), bai=_lbgBai(m.bai), tbdh=_lbgTbdh(m.tbdh);
+    const lines=Math.max(_nLines(bai,42),_nLines(tbdh,15),1);
+    const rowH=Math.min(180,Math.max(18,Math.round((lines*15.5+4)*100)/100)); // trần 180pt phòng nội dung quá dài
+    rows.push(ROW(r,rowH,[C(0,r,6,m.thu),C(1,r,7,m.buoi),C(2,r,7,m.tiet,true),C(3,r,9,mon),C(4,r,8,m.lop),C(5,r,9,bai),C(6,r,10,tbdh)]));
     if(m.thuSpan>1) merges.push('A'+r+':A'+(r+m.thuSpan-1));
     if(m.buoiSpan>1) merges.push('B'+r+':B'+(r+m.buoiSpan-1));
     r++;
