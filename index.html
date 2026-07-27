@@ -2609,8 +2609,10 @@ function _lbgTbdh(s){
   s=s.replace(/\b(III|IV|II|V)\s*[.)]\s*(PHƯƠNG TIỆN|ĐIỀU CHỈNH|HÌNH THỨC|TIẾN TRÌNH)[\s\S]*$/i,' ');
   s=s.replace(/ĐIỀU CHỈNH SAU BÀI DẠY[\s\S]*$/i,' ');
   s=s.replace(/\r?\n/g,' ').replace(/\s*[-–—•]\s+/g,' ').replace(/\s*\+\s*/g,' ');
-  s=s.replace(/(\d\s*[.)]?\s*)?(Đối với\s+)?Giáo\s*viên\s*:/gi,' ')
-     .replace(/(\d\s*[.)]?\s*)?(Đối với\s+)?Học\s*sinh\s*:/gi,' ')
+  s=s.replace(/(\d\s*[.,)]?\s*)?Đối với\s+giáo\s*viên\s*:?/gi,' ')
+     .replace(/(\d\s*[.,)]?\s*)?Đối với\s+học\s*sinh\s*:?/gi,' ')
+     .replace(/(\d\s*[.,)]?\s*)?Giáo\s*viên\s*:/gi,' ')
+     .replace(/(\d\s*[.,)]?\s*)?Học\s*sinh\s*:/gi,' ')
      .replace(/\bGV\s*(và\s*HS\s*)?(chuẩn bị\s*:?|:)/gi,' ')
      .replace(/\bHS\s*(chuẩn bị\s*:?|:)/gi,' ');
   [[/Kế hoạch bài dạy/gi,'KHBD'],[/Bài soạn/gi,'KHBD'],[/bài giảng\s*(điện tử|trình chiếu)/gi,'BGĐT'],
@@ -2625,12 +2627,24 @@ function _lbgTbdh(s){
   const seen=new Set(),uniq=[];
   parts.forEach(p=>{const k=p.toLowerCase();if(!seen.has(k)){seen.add(k);uniq.push(p);}});
   s=uniq.join(', ');
-  if(s.length>75) s=s.slice(0,73).replace(/[\s,;]+\S*$/,'')+'…';
+  if(s.length>55) s=s.slice(0,53).replace(/[\s,;]+\S*$/,'')+'…';
   return s?s.charAt(0).toUpperCase()+s.slice(1):'';
+}
+/* Chuyển tên bài IN HOA -> chữ thường kiểu câu, giữ nguyên các viết tắt */
+const _LBG_KEEP=new Set(['STEM','SGK','SGV','VBT','PHT','TN','PPT','KHBD','BGĐT','HĐTN','TNXH','SHL','SHDC','GV','HS','LS','ĐL','TV','TA','ICT','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII']);
+function _sentenceCase(s){
+  s=s.split(/(\s+)/).map(tok=>{
+    if(/^\s*$/.test(tok)) return tok;
+    const m=tok.match(/^([^\p{L}]*)(.*?)([^\p{L}]*)$/u); let pre=m[1],core=m[2],post=m[3];
+    if(core&&core===core.toUpperCase()&&(core.replace(/[^\p{L}]/gu,'').length>=2)&&!_LBG_KEEP.has(core.toUpperCase())) core=core.toLowerCase();
+    return pre+core+post;
+  }).join('');
+  return s.replace(/(^|[.!?:;–—\-]\s*)(\p{Ll})/gu,(mm,p,c)=>p+c.toUpperCase());
 }
 function _lbgBai(s){
   if(!s) return '';
-  return String(s).replace(/\r?\n/g,' ').replace(/\s{2,}/g,' ').replace(/\(\s*Tiết\s*(\d+)\s*\)/gi,'(T$1)').trim();
+  s=String(s).replace(/\r?\n/g,' ').replace(/\s{2,}/g,' ').replace(/\(\s*Tiết\s*(\d+)\s*\)/gi,'(T$1)').trim();
+  return _sentenceCase(s);
 }
 function _scheduleSheetXml(filled){
   const COL=['A','B','C','D','E','F','G'];
@@ -2656,7 +2670,7 @@ function _scheduleSheetXml(filled){
   let r=5;
   model.forEach(m=>{
     const mon=_lbgMon(m.mon), bai=_lbgBai(m.bai), tbdh=_lbgTbdh(m.tbdh);
-    const lines=Math.max(_nLines(bai,74),_nLines(tbdh,18),1); // cột F rộng 80, G rộng 20
+    const lines=Math.max(_nLines(bai,80),_nLines(tbdh,18),1); // cột F rộng 80 (chữ thường), G rộng 20
     const rowH=Math.min(180,Math.max(18,Math.round((lines*15.5+4)*100)/100)); // trần 180pt phòng nội dung quá dài
     rows.push(ROW(r,rowH,[C(0,r,6,m.thu),C(1,r,7,m.buoi),C(2,r,7,m.tiet,true),C(3,r,9,mon),C(4,r,8,m.lop),C(5,r,9,bai),C(6,r,10,tbdh)]));
     if(m.thuSpan>1) merges.push('A'+r+':A'+(r+m.thuSpan-1));
