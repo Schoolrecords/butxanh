@@ -5614,6 +5614,7 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   /* Khóa đồng bộ — phần chữ (bỏ butxanh_khofiles vì tệp Word nặng, để v2 dùng Storage) */
   var KEYS=['butxanh_profile','butxanh_tkb','butxanh_tkb_exc','butxanh_lbg_weeks','butxanh_lbg_meta','butxanh_khbd','butxanh_hocsinh','butxanh_hoclieu','butxanh_bank'];
   var auth=null, db=null, user=null, lastPushed=null, loopT=null, busy=false, seeded=false, reloadT=null, curRef=null, lastVals={};
+  var dirty=false, hadUser=false, intentionalLogout=false;   // dirty: có thay đổi chưa đẩy lên đám mây
   var box=document.getElementById('fb-auth');
 
   function gather(){ var o={}; KEYS.forEach(function(k){ var v=localStorage.getItem(k); if(v!=null) o[k]=v; }); return o; }
@@ -5646,6 +5647,8 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   function snapVals(){ lastVals={}; KEYS.forEach(function(k){ lastVals[k]=localStorage.getItem(k); }); }
   // Phát hiện phần nào vừa đổi → đóng dấu thời gian phần đó. Trả về true nếu có thay đổi.
   function stampChanges(){ var t=loadTs(), ch=false, now=Date.now(); KEYS.forEach(function(k){ var v=localStorage.getItem(k); if(v!==lastVals[k]){ lastVals[k]=v; t[k]=now; ch=true; } }); if(ch) saveTs(t); return ch; }
+  // Danh sách CỤ THỂ các phần vừa đổi (để chỉ đẩy phần đó — nhanh hơn nhiều)
+  function changedKeys(){ var t=loadTs(), ch=[], now=Date.now(); KEYS.forEach(function(k){ var v=localStorage.getItem(k); if(v!==lastVals[k]){ lastVals[k]=v; t[k]=now; ch.push(k); } }); if(ch.length){ saveTs(t); dirty=true; } return ch; }
 
   /* ----- Lưới an toàn: sao lưu cục bộ trước khi áp dữ liệu trộn (để khôi phục được) ----- */
   function backupLocal(data){
@@ -5660,16 +5663,29 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
 
   function startLoop(){ stopLoop(); loopT=setInterval(function(){
     if(!user||busy||!seeded) return;
-    if(stampChanges()) pushCurrent();
-  }, 4000); }
+    var ch=changedKeys(); if(ch.length) pushKeys(ch);
+  }, 2500); }
   function stopLoop(){ if(loopT){ clearInterval(loopT); loopT=null; } }
 
+  // Đẩy NGAY các phần vừa đổi (gọi khi bấm Lưu) — không đợi vòng lặp
+  window.__bxFlush=function(){ if(!user||!seeded) return; if(busy){ dirty=true; return; } var ch=changedKeys(); if(ch.length) pushKeys(ch); };
+
   function pushCurrent(){ pushData(gather(), loadTs()); }
+  // Chỉ ghi các phần thay đổi lên đám mây (update path con) — tương thích ngược với bản đọc cũ
+  function pushKeys(keys){
+    if(!db||!user||!keys||!keys.length){ return; }
+    busy=true; setStatus('syncing');
+    var ts=loadTs(), upd={ updatedAt:firebase.database.ServerValue.TIMESTAMP };
+    keys.forEach(function(k){ var v=localStorage.getItem(k); upd['data/'+k]=(v!=null?v:null); upd['ts/'+k]=ts[k]||Date.now(); });
+    db.ref('users/'+user.uid).update(upd)
+      .then(function(){ busy=false; dirty=false; lastPushed=JSON.stringify(gather()); setStatus('synced'); })
+      .catch(function(e){ console.warn('[ĐB] đẩy phần lỗi',e); busy=false; setStatus('error'); });
+  }
   function pushData(data, ts){
     if(!db||!user) return; busy=true; setStatus('syncing');
     var dataStr=JSON.stringify(data);
     db.ref('users/'+user.uid).set({ data:data, ts:ts, updatedAt:firebase.database.ServerValue.TIMESTAMP, app:'butxanh' })
-      .then(function(){ lastPushed=dataStr; busy=false; setStatus('synced'); })
+      .then(function(){ lastPushed=dataStr; busy=false; dirty=false; setStatus('synced'); })
       .catch(function(e){
         console.warn('[ĐB] push lỗi',e); busy=false; setStatus('error');
         var code=(e&&(e.code||e.message))||'';
@@ -5749,7 +5765,14 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   function stopSync(){ if(curRef){ try{ curRef.off('value', onCloud); }catch(e){} curRef=null; } }
   function onAuth(u){
     user=u; renderUI();
-    if(u){ startSync(); startLoop(); } else { stopSync(); stopLoop(); seeded=false; lastPushed=null; setStatus('off'); }
+    if(u){ hadUser=true; startSync(); startLoop(); }
+    else {
+      stopSync(); stopLoop(); seeded=false; lastPushed=null; setStatus('off');
+      if(hadUser && !intentionalLogout){   // phiên bị rớt ngoài ý muốn
+        try{ bxAlert('⚠️ Thầy/cô vừa bị đăng xuất khỏi tài khoản Google (thường do trình duyệt chặn cookie hoặc mạng làm rớt phiên).\n\n✅ Dữ liệu VẪN AN TOÀN trên máy này — không mất gì. Hãy bấm “Đăng nhập” lại để tiếp tục đồng bộ lên đám mây.'); }catch(e){}
+      }
+      hadUser=false; intentionalLogout=false;
+    }
   }
 
   window.FBX={
@@ -5765,7 +5788,8 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
         } else { bxAlert('Đăng nhập chưa được — '+((e&&e.message)||'')); }
       });
     },
-    logout:function(){ if(auth) auth.signOut(); var m=document.getElementById('fb-menu'); if(m)m.style.display='none'; },
+    logout:function(){ intentionalLogout=true; if(auth) auth.signOut(); var m=document.getElementById('fb-menu'); if(m)m.style.display='none'; },
+    flush:function(){ if(window.__bxFlush) window.__bxFlush(); },
     syncNow:function(){ var m=document.getElementById('fb-menu'); if(m)m.style.display='none'; if(user) pushCurrent(); },
     restore:function(){
       var mm=document.getElementById('fb-menu'); if(mm)mm.style.display='none';
@@ -5790,8 +5814,11 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     try{
       firebase.initializeApp(CFG);
       auth=firebase.auth(); db=firebase.database();
+      try{ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(){}); }catch(e){}   // giữ đăng nhập bền
       try{ auth.getRedirectResult().catch(function(){}); }catch(e){}
       auth.onAuthStateChanged(onAuth);
+      // Cảnh báo nếu đóng/chuyển trang khi còn thay đổi chưa kịp đẩy lên đám mây
+      window.addEventListener('beforeunload', function(e){ if(user && (busy||dirty)){ e.preventDefault(); e.returnValue=''; return ''; } });
       renderUI();
     }catch(e){ console.warn('[ĐB] init lỗi',e); renderUI(); }
   }
@@ -5885,6 +5912,7 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   function hasUserTKB(){ var s=loadTKBraw(); return !!(s&&s.length); }
   function saveTKB(slots){
     try{ localStorage.setItem(TKB_KEY,JSON.stringify({slots:slots,updated:new Date().toISOString()})); }catch(e){}
+    try{ if(window.FBX&&window.FBX.flush) window.FBX.flush(); }catch(e){}   // đẩy ngay lên đám mây
   }
   window.bxLoadTKB=loadTKB; window.bxHasUserTKB=hasUserTKB;
 
