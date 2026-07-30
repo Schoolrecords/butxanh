@@ -765,58 +765,70 @@ window.bxMergeKho = function(){
     }
   }catch(e){} }
 };</script>
-<!-- ĐỒNG BỘ: Lớp 5 (mặc định của app) + KHGD nhỏ, để giao diện khởi tạo có dữ liệu ngay -->
-<script src="kho-data-lop5.js?v=20260725-lz"></script>
-<script src="kho-data-l5-gdtc.js?v=20260725-lz"></script>
-<script src="kho-data-l5-mithuat.js?v=20260725-lz"></script>
-<script src="kho-data-l5-tienganh.js?v=20260725-lz"></script>
-<script src="kho-data-l5-amnhac.js?v=20260725-lz"></script>
-<script src="kho-data-l5-tinhoc.js?v=20260725-lz"></script>
+<!-- KHGD (nhẹ, dùng cho mọi lớp) nạp ngay; KHO GIÁO ÁN nạp theo lớp đang dạy ở khối dưới -->
 <script src="khgd-lop4.js?v=20260725-lz"></script>
 <script src="khgd-lop3.js?v=20260725-lz"></script>
 <script src="khgd-lop2.js?v=20260725-lz"></script>
 <script src="khgd-lop1.js?v=20260725-lz"></script>
-<script>window.bxMergeKho(); /* gộp Lớp 5 ngay, trước khi app khởi tạo */</script>
 <script>
-/* Các lớp còn lại (1-4) tải NGẦM sau khi trang hiện xong, rồi tự vẽ lại màn đang mở */
+/* ===== NẠP KHO GIÁO ÁN THEO LỚP ĐANG DẠY (31/7/2026) =====
+   Trước đây app nạp kho của CẢ 5 LỚP (~27MB) dù thầy cô chỉ dạy một lớp — tốn 4G,
+   tốn bộ nhớ và làm điện thoại giật. Nay chỉ nạp kho lớp đang dạy (~5-6MB);
+   lớp khác chỉ nạp KHI CẦN (đổi lớp, mở Kho giáo án chọn lớp khác). */
 (function(){
-  var V='20260725-lz';
-  var REST=[
-    'kho-data-lop4.js','kho-data-l4-gdtc.js','kho-data-l4-tienganh.js','kho-data-l4-mithuat.js','kho-data-l4-amnhac.js',
-    'kho-data-lop3.js','kho-data-l3-tienganh.js','kho-data-l3-gdtc.js','kho-data-l3-mithuat.js','kho-data-l3-tinhoc.js',
-    'kho-data-lop2.js','kho-data-l2-gdtc.js','kho-data-l2-amnhac.js','kho-data-l2-mithuat.js',
-    'kho-data-lop1.js','kho-data-l1-gdtc.js','kho-data-l1-amnhac.js','kho-data-l1-mithuat.js'
-  ];
-  var _t=null;
-  function refreshActive(){
-    if(_t) return; /* gộp nhiều lần vẽ trong 1,2s để tránh nháy và tránh giật máy yếu */
+  var V='20260731-lop';
+  window.BX_KHO_FILES={
+    '1':['kho-data-lop1.js','kho-data-l1-gdtc.js','kho-data-l1-amnhac.js','kho-data-l1-mithuat.js'],
+    '2':['kho-data-lop2.js','kho-data-l2-gdtc.js','kho-data-l2-amnhac.js','kho-data-l2-mithuat.js'],
+    '3':['kho-data-lop3.js','kho-data-l3-tienganh.js','kho-data-l3-gdtc.js','kho-data-l3-mithuat.js','kho-data-l3-tinhoc.js'],
+    '4':['kho-data-lop4.js','kho-data-l4-gdtc.js','kho-data-l4-tienganh.js','kho-data-l4-mithuat.js','kho-data-l4-amnhac.js'],
+    '5':['kho-data-lop5.js','kho-data-l5-gdtc.js','kho-data-l5-mithuat.js','kho-data-l5-tienganh.js','kho-data-l5-amnhac.js','kho-data-l5-tinhoc.js']
+  };
+  var trangThai={}, _t=null;
+  function veLai(){
+    if(_t) return;                       /* gộp nhiều lần vẽ để khỏi nháy màn hình */
     _t=setTimeout(function(){
       _t=null;
       try{
         if(window.bxMergeKho) window.bxMergeKho();
-        var kho=document.getElementById('v-kho');
-        if(kho&&kho.classList.contains('active')&&typeof window.renderKhoBrowser==='function') window.renderKhoBrowser();
-        var dash=document.getElementById('v-dashboard');
-        if(dash&&dash.classList.contains('active')&&typeof renderDashboard==='function') renderDashboard();
+        var q=function(id){ var e=document.getElementById(id); return e&&e.classList.contains('active'); };
+        if(q('v-kho')&&typeof window.renderKhoBrowser==='function') window.renderKhoBrowser();
+        if(q('v-dashboard')&&typeof renderDashboard==='function') renderDashboard();
+        if(q('v-khbd')&&typeof window.renderBankSchedule==='function') window.renderBankSchedule();
+        if(q('v-lich')&&typeof renderFullSchedule==='function') renderFullSchedule();
       }catch(e){}
-    },1200);
+    },400);
   }
-  /* Chờ lúc máy rảnh mới tải tệp tiếp theo — thầy cô đang bấm nút thì không tranh CPU.
-     (Trước đây tải liên tục 18 tệp ~20MB và gộp lại kho 18 lần → điện thoại giật.) */
-  function khiRanh(fn,cham){
-    if(window.requestIdleCallback) requestIdleCallback(function(){ fn(); },{timeout:cham||2000});
-    else setTimeout(fn, cham||600);
-  }
-  function loadNext(i){
-    if(i>=REST.length){ refreshActive(); return; }
-    var s=document.createElement('script'); s.src=REST[i]+'?v='+V;
-    s.onload=function(){ refreshActive(); khiRanh(function(){ loadNext(i+1); }); };
-    s.onerror=function(){ khiRanh(function(){ loadNext(i+1); }); };
-    document.head.appendChild(s);
-  }
-  /* Hoãn 3 giây sau khi trang hiện xong: nhường toàn bộ máy cho thao tác đầu tiên của thầy cô */
-  function start(){ setTimeout(function(){ khiRanh(function(){ loadNext(0); },3000); }, 3000); }
-  if(document.readyState==='complete') start(); else window.addEventListener('load', start);
+  window.BX_veLaiSauKho=veLai;
+  window.BX_khoiCuaLop=function(lop){ var m=/(\d)/.exec(String(lop||'')); return m?m[1]:''; };
+  window.BX_khoiHienTai=function(){
+    try{
+      var p=JSON.parse(localStorage.getItem('butxanh_profile')||'{}');
+      var k=window.BX_khoiCuaLop(p.klass); if(window.BX_KHO_FILES[k]) return k;
+    }catch(e){}
+    return '5';
+  };
+  window.BX_khoDaCo=function(x){ var t=trangThai[window.BX_khoiCuaLop(x)||String(x||'')]; return !!(t&&t.xong); };
+  /* Bảo đảm kho của một lớp đã sẵn sàng; trả về Promise. Gọi nhiều lần cũng chỉ tải 1 lần. */
+  window.BX_ensureKho=function(lopHoacKhoi){
+    var khoi=window.BX_khoiCuaLop(lopHoacKhoi)||String(lopHoacKhoi||'').replace(/\D/g,'').slice(0,1);
+    var ds=window.BX_KHO_FILES[khoi];
+    if(!ds) return Promise.resolve(false);
+    if(trangThai[khoi]) return trangThai[khoi].p;
+    var t={xong:false}; trangThai[khoi]=t;
+    t.p=new Promise(function(xong){
+      var i=0;
+      (function tiep(){
+        if(i>=ds.length){ try{ window.bxMergeKho(); }catch(e){} t.xong=true; veLai(); xong(true); return; }
+        var s=document.createElement('script'); s.src=ds[i++]+'?v='+V; s.async=true;
+        s.onload=function(){ try{ window.bxMergeKho(); }catch(e){} tiep(); };
+        s.onerror=function(){ tiep(); };
+        document.head.appendChild(s);
+      })();
+    });
+    return t.p;
+  };
+  window.BX_ensureKho(window.BX_khoiHienTai());   /* nạp ngay kho lớp đang dạy */
 })();
 </script>
 </head>
@@ -3775,6 +3787,8 @@ function applyProfile(p){
   if(p.to) state.to=p.to;
   if(p.khbdIV) state.khbdIV=p.khbdIV;
   const m=String(state.klass).match(/\d+/); if(m) state.khoi=m[0];
+  /* Đổi lớp giảng dạy → bảo đảm kho của lớp đó đã nạp (app chỉ nạp lớp đang dạy) */
+  try{ if(window.BX_ensureKho) window.BX_ensureKho(state.klass); }catch(e){}
   syncStaticLabels();
   renderSchedule();
   if(el('v-lich').classList.contains('active')) renderFullSchedule();
@@ -5007,6 +5021,7 @@ function clearEditUI(){ EDIT=false;
 window.BX_khgdSetLop=function(l){ window.BX_curLop=l;
   var subs=subjectsOf(l); if(subs.indexOf(window.BX_curSubject)<0) window.BX_curSubject=subs[0]||'';
   clearEditUI(); rebuild();   // đổi lớp -> dựng lại cả danh sách môn
+  try{ if(window.BX_ensureKho) window.BX_ensureKho(l).then(function(){ try{ rebuild(); }catch(e){} }); }catch(e){}
 };
 window.BX_khgdSetSubject=function(s){ window.BX_curSubject=s; clearEditUI();
   var t=document.getElementById('khdh-title'); if(t)t.textContent=titleText();
@@ -5419,7 +5434,18 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
     }).join('');
   }
 
-  window.KHO_onLop=function(v){ ST.lop=parseInt(v,10); ST.mon=null; ST.tuan=null; renderKhoBrowser(); };
+  window.KHO_onLop=function(v){
+    ST.lop=parseInt(v,10); ST.mon=null; ST.tuan=null; renderKhoBrowser();
+    /* Kho lớp này có thể chưa nạp (app chỉ nạp lớp đang dạy) → nạp rồi vẽ lại */
+    if(window.BX_ensureKho && !window.BX_khoDaCo(v)){
+      var b=document.getElementById('kho-browser')||document.getElementById('v-kho');
+      if(b){ var n=document.createElement('div'); n.id='kho-dangtai'; n.className='empty-pad'; n.textContent='Đang tải kho giáo án Lớp '+v+'…'; b.insertBefore(n,b.firstChild); }
+      window.BX_ensureKho(v).then(function(){
+        var n=document.getElementById('kho-dangtai'); if(n&&n.parentNode) n.parentNode.removeChild(n);
+        try{ renderKhoBrowser(); }catch(e){}
+      });
+    }
+  };
   window.KHO_onMon=function(v){ ST.mon=v; ST.tuan=null; renderKhoBrowser(); };
   window.KHO_onTuan=function(v){ ST.tuan=parseInt(v,10); renderKhoBrowser(); };
 
