@@ -2000,7 +2000,7 @@ function _wrapDocx(body){
     F('word/_rels/document.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'),
     F('word/styles.xml',styles),
     F('word/document.xml',doc)
-  ]);
+  ], BX_MIME.docx);
 }
 function buildKhbdDocx(items){
   return _wrapDocx(items.map((it,i)=>(i?'<w:p><w:r><w:br w:type="page"/></w:r></w:p>':'')+_khbdItemParas(it)).join(''));
@@ -2204,7 +2204,15 @@ function _bxCanonSubject(s){
     'tienganh':'Tiếng Anh','ta':'Tiếng Anh','anhvan':'Tiếng Anh',
     'amnhac':'Âm nhạc','nhac':'Âm nhạc','an':'Âm nhạc',
     'mithuat':'Mĩ thuật','mythuat':'Mĩ thuật','mt':'Mĩ thuật',
-    'gdtc':'GDTC','giaoducthechat':'GDTC','theduc':'GDTC'
+    'gdtc':'GDTC','giaoducthechat':'GDTC','theduc':'GDTC',
+    /* Các tiết thuộc HĐTN nhưng GV thường ghi tách trên TKB/LBG (30/7/2026) */
+    'chaoco':'HĐTN','shdc':'HĐTN','sinhhoatduoico':'HĐTN','sinhhoatdcm':'HĐTN',
+    'sinhhoatlop':'HĐTN','shl':'HĐTN','sinhhoatcuoituan':'HĐTN','sinhhoattaplop':'HĐTN',
+    'hdgdtheochude':'HĐTN','hoatdonggiaoductheochude':'HĐTN','theochude':'HĐTN',
+    /* Môn/hoạt động ngoài kho giáo án — nhận diện để không báo “môn lạ” oan */
+    'giaoducdiaphuong':'Giáo dục địa phương','gddp':'Giáo dục địa phương','diaphuong':'Giáo dục địa phương',
+    'tuhoc':'Tự học','tuhoccohuongdan':'Tự học','tuhocccohuongdan':'Tự học',
+    'hoatdongthuvien':'Hoạt động thư viện','thuvien':'Hoạt động thư viện'
   };
   return A[k]||null;
 }
@@ -2549,7 +2557,13 @@ function renderLbgCards(){
    "định dạng không khớp"; có gộp ô Thứ/Buổi, viền, tô header, font Times, set khổ A4. */
 const _CRCT=(function(){const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);t[n]=c>>>0;}return t;})();
 function _crc32(u8){let c=0xFFFFFFFF;for(let i=0;i<u8.length;i++)c=_CRCT[(c^u8[i])&0xFF]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
-function _zipStore(files){
+/* Kiểu tệp chuẩn (MIME) — điện thoại/máy tính bảng dựa vào đây để mở đúng Word/Excel/PowerPoint */
+const BX_MIME={
+  docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  pptx:'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+};
+function _zipStore(files,mime){
   const enc=new TextEncoder();
   const u16=n=>[n&255,(n>>>8)&255], u32=n=>[n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255];
   const parts=[], central=[]; let off=0;
@@ -2562,9 +2576,19 @@ function _zipStore(files){
   });
   let cs=0; central.forEach(c=>cs+=c.length);
   const eocd=new Uint8Array([].concat(u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(cs),u32(off),u16(0)));
-  return new Blob(parts.concat(central,[eocd]),{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  return new Blob(parts.concat(central,[eocd]),{type:mime||BX_MIME.xlsx});
 }
-function _xe(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+/* Loại ký tự ĐIỀU KHIỂN mà XML 1.0 cấm (Word/Excel sẽ báo “tệp hỏng, cần khôi phục”
+   nếu lọt vào). Giữ nguyên Tab / xuống dòng. Áp cho mọi bản xuất .docx & .xlsx. */
+function _bxXmlSafe(s){ return String(s==null?'':s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,'').replace(/[￾￿]/g,''); }
+function _xe(s){return _bxXmlSafe(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+/* Tên tệp an toàn cho Windows/macOS: bỏ ký tự cấm \ / : * ? " < > | và ký tự điều khiển */
+function _bxSafeFileName(n){
+  var s=_bxXmlSafe(n).replace(/[\\\/:*?"<>|]/g,'-').replace(/\s+/g,' ').replace(/^[\s.]+|[\s.]+$/g,'').trim();
+  if(!s) s='ButXanh';
+  if(s.length>150){ var d=s.lastIndexOf('.'); var ext=(d>s.length-8&&d>0)?s.slice(d):''; s=s.slice(0,150-ext.length)+ext; }
+  return s;
+}
 const _XLSX_STYLES=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
 <fonts count="6"><font><sz val="11"/><name val="Times New Roman"/></font><font><b/><sz val="14"/><name val="Times New Roman"/></font><font><i/><sz val="11"/><name val="Times New Roman"/></font><font><b/><sz val="11"/><name val="Times New Roman"/></font><font><b/><sz val="12"/><name val="Times New Roman"/></font><font><sz val="10"/><color rgb="FF555555"/><name val="Times New Roman"/></font></fonts>
@@ -2699,7 +2723,7 @@ function buildScheduleXlsx(filled){
     F('xl/worksheets/sheet1.xml',_scheduleSheetXml(filled))
   ]);
 }
-function _downloadBlob(name,blob){ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); setTimeout(()=>{try{URL.revokeObjectURL(a.href);}catch(e){}},1500); }
+function _downloadBlob(name,blob){ try{ if(typeof _bxSafeFileName==='function') name=_bxSafeFileName(name); }catch(e){} const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); setTimeout(()=>{try{URL.revokeObjectURL(a.href);}catch(e){}},1500); }
 function downloadScheduleTemplate(){ _downloadBlob('Mau_Lich_Bao_Giang_ButXanh.xlsx', buildScheduleXlsx(false)); }
 function exportScheduleXls(){ _downloadBlob(`Lich_Bao_Giang_Tuan${state.week}_Lop${state.klass}.xlsx`, buildScheduleXlsx(true)); }
 
@@ -3442,7 +3466,7 @@ function _docxBlob(bodyParas){
     F('word/_rels/document.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'),
     F('word/styles.xml',styles),
     F('word/document.xml',doc)
-  ]);
+  ], BX_MIME.docx);
 }
 function buildHocSinhDocx(){
   const P=[];
@@ -3636,7 +3660,7 @@ function buildPptx(slides){
     F('ppt/slideLayouts/_rels/slideLayout1.xml.rels',layoutRels),
     F('ppt/theme/theme1.xml',PPTX_THEME)
   ].concat(slideFiles,slideRelFiles);
-  return _zipStore(files);
+  return _zipStore(files, BX_MIME.pptx);
 }
 
 /* ---------- 15) THỐNG KÊ & BÁO CÁO ---------- */
@@ -4858,7 +4882,7 @@ function buildKHGDMonDocx(){
     F('[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>'),
     F('_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'),
     F('word/document.xml',doc)
-  ]);
+  ], BX_MIME.docx);
 }
 
 window.exportKHGDMonWord=function(){
@@ -5465,7 +5489,7 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
     if(cx>MAXCX){cy=Math.round(cy*MAXCX/cx);cx=MAXCX;}
     return '<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="'+cx+'" cy="'+cy+'"/><wp:docPr id="'+did+'" name="img'+did+'"/><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic><pic:nvPicPr><pic:cNvPr id="'+did+'" name="img'+did+'"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="'+rId+'"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="'+cx+'" cy="'+cy+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>';
   }
-  function xe(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function xe(s){var t=(typeof _bxXmlSafe==='function')?_bxXmlSafe(s):String(s==null?'':s); return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
   async function buildImgCtx(srcs){
     var ctx={map:{},list:[],seq:1,did:1};
     for(var k=0;k<srcs.length;k++){var src=srcs[k]; if(ctx.map[src])continue;
@@ -5523,7 +5547,7 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
     var rels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>';
     var files=[{name:'[Content_Types].xml',data:enc.encode(ct)},{name:'_rels/.rels',data:enc.encode(rels)},{name:'word/_rels/document.xml.rels',data:enc.encode(docRels)},{name:'word/styles.xml',data:enc.encode(styles)},{name:'word/document.xml',data:enc.encode(doc)}];
     imgs.forEach(function(im){files.push({name:'word/'+im.media,data:im.data});});
-    return _zipStore(files);
+    return _zipStore(files, (typeof BX_MIME!=='undefined'?BX_MIME.docx:undefined));
   }
   async function elsToDocxBlob(els){
     var srcs=[];els.forEach(function(el){Array.prototype.forEach.call(el.querySelectorAll('img'),function(im){var s=im.getAttribute('src');if(s&&srcs.indexOf(s)<0)srcs.push(s);});});
@@ -5825,6 +5849,7 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded',init);
 })();
 </script>
+
 
 <!-- ============ MODAL: LỊCH NGHỈ & DẠY BÙ (Phase 2 — con trỏ tiến độ) ============ -->
 <div class="overlay" id="tkbexc-overlay">
