@@ -789,7 +789,7 @@ window.bxMergeKho = function(){
   ];
   var _t=null;
   function refreshActive(){
-    if(_t) return; /* gộp nhiều lần vẽ trong 250ms để tránh nháy */
+    if(_t) return; /* gộp nhiều lần vẽ trong 1,2s để tránh nháy và tránh giật máy yếu */
     _t=setTimeout(function(){
       _t=null;
       try{
@@ -799,16 +799,23 @@ window.bxMergeKho = function(){
         var dash=document.getElementById('v-dashboard');
         if(dash&&dash.classList.contains('active')&&typeof renderDashboard==='function') renderDashboard();
       }catch(e){}
-    },250);
+    },1200);
+  }
+  /* Chờ lúc máy rảnh mới tải tệp tiếp theo — thầy cô đang bấm nút thì không tranh CPU.
+     (Trước đây tải liên tục 18 tệp ~20MB và gộp lại kho 18 lần → điện thoại giật.) */
+  function khiRanh(fn,cham){
+    if(window.requestIdleCallback) requestIdleCallback(function(){ fn(); },{timeout:cham||2000});
+    else setTimeout(fn, cham||600);
   }
   function loadNext(i){
     if(i>=REST.length){ refreshActive(); return; }
     var s=document.createElement('script'); s.src=REST[i]+'?v='+V;
-    s.onload=function(){ if(window.bxMergeKho) window.bxMergeKho(); refreshActive(); loadNext(i+1); };
-    s.onerror=function(){ loadNext(i+1); };
+    s.onload=function(){ refreshActive(); khiRanh(function(){ loadNext(i+1); }); };
+    s.onerror=function(){ khiRanh(function(){ loadNext(i+1); }); };
     document.head.appendChild(s);
   }
-  function start(){ loadNext(0); }
+  /* Hoãn 3 giây sau khi trang hiện xong: nhường toàn bộ máy cho thao tác đầu tiên của thầy cô */
+  function start(){ setTimeout(function(){ khiRanh(function(){ loadNext(0); },3000); }, 3000); }
   if(document.readyState==='complete') start(); else window.addEventListener('load', start);
 })();
 </script>
@@ -2800,13 +2807,28 @@ function _normTxt(s){
 function bankKey(mon,bai){ var cm=(typeof _bxCanonSubject==='function'&&_bxCanonSubject(mon))||mon; return _normTxt(cm)+'|'+_normTxt(bai); }
 function loadBankImport(){ try{const v=JSON.parse(localStorage.getItem('butxanh_bank')); return Array.isArray(v)?v:[];}catch(e){return [];} }
 function persistBankImport(arr){ try{localStorage.setItem('butxanh_bank',JSON.stringify(arr)); return true;}catch(e){return false;} }
+/* ===== NHỚ TẠM KHO GIÁO ÁN (31/7/2026) =====
+   Dựng lại danh sách 4.245 tiết tốn ~60ms. Màn "Kế hoạch bài dạy" gọi hàm này một lần
+   cho MỖI tiết trong tuần (~25 lần) → mất hơn 1 giây, điện thoại thấy rõ độ trễ.
+   Nay nhớ kết quả lại; kho có thay đổi (tải thêm lớp, giáo viên nhập thêm) thì tự dựng lại. */
+var _bxBankCache=null, _bxBankSig='', _bxBankByGrade={};
+function _bxBankSig_(){
+  var a=(window.KHO_DATA&&window.KHO_DATA.length)||0;
+  var b=(typeof LESSON_BANK!=='undefined'&&LESSON_BANK&&LESSON_BANK.length)||0;
+  var c=0; try{ var s=localStorage.getItem('butxanh_bank'); c=s?s.length:0; }catch(e){}
+  return a+'|'+b+'|'+c;
+}
 function bankAll(){
+  var sig=_bxBankSig_();
+  if(_bxBankCache && _bxBankSig===sig) return _bxBankCache;
   const byId={};
   // Kho giáo án số (tệp kho-data.js) — nguồn chính để KHBD khớp theo định danh ngầm
   (window.KHO_DATA||[]).forEach(L=>{ if(L&&L.mon&&L.bai){ byId[L.id||('kho-'+_normTxt(L.mon)+'-'+(L.lop||L.khoi||'')+'-'+(L.tuan||'')+'-'+(L.tiet||'')+'-'+_normTxt(L.bai))]=L; } });
   LESSON_BANK.forEach(L=>{byId[L.id]=L;});
   loadBankImport().forEach(L=>{ if(L&&L.mon&&L.bai){ byId[L.id||('imp-'+_normTxt(L.mon)+'-'+_normTxt(L.bai))]=L; } });
-  return Object.keys(byId).map(k=>byId[k]);
+  _bxBankCache=Object.keys(byId).map(k=>byId[k]);
+  _bxBankSig=sig; _bxBankByGrade={};
+  return _bxBankCache;
 }
 /* ---- LỌC KHO THEO KHỐI (LỚP) ----
    GV Lớp 4 không được khớp nhầm giáo án Lớp 5 (và ngược lại). Khối của 1 dòng lịch:
@@ -2817,7 +2839,13 @@ function _bxRowGrade(row){
   return String(g||'').trim();
 }
 function _bxGradeOf(L){ return String((L&&(L.khoi!=null?L.khoi:L.lop))||'').trim(); }
-function bankAllForRow(row){ var g=_bxRowGrade(row); var all=bankAll(); return g?all.filter(function(L){return _bxGradeOf(L)===g;}):all; }
+function bankAllForRow(row){
+  var g=_bxRowGrade(row), all=bankAll();          // all đã được nhớ tạm
+  if(!g) return all;
+  if(_bxBankByGrade[g]) return _bxBankByGrade[g]; // nhớ luôn bản đã lọc theo khối
+  _bxBankByGrade[g]=all.filter(function(L){ return _bxGradeOf(L)===g; });
+  return _bxBankByGrade[g];
+}
 function bankStatusLabel(s){ return ({draft:'Bản nháp',checked:'Đã kiểm tra',approved:'Đã duyệt','needs-update':'Cần cập nhật'})[s]||'Bản nháp'; }
 /* tách số "Bài N" / "Tiết M" và token từ trong tên bài (cho khớp dự phòng) */
 function _baiNo(s){ const m=/b[aà]i\s*0*(\d+)/i.exec(s||''); return m?+m[1]:null; }
