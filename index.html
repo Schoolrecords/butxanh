@@ -5639,6 +5639,26 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   var KEYS=['butxanh_profile','butxanh_tkb','butxanh_tkb_exc','butxanh_lbg_weeks','butxanh_lbg_meta','butxanh_khbd','butxanh_hocsinh','butxanh_hoclieu','butxanh_bank'];
   var auth=null, db=null, user=null, lastPushed=null, loopT=null, busy=false, seeded=false, reloadT=null, curRef=null, lastVals={};
   var dirty=false, hadUser=false, intentionalLogout=false;   // dirty: có thay đổi chưa đẩy lên đám mây
+  /* ===== TIẾT KIỆM BĂNG THÔNG & CHỐNG ĐỒNG BỘ VÒNG TRÒN (31/7/2026) =====
+     Trước đây app nghe TOÀN BỘ gói dữ liệu; mỗi lần ghi lại kéo về cả gói, hai tab/hai máy
+     có thể đẩy qua đẩy lại không dứt → tốn hàng GB băng thông Firebase (tốn tiền thật).
+     Nay chỉ nghe DẤU THỜI GIAN (vài trăm byte); chỉ khi nơi khác thực sự có bản mới hơn
+     mới tải dữ liệu về. Kèm "phanh" giới hạn số lần đẩy mỗi phút. */
+  var tsRef=null, pushLog=[], syncPaused=0;
+  var SYNC_MAX_PUSH_PER_MIN=12;          // quá ngưỡng này là bất thường
+  var SYNC_PAUSE_MS=5*60*1000;           // tạm nghỉ 5 phút cho nguội
+  function pushAllowed(){
+    var now=Date.now();
+    if(syncPaused && now<syncPaused) return false;
+    pushLog=pushLog.filter(function(t){ return now-t<60000; });
+    if(pushLog.length>=SYNC_MAX_PUSH_PER_MIN){
+      syncPaused=now+SYNC_PAUSE_MS; pushLog=[];
+      console.warn('[ĐB] Đồng bộ lặp bất thường — tạm nghỉ 5 phút để khỏi tốn băng thông.');
+      setStatus('error');
+      return false;
+    }
+    pushLog.push(now); return true;
+  }
   var box=document.getElementById('fb-auth');
 
   function gather(){ var o={}; KEYS.forEach(function(k){ var v=localStorage.getItem(k); if(v!=null) o[k]=v; }); return o; }
@@ -5698,6 +5718,7 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   // Chỉ ghi các phần thay đổi lên đám mây (update path con) — tương thích ngược với bản đọc cũ
   function pushKeys(keys){
     if(!db||!user||!keys||!keys.length){ return; }
+    if(!pushAllowed()){ dirty=true; return; }
     busy=true; setStatus('syncing');
     var ts=loadTs(), upd={ updatedAt:firebase.database.ServerValue.TIMESTAMP };
     keys.forEach(function(k){ var v=localStorage.getItem(k); upd['data/'+k]=(v!=null?v:null); upd['ts/'+k]=ts[k]||Date.now(); });
@@ -5706,7 +5727,9 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
       .catch(function(e){ console.warn('[ĐB] đẩy phần lỗi',e); busy=false; setStatus('error'); });
   }
   function pushData(data, ts){
-    if(!db||!user) return; busy=true; setStatus('syncing');
+    if(!db||!user) return;
+    if(!pushAllowed()){ dirty=true; busy=false; return; }
+    busy=true; setStatus('syncing');
     var dataStr=JSON.stringify(data);
     db.ref('users/'+user.uid).set({ data:data, ts:ts, updatedAt:firebase.database.ServerValue.TIMESTAMP, app:'butxanh' })
       .then(function(){ lastPushed=dataStr; busy=false; dirty=false; setStatus('synced'); })
@@ -5785,8 +5808,34 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     if(mStr!==cStr){ pushData(m.data,m.ts); }                        // đám mây thiếu phần nào → đẩy bản trộn lên
     else { lastPushed=cStr; busy=false; setStatus('synced'); }
   }
-  function startSync(){ if(!db||!user) return; seeded=false; busy=true; setStatus('syncing'); ensureInitTs(); snapVals(); curRef=db.ref('users/'+user.uid); curRef.on('value', onCloud); }
-  function stopSync(){ if(curRef){ try{ curRef.off('value', onCloud); }catch(e){} curRef=null; } }
+  /* Chỉ nghe DẤU THỜI GIAN. Có nơi khác mới hơn mới tải dữ liệu về — tiết kiệm ~100 lần băng thông. */
+  function onCloudTs(snap, thu){
+    if(!seeded) return;
+    var cts=(snap&&typeof snap.val==='function')?snap.val():snap;
+    if(!cts||typeof cts!=='object') return;
+    if(busy){                                 // đang bận đẩy → hẹn kiểm tra lại, đừng bỏ sót
+      if((thu||0)<6) setTimeout(function(){ onCloudTs(cts,(thu||0)+1); }, 1500);
+      return;
+    }
+    var lts=loadTs(), moiHon=false;
+    for(var k in cts){ if(cts.hasOwnProperty(k) && (+cts[k]||0) > (+lts[k]||0)){ moiHon=true; break; } }
+    if(!moiHon) return;                       // chính mình vừa đẩy, hoặc không có gì mới → không tải
+    if(!curRef) return;
+    curRef.once('value').then(onCloud).catch(function(e){ console.warn('[ĐB] tải dữ liệu lỗi',e); });
+  }
+  function startSync(){
+    if(!db||!user) return;
+    seeded=false; busy=true; setStatus('syncing'); ensureInitTs(); snapVals();
+    curRef=db.ref('users/'+user.uid);
+    tsRef=db.ref('users/'+user.uid+'/ts');
+    curRef.once('value')                       // lần đầu: tải trọn gói một lần rồi trộn như cũ
+      .then(function(snap){ onCloud(snap); tsRef.on('value', onCloudTs); })
+      .catch(function(e){ console.warn('[ĐB] nạp lần đầu lỗi',e); busy=false; setStatus('error'); });
+  }
+  function stopSync(){
+    if(tsRef){ try{ tsRef.off('value', onCloudTs); }catch(e){} tsRef=null; }
+    curRef=null; pushLog=[]; syncPaused=0;
+  }
   function onAuth(u){
     user=u; renderUI();
     if(u){ hadUser=true; startSync(); startLoop(); }
