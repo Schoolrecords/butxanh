@@ -2768,7 +2768,7 @@ function buildScheduleXlsx(filled){
     F('xl/worksheets/sheet1.xml',_scheduleSheetXml(filled))
   ]);
 }
-function _downloadBlob(name,blob){ try{ if(typeof _bxSafeFileName==='function') name=_bxSafeFileName(name); }catch(e){} const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); setTimeout(()=>{try{URL.revokeObjectURL(a.href);}catch(e){}},1500); }
+function _downloadBlob(name,blob){ if(window.BXLIC && BXLIC.needPaid && BXLIC.needPaid(name) && !BXLIC.canDownload()){ BXLIC.showActivate(); return; } try{ if(typeof _bxSafeFileName==='function') name=_bxSafeFileName(name); }catch(e){} const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); setTimeout(()=>{try{URL.revokeObjectURL(a.href);}catch(e){}},1500); }
 function downloadScheduleTemplate(){ _downloadBlob('Mau_Lich_Bao_Giang_ButXanh.xlsx', buildScheduleXlsx(false)); }
 function exportScheduleXls(){ _downloadBlob(`Lich_Bao_Giang_Tuan${state.week}_Lop${state.klass}.xlsx`, buildScheduleXlsx(true)); }
 
@@ -6022,6 +6022,8 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
 })();
 </script>
 
+<!-- Lớp bản quyền (License) — tách riêng để an toàn, dễ cập nhật -->
+<script src="license.js"></script>
 
 <!-- ============ MODAL: LỊCH NGHỈ & DẠY BÙ (Phase 2 — con trỏ tiến độ) ============ -->
 <div class="overlay" id="tkbexc-overlay">
