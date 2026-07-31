@@ -828,7 +828,24 @@ window.bxMergeKho = function(){
     });
     return t.p;
   };
-  window.BX_ensureKho(window.BX_khoiHienTai());   /* nạp ngay kho lớp đang dạy */
+  /* Giáo viên bộ môn (Âm nhạc, Thể dục, Tiếng Anh, Tin học…) dạy NHIỀU KHỐI:
+     mỗi ô thời khoá biểu / dòng lịch báo giảng có lớp riêng. Quét hết các lớp đó
+     để nạp đủ kho, tránh báo nhầm "Đang cập nhật kho". */
+  function _gomKhoi(chuoi, ks){
+    if(!chuoi) return;
+    var re=/"lop"\s*:\s*"?\s*([1-5])/g, m;
+    while((m=re.exec(chuoi))!==null){ if(window.BX_KHO_FILES[m[1]]) ks[m[1]]=1; }
+  }
+  window.BX_ensureKhoTheoLich=function(){
+    var ks={}, k0=window.BX_khoiHienTai();
+    if(k0) ks[k0]=1;
+    ['butxanh_tkb','butxanh_schedule','butxanh_lbg_weeks','butxanh_khbd'].forEach(function(k){
+      try{ _gomKhoi(localStorage.getItem(k), ks); }catch(e){}
+    });
+    Object.keys(ks).forEach(function(k){ window.BX_ensureKho(k); });
+    return Object.keys(ks);
+  };
+  window.BX_ensureKhoTheoLich();   /* nạp kho các lớp thầy cô thực dạy */
 })();
 </script>
 </head>
@@ -3877,7 +3894,10 @@ function resetAllData(){
 var SCHEDULE_SEED=JSON.parse(JSON.stringify(state.schedule));
 /* ===== LBG lưu theo TỪNG TUẦN: butxanh_lbg_weeks = { "1":[...], "6":[...] } ===== */
 function loadLBGWeeks(){ try{ var v=JSON.parse(localStorage.getItem('butxanh_lbg_weeks')); return (v&&typeof v==='object'&&!Array.isArray(v))?v:{}; }catch(e){ return {}; } }
-function saveLBGWeeks(map){ try{ localStorage.setItem('butxanh_lbg_weeks',JSON.stringify(map)); }catch(e){} }
+function saveLBGWeeks(map){
+  try{ localStorage.setItem('butxanh_lbg_weeks',JSON.stringify(map)); }catch(e){}
+  try{ if(window.BX_ensureKhoTheoLich) window.BX_ensureKhoTheoLich(); }catch(e){}   /* lịch có thể có lớp mới */
+}
 function getLBGForWeek(w){ var s=loadLBGWeeks()[String(w)]; return (Array.isArray(s)&&s.length)?s:null; }
 /* Lịch của tuần đang xem (cho reloadAllState / init) */
 function loadSchedule(){
@@ -5845,6 +5865,8 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   function applyData(data,ts){
     try{ KEYS.forEach(function(k){ if(data&&data[k]!=null) localStorage.setItem(k,data[k]); else localStorage.removeItem(k); }); }catch(e){}
     if(ts) saveTs(ts);
+    /* Dữ liệu từ máy khác có thể chứa lớp mà máy này chưa nạp kho */
+    try{ if(window.BX_ensureKhoTheoLich) window.BX_ensureKhoTheoLich(); }catch(e){}
     var soft=false;
     if(typeof window.BX_reloadFromStorage==='function'){ try{ window.BX_reloadFromStorage(); soft=true; }catch(e){} }
     snapVals(); lastPushed=JSON.stringify(gather()); setStatus('synced');
@@ -6040,6 +6062,8 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   function hasUserTKB(){ var s=loadTKBraw(); return !!(s&&s.length); }
   function saveTKB(slots){
     try{ localStorage.setItem(TKB_KEY,JSON.stringify({slots:slots,updated:new Date().toISOString()})); }catch(e){}
+    /* Thời khoá biểu có thể vừa thêm lớp mới → nạp kho lớp đó nếu chưa có */
+    try{ if(window.BX_ensureKhoTheoLich) window.BX_ensureKhoTheoLich(); }catch(e){}
     try{ if(window.FBX&&window.FBX.flush) window.FBX.flush(); }catch(e){}   // đẩy ngay lên đám mây
   }
   window.bxLoadTKB=loadTKB; window.bxHasUserTKB=hasUserTKB;
