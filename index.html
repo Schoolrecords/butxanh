@@ -414,6 +414,28 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
   .app{flex-direction:column}
   .sidebar{flex:0 0 auto;width:100%;position:static;height:auto;border-right:none;border-bottom:1px solid var(--line);padding:12px 12px 10px}
   .brand{padding:0 4px 12px}
+  /* ===== GỌN ĐẦU TRANG TRÊN ĐIỆN THOẠI (31/7/2026) =====
+     Trước đây phải đi qua 3 tầng (dải logo → lời chào → hàng nút) mới tới nội dung,
+     ăn mất ~40% màn hình nên chỉ thấy 1 tiết học. Nay gộp còn MỘT hàng.
+     Logo vẫn còn ở nút giữa thanh điều hướng dưới nên không mất nhận diện. */
+  .sidebar{padding:0;border-bottom:none}
+  .brand{display:none}
+  .header{flex-direction:row;align-items:center;flex-wrap:nowrap;gap:8px;margin-bottom:12px}
+  .header>div:first-child{min-width:0;flex:1 1 auto}
+  .header h2{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .header h2 span[aria-hidden]{display:none}   /* bỏ hoa trang trí để đủ chỗ cho tên thầy cô */
+  /* Khi CHƯA đăng nhập, nút "Đăng nhập" chiếm chỗ → thu nhỏ lời chào một chút
+     để tên thầy cô hiện đủ, không bị cắt cụt giữa chữ. */
+  .header:has(#fb-auth .fb-btn) h2{font-size:13.5px}
+  /* Máy màn hình rất hẹp (≤374px): khi chưa đăng nhập thì ẩn lời chào, nhường chỗ
+     cho nút Đăng nhập; đăng nhập xong lời chào hiện lại bình thường. */
+  @media(max-width:374px){
+    .header h2{font-size:14px}
+    .header:has(#fb-auth .fb-btn) h2{display:none}
+  }
+  .header-right{flex:0 0 auto;gap:10px}
+  .header .bell{display:none}        /* thanh dưới đã có mục "Nhắc" — bỏ chuông trùng */
+  .an-mobile{display:none}           /* rút gọn chữ dài trên màn hình hẹp */
   .nav{flex-direction:row;flex-wrap:nowrap;overflow-x:auto;gap:6px;padding-bottom:4px;scrollbar-width:thin}
   .nav a{flex:0 0 auto;white-space:nowrap;padding:9px 13px;font-size:13.5px}
   .nav a .chev{display:none}
@@ -422,7 +444,7 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
   .main>*{max-width:none}
   .right-col{grid-template-columns:minmax(0,1fr)}
   .header{gap:10px;margin-bottom:14px}
-  .header h2{font-size:19px}
+  /* cỡ chữ lời chào do khối gọn-đầu-trang phía trên quyết định (31/7/2026) */
   .header-right{gap:14px}
   /* Bỏ chữ nhỏ lặp lại cho gọn, chuyên nghiệp hơn */
   .brand small{display:none}
@@ -439,10 +461,21 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
   .form-grid{grid-template-columns:1fr}
   .page-head{flex-direction:column;align-items:stretch;gap:12px}
   .page-head .btn-upload,.page-head .btn-start{align-self:flex-start}
+  /* ===== NHÓM NÚT & HÀNG THÔNG TIN GỌN GÀNG TRÊN ĐIỆN THOẠI (31/7/2026) =====
+     Trước: 4 nút tràn thành 2 hàng lệch (3 nút + 1 nút lẻ). Nay: nút chính chiếm
+     trọn một hàng, các nút phụ chia đều hàng dưới. */
+  .ph-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%}
+  .ph-actions>.btn-xs{width:100%;justify-content:center;text-align:center;padding:10px 4px;font-size:12px;line-height:1.25;white-space:nowrap;overflow:hidden}
+  .ph-actions>.btn-xs.solid{grid-column:1/-1;padding:12px 10px;font-size:14px;font-weight:700}
+  /* Tuần · Khối · GVCN · Lớp: 4 cột trên màn hẹp thì chữ dính nhau → xếp 2 cột */
+  .lbg-meta{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;font-size:13px}
+  .lbg-title{font-size:14.5px;letter-spacing:0;line-height:1.35}
+  /* Chừa chỗ cho thanh điều hướng + vạch gạt dưới đáy iPhone */
+  .main{padding-bottom:calc(94px + env(safe-area-inset-bottom))}
 }
 /* < 520px: điện thoại nhỏ */
 @media(max-width:520px){
-  .header h2{font-size:18px}
+  /* cỡ chữ lời chào: xem khối gọn-đầu-trang ở @media 768px */
   .header .help span,.profile .pname{display:none}
   .filters .select{padding:9px 11px;font-size:12.5px}
   .banner .hero{display:none}
@@ -532,7 +565,7 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 /* ===================== GIAO DIỆN ĐIỆN THOẠI ===================== */
 #mnav,#msheet-bd{display:none}
 @media(max-width:768px){
-  .main{padding-bottom:94px}
+  .main{padding-bottom:calc(94px + env(safe-area-inset-bottom))}   /* chừa vạch gạt đáy iPhone */
   /* linh vật trên đầu trang nổi bật hơn (như icon app) */
   .brand .logo{width:50px;height:50px;background-color:#e7f6ee;border-radius:14px;box-shadow:0 4px 12px rgba(31,164,92,.18)}
   .brand h1{font-size:22px}
@@ -650,7 +683,9 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 .fb-menu .fb-mi:hover{background:#f0f7f3}
 .fb-menu .fb-info{padding:8px 11px;font-size:12px;color:#8a978f;border-bottom:1px solid var(--line);margin-bottom:4px}
 .fb-auth{position:relative}
-@media(max-width:520px){ .fb-btn .fb-name{display:none} .fb-btn{padding:7px 10px} }
+@media(max-width:520px){ .fb-btn .fb-name{display:none} .fb-btn{padding:7px 10px;font-size:12.5px} }
+/* Điện thoại: nút Đăng nhập gọn lại để còn chỗ hiện đủ tên thầy cô (31/7/2026) */
+@media(max-width:768px){ .header .fb-btn{padding:7px 11px;font-size:12.5px;gap:5px} .header .fb-btn svg{width:15px;height:15px} }
 /* Bộ chọn Tuần (Lịch báo giảng) — bấm để mở bảng chọn, gọn không chiếm chỗ */
 .wk-picker{position:relative;margin-top:6px}
 .wk-sel{display:inline-flex;align-items:center;gap:6px}
@@ -905,7 +940,7 @@ window.bxMergeKho = function(){
     <!-- Header -->
     <div class="header">
       <div>
-        <h2>Xin chào, <span id="hdr-greet">Bút Xanh</span> <span aria-hidden="true">🌼</span></h2>
+        <h2><span class="an-mobile">Xin chào, </span><span id="hdr-greet">Bút Xanh</span> <span aria-hidden="true">🌼</span></h2>
         <div class="role">Giáo viên Tiểu học</div>
       </div>
       <div class="header-right">
@@ -1113,13 +1148,13 @@ window.bxMergeKho = function(){
         <div class="ph-actions">
           <input type="file" id="lbg-file" accept=".xlsx" style="display:none" onchange="lbgRead(this)">
           <button class="btn-xs solid" onclick="bxRegenCurrentWeek()">✨ Tạo LBG tuần này</button>
-          <button class="btn-xs" onclick="bxOpenExc()">📅 Nghỉ lễ / dạy bù</button>
+          <button class="btn-xs" onclick="bxOpenExc()">📅 Nghỉ lễ<span class="an-mobile"> / dạy bù</span></button>
           <button class="btn-xs" onclick="openSchedEditor()">✏️ Sửa LBG</button>
-          <button class="btn-xs" onclick="exportScheduleXls()">📥 Tải LBG về máy</button>
+          <button class="btn-xs" onclick="exportScheduleXls()">📥 Tải<span class="an-mobile"> LBG</span> về máy</button>
         </div>
       </div>
       <div class="card lbg-card">
-        <div class="lbg-title">LỊCH BÁO GIẢNG NĂM HỌC <span id="lbg-year"></span></div>
+        <div class="lbg-title">LỊCH BÁO GIẢNG<span class="an-mobile"> NĂM HỌC</span> <span id="lbg-year"></span></div>
         <div class="lbg-range" id="lbg-range"></div>
         <div class="lbg-meta">
           <span><b>Tuần:</b> <span id="lbg-week"></span></span>
@@ -2524,7 +2559,18 @@ function _lbgCard(r){
   var m=(typeof monMeta==='function')?monMeta(r.mon):{icon:'📘',c:'#15834A',cs:'#E7F5ED'};
   var sub=[];
   if(r.buoi) sub.push(_xe(r.buoi));
-  if((r.tbdh||'').trim()) sub.push('ĐDDH: '+_xe(r.tbdh));
+  /* Đồ dùng dạy học: rút gọn như bản in Excel rồi cắt vừa màn hình điện thoại,
+     tránh hiện nửa chừng kiểu "ĐDDH: 1.Giáo viên:" trông như lỗi (31/7/2026). */
+  var td=(r.tbdh||'').trim();
+  if(td){
+    try{ if(typeof _lbgTbdh==='function') td=_lbgTbdh(td); }catch(e){}
+    td=String(td).replace(/\s+/g,' ').trim();
+    if(td.length>52){
+      var cat=td.slice(0,52), sp=cat.lastIndexOf(' ');
+      td=(sp>28?cat.slice(0,sp):cat)+'…';
+    }
+    if(td && !/^[\s…]*$/.test(td)) sub.push('ĐDDH: '+_xe(td));
+  }
   return '<div class="kd-card" style="--c:'+m.c+';--cs:'+m.cs+'">'+
     '<div class="kd-tiet"><span class="kd-tiet-n">'+_xe(String(r.tiet||'–'))+'</span><span class="kd-tiet-l">Tiết</span></div>'+
     '<div class="kd-body"><div class="kd-mon">'+m.icon+' '+_xe(r.mon||'')+'</div>'+
