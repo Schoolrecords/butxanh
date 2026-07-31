@@ -4027,6 +4027,9 @@ renderSchedule();
    - Đã có Thời khoá biểu → mở thẳng Lịch báo giảng tuần hiện tại, đúng việc hằng ngày.
    Bảng điều khiển vẫn nằm trong menu, không mất đi đâu. */
 function BX_manHinhMoDau(){
+  /* Nhớ địa chỉ GỐC lúc thầy cô vừa mở, vì ngay sau đây app sẽ tự ghi #... lên thanh
+     địa chỉ — màn chào cần biết thầy cô có mở bằng liên kết sâu hay không. */
+  try{ window.__bxHashGoc=(location.hash||''); }catch(e){}
   try{ if(location.hash && location.hash.length>1) return location.hash.slice(1); }catch(e){}
   try{
     var v=JSON.parse(localStorage.getItem('butxanh_tkb')||'null');
@@ -6557,6 +6560,141 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   window.bxExcAddWeekOff=function(){ var x=loadExc(); x.weekOff.push({tuan:parseInt(document.getElementById('exc-wo-week').value,10)||1,note:document.getElementById('exc-wo-note').value.trim()}); saveExc(x); document.getElementById('exc-wo-note').value=''; renderExc(); _excAfterChange(); };
   window.bxExcAddDayOff=function(){ var x=loadExc(); x.dayOff.push({tuan:parseInt(document.getElementById('exc-do-week').value,10)||1,day:document.getElementById('exc-do-day').value,note:document.getElementById('exc-do-note').value.trim()}); saveExc(x); document.getElementById('exc-do-note').value=''; renderExc(); _excAfterChange(); };
   window.bxExcAddMakeup=function(){ var x=loadExc(); x.makeup.push({tuan:parseInt(document.getElementById('exc-mk-week').value,10)||1,day:document.getElementById('exc-mk-day').value,buoi:document.getElementById('exc-mk-buoi').value,tiet:parseInt(document.getElementById('exc-mk-tiet').value,10)||1,mon:document.getElementById('exc-mk-mon').value,lop:document.getElementById('exc-mk-lop').value.trim()||_defLop(),note:''}); saveExc(x); renderExc(); _excAfterChange(); };
+})();
+</script>
+
+<!-- ============ MÀN CHÀO: THẦY CÔ MỚI VÀO LẦN ĐẦU (31/7/2026) ============
+     Trước đây thầy cô vừa bấm link đã gặp ngay bảng khai báo Thời khoá biểu —
+     chưa biết Bút Xanh là gì đã phải "làm bài tập", nhiều người thoát luôn.
+     Nay chỉ hỏi ĐÚNG MỘT CÂU: dạy lớp mấy. Chạm một lần là có ngay lịch dạy
+     cả tuần kèm giáo án, xem thấy giá trị rồi mới chỉnh cho đúng lớp mình. -->
+<style>
+#bxwc{position:fixed;inset:0;z-index:2000;background:linear-gradient(160deg,#0f7a45,#1fa45c 55%,#43c77f);display:none;align-items:center;justify-content:center;padding:20px}
+#bxwc.on{display:flex}
+#bxwc .wc-box{background:#fff;border-radius:22px;width:100%;max-width:440px;max-height:92vh;overflow:auto;padding:26px 22px 20px;box-shadow:0 22px 60px rgba(0,0,0,.28);text-align:center}
+#bxwc .wc-art{width:84px;height:84px;margin:0 auto 12px;border-radius:24px;background:var(--mascot) center/78% no-repeat,#e7f6ee;box-shadow:0 6px 18px rgba(31,164,92,.22)}
+#bxwc h3{margin:0 0 6px;font-size:21px;color:var(--green-dark);font-weight:800}
+#bxwc .wc-sub{font-size:14.5px;color:#4a5b51;line-height:1.55;margin-bottom:4px}
+#bxwc .wc-sub b{color:var(--green-dark)}
+#bxwc .wc-ask{margin:18px 0 12px;font-size:16px;font-weight:700;color:#243}
+#bxwc .wc-lops{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}
+#bxwc .wc-lop{border:2px solid #d7ebdf;background:#f6fbf8;border-radius:16px;padding:14px 2px 10px;cursor:pointer;transition:transform .12s,border-color .12s,background .12s;font-family:inherit}
+#bxwc .wc-lop:active{transform:scale(.94)}
+#bxwc .wc-lop .n{display:block;font-size:26px;font-weight:800;color:var(--green-dark);line-height:1}
+#bxwc .wc-lop .l{display:block;font-size:11px;color:#7b8f83;margin-top:3px;font-weight:600}
+#bxwc .wc-note{margin-top:14px;font-size:12.5px;color:#8a9a90;line-height:1.5}
+#bxwc .wc-skip{margin-top:14px;background:none;border:0;color:#5f7a6b;font-size:13.5px;text-decoration:underline;cursor:pointer;font-family:inherit;padding:6px}
+#bxwc .wc-busy{display:none;margin-top:16px;font-size:14px;color:var(--green-dark);font-weight:600}
+#bxwc.busy .wc-busy{display:block}
+#bxwc.busy .wc-lops,#bxwc.busy .wc-skip{opacity:.45;pointer-events:none}
+@media(max-width:380px){ #bxwc .wc-box{padding:20px 15px 16px} #bxwc h3{font-size:19px} #bxwc .wc-lop .n{font-size:22px} }
+</style>
+<div id="bxwc" role="dialog" aria-modal="true" aria-label="Chào mừng đến với Bút Xanh">
+  <div class="wc-box">
+    <div class="wc-art" aria-hidden="true"></div>
+    <h3>Chào thầy cô! 🌱</h3>
+    <div class="wc-sub">Bút Xanh có sẵn <b>4.245 giáo án</b> theo chuẩn<br><b>Kết nối tri thức</b> cho cả 5 khối lớp.</div>
+    <div class="wc-ask">Thầy/cô đang dạy lớp mấy?</div>
+    <div class="wc-lops">
+      <button class="wc-lop" onclick="BX_wcChonLop(1)"><span class="n">1</span><span class="l">LỚP</span></button>
+      <button class="wc-lop" onclick="BX_wcChonLop(2)"><span class="n">2</span><span class="l">LỚP</span></button>
+      <button class="wc-lop" onclick="BX_wcChonLop(3)"><span class="n">3</span><span class="l">LỚP</span></button>
+      <button class="wc-lop" onclick="BX_wcChonLop(4)"><span class="n">4</span><span class="l">LỚP</span></button>
+      <button class="wc-lop" onclick="BX_wcChonLop(5)"><span class="n">5</span><span class="l">LỚP</span></button>
+    </div>
+    <div class="wc-note">Chạm một lần là xong — Bút Xanh dựng sẵn lịch dạy cả tuần kèm giáo án. Thầy cô chỉnh lại lúc nào cũng được.</div>
+    <div class="wc-busy">⏳ Đang chuẩn bị lịch dạy cho thầy cô…</div>
+    <button class="wc-skip" onclick="BX_wcBoQua()">Tôi tự lập thời khoá biểu</button>
+  </div>
+</div>
+<script>
+(function(){
+  /* Số tiết mỗi tuần theo Chương trình GDPT 2018 (tiểu học, 2 buổi/ngày).
+     Đây là LỊCH MẪU để thầy cô chỉnh lại cho đúng trường mình. */
+  var TIET_TUAN={
+    '1':{'Tiếng Việt':12,'Toán':3,'HĐTN':3,'Tự nhiên và Xã hội':2,'GDTC':2,'Đạo đức':1,'Âm nhạc':1,'Mĩ thuật':1},
+    '2':{'Tiếng Việt':10,'Toán':5,'HĐTN':3,'Tự nhiên và Xã hội':2,'GDTC':2,'Đạo đức':1,'Âm nhạc':1,'Mĩ thuật':1},
+    '3':{'Tiếng Việt':7,'Toán':5,'Tiếng Anh':4,'HĐTN':3,'Tự nhiên và Xã hội':3,'GDTC':2,'Đạo đức':1,'Tin học':1,'Công nghệ':1,'Âm nhạc':1,'Mĩ thuật':1},
+    '4':{'Tiếng Việt':7,'Toán':5,'Tiếng Anh':4,'HĐTN':3,'Khoa học':2,'Lịch sử & Địa lí':2,'GDTC':2,'Đạo đức':1,'Tin học':1,'Công nghệ':1,'Âm nhạc':1,'Mĩ thuật':1},
+    '5':{'Tiếng Việt':7,'Toán':5,'Tiếng Anh':4,'HĐTN':3,'Khoa học':2,'Lịch sử & Địa lí':2,'GDTC':2,'Đạo đức':1,'Tin học':1,'Công nghệ':1,'Âm nhạc':1,'Mĩ thuật':1}
+  };
+  var NGAY=['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6'];
+
+  /* Dựng thời khoá biểu mẫu: rải đều từng môn ra 5 ngày để môn nhiều tiết
+     (Tiếng Việt, Toán) có mặt hầu hết các ngày — giống cách xếp thật ở trường. */
+  function dungTKB(khoi, lop){
+    var bang=TIET_TUAN[String(khoi)]||TIET_TUAN['5'];
+    var mon=Object.keys(bang).sort(function(a,b){ return bang[b]-bang[a]; });
+    var theoNgay=[[],[],[],[],[]], i=0;
+    mon.forEach(function(m){
+      for(var k=0;k<bang[m];k++){ theoNgay[i%5].push(m); i++; }
+    });
+    var slots=[];
+    theoNgay.forEach(function(ds,idx){
+      ds.forEach(function(m,j){
+        var buoi=(j<4)?'Sáng':'Chiều';
+        var tiet=(j<4)?(j+1):(j-3);
+        slots.push({day:NGAY[idx],buoi:buoi,tiet:tiet,mon:m,lop:lop});
+      });
+    });
+    return slots;
+  }
+
+  function dong(){ var o=document.getElementById('bxwc'); if(o){ o.classList.remove('on','busy'); } }
+
+  window.BX_wcBoQua=function(){
+    try{ localStorage.setItem('butxanh_wc_boqua','1'); }catch(e){}
+    dong();
+  };
+
+  window.BX_wcChonLop=function(n){
+    var o=document.getElementById('bxwc'); if(o) o.classList.add('busy');
+    var khoi=String(n), lop=khoi+'A';
+    setTimeout(function(){
+      try{
+        /* 1) Ghi hồ sơ lớp */
+        var p={}; try{ p=JSON.parse(localStorage.getItem('butxanh_profile')||'{}'); }catch(e){}
+        p.klass=lop; localStorage.setItem('butxanh_profile',JSON.stringify(p));
+        /* state là biến toàn cục của app (không nằm trên window) — gán thẳng,
+           rồi nạp lại hồ sơ để mọi nhãn "Khối/Lớp" hiện đúng lớp vừa chọn. */
+        try{ state.klass=lop; state.khoi=khoi; }catch(e){}
+        try{ if(typeof applyProfile==='function') applyProfile(p); }catch(e){}
+
+        /* 2) Lưu thời khoá biểu mẫu của khối đó */
+        var slots=dungTKB(khoi,lop);
+        localStorage.setItem('butxanh_tkb',JSON.stringify({slots:slots,updated:new Date().toISOString(),mau:true}));
+
+        /* 3) Nạp kho giáo án của khối rồi mới sinh lịch báo giảng (cần có kho mới ra tên bài) */
+        var xong=function(){
+          try{ if(typeof syncStaticLabels==='function') syncStaticLabels(); }catch(e){}
+          try{ if(typeof window.bxRenderTKBView==='function') window.bxRenderTKBView(); }catch(e){}
+          try{ if(typeof window.bxRegenCurrentWeek==='function') window.bxRegenCurrentWeek(); }catch(e){}
+          try{ if(typeof showView==='function') showView('lich'); }catch(e){}
+          dong();
+          try{
+            if(window.bxAlert) bxAlert('✓ Đã dựng sẵn lịch dạy Lớp '+khoi+' cho thầy/cô.\n\nĐây là LỊCH MẪU theo chương trình — thầy cô bấm "Sửa LBG" hoặc vào Thời khoá biểu để chỉnh cho đúng lớp mình.');
+          }catch(e){}
+        };
+        if(window.BX_ensureKho) window.BX_ensureKho(khoi).then(xong).catch(xong); else xong();
+      }catch(e){ console.warn('[Chào mừng] lỗi', e && e.message); dong(); }
+    },60);
+  };
+
+  /* Chỉ hiện với thầy cô CHƯA có thời khoá biểu và chưa bấm bỏ qua */
+  function nenHien(){
+    try{ if(localStorage.getItem('butxanh_wc_boqua')==='1') return false; }catch(e){}
+    /* Mở bằng liên kết sâu (vd butxanh.net#kho) thì tôn trọng, không chen màn chào.
+       Dùng địa chỉ GỐC vì app tự ghi #tkb lên thanh địa chỉ ngay khi khởi động. */
+    try{ var h=(typeof window.__bxHashGoc==='string')?window.__bxHashGoc:(location.hash||'');
+         if(h && h.length>1) return false; }catch(e){}
+    try{
+      var v=JSON.parse(localStorage.getItem('butxanh_tkb')||'null');
+      if(v && Array.isArray(v.slots) && v.slots.some(function(s){ return s && String(s.mon||'').trim(); })) return false;
+    }catch(e){}
+    return true;
+  }
+  function hien(){ if(!nenHien()) return; var o=document.getElementById('bxwc'); if(o) o.classList.add('on'); }
+  if(document.readyState==='complete') hien(); else window.addEventListener('load', hien);
 })();
 </script>
 </body>
