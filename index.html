@@ -6592,8 +6592,8 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
 <div id="bxwc" role="dialog" aria-modal="true" aria-label="Chào mừng đến với Bút Xanh">
   <div class="wc-box">
     <div class="wc-art" aria-hidden="true"></div>
-    <h3>Chào thầy cô! 🌱</h3>
-    <div class="wc-sub">Bút Xanh có sẵn <b>4.245 giáo án</b> theo chuẩn<br><b>Kết nối tri thức</b> cho cả 5 khối lớp.</div>
+    <h3>Xin chào thầy cô! 🌱</h3>
+    <div class="wc-sub"><b>Trọn bộ giáo án cả 5 khối lớp</b> — chuẩn Kết nối tri thức, tích hợp năng lực số, <b>cá nhân hoá theo lớp học của thầy cô</b>.</div>
     <div class="wc-ask">Thầy/cô đang dạy lớp mấy?</div>
     <div class="wc-lops">
       <button class="wc-lop" onclick="BX_wcChonLop(1)"><span class="n">1</span><span class="l">LỚP</span></button>
@@ -6602,9 +6602,9 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
       <button class="wc-lop" onclick="BX_wcChonLop(4)"><span class="n">4</span><span class="l">LỚP</span></button>
       <button class="wc-lop" onclick="BX_wcChonLop(5)"><span class="n">5</span><span class="l">LỚP</span></button>
     </div>
-    <div class="wc-note">Chạm một lần là xong — Bút Xanh dựng sẵn lịch dạy cả tuần kèm giáo án. Thầy cô chỉnh lại lúc nào cũng được.</div>
+    <div class="wc-note">Chạm một lần — Bút Xanh dựng sẵn lịch dạy cả tuần kèm giáo án, thầy cô chỉnh lại lúc nào cũng được.</div>
     <div class="wc-busy">⏳ Đang chuẩn bị lịch dạy cho thầy cô…</div>
-    <button class="wc-skip" onclick="BX_wcBoQua()">Tôi tự lập thời khoá biểu</button>
+    <button class="wc-skip" onclick="BX_wcXemKho()">📚 Xem thử kho giáo án trước</button>
   </div>
 </div>
 <script>
@@ -6645,6 +6645,14 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   window.BX_wcBoQua=function(){
     try{ localStorage.setItem('butxanh_wc_boqua','1'); }catch(e){}
     dong();
+  };
+
+  /* Thầy cô còn ngần ngại → cho xem kho giáo án trước, đừng bắt khai báo gì.
+     Xem xong muốn dùng thì bấm "Lịch dạy" ở thanh dưới để lập thời khoá biểu. */
+  window.BX_wcXemKho=function(){
+    try{ localStorage.setItem('butxanh_wc_boqua','1'); }catch(e){}
+    dong();
+    try{ if(typeof showView==='function') showView('kho'); }catch(e){}
   };
 
   window.BX_wcChonLop=function(n){
