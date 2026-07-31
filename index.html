@@ -2765,7 +2765,28 @@ function exportScheduleXls(){ _downloadBlob(`Lich_Bao_Giang_Tuan${state.week}_Lo
 
 /* ---------- 9) KHO KHBD (localStorage) ---------- */
 function loadKHBD(){ try{return JSON.parse(localStorage.getItem('butxanh_khbd')||'[]');}catch(e){return [];} }
-function persistKHBD(){ try{localStorage.setItem('butxanh_khbd',JSON.stringify(state.khbd));}catch(e){} }
+/* ===== LƯU AN TOÀN (31/7/2026) =====
+   Bộ nhớ trình duyệt có giới hạn (~5–10MB). Trước đây mọi lệnh lưu đều nuốt lỗi im lặng:
+   khi đầy, thầy cô bấm Lưu mà KHÔNG hề biết là chưa lưu được → mất công sức đã soạn.
+   Nay báo rõ một lần (không lặp lại quá 30 giây để khỏi phiền). */
+var _bxLuuLoiTs=0;
+function BX_luu(khoa, chuoi, tenDeHieu){
+  try{ localStorage.setItem(khoa, chuoi); return true; }
+  catch(e){
+    var now=Date.now();
+    if(now-_bxLuuLoiTs>30000){
+      _bxLuuLoiTs=now;
+      try{
+        if(window.bxAlert) bxAlert('⚠️ CHƯA LƯU ĐƯỢC '+(tenDeHieu||'dữ liệu')+' — bộ nhớ trình duyệt đã đầy.\n\n'+
+          'Thầy/cô hãy vào mục Kho giáo án ▸ xoá bớt tệp đã tải lên, hoặc mục Cài đặt ▸ Sao lưu dữ liệu rồi xoá bớt giáo án cũ.\n\n'+
+          'Nếu đã đăng nhập, dữ liệu cũ trên đám mây vẫn an toàn.');
+      }catch(_){}
+    }
+    console.warn('[Bút Xanh] Lưu thất bại:', khoa, e && e.message);
+    return false;
+  }
+}
+function persistKHBD(){ return BX_luu('butxanh_khbd', JSON.stringify(state.khbd), 'giáo án đã lưu'); }
 function saveCurrentKHBD(){
   const l=state.current, content=el('khbd-text').value.trim(); if(!l||!content) return;
   if(l.id){
@@ -3419,7 +3440,7 @@ const HS_SAMPLE=[
   {type:'hoa-nhap',count:1,subject:'',name:'Em N.V.A — học hòa nhập (ví dụ)',disability:'trltue',severity:'nhe',iep:'dang',notes:['Giao nhiệm vụ ngắn, chia nhỏ từng bước, làm mẫu trước.','Đánh giá theo KHGDCN, ưu tiên động viên sự tiến bộ.','Sắp xếp chỗ ngồi gần GV, ghép bạn hỗ trợ.']}
 ];
 function loadHocSinh(){ try{const v=JSON.parse(localStorage.getItem('butxanh_hocsinh')); return Array.isArray(v)?v:HS_SEED.slice();}catch(e){return HS_SEED.slice();} }
-function persistHocSinh(){ try{localStorage.setItem('butxanh_hocsinh',JSON.stringify(state.hocsinh));}catch(e){} }
+function persistHocSinh(){ return BX_luu('butxanh_hocsinh', JSON.stringify(state.hocsinh), 'danh sách học sinh'); }
 function hsTypeOf(s){ return HS_TYPES.find(x=>x.key===s.type)||null; }
 function hsTypeLabel(s){ const tp=hsTypeOf(s); return tp?tp.label:'Khác'; }
 function hsColorKey(s){ const tp=hsTypeOf(s); return s.color||(tp&&tp.color)||'blue'; }
@@ -3572,7 +3593,7 @@ let hlMon='Tất cả', hlType='Tất cả';
 function setHlMon(m){ hlMon=m; renderHocLieu(); }
 function setHlType(t){ hlType=t; renderHocLieu(); }
 function loadHocLieu(){ try{const v=JSON.parse(localStorage.getItem('butxanh_hoclieu')); return Array.isArray(v)?v:[];}catch(e){return [];} }
-function persistHocLieu(){ try{localStorage.setItem('butxanh_hoclieu',JSON.stringify(state.hoclieu));}catch(e){} }
+function persistHocLieu(){ return BX_luu('butxanh_hoclieu', JSON.stringify(state.hoclieu), 'học liệu'); }
 function allHocLieu(){
   const cus=state.hoclieu.map(h=>{ const st=hlStyleFor(h.subject||''); return {emoji:h.emoji||st.emoji,type:h.type||'Tài liệu',color:st.color,bg:st.bg,title:h.title,subject:h.subject||'',link:h.link||'',id:h.id}; });
   return cus.concat(suggestedHocLieu());
@@ -3895,7 +3916,7 @@ var SCHEDULE_SEED=JSON.parse(JSON.stringify(state.schedule));
 /* ===== LBG lưu theo TỪNG TUẦN: butxanh_lbg_weeks = { "1":[...], "6":[...] } ===== */
 function loadLBGWeeks(){ try{ var v=JSON.parse(localStorage.getItem('butxanh_lbg_weeks')); return (v&&typeof v==='object'&&!Array.isArray(v))?v:{}; }catch(e){ return {}; } }
 function saveLBGWeeks(map){
-  try{ localStorage.setItem('butxanh_lbg_weeks',JSON.stringify(map)); }catch(e){}
+  BX_luu('butxanh_lbg_weeks', JSON.stringify(map), 'lịch báo giảng');
   try{ if(window.BX_ensureKhoTheoLich) window.BX_ensureKhoTheoLich(); }catch(e){}   /* lịch có thể có lớp mới */
 }
 function getLBGForWeek(w){ var s=loadLBGWeeks()[String(w)]; return (Array.isArray(s)&&s.length)?s:null; }
@@ -6061,7 +6082,8 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   function loadTKB(){ var s=loadTKBraw(); return (s&&s.length)?s:defaultTKB(); }
   function hasUserTKB(){ var s=loadTKBraw(); return !!(s&&s.length); }
   function saveTKB(slots){
-    try{ localStorage.setItem(TKB_KEY,JSON.stringify({slots:slots,updated:new Date().toISOString()})); }catch(e){}
+    if(window.BX_luu) BX_luu(TKB_KEY, JSON.stringify({slots:slots,updated:new Date().toISOString()}), 'thời khoá biểu');
+    else { try{ localStorage.setItem(TKB_KEY,JSON.stringify({slots:slots,updated:new Date().toISOString()})); }catch(e){} }
     /* Thời khoá biểu có thể vừa thêm lớp mới → nạp kho lớp đó nếu chưa có */
     try{ if(window.BX_ensureKhoTheoLich) window.BX_ensureKhoTheoLich(); }catch(e){}
     try{ if(window.FBX&&window.FBX.flush) window.FBX.flush(); }catch(e){}   // đẩy ngay lên đám mây
