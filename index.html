@@ -467,6 +467,8 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
   .ph-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%}
   .ph-actions>.btn-xs{width:100%;justify-content:center;text-align:center;padding:10px 4px;font-size:12px;line-height:1.25;white-space:nowrap;overflow:hidden}
   .ph-actions>.btn-xs.solid{grid-column:1/-1;padding:12px 10px;font-size:14px;font-weight:700}
+  /* Màn không có nút chính (vd Thời khoá biểu: 4 nút ngang hàng) → xếp 2×2 cho cân đối */
+  .ph-actions:not(:has(.btn-xs.solid)){grid-template-columns:repeat(2,minmax(0,1fr))}
   /* Tuần · Khối · GVCN · Lớp: 4 cột trên màn hẹp thì chữ dính nhau → xếp 2 cột */
   .lbg-meta{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;font-size:13px}
   .lbg-title{font-size:14.5px;letter-spacing:0;line-height:1.35}
@@ -1110,7 +1112,9 @@ window.bxMergeKho = function(){
     .tkb-lop{width:auto;min-width:30px;max-width:64px;border:1px solid rgba(0,0,0,.07);border-radius:999px;padding:1px 9px;font-size:10.5px;text-align:center;color:#54655c;background:rgba(255,255,255,.72);font-weight:600}
     .tkb-lop::placeholder{color:#aeb9b1}
     .tkb-addtiet td{background:#fafdfb;border-bottom:none}
-    @media (max-width:760px){ .tkb-grid{font-size:11px} .tkb-grid td.tkb-cell{min-width:80px;padding:3px} .tkb-card{min-height:40px;padding:5px 3px} .tkb-msel{font-size:10.5px} .tkb-grid .tkb-buoi{width:58px;padding:6px 2px} .tkb-bz .nm{font-size:12.5px} .tkb-bz svg{width:24px;height:24px} .tkb-grid .tkb-tiet{width:32px} .tkb-grid .tkb-tiet .tn{width:24px;height:24px;font-size:11px} }
+    /* Điện thoại: cho lưới rộng đủ để đọc trọn tên môn rồi vuốt ngang — trước đây ép vừa
+       màn hình nên chữ bị cắt, dễ nhầm "Tiếng Việt" với "Tiếng Anh" (31/7/2026) */
+    @media (max-width:760px){ .tkb-grid{font-size:11px;table-layout:auto;min-width:560px} .tkb-grid td.tkb-cell{min-width:88px;padding:3px} .tkb-card{min-height:40px;padding:5px 3px} .tkb-msel{font-size:10.5px} .tkb-grid .tkb-buoi{width:58px;padding:6px 2px} .tkb-bz .nm{font-size:12.5px} .tkb-bz svg{width:24px;height:24px} .tkb-grid .tkb-tiet{width:32px} .tkb-grid .tkb-tiet .tn{width:24px;height:24px;font-size:11px} }
     </style>
     <section class="view" id="v-tkb">
       <div class="page-head">
@@ -1119,7 +1123,7 @@ window.bxMergeKho = function(){
           <input type="file" id="tkb-file" accept=".xlsx" style="display:none" onchange="bxTKBupload(this)">
           <button class="btn-xs" onclick="bxTKBdownloadTemplate()">📥 Tải mẫu TKB</button>
           <button class="btn-xs" onclick="document.getElementById('tkb-file').click()">⤴ Đưa TKB lên</button>
-          <button class="btn-xs" onclick="bxOpenExc()">📅 Nghỉ lễ / dạy bù</button>
+          <button class="btn-xs" onclick="bxOpenExc()">📅 Nghỉ lễ<span class="an-mobile"> / dạy bù</span></button>
           <button class="btn-xs" onclick="bxTKBresetDefault()">↺ Lấy từ LBG</button>
         </div>
       </div>
@@ -4016,7 +4020,21 @@ try{ applyProfile(JSON.parse(localStorage.getItem('butxanh_profile')||'{}')); }c
 syncStaticLabels();
 el('khbd-clear').onclick=function(){ if(!state.khbd.length)return; bxConfirm('Xoá tất cả KHBD đã lưu?').then(function(ok){ if(!ok)return; state.khbd=[];persistKHBD();renderKHBDList(); }); };
 renderSchedule();
-showView((location.hash||'#dashboard').slice(1));
+/* ===== MÀN HÌNH MỞ ĐẦU THEO TRẠNG THÁI (31/7/2026) =====
+   - Mở từ một liên kết có #... (vd #kho) → tôn trọng liên kết đó.
+   - Thầy cô CHƯA khai báo Thời khoá biểu → mở thẳng Thời khoá biểu; màn này đã có sẵn
+     lời mời "đây là bước thiết lập đầu tiên", tránh cảnh mở ra thấy lịch trống.
+   - Đã có Thời khoá biểu → mở thẳng Lịch báo giảng tuần hiện tại, đúng việc hằng ngày.
+   Bảng điều khiển vẫn nằm trong menu, không mất đi đâu. */
+function BX_manHinhMoDau(){
+  try{ if(location.hash && location.hash.length>1) return location.hash.slice(1); }catch(e){}
+  try{
+    var v=JSON.parse(localStorage.getItem('butxanh_tkb')||'null');
+    if(v && Array.isArray(v.slots) && v.slots.some(function(s){ return s && String(s.mon||'').trim(); })) return 'lich';
+  }catch(e){}
+  return 'tkb';
+}
+showView(BX_manHinhMoDau());
 </script>
 
 <!-- ============================================================= -->
@@ -6334,6 +6352,15 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     var t7=document.getElementById('tkb-thu7'); if(t7) t7.checked=_showThu7;
     renderGrid(); renderStatus();
   };
+  /* App có thể MỞ THẲNG vào màn Thời khoá biểu (thầy cô chưa khai báo TKB). Khi đó
+     lệnh mở màn hình chạy TRƯỚC lúc mã này nạp xong nên lưới chưa được vẽ → vẽ bù ở đây,
+     nếu không thầy cô sẽ thấy màn hình trống, không nhập được. (31/7/2026) */
+  setTimeout(function(){
+    try{
+      var _vTkb=document.getElementById('v-tkb');
+      if(_vTkb && _vTkb.classList.contains('active')) window.bxRenderTKBView();
+    }catch(e){ console.warn('[TKB] vẽ bù lưới lỗi', e && e.message); }
+  },0);
   function renderStatus(){
     var s=document.getElementById('tkb-view-status'); if(!s) return;
     if(hasUserTKB()){
