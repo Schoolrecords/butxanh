@@ -724,12 +724,6 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 .sl-week.edit.has{border-style:solid;background:var(--green-soft);border-color:#bfe7cd;color:var(--green-dark)}
 .sl-week.edit:hover{border-color:var(--green);color:var(--green-dark)}
 .sl-week-ic{font-size:13px;opacity:.85}
-.sl-linkbox{background:var(--card);border:1px solid var(--green);border-radius:14px;padding:14px;margin-bottom:14px;box-shadow:0 8px 20px rgba(31,164,92,.12)}
-.sl-linkbox-label{font-size:14px;color:var(--ink);margin-bottom:8px}
-.sl-link-input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font-size:14px;box-sizing:border-box;margin-bottom:10px}
-.sl-link-input:focus{outline:none;border-color:var(--green)}
-.sl-linkbox-actions{display:flex;gap:8px;flex-wrap:wrap}
-.sl-linkbox-hint{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5}
 @media(max-width:560px){
   .sl-subj-grid{grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:11px}
   .sl-week-grid{grid-template-columns:repeat(auto-fill,minmax(94px,1fr));gap:8px}
@@ -2431,26 +2425,16 @@ var BX_SLIDE_SRC = {
 };
 /* 2026-07-23: BỎ merge link nguồn hanhtranggiaovien (BX_SLIDE_SRC) vì bản gốc còn logo/slide quảng cáo.
    App dùng kho chungtrt ĐÃ DỌN RÁC qua BX_SLIDE_SEED (folder môn chungtrt). Bấm tuần → mở folder môn chungtrt. */
-var _slideSel = {lop:null, mon:null, edit:false, editKey:null};
+var _slideSel = {lop:null, mon:null};
 function BX_escAttr(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function BX_slideStore(){ try{ var v=JSON.parse(localStorage.getItem('butxanh_slides')||'{}'); return (v&&typeof v==='object')?v:{}; }catch(e){ return {}; } }
-function BX_slideSave(o){ try{ localStorage.setItem('butxanh_slides', JSON.stringify(o)); }catch(e){} }
 function BX_slideKey(lop,mon){ return 'L'+lop+'|'+mon; }
+/* Link bài giảng do Dự án cài sẵn (BX_SLIDE_SEED). Tính năng "giáo viên tự dán link"
+   đã gỡ ngày 31/7/2026 theo yêu cầu — giữ giao diện gọn, tránh dán nhầm link. */
 function BX_slideEntry(lop,mon){
-  var k=BX_slideKey(lop,mon), sd=BX_SLIDE_SEED[k]||{}, ov=BX_slideStore()[k]||{};
-  return { folder:(ov.folder!=null&&ov.folder!=='')?ov.folder:(sd.folder||''),
-           weeks: Object.assign({}, sd.weeks||{}, ov.weeks||{}),
-           has: (sd.has||[]).slice() };
+  var sd=BX_SLIDE_SEED[BX_slideKey(lop,mon)]||{};
+  return { folder: sd.folder||'', weeks: Object.assign({}, sd.weeks||{}), has: (sd.has||[]).slice() };
 }
 function BX_slideCount(lop,mon){ var e=BX_slideEntry(lop,mon); return (e.has||[]).length; }
-function BX_slideSetLink(lop,mon,which,url){
-  var s=BX_slideStore(), k=BX_slideKey(lop,mon), e=s[k]||{folder:'',weeks:{}};
-  e.weeks=e.weeks||{}; url=(url||'').trim();
-  if(which==='folder'){ e.folder=url; }
-  else if(url){ e.weeks[String(which)]=url; }
-  else { delete e.weeks[String(which)]; }
-  s[k]=e; BX_slideSave(s);
-}
 function renderSlides(){
   var chips = el('sl-lop-chips'); if(!chips) return;
   if(!_slideSel.lop) _slideSel.lop = String((String(state.klass).match(/[1-5]/)||['5'])[0]);
@@ -2460,22 +2444,9 @@ function renderSlides(){
   var body = el('sl-body'); if(!body) return;
   body.innerHTML = _slideSel.mon ? BX_slideDetail(_slideSel.lop,_slideSel.mon) : BX_slideSubjGrid(_slideSel.lop);
 }
-window.BX_slideLop=function(l){ _slideSel.lop=l; _slideSel.mon=null; _slideSel.editKey=null; renderSlides(); };
-window.BX_slideOpenIdx=function(i){ var subs=BX_SLIDE_SUBJECTS[_slideSel.lop]||[]; if(subs[i]){ _slideSel.mon=subs[i]; _slideSel.editKey=null; renderSlides(); } };
-window.BX_slideBack=function(){ _slideSel.mon=null; _slideSel.editKey=null; renderSlides(); };
-window.BX_slideToggleEdit=function(){ _slideSel.edit=!_slideSel.edit; _slideSel.editKey=null; renderSlides(); };
-window.BX_slideEditKey=function(k){ _slideSel.editKey=k; renderSlides(); setTimeout(function(){ var i=el('sl-link-input'); if(i) i.focus(); },30); };
-window.BX_slideCancelEdit=function(){ _slideSel.editKey=null; renderSlides(); };
-window.BX_slideSaveLink=function(){
-  var i=el('sl-link-input'), key=_slideSel.editKey; if(!i||!key) return;
-  BX_slideSetLink(_slideSel.lop,_slideSel.mon, key==='folder'?'folder':key.slice(1), i.value);
-  _slideSel.editKey=null; renderSlides();
-};
-window.BX_slideClearLink=function(){
-  var key=_slideSel.editKey; if(!key) return;
-  BX_slideSetLink(_slideSel.lop,_slideSel.mon, key==='folder'?'folder':key.slice(1), '');
-  _slideSel.editKey=null; renderSlides();
-};
+window.BX_slideLop=function(l){ _slideSel.lop=l; _slideSel.mon=null; renderSlides(); };
+window.BX_slideOpenIdx=function(i){ var subs=BX_SLIDE_SUBJECTS[_slideSel.lop]||[]; if(subs[i]){ _slideSel.mon=subs[i]; renderSlides(); } };
+window.BX_slideBack=function(){ _slideSel.mon=null; renderSlides(); };
 function BX_slideSubjGrid(lop){
   var subs = BX_SLIDE_SUBJECTS[lop]||[];
   var cards = subs.map(function(mon,i){
@@ -2509,18 +2480,6 @@ function BX_slideDetail(lop,mon){
   }
   h+='<div class="sl-week-grid">'+g+'</div>';
   return h;
-}
-function BX_slideEditPanel(label,cur){
-  return '<div class="sl-linkbox">'+
-    '<div class="sl-linkbox-label">Dán link Google Drive cho <b>'+label+'</b>:</div>'+
-    '<input id="sl-link-input" class="sl-link-input" placeholder="https://drive.google.com/…" value="'+BX_escAttr(cur)+'">'+
-    '<div class="sl-linkbox-actions">'+
-      '<button class="btn-xs solid" onclick="BX_slideSaveLink()">Lưu link</button>'+
-      (cur?'<button class="btn-xs" onclick="BX_slideClearLink()">Xóa link</button>':'')+
-      '<button class="btn-xs" onclick="BX_slideCancelEdit()">Hủy</button>'+
-    '</div>'+
-    '<div class="sl-linkbox-hint">Mẹo lấy link: trên Google Drive, bấm chuột phải vào thư mục/tệp → <b>Chia sẻ</b> → chọn <b>"Bất kỳ ai có đường liên kết"</b> → <b>Sao chép liên kết</b>, rồi dán vào ô trên.</div>'+
-  '</div>';
 }
 
 /* ---------- 8) LỊCH BÁO GIẢNG (đầy đủ) ---------- */
