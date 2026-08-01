@@ -1403,6 +1403,7 @@ window.bxMergeKho = function(){
       <div class="pb-act">
         <button class="btn-xs" id="kho-prev-edit" style="display:none" onclick="KHBD_edit()">✏️ Sửa</button>
         <button class="btn-xs solid" id="kho-prev-saveedit" style="display:none" onclick="KHBD_saveEdit()">💾 Lưu</button>
+        <button class="btn-xs" id="kho-prev-restore" style="display:none" onclick="KHBD_restore()" title="Xoá bản sửa của bạn, quay về bản gốc trong Kho">↺ Bản gốc</button>
         <button class="btn-xs solid" id="kho-prev-dl">⬇ Tải tiết này (Word)</button>
         <button class="btn-xs pb-close" onclick="closeModal('kho-prev-overlay')">✕ Đóng</button>
       </div>
@@ -3874,7 +3875,7 @@ el('set-save').onclick=function(){
 };
 
 /* ---------- 16b) SAO LƯU / KHÔI PHỤC DỮ LIỆU (JSON) ---------- */
-const BACKUP_KEYS=['butxanh_profile','butxanh_schedule','butxanh_tkb','butxanh_tkb_exc','butxanh_khbd','butxanh_hocsinh','butxanh_hoclieu','butxanh_khofiles','butxanh_bank'];
+const BACKUP_KEYS=['butxanh_profile','butxanh_schedule','butxanh_tkb','butxanh_tkb_exc','butxanh_khbd','butxanh_khbd_edits','butxanh_hocsinh','butxanh_hoclieu','butxanh_khofiles','butxanh_bank'];
 function buildBackupPayload(){
   const data={}; BACKUP_KEYS.forEach(k=>{ const v=localStorage.getItem(k); if(v!==null) data[k]=v; });
   return {app:'butxanh', version:1, exportedAt:new Date().toISOString(), data};
@@ -5594,9 +5595,10 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
     if(b){ b.innerHTML=khoLessonToHtml(L,rowOf(L)); b.scrollTop=0; }
     var sc=document.querySelector('#kho-prev-overlay .kho-prev-scroll'); if(sc) sc.scrollTop=0;
     var dl=document.getElementById('kho-prev-dl'); if(dl){ dl.textContent='⬇ Tải tiết này (Word)'; dl.onclick=function(){ KHO_downloadTiet(key); }; }
-    /* chế độ Kho: ẩn nút Sửa/Lưu (chỉ KHBD mới cho sửa, không đụng bản gốc) */
+    /* chế độ Kho: ẩn nút Sửa/Lưu/Bản gốc (chỉ KHBD mới cho sửa, không đụng bản gốc) */
     var be=document.getElementById('kho-prev-edit'), bs=document.getElementById('kho-prev-saveedit');
     if(be) be.style.display='none'; if(bs) bs.style.display='none';
+    var br=document.getElementById('kho-prev-restore'); if(br) br.style.display='none';
     var bd=document.getElementById('kho-prev-body'); if(bd){ bd.contentEditable='false'; bd.classList.remove('editing'); }
     var ov=document.getElementById('kho-prev-overlay'); if(ov) ov.classList.add('show');
   };
@@ -5714,6 +5716,7 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
     if(b){b.innerHTML=(edits[key]!=null)?edits[key]:window.khoLessonToHtml(L,row);b.contentEditable='false';b.classList.remove('editing');b.scrollTop=0;}
     var be=document.getElementById('kho-prev-edit'),bs=document.getElementById('kho-prev-saveedit');
     if(be)be.style.display=''; if(bs)bs.style.display='none';
+    var br=document.getElementById('kho-prev-restore'); if(br)br.style.display=(edits[key]!=null)?'':'none';
     var dl=document.getElementById('kho-prev-dl');
     if(dl){dl.textContent='⬇ Tải tiết này (Word)';dl.onclick=function(){window.dlElImg(b,'KHBD_'+safeName(L.mon)+'_Tuan'+(L.tuan||row.tuan||'')+'_Lop'+(row.lop||'')+'.docx');};}
     var sc=document.querySelector('#kho-prev-overlay .kho-prev-scroll'); if(sc)sc.scrollTop=0;
@@ -5723,7 +5726,21 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
     var be=document.getElementById('kho-prev-edit'),bs=document.getElementById('kho-prev-saveedit');if(be)be.style.display='none';if(bs)bs.style.display='';};
   window.KHBD_saveEdit=function(){var b=document.getElementById('kho-prev-body');if(!b||!_cur)return;saveEditHtml(_cur.key,b.innerHTML);b.contentEditable='false';b.classList.remove('editing');
     var be=document.getElementById('kho-prev-edit'),bs=document.getElementById('kho-prev-saveedit');if(bs)bs.style.display='none';if(be)be.style.display='';
+    var br=document.getElementById('kho-prev-restore');if(br)br.style.display='';
     _bxToast('✅ Đã lưu bản của bạn (hiển thị & tải Word đều theo bản đã sửa).');};
+  window.KHBD_restore=function(){
+    if(!_cur)return;
+    bxConfirm('Xoá bản sửa của thầy/cô và quay về BẢN GỐC trong Kho?\n(Bản gốc luôn được giữ nguyên — thao tác này chỉ xoá phần đã chỉnh của riêng thầy/cô.)',{okText:'Về bản gốc',cancelText:'Giữ bản sửa'}).then(function(ok){
+      if(!ok)return;
+      var m=loadEdits(); delete m[_cur.key];
+      try{localStorage.setItem('butxanh_khbd_edits',JSON.stringify(m));}catch(e){}
+      var b=document.getElementById('kho-prev-body');
+      if(b){b.innerHTML=window.khoLessonToHtml(_cur.L,_cur.row);b.contentEditable='false';b.classList.remove('editing');b.scrollTop=0;}
+      var be=document.getElementById('kho-prev-edit'),bs=document.getElementById('kho-prev-saveedit'),br=document.getElementById('kho-prev-restore');
+      if(be)be.style.display='';if(bs)bs.style.display='none';if(br)br.style.display='none';
+      _bxToast('↺ Đã quay về bản gốc trong Kho.');
+    });
+  };
   function _bxToast(msg){var d=document.createElement('div');d.textContent=msg;d.style.cssText='position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:#1f6b3a;color:#fff;padding:11px 18px;border-radius:10px;z-index:9999;box-shadow:0 6px 20px rgba(0,0,0,.3);font-size:14px';document.body.appendChild(d);setTimeout(function(){d.style.transition='opacity .4s';d.style.opacity='0';setTimeout(function(){d.remove();},450);},2200);}
 })();
 </script>
@@ -5778,7 +5795,7 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     appId:"1:288012765675:web:a07f84a69f16a17352b1ae"
   };
   /* Khóa đồng bộ — phần chữ (bỏ butxanh_khofiles vì tệp Word nặng, để v2 dùng Storage) */
-  var KEYS=['butxanh_profile','butxanh_tkb','butxanh_tkb_exc','butxanh_lbg_weeks','butxanh_lbg_meta','butxanh_khbd','butxanh_hocsinh','butxanh_hoclieu','butxanh_bank'];
+  var KEYS=['butxanh_profile','butxanh_tkb','butxanh_tkb_exc','butxanh_lbg_weeks','butxanh_lbg_meta','butxanh_khbd','butxanh_khbd_edits','butxanh_hocsinh','butxanh_hoclieu','butxanh_bank'];
   var auth=null, db=null, user=null, lastPushed=null, loopT=null, busy=false, seeded=false, reloadT=null, curRef=null, lastVals={};
   var dirty=false, hadUser=false, intentionalLogout=false;   // dirty: có thay đổi chưa đẩy lên đám mây
   /* ===== TIẾT KIỆM BĂNG THÔNG & CHỐNG ĐỒNG BỘ VÒNG TRÒN (31/7/2026) =====
