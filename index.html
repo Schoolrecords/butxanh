@@ -658,6 +658,19 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
   .a4page{padding:26px 20px;font-size:14px}
   .kho-prev-bar h3{font-size:13px}
   .kho-prev-bar .pb-act .btn-xs{padding:6px 9px;font-size:11px}
+  /* Đọc giáo án toàn màn hình: ẩn thanh tab đáy cho rộng chỗ (nút ✕ Đóng để thoát) */
+  body:has(#kho-prev-overlay.show) #mnav{display:none}
+  /* Bảng GV–HS 2 cột quá hẹp trên điện thoại → xếp chồng từng hoạt động (chỉ màn xem; xuất Word giữ nguyên 2 cột) */
+  #kho-prev-overlay .a4page table.hd thead{display:none}
+  #kho-prev-overlay .a4page table.hd,#kho-prev-overlay .a4page table.hd tbody,#kho-prev-overlay .a4page table.hd tr,#kho-prev-overlay .a4page table.hd td{display:block;width:100%!important}
+  #kho-prev-overlay .a4page table.hd{border:none}
+  #kho-prev-overlay .a4page table.hd tr{border:1px solid #2b2b2b;margin:0 0 10px;border-radius:6px;overflow:hidden}
+  #kho-prev-overlay .a4page table.hd td{border:none;padding:8px 10px}
+  #kho-prev-overlay .a4page table.hd td:before{display:block;font-weight:800;font-size:11px;letter-spacing:.4px;color:#0f5a34;margin-bottom:4px;font-family:system-ui,sans-serif}
+  #kho-prev-overlay .a4page table.hd td.gv:before{content:'👩‍🏫 HOẠT ĐỘNG CỦA GV'}
+  #kho-prev-overlay .a4page table.hd td:not(.gv):before{content:'🧑‍🎓 HOẠT ĐỘNG CỦA HS'}
+  #kho-prev-overlay .a4page table.hd td:not(.gv){background:#f2f9f4;border-top:1px dashed #9fb0a4}
+  #kho-prev-overlay .a4page table.hd td:not(.gv):empty{display:none}
 }
 /* Bảng "Sửa lịch báo giảng" — giống lịch chính, có nút sửa từng dòng */
 .se-table{width:100%;border-collapse:collapse;font-size:13px;min-width:760px}
