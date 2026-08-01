@@ -5730,9 +5730,17 @@ window.BX_confirm=function(opts,onOk,onCancel){
       '<button class="bxc-btn ok" id="bxc-ok">'+(opts.okText||'OK')+'</button>'+
     '</div></div></div>';
   ov.classList.add('show');
-  function close(){ ov.classList.remove('show'); ov.innerHTML=''; }
+  var timers=[];
+  function close(){ timers.forEach(clearTimeout); timers.forEach(clearInterval); timers=[]; ov.classList.remove('show'); ov.innerHTML=''; }
   var okb=document.getElementById('bxc-ok'); if(okb){ okb.focus(); okb.onclick=function(){ close(); if(onOk)onOk(); }; }
   var cb=document.getElementById('bxc-cancel'); if(cb){ cb.onclick=function(){ close(); if(onCancel)onCancel(); }; }
+  /* Tự đóng (chỉ dùng cho THÔNG BÁO 1 nút, không dùng cho hộp xác nhận) */
+  if(single && opts.autoClose>0 && okb){
+    var okText=okb.textContent, conLai=Math.ceil(opts.autoClose/1000);
+    okb.textContent=okText+' ('+conLai+')';
+    timers.push(setInterval(function(){ conLai--; if(conLai>0) okb.textContent=okText+' ('+conLai+')'; },1000));
+    timers.push(setTimeout(function(){ close(); if(onOk)onOk(); },opts.autoClose));
+  }
 };
 /* Chuyển văn bản thường thành HTML an toàn (giữ xuống dòng) */
 function bxEsc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
@@ -6686,7 +6694,7 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
           try{ if(typeof showView==='function') showView('lich'); }catch(e){}
           dong();
           try{
-            if(window.bxAlert) bxAlert('✓ Đã dựng sẵn lịch dạy Lớp '+khoi+' cho thầy/cô.\n\nĐây là LỊCH MẪU theo chương trình — thầy cô bấm "Sửa LBG" hoặc vào Thời khoá biểu để chỉnh cho đúng lớp mình.');
+            if(window.bxAlert) bxAlert('✓ Đã dựng sẵn lịch dạy Lớp '+khoi+' cho thầy/cô.\n\nĐây là LỊCH MẪU theo chương trình — thầy cô bấm "Sửa LBG" hoặc vào Thời khoá biểu để chỉnh cho đúng lớp mình.',{autoClose:8000});
           }catch(e){}
         };
         if(window.BX_ensureKho) window.BX_ensureKho(khoi).then(xong).catch(xong); else xong();
