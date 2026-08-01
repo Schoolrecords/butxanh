@@ -581,8 +581,8 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
   #mnav .mi .dot2{position:absolute;top:1px;left:50%;margin-left:6px;width:9px;height:9px;border-radius:50%;background:var(--red);border:2px solid #fff}
   /* nút linh vật nổi ở giữa */
   #mnav .mc{flex:0 0 auto;transform:translateY(-18px)}
-  #mnav .mc .mc-art{display:block;width:58px;height:58px;border-radius:50%;background:var(--mascot) center/76% no-repeat,linear-gradient(135deg,#46d585,#1fa45c);box-shadow:0 10px 22px rgba(31,164,92,.42);border:3px solid #fff;transition:transform .12s}
-  #mnav .mc .mc-lbl{display:block;text-align:center;font-size:10px;color:var(--green-dark);font-weight:800;margin-top:3px}
+  #mnav .mc .mc-art{display:block;width:44px;height:44px;border-radius:50%;background:var(--mascot) center/76% no-repeat,linear-gradient(135deg,#46d585,#1fa45c);box-shadow:0 4px 10px rgba(31,164,92,.32);border:2px solid #fff;transition:transform .12s}
+  #mnav .mc .mc-lbl{display:none}
   #mnav .mc:active .mc-art{transform:scale(.93)}
   /* menu đầy đủ = bảng trượt lên (mở bằng "Thêm") */
   #msheet-bd{display:block;position:fixed;inset:0;z-index:1190;background:rgba(20,45,33,.45);opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s}
@@ -3860,9 +3860,13 @@ function syncStaticLabels(){
   const w=state.week,l=state.klass;
   [['dash-week1',w],['dash-week2',w],['tk-week',w],['khbd-week',w],['khbd-week-btn',w],['tk-lop',l]].forEach(p=>{const e=el(p[0]); if(e)e.textContent=p[1];});
   const full=(state.gvcn||'').trim(), short=full.split(/\s+/).slice(-1)[0]||full;
-  const xg=(full==='Bút Xanh')?'':(state.xung||'Cô').trim();   // mặc định thương hiệu "Bút Xanh" -> không thêm "Cô/Thầy"
-  const g=el('hdr-greet'); if(g&&full) g.textContent=(xg?xg+' ':'')+full;
-  const pn=el('hdr-pname'); if(pn&&full) pn.textContent=(xg?xg+' ':'')+short;
+  const brand=(!full||full==='Bút Xanh');                      // chưa khai tên thật -> chào "thầy/cô", không tự chào chính app
+  const xg=brand?'':(state.xung||'Cô').trim();
+  const g=el('hdr-greet'); if(g) g.textContent=brand?'thầy/cô':((xg?xg+' ':'')+full);
+  const pn=el('hdr-pname'); if(pn) pn.textContent=brand?'thầy/cô':((xg?xg+' ':'')+short);
+  const add=el('hdr-addname');
+  if(brand){ if(!add&&g) g.insertAdjacentHTML('afterend',' <a id="hdr-addname" href="#" onclick="showView(\'caidat\');return false" title="Khai tên để Bút Xanh xưng hô đúng" style="font-size:12px;font-weight:600;color:var(--green);text-decoration:none;white-space:nowrap">✎ thêm tên</a>'); }
+  else if(add){ add.remove(); }
 }
 el('set-save').onclick=function(){
   const p={xung:el('set-xung').value,name:el('set-name').value,grade:el('set-grade').value,school:el('set-school').value,year:el('set-year').value,team:el('set-team').value,
@@ -6762,7 +6766,18 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     }catch(e){}
     return true;
   }
-  function hien(){ if(!nenHien()) return; var o=document.getElementById('bxwc'); if(o) o.classList.add('on'); }
+  function hien(){
+    if(!nenHien()) return;
+    var o=document.getElementById('bxwc'); if(!o) return;
+    /* Chờ màn khởi động (splash) mờ hẳn rồi mới hiện hộp chọn lớp — tránh chữ/linh vật đè lên nút */
+    var daHien=false;
+    var show=function(){ if(daHien) return; daHien=true; o.classList.add('on'); };
+    var sp=document.getElementById('splash');
+    if(sp && getComputedStyle(sp).visibility!=='hidden'){
+      sp.addEventListener('animationend', function(e){ if(e.target===sp) show(); });
+      setTimeout(show, 3200); // dự phòng nếu animation không chạy
+    } else show();
+  }
   if(document.readyState==='complete') hien(); else window.addEventListener('load', hien);
 })();
 </script>
