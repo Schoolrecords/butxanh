@@ -6073,7 +6073,7 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
       </div>
     </div>
     <div class="modal-foot">
-      <button class="btn solid" onclick="closeModal('tkbexc-overlay'); if(typeof showView==='function'){ showView('lich'); }">✓ Xong — xem Lịch báo giảng</button>
+      <button class="btn solid" onclick="bxExcDone()">✓ Xong — xem Lịch báo giảng</button>
     </div>
   </div>
 </div>
@@ -6330,6 +6330,7 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
       return;
     }
     var _doGen=function(){
+      _excDirty=false;
       var sch=genForWeek(w);
       state.schedule=sch;
       try{ if(typeof fillScheduleDates==='function') fillScheduleDates(); }catch(e){}
@@ -6563,9 +6564,25 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     var mk=document.getElementById('exc-makeup');
     if(mk) mk.innerHTML=x.makeup.length?x.makeup.map(function(e,i){return '<div class="exc-item">↩️ <b>Tuần '+e.tuan+' · '+e.day+' '+(e.buoi||'')+' tiết '+(e.tiet||'')+'</b> · '+_esc(e.mon)+' '+_esc(e.lop||'')+(e.note?(' — '+_esc(e.note)):'')+'<button class="btn-xs" onclick="bxExcDel(&quot;makeup&quot;,'+i+')">Xoá</button></div>';}).join(''):'<div class="exc-empty">Chưa khai báo.</div>';
   }
+  var _excDirty=false; // có thêm/xoá khai báo trong lần mở này → nhắc tạo lại LBG nếu tuần đã có lịch
   function _excAfterChange(){
+    _excDirty=true;
     try{ var w=parseInt(state.week,10)||1; var saved=(typeof getLBGForWeek==='function')?getLBGForWeek(w):null; if(typeof BX_setWeek==='function' && !(saved&&saved.length)) BX_setWeek(w); }catch(e){}
   }
+  window.bxExcDone=function(){
+    closeModal('tkbexc-overlay');
+    if(typeof showView==='function') showView('lich');
+    if(_excDirty){
+      _excDirty=false;
+      try{
+        var w=parseInt(state.week,10)||1;
+        var saved=(typeof getLBGForWeek==='function')?getLBGForWeek(w):null;
+        if(saved&&saved.length&&window.bxAlert){
+          bxAlert('💡 Tuần '+w+' đã có Lịch báo giảng tạo từ trước.\nThầy cô bấm "✨ Tạo LBG tuần này" (chọn Ghi đè) để áp dụng nghỉ/dạy bù vừa khai báo.\nCác tuần sau đã tạo lịch rồi cũng nên tạo lại nếu bị ảnh hưởng.',{autoClose:12000});
+        }
+      }catch(e){}
+    }
+  };
   window.bxExcDel=function(kind,i){ var x=loadExc(); x[kind].splice(i,1); saveExc(x); renderExc(); _excAfterChange(); };
   window.bxExcAddWeekOff=function(){ var x=loadExc(); x.weekOff.push({tuan:parseInt(document.getElementById('exc-wo-week').value,10)||1,note:document.getElementById('exc-wo-note').value.trim()}); saveExc(x); document.getElementById('exc-wo-note').value=''; renderExc(); _excAfterChange(); };
   window.bxExcAddDayOff=function(){ var x=loadExc(); x.dayOff.push({tuan:parseInt(document.getElementById('exc-do-week').value,10)||1,day:document.getElementById('exc-do-day').value,note:document.getElementById('exc-do-note').value.trim()}); saveExc(x); document.getElementById('exc-do-note').value=''; renderExc(); _excAfterChange(); };
