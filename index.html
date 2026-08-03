@@ -6413,17 +6413,44 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     }
   }
 
+  /* Đăng nhập: popup là luồng chính (không phụ thuộc cookie bên thứ ba).
+     Chuyển trang (redirect) qua but-xanh.firebaseapp.com dễ mất phiên khi trình duyệt
+     chặn cookie → chỉ là đường cùng, và phải được thầy cô đồng ý trước. */
+  var popupBlocked=0;
+  function loginBusy(on){
+    var b=box&&box.querySelector('.fb-btn'); if(!b) return;
+    if(on){ b.disabled=true; b.style.opacity='.7'; b.innerHTML='⏳ Đang đăng nhập…'; }
+    else renderUI();
+  }
   window.FBX={
     login:function(){
       if(!auth) return;
       var p=new firebase.auth.GoogleAuthProvider();
+      loginBusy(true);
       auth.signInWithPopup(p).catch(function(e){
+        loginBusy(false);
         console.warn('[ĐB] đăng nhập lỗi',e);
-        if(e&&(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment'||e.code==='auth/cancelled-popup-request')){
-          try{ auth.signInWithRedirect(p); }catch(_){ bxAlert('Không mở được cửa sổ đăng nhập. Thầy cô thử lại hoặc cho phép pop-up.'); }
-        } else if(e&&e.code==='auth/unauthorized-domain'){
+        var code=(e&&e.code)||'';
+        /* Thầy cô tự đóng cửa sổ / bấm nút hai lần — không phải lỗi, không làm phiền */
+        if(code==='auth/popup-closed-by-user'||code==='auth/cancelled-popup-request') return;
+        if(code==='auth/popup-blocked'||code==='auth/operation-not-supported-in-this-environment'){
+          popupBlocked++;
+          if(popupBlocked<2){
+            BX_confirm({title:'Trình duyệt chặn cửa sổ đăng nhập',
+              html:'Trình duyệt vừa chặn cửa sổ đăng nhập Google của Bút Xanh.<br><br>👉 Thầy cô bấm biểu tượng <b>cửa sổ bật lên bị chặn</b> (thường nằm cuối thanh địa chỉ), chọn <b>«Luôn cho phép»</b> cho trang này, rồi bấm <b>Thử lại</b>.',
+              okText:'Thử lại',cancelText:'Để sau'}, function(){ FBX.login(); });
+          } else {
+            BX_confirm({title:'Vẫn chưa mở được cửa sổ',
+              html:'Bút Xanh có thể đăng nhập bằng cách <b>chuyển hẳn sang trang Google</b> rồi quay lại.<br><br>Lưu ý: nếu trình duyệt chặn cookie thì cách này có thể không nhận được phiên — khi đó thầy cô gỡ chặn cửa sổ bật lên hoặc dùng Chrome/Edge.',
+              okText:'Chuyển sang trang Google',cancelText:'Để sau'}, function(){
+                try{ auth.signInWithRedirect(p); }catch(_){ bxAlert('Không chuyển được sang trang đăng nhập Google. Thầy cô thử lại sau ạ.'); }
+              });
+          }
+        } else if(code==='auth/unauthorized-domain'){
           bxAlert('Tên miền chưa được cho phép đăng nhập. (Mở bằng file:// sẽ không đăng nhập được — cần localhost hoặc trang web chính thức.)');
-        } else { bxAlert('Đăng nhập chưa được — '+((e&&e.message)||'')); }
+        } else {
+          bxAlert('Đăng nhập chưa được — '+((e&&e.message)||code||'lỗi không rõ')+'\n\n💡 Nếu thầy cô dùng tài khoản Google của ngành (đuôi .edu.vn), có thể đơn vị đang chặn ứng dụng ngoài — thầy cô thử lại bằng Gmail cá nhân.');
+        }
       });
     },
     logout:function(){ intentionalLogout=true; if(auth) auth.signOut(); var m=document.getElementById('fb-menu'); if(m)m.style.display='none'; },
@@ -6453,7 +6480,13 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
       firebase.initializeApp(CFG);
       auth=firebase.auth(); db=firebase.database();
       try{ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(){}); }catch(e){}   // giữ đăng nhập bền
-      try{ auth.getRedirectResult().catch(function(){}); }catch(e){}
+      /* Quay về sau đăng nhập kiểu chuyển trang: có lỗi thì phải nói ra,
+         không nuốt im lặng — trước đây GV treo ở bước này mà không ai biết vì sao */
+      try{ auth.getRedirectResult().catch(function(e){
+        console.warn('[ĐB] lỗi nhận phiên sau chuyển trang',e);
+        var msg=(e&&e.message)||(e&&e.code)||'';
+        if(msg) bxAlert('Đăng nhập bằng cách chuyển trang chưa thành công — '+msg+'\n\nThầy cô bấm "Đăng nhập" thử lại; nếu vẫn không được, gỡ chặn cửa sổ bật lên hoặc dùng Gmail cá nhân.');
+      }); }catch(e){}
       auth.onAuthStateChanged(onAuth);
       // Cảnh báo nếu đóng/chuyển trang khi còn thay đổi chưa kịp đẩy lên đám mây
       window.addEventListener('beforeunload', function(e){ if(user && (busy||dirty)){ e.preventDefault(); e.returnValue=''; return ''; } });
@@ -7144,14 +7177,48 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
           try{ if(typeof window.bxRegenCurrentWeek==='function') window.bxRegenCurrentWeek(); }catch(e){}
           try{ if(typeof showView==='function') showView('lich'); }catch(e){}
           dong();
-          try{
-            if(window.bxAlert) bxAlert('✓ Đã dựng sẵn lịch dạy Lớp '+khoi+' cho thầy/cô.\n\nĐây là LỊCH MẪU theo chương trình — thầy cô bấm "Sửa LBG" hoặc vào Thời khoá biểu để chỉnh cho đúng lớp mình.',{autoClose:8000});
-          }catch(e){}
+          try{ hoiTen(khoi); }catch(e){}
         };
         if(window.BX_ensureKho) window.BX_ensureKho(khoi).then(xong).catch(xong); else xong();
       }catch(e){ console.warn('[Chào mừng] lỗi', e && e.message); dong(); }
     },60);
   };
+
+  /* Sau khi chọn lớp: mời khai tên (bỏ qua được) để lịch báo giảng, hồ sơ in ra
+     mang tên thật thay vì "Bút Xanh". Hộp thoại BX_confirm dọn sạch nội dung
+     TRƯỚC khi gọi onOk nên phải hứng giá trị ô nhập qua sự kiện input/change. */
+  function hoiTen(khoi){
+    var p={}; try{ p=JSON.parse(localStorage.getItem('butxanh_profile')||'{}'); }catch(e){}
+    var daCoTen=p.name&&p.name.trim()&&p.name.trim()!=='Bút Xanh';
+    if(daCoTen||typeof window.BX_confirm!=='function'){
+      if(window.bxAlert) bxAlert('✓ Đã dựng sẵn lịch dạy Lớp '+khoi+' cho thầy/cô.\n\nĐây là LỊCH MẪU theo chương trình — thầy cô bấm "Sửa LBG" hoặc vào Thời khoá biểu để chỉnh cho đúng lớp mình.',{autoClose:8000});
+      return;
+    }
+    var xung='Cô', ten='';
+    BX_confirm({
+      title:'✓ Đã dựng xong lịch dạy Lớp '+khoi,
+      html:'Đây là <b>lịch mẫu theo chương trình</b> — thầy cô chỉnh lại trong Thời khoá biểu lúc nào cũng được.'+
+        '<br><br><b>Thầy/cô tên là gì</b> để Bút Xanh xưng hô đúng và ghi tên thật vào lịch báo giảng, hồ sơ in ra?'+
+        '<div style="display:flex;gap:8px;margin-top:10px">'+
+          '<select id="bxwc-xung" style="border:1px solid #d7ebdf;border-radius:10px;padding:9px 8px;font:inherit;background:#f6fbf8"><option>Cô</option><option>Thầy</option></select>'+
+          '<input id="bxwc-ten" placeholder="Ví dụ: Nguyễn Thị Mỹ" autocomplete="name" style="flex:1;min-width:0;border:1px solid #d7ebdf;border-radius:10px;padding:9px 11px;font:inherit">'+
+        '</div>',
+      okText:'Lưu tên', cancelText:'Để sau'
+    }, function(){
+      var t=(ten||'').trim();
+      if(!t) return;
+      p.name=t; p.xung=xung;
+      try{ localStorage.setItem('butxanh_profile',JSON.stringify(p)); }catch(e){}
+      try{ if(typeof applyProfile==='function') applyProfile(p); }catch(e){}
+    });
+    var inp=document.getElementById('bxwc-ten'), sel=document.getElementById('bxwc-xung'), okb=document.getElementById('bxc-ok');
+    if(sel) sel.addEventListener('change',function(){ xung=sel.value; });
+    if(inp){
+      inp.addEventListener('input',function(){ ten=inp.value; });
+      inp.addEventListener('keydown',function(ev){ if(ev.key==='Enter'&&okb) okb.click(); });
+      setTimeout(function(){ try{ inp.focus(); }catch(e){} },80);
+    }
+  }
 
   /* Chỉ hiện với thầy cô CHƯA có thời khoá biểu và chưa bấm bỏ qua */
   function nenHien(){
