@@ -486,7 +486,10 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
    Để mặc định là bản đầy đủ — nếu JS lỗi thì màn vẫn tự tan, không kẹt. */
 /* Bản đầy đủ CHỜ thầy cô bấm, không tự tan. Vẫn để một lưới an toàn 60 giây:
    nếu JavaScript hỏng thì màn chào tự tan chứ không kẹt lại che mất app. */
-#splash{position:fixed;inset:0;z-index:9999;overflow-y:auto;overflow-x:hidden;background:radial-gradient(circle at 50% 38%,#f4fbf7 0%,#e3f6ec 55%,#d2efdf 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:18px 14px;animation:splashHide .8s ease 60s forwards}
+/* justify-content:flex-start + margin:auto ở khối con — cách này vừa căn giữa khi
+   nội dung ngắn, vừa KHÔNG cắt mất phần đầu/cuối khi nội dung dài hơn màn hình
+   (dùng justify-content:center sẽ cắt cụt đầu linh vật và dòng chữ cuối). */
+#splash{position:fixed;inset:0;z-index:9999;overflow-y:auto;overflow-x:hidden;background:radial-gradient(circle at 50% 38%,#f4fbf7 0%,#e3f6ec 55%,#d2efdf 100%);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:16px;padding:18px 14px;animation:splashHide .8s ease 60s forwards}
 #splash.quick{overflow:hidden;animation:splashHide .6s ease 1.2s forwards}
 /* Tạm ẩn khối giới thiệu cho tới khi CSS của nó (nằm cuối trang) được nạp —
    tránh loé biểu tượng SVG dạng thô. Dòng cởi khoá ở cuối trang. */
@@ -498,8 +501,13 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
    CSS tạo hình cho khối này nằm ở cuối trang, nên phía trên đã tạm ẩn nó đi;
    nếu không, mấy biểu tượng SVG sẽ loé ra dạng thô (đen, phình to) lúc trang
    mới tải, trước khi kịp có CSS. */
-#splash .sp-intro{position:relative;z-index:3;width:100%;max-width:1000px;margin:auto;visibility:visible}
-#splash .sp-intro .bx-intro{box-shadow:0 18px 50px rgba(15,90,55,.13)}
+#splash .sp-intro{position:relative;z-index:3;width:100%;max-width:1180px;margin:auto;visibility:visible}
+/* Trong màn chào KHÔNG đóng khung — bỏ nền/viền/bo góc để nội dung trải rộng
+   trên nền màn chào, thay vì bị nhốt trong một ô vuông giữa màn hình. */
+#splash .sp-intro .bx-intro{background:none;border:none;box-shadow:none;border-radius:0;padding:6px 12px 10px}
+#splash .sp-intro .bxi-desc,#splash .sp-intro .bxi-punch{max-width:900px}
+#splash .sp-intro .bxi-feats{max-width:1080px}
+#splash .sp-intro .bxi-bens{max-width:860px}
 /* --- Phần chọn lớp / vào thẳng, gộp ngay trong màn chào --- */
 #splash .sp-chon,#splash .sp-vao{margin-top:16px}
 #splash:not(.cu) .sp-vao{display:none}          /* người mới → hiện hàng chọn lớp */
@@ -517,11 +525,43 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 #splash .sp-busy{display:none;margin-top:16px;font-size:15px;font-weight:700;color:var(--green-dark)}
 #splash.dangdung .sp-chon,#splash.dangdung .sp-vao{display:none}
 #splash.dangdung .sp-busy{display:block}
+/* ===== ĐIỆN THOẠI: nén lại để thầy cô thấy được gần hết mà ít phải cuộn =====
+   Trước đây 5 thẻ tính năng xếp dọc, mỗi thẻ một khối cao ~190px → riêng chúng
+   đã chiếm gần cả màn hình. Nay đổi thành 5 dòng ngang gọn (biểu tượng bên trái,
+   chữ bên phải), tiết kiệm khoảng 700px chiều cao. */
+@media(max-width:768px){
+  #splash{padding:12px 10px;gap:8px}
+  #splash .sp-intro .bx-intro{padding:2px 4px 8px}
+  #splash .bxi-mascot{width:62px;height:62px;margin-bottom:2px}
+  #splash .bxi-hi{font-size:19px;margin:0 0 7px}
+  #splash .bxi-sprig{font-size:15px}
+  #splash .bxi-desc{font-size:13px;line-height:1.6}
+  #splash .bxi-punch{margin-top:9px;font-size:13.5px}
+  #splash .bxi-invite{font-size:15px;margin-top:5px}
+
+  #splash .bxi-feats{grid-template-columns:1fr;gap:0;margin-top:11px;padding:5px 6px;max-width:100%}
+  #splash .bxi-feat{display:flex;align-items:center;gap:11px;text-align:left;
+    padding:8px 6px;border-right:none;border-bottom:1px solid var(--green-line);font-size:12.5px;line-height:1.35}
+  #splash .bxi-feat:last-child{border-bottom:none}
+  #splash .bxi-ic{width:34px;height:34px;margin:0;flex:none}
+  #splash .bxi-ic svg{width:18px;height:18px}
+
+  /* 3 lợi ích gộp thành một hàng chữ nhỏ, bỏ biểu tượng cho gọn */
+  #splash .bxi-bens{flex-direction:row;flex-wrap:wrap;justify-content:center;gap:4px 0;margin-top:9px;padding:7px 10px}
+  #splash .bxi-ben{border-right:1px solid var(--green-line);padding:0 9px;font-size:11.5px}
+  #splash .bxi-ben:last-child{border-right:none}
+  #splash .bxi-ben span{display:none}
+  #splash .bxi-slogan{font-size:14px;margin-top:9px}
+
+  #splash .sp-chon,#splash .sp-vao{margin-top:11px}
+  #splash .sp-ask{font-size:15px;margin-bottom:9px}
+  #splash .sp-note{margin-top:9px;font-size:11.5px}
+  #splash .sp-dn{margin-top:6px;font-size:12px}
+}
 @media(max-width:520px){
   #splash .sp-lops{gap:7px}
   #splash .sp-lop{padding:11px 2px 8px}
   #splash .sp-lop .n{font-size:22px}
-  #splash .sp-ask{font-size:15px}
 }
 #splash::before{content:"";position:absolute;width:min(640px,86vw);height:min(640px,86vw);border-radius:50%;background:radial-gradient(circle,rgba(39,180,109,.16),rgba(39,180,109,0) 68%);top:30%;left:50%;transform:translate(-50%,-50%)}
 #splash .sp-art{position:relative;z-index:2;width:clamp(220px,48vw,340px);height:clamp(196px,42vw,300px);background:var(--mascot) center/contain no-repeat;filter:drop-shadow(0 18px 28px rgba(15,138,82,.22));animation:spbob 2.4s ease-in-out infinite}
@@ -951,23 +991,23 @@ window.bxMergeKho = function(){
 
       <div class="bxi-feats">
         <div class="bxi-feat">
-          <span class="bxi-ic"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="M8.5 14.5l2.2 2.2 4.3-4.3"/></svg></span>
+          <span class="bxi-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#15834A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="M8.5 14.5l2.2 2.2 4.3-4.3"/></svg></span>
           <div>Nhập thời khóa biểu<br><b>nhanh chóng</b></div>
         </div>
         <div class="bxi-feat">
-          <span class="bxi-ic"><svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 2.5h6v3H9z"/><path d="M8.5 10h7M8.5 13.5h7M8.5 17h4"/></svg></span>
+          <span class="bxi-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#15834A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 2.5h6v3H9z"/><path d="M8.5 10h7M8.5 13.5h7M8.5 17h4"/></svg></span>
           <div>Tự động tạo<br><b>Lịch báo giảng</b></div>
         </div>
         <div class="bxi-feat">
-          <span class="bxi-ic"><svg viewBox="0 0 24 24"><path d="M12 6.5C10 4.8 7.5 4.2 4 4.5v13c3.5-.3 6 .3 8 2 2-1.7 4.5-2.3 8-2v-13c-3.5-.3-6 .3-8 2z"/><path d="M12 6.5v12"/></svg></span>
+          <span class="bxi-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#15834A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10 4.8 7.5 4.2 4 4.5v13c3.5-.3 6 .3 8 2 2-1.7 4.5-2.3 8-2v-13c-3.5-.3-6 .3-8 2z"/><path d="M12 6.5v12"/></svg></span>
           <div>Kết nối từng tiết với<br><b>kế hoạch &amp; kho giáo án</b></div>
         </div>
         <div class="bxi-feat">
-          <span class="bxi-ic"><svg viewBox="0 0 24 24"><path d="M12 2.8l7 2.6v6c0 4.5-3 7.9-7 9.8-4-1.9-7-5.3-7-9.8v-6z"/><path d="M9.6 14.2l2.4-5.4 2.4 5.4M10.3 12.6h3.4"/></svg></span>
+          <span class="bxi-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#15834A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.8l7 2.6v6c0 4.5-3 7.9-7 9.8-4-1.9-7-5.3-7-9.8v-6z"/><path d="M9.6 14.2l2.4-5.4 2.4 5.4M10.3 12.6h3.4"/></svg></span>
           <div>Tích hợp năng lực số,<br><b>AI, giáo dục địa phương</b></div>
         </div>
         <div class="bxi-feat">
-          <span class="bxi-ic"><svg viewBox="0 0 24 24"><circle cx="8.5" cy="9" r="2.6"/><circle cx="16" cy="10" r="2.2"/><path d="M3.5 19c0-2.8 2.2-4.6 5-4.6s5 1.8 5 4.6"/><path d="M14 19c0-2.2 1.4-3.6 3.2-3.6S20.5 16.8 20.5 19"/><path d="M12 3.2l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2L9 5.4l2-.3z"/></svg></span>
+          <span class="bxi-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#15834A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="9" r="2.6"/><circle cx="16" cy="10" r="2.2"/><path d="M3.5 19c0-2.8 2.2-4.6 5-4.6s5 1.8 5 4.6"/><path d="M14 19c0-2.2 1.4-3.6 3.2-3.6S20.5 16.8 20.5 19"/><path d="M12 3.2l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2L9 5.4l2-.3z"/></svg></span>
           <div>Cá nhân hóa cho từng nhóm HS,<br><b>kể cả HS khuyết tật hòa nhập</b></div>
         </div>
       </div>
