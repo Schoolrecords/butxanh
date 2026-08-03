@@ -3382,8 +3382,27 @@ function bankAll(){
   LESSON_BANK.forEach(L=>{byId[L.id]=L;});
   loadBankImport().forEach(L=>{ if(L&&L.mon&&L.bai){ byId[L.id||('imp-'+_normTxt(L.mon)+'-'+_normTxt(L.bai))]=L; } });
   _bxBankCache=Object.keys(byId).map(k=>byId[k]);
-  _bxBankSig=sig; _bxBankByGrade={};
+  _bxBankSig=sig; _bxBankByGrade={}; _bxBankKeyIdx={}; _bxBankMonIdx={};
   return _bxBankCache;
+}
+/* ===== CHỈ MỤC KHỚP TÊN BÀI (3/8/2026) =====
+   Trước: mỗi thẻ tiết trong màn KHBD lọc CẢ kho (~1000 bài) và tính bankKey (2 lần
+   chuẩn hoá regex) cho từng bài, MỖI LẦN VẼ → 30 thẻ ≈ 60.000 lần chuẩn hoá, điện
+   thoại nghẽn 2-5 giây mỗi cú chạm vào "Giáo án". Nay: khoá tính 1 lần ghim vào bài
+   (L.__bk / L.__nm), tra qua chỉ mục theo khối — vẽ lại chỉ còn phép tra bảng. */
+var _bxBankKeyIdx={}, _bxBankMonIdx={};
+function _bxBankIdxOf(row){
+  var g=_bxRowGrade(row)||'*';
+  if(_bxBankKeyIdx[g]) return {key:_bxBankKeyIdx[g], mon:_bxBankMonIdx[g]};
+  var mk={}, mm={};
+  bankAllForRow(row).forEach(function(L){
+    var k=L.__bk||(L.__bk=bankKey(L.mon,L.bai));
+    (mk[k]||(mk[k]=[])).push(L);
+    var nm=L.__nm||(L.__nm=_normTxt((typeof _bxCanonSubject==='function'&&_bxCanonSubject(L.mon))||L.mon));
+    (mm[nm]||(mm[nm]=[])).push(L);
+  });
+  _bxBankKeyIdx[g]=mk; _bxBankMonIdx[g]=mm;
+  return {key:mk, mon:mm};
 }
 /* ---- LỌC KHO THEO KHỐI (LỚP) ----
    GV Lớp 4 không được khớp nhầm giáo án Lớp 5 (và ngược lại). Khối của 1 dòng lịch:
@@ -4742,10 +4761,11 @@ function BX_resolveBankMatch(row){
   //    + ưu tiên cùng Tuần, chọn giáo án trùng từ khóa nhất (overlap≥0.6) ⇒ "Bài 1"≈"Bài 01",
   //    tên ngắn ở lịch nằm trong tên kho dài vẫn khớp đúng.
   var k=bankKey(row.mon,row.bai);
-  var byName=all.filter(function(L){ return bankKey(L.mon,L.bai)===k; });
+  var _idx=_bxBankIdxOf(row);                       /* chỉ mục theo khối — tra O(1) thay vì lọc cả kho */
+  var byName=(_idx.key[k]||[]).slice();
   if(!byName.length){
     var mon=_normTxt((_bxCanonSubject(row.mon)||row.mon)), bn=_baiNo(row.bai), tn=_tietNo(row.bai), wk0=String(row.tuan||state.week);
-    var pool=all.filter(function(L){ return _normTxt((_bxCanonSubject(L.mon)||L.mon))===mon; }).filter(function(L){
+    var pool=(_idx.mon[mon]||[]).filter(function(L){
       if(bn!=null){ var lb=_baiNo(L.bai); if(lb!=null && lb!==bn) return false; }
       if(tn!=null){ var lt=_tietNo(L.bai); if(lt!=null && lt!==tn) return false; }
       return true;
@@ -5922,7 +5942,10 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
     });
   }
   function openSheet(o){ sheet.classList.toggle('open',o); bd.classList.toggle('open',o); document.body.style.overflow=o?'hidden':''; }
-  function go(v){ openSheet(false); requestAnimationFrame(function(){ try{ (window.showView||function(){})(v); }catch(e){} syncMnav(); }); }
+  /* rAF chạy TRƯỚC lúc tô màn hình → nếu gọi showView ngay trong rAF thì nút chưa kịp
+     sáng đã bị render nặng chặn. rAF + setTimeout(0) = đợi TÔ XONG khung hình (nút đã
+     sáng) rồi mới vẽ màn mới — cú chạm luôn có phản hồi tức thì (3/8/2026). */
+  function go(v){ openSheet(false); requestAnimationFrame(function(){ setTimeout(function(){ try{ (window.showView||function(){})(v); }catch(e){} syncMnav(); },0); }); }
   mnav.addEventListener('click',function(e){
     var a=e.target.closest('.mi'); if(!a) return; e.preventDefault();
     var t=a.dataset.t;
