@@ -480,7 +480,19 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
   .footer .flinks{justify-content:center;flex-wrap:wrap}
 }
 .logo-m{background:var(--mascot) center/contain no-repeat}
-#splash{position:fixed;inset:0;z-index:9999;overflow:hidden;background:radial-gradient(circle at 50% 38%,#f4fbf7 0%,#e3f6ec 55%,#d2efdf 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;animation:splashHide .6s ease 2.1s forwards}
+/* Màn chào có 2 chế độ:
+   - MẶC ĐỊNH (lần mở đầu tiên trong ngày): giới thiệu đầy đủ, tan sau ~9,4 giây.
+   - .quick (các lần mở sau trong ngày): chỉ loé logo, tan sau ~1,8 giây.
+   Để mặc định là bản đầy đủ — nếu JS lỗi thì màn vẫn tự tan, không kẹt. */
+#splash{position:fixed;inset:0;z-index:9999;overflow-y:auto;overflow-x:hidden;background:radial-gradient(circle at 50% 38%,#f4fbf7 0%,#e3f6ec 55%,#d2efdf 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:18px 14px;animation:splashHide .8s ease 8.6s forwards}
+#splash.quick{overflow:hidden;animation:splashHide .6s ease 1.2s forwards}
+/* Chế độ đầy đủ: ẩn logo lớn vì khối giới thiệu đã có linh vật và tên rồi */
+#splash:not(.quick) .sp-art,#splash:not(.quick) .sp-name,#splash:not(.quick) .sp-tag{display:none}
+#splash.quick .sp-intro{display:none}
+#splash .sp-intro{position:relative;z-index:3;width:100%;max-width:1000px;margin:auto}
+#splash .sp-intro .bx-intro{box-shadow:0 18px 50px rgba(15,90,55,.13)}
+#splash .bxi-dem{margin-top:9px;font-size:13px;color:#5c7a68}
+#splash .bxi-dem b{color:var(--green-dark);font-weight:800}
 #splash::before{content:"";position:absolute;width:min(640px,86vw);height:min(640px,86vw);border-radius:50%;background:radial-gradient(circle,rgba(39,180,109,.16),rgba(39,180,109,0) 68%);top:30%;left:50%;transform:translate(-50%,-50%)}
 #splash .sp-art{position:relative;z-index:2;width:clamp(220px,48vw,340px);height:clamp(196px,42vw,300px);background:var(--mascot) center/contain no-repeat;filter:drop-shadow(0 18px 28px rgba(15,138,82,.22));animation:spbob 2.4s ease-in-out infinite}
 #splash .sp-name{position:relative;z-index:2;font-size:clamp(34px,7.6vw,54px);font-weight:800;color:#0f7a44;letter-spacing:-.5px;line-height:1;text-shadow:0 1px 0 #fff}
@@ -888,7 +900,74 @@ window.bxMergeKho = function(){
   <div class="sp-art"></div>
   <div class="sp-name">Bút Xanh</div>
   <div class="sp-tag">Trợ lý đắc lực của thầy cô 🌿</div>
+
+  <!-- ===== Lời giới thiệu — chỉ hiện ở lần mở ĐẦU TIÊN trong ngày ===== -->
+  <div class="sp-intro">
+    <div class="bx-intro bxi-go" id="bxIntro">
+      <div class="bxi-mascot" role="img" aria-label="Linh vật Bút Xanh vẫy tay chào"></div>
+
+      <h2 class="bxi-hi">Bút Xanh xin chào thầy/cô! <span class="bxi-sprig">🌿</span></h2>
+
+      <p class="bxi-desc">
+        Thầy cô chỉ cần nhập <b>thời khóa biểu</b> cá nhân, Bút Xanh sẽ tự động tạo
+        <b class="g">Lịch báo giảng</b>, kết nối từng tiết với kế hoạch bài dạy và kho giáo án;
+        đồng thời hỗ trợ <b>tích hợp</b> <b class="g">năng lực số</b>, <b class="g">ứng dụng AI</b>,
+        <b class="g">giáo dục địa phương</b> và <b class="g">cá nhân hóa</b> hoạt động cho từng nhóm học sinh,
+        <b class="g">kể cả học sinh khuyết tật hòa nhập</b>.
+      </p>
+
+      <p class="bxi-punch">Chỉ 1 nút chạm, thầy cô tải ngay bộ giáo án trọn tuần theo Lịch báo giảng!</p>
+      <p class="bxi-invite">Hãy đến với Bút Xanh! <span aria-hidden="true">♡</span></p>
+
+      <div class="bxi-feats">
+        <div class="bxi-feat">
+          <span class="bxi-ic"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="M8.5 14.5l2.2 2.2 4.3-4.3"/></svg></span>
+          <div>Nhập thời khóa biểu<br><b>nhanh chóng</b></div>
+        </div>
+        <div class="bxi-feat">
+          <span class="bxi-ic"><svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 2.5h6v3H9z"/><path d="M8.5 10h7M8.5 13.5h7M8.5 17h4"/></svg></span>
+          <div>Tự động tạo<br><b>Lịch báo giảng</b></div>
+        </div>
+        <div class="bxi-feat">
+          <span class="bxi-ic"><svg viewBox="0 0 24 24"><path d="M12 6.5C10 4.8 7.5 4.2 4 4.5v13c3.5-.3 6 .3 8 2 2-1.7 4.5-2.3 8-2v-13c-3.5-.3-6 .3-8 2z"/><path d="M12 6.5v12"/></svg></span>
+          <div>Kết nối từng tiết với<br><b>kế hoạch &amp; kho giáo án</b></div>
+        </div>
+        <div class="bxi-feat">
+          <span class="bxi-ic"><svg viewBox="0 0 24 24"><path d="M12 2.8l7 2.6v6c0 4.5-3 7.9-7 9.8-4-1.9-7-5.3-7-9.8v-6z"/><path d="M9.6 14.2l2.4-5.4 2.4 5.4M10.3 12.6h3.4"/></svg></span>
+          <div>Tích hợp năng lực số,<br><b>AI, giáo dục địa phương</b></div>
+        </div>
+        <div class="bxi-feat">
+          <span class="bxi-ic"><svg viewBox="0 0 24 24"><circle cx="8.5" cy="9" r="2.6"/><circle cx="16" cy="10" r="2.2"/><path d="M3.5 19c0-2.8 2.2-4.6 5-4.6s5 1.8 5 4.6"/><path d="M14 19c0-2.2 1.4-3.6 3.2-3.6S20.5 16.8 20.5 19"/><path d="M12 3.2l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2L9 5.4l2-.3z"/></svg></span>
+          <div>Cá nhân hóa cho từng nhóm HS,<br><b>kể cả HS khuyết tật hòa nhập</b></div>
+        </div>
+      </div>
+
+      <div class="bxi-bens">
+        <div class="bxi-ben"><span aria-hidden="true">🕐</span> <b>Ít thao tác hơn</b></div>
+        <div class="bxi-ben"><span aria-hidden="true">📁</span> <b>Hồ sơ gọn hơn</b></div>
+        <div class="bxi-ben"><span aria-hidden="true">👨‍👩‍👧</span> <b>Thêm thời gian cho học sinh và gia đình</b></div>
+      </div>
+
+      <p class="bxi-slogan">🌿 Bút Xanh — trả lại buổi tối cho thầy cô. 🌿</p>
+
+      <button class="bxi-cta" onclick="BX_dongManChao()">Bắt đầu cùng Bút Xanh <span aria-hidden="true">→</span></button>
+      <div class="bxi-dem" id="bxiDem">Tự vào sau <b>9</b> giây</div>
+    </div>
+  </div>
 </div>
+<script>/* Chọn chế độ màn chào NGAY trước khi trang vẽ: mỗi ngày chỉ giới thiệu đầy đủ 1 lần */
+(function(){
+  var sp=document.getElementById('splash'); if(!sp) return;
+  var homNay=new Date().toLocaleDateString('en-CA');           // dạng 2026-08-03
+  var daXem=false;
+  try{ daXem=(localStorage.getItem('butxanh_intro_ngay')===homNay); }catch(e){}
+  if(daXem){ sp.classList.add('quick'); window.__bxSplashHet=2000; }
+  else{
+    window.__bxSplashHet=9800;
+    try{ localStorage.setItem('butxanh_intro_ngay',homNay); }catch(e){}
+  }
+})();
+</script>
 <div class="app">
 
   <!-- ==================== SIDEBAR ==================== -->
@@ -969,62 +1048,6 @@ window.bxMergeKho = function(){
       <!-- ===== VÙNG LÀM VIỆC ===== -->
       <div class="left-area">
 
-        <!-- ===== LỜI GIỚI THIỆU (thiết kế lại 3/8/2026) ===== -->
-        <div class="bx-intro" id="bxIntro">
-          <div class="bxi-leaf bxi-l1" aria-hidden="true">🍃</div>
-          <div class="bxi-leaf bxi-l2" aria-hidden="true">🌿</div>
-          <div class="bxi-leaf bxi-l3" aria-hidden="true">🍃</div>
-
-          <div class="bxi-mascot" role="img" aria-label="Linh vật Bút Xanh vẫy tay chào"></div>
-
-          <h2 class="bxi-hi">Bút Xanh xin chào thầy/cô! <span class="bxi-sprig">🌿</span></h2>
-
-          <p class="bxi-desc">
-            Thầy cô chỉ cần nhập <b>thời khóa biểu</b> cá nhân, Bút Xanh sẽ tự động tạo
-            <b class="g">Lịch báo giảng</b>, kết nối từng tiết với kế hoạch bài dạy và kho giáo án;
-            đồng thời hỗ trợ <b>tích hợp</b> <b class="g">năng lực số</b>, <b class="g">ứng dụng AI</b>,
-            <b class="g">giáo dục địa phương</b> và <b class="g">cá nhân hóa</b> hoạt động cho từng nhóm học sinh,
-            <b class="g">kể cả học sinh khuyết tật hòa nhập</b>.
-          </p>
-
-          <p class="bxi-punch">Chỉ 1 nút chạm, thầy cô tải ngay bộ giáo án trọn tuần theo Lịch báo giảng!</p>
-          <p class="bxi-invite">Hãy đến với Bút Xanh! <span aria-hidden="true">♡</span></p>
-
-          <div class="bxi-feats">
-            <div class="bxi-feat">
-              <span class="bxi-ic"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="M8.5 14.5l2.2 2.2 4.3-4.3"/></svg></span>
-              <div>Nhập thời khóa biểu<br><b>nhanh chóng</b></div>
-            </div>
-            <div class="bxi-feat">
-              <span class="bxi-ic"><svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 2.5h6v3H9z"/><path d="M8.5 10h7M8.5 13.5h7M8.5 17h4"/></svg></span>
-              <div>Tự động tạo<br><b>Lịch báo giảng</b></div>
-            </div>
-            <div class="bxi-feat">
-              <span class="bxi-ic"><svg viewBox="0 0 24 24"><path d="M12 6.5C10 4.8 7.5 4.2 4 4.5v13c3.5-.3 6 .3 8 2 2-1.7 4.5-2.3 8-2v-13c-3.5-.3-6 .3-8 2z"/><path d="M12 6.5v12"/></svg></span>
-              <div>Kết nối từng tiết với<br><b>kế hoạch &amp; kho giáo án</b></div>
-            </div>
-            <div class="bxi-feat">
-              <span class="bxi-ic"><svg viewBox="0 0 24 24"><path d="M12 2.8l7 2.6v6c0 4.5-3 7.9-7 9.8-4-1.9-7-5.3-7-9.8v-6z"/><path d="M9.6 14.2l2.4-5.4 2.4 5.4M10.3 12.6h3.4"/></svg></span>
-              <div>Tích hợp năng lực số,<br><b>AI, giáo dục địa phương</b></div>
-            </div>
-            <div class="bxi-feat">
-              <span class="bxi-ic"><svg viewBox="0 0 24 24"><circle cx="8.5" cy="9" r="2.6"/><circle cx="16" cy="10" r="2.2"/><path d="M3.5 19c0-2.8 2.2-4.6 5-4.6s5 1.8 5 4.6"/><path d="M14 19c0-2.2 1.4-3.6 3.2-3.6S20.5 16.8 20.5 19"/><path d="M12 3.2l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2L9 5.4l2-.3z"/></svg></span>
-              <div>Cá nhân hóa cho từng nhóm HS,<br><b>kể cả HS khuyết tật hòa nhập</b></div>
-            </div>
-          </div>
-
-          <div class="bxi-bens">
-            <div class="bxi-ben"><span aria-hidden="true">🕐</span> <b>Ít thao tác hơn</b></div>
-            <div class="bxi-ben"><span aria-hidden="true">📁</span> <b>Hồ sơ gọn hơn</b></div>
-            <div class="bxi-ben"><span aria-hidden="true">👨‍👩‍👧</span> <b>Thêm thời gian cho học sinh và gia đình</b></div>
-          </div>
-
-          <p class="bxi-slogan">🌿 Bút Xanh — trả lại buổi tối cho thầy cô. 🌿</p>
-
-          <button class="bxi-cta" onclick="BX_introBatDau()">Bắt đầu cùng Bút Xanh <span aria-hidden="true">→</span></button>
-        </div>
-        <script>/* bật hiệu ứng ngay trước khi trang vẽ, tránh nhấp nháy */
-        (function(){ var e=document.getElementById('bxIntro'); if(e) e.classList.add('bxi-go'); })();</script>
 
         <!-- Lịch dạy + Bút Xanh nhắc -->
         <div class="work-grid">
@@ -6827,7 +6850,10 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     var sp=document.getElementById('splash');
     if(sp && getComputedStyle(sp).visibility!=='hidden'){
       sp.addEventListener('animationend', function(e){ if(e.target===sp) show(); });
-      setTimeout(show, 3200); // dự phòng nếu animation không chạy
+      /* Bấm "Bắt đầu cùng Bút Xanh" đóng màn chào sớm → hiện hộp chọn lớp ngay */
+      window.__bxManChaoXong=show;
+      /* Dự phòng: đợi đúng thời lượng màn chào (9,8s bản đầy đủ · 2s bản loé nhanh) */
+      setTimeout(show, (window.__bxSplashHet||3200) + 600);
     } else show();
   }
   if(document.readyState==='complete') hien(); else window.addEventListener('load', hien);
@@ -6982,21 +7008,38 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
      Nút độc lập, không thuộc menu nào. Lay động nhẹ để thầy cô nhận ra,
      nhưng z-index thấp hơn lớp phủ (overlay=60) nên không đè lên hộp thoại. -->
 <style>
+/* Nút tròn nhỏ, chỉ biểu tượng — rê chuột mới hiện chữ, đỡ choán chỗ */
 #bxZalo{
   position:fixed; right:18px; bottom:20px; z-index:55;
-  display:inline-flex; align-items:center; gap:9px;
-  padding:11px 17px 11px 13px; border-radius:999px;
+  display:inline-flex; align-items:center; justify-content:center;
+  width:46px; height:46px; border-radius:50%;
   background:linear-gradient(135deg,#0068FF,#0091FF);
-  color:#fff; text-decoration:none; font-weight:700; font-size:14.5px;
-  box-shadow:0 8px 22px rgba(0,86,204,.36), 0 2px 6px rgba(0,0,0,.14);
+  color:#fff; text-decoration:none;
+  box-shadow:0 6px 18px rgba(0,86,204,.34), 0 2px 6px rgba(0,0,0,.12);
   border:2px solid rgba(255,255,255,.55);
   animation:bxZaloLac 6s ease-in-out 3s infinite;
   transition:transform .22s ease, box-shadow .22s ease;
   -webkit-tap-highlight-color:transparent;
 }
-#bxZalo:hover,#bxZalo:focus-visible{ transform:translateY(-3px) scale(1.04); box-shadow:0 12px 28px rgba(0,86,204,.45); animation-play-state:paused; }
-#bxZalo:active{ transform:scale(.96) }
-#bxZalo svg{ width:22px; height:22px; flex:none }
+#bxZalo:hover,#bxZalo:focus-visible{ transform:translateY(-3px) scale(1.06); box-shadow:0 12px 26px rgba(0,86,204,.45); animation-play-state:paused; }
+#bxZalo:active{ transform:scale(.94) }
+#bxZalo svg{ width:24px; height:24px; flex:none }
+/* Chữ thành nhãn nổi bên trái, chỉ hiện khi rê chuột trên máy tính */
+#bxZalo .bxz-chu{
+  position:absolute; right:56px; top:50%; transform:translateY(-50%) translateX(6px);
+  white-space:nowrap; background:#12324d; color:#fff;
+  font-size:13px; font-weight:700; padding:7px 12px; border-radius:9px;
+  opacity:0; visibility:hidden; pointer-events:none;
+  transition:opacity .2s ease, transform .2s ease, visibility .2s;
+  box-shadow:0 6px 16px rgba(0,0,0,.2);
+}
+#bxZalo .bxz-chu::after{
+  content:''; position:absolute; left:100%; top:50%; transform:translateY(-50%);
+  border:6px solid transparent; border-left-color:#12324d;
+}
+@media (hover:hover){
+  #bxZalo:hover .bxz-chu,#bxZalo:focus-visible .bxz-chu{ opacity:1; visibility:visible; transform:translateY(-50%) translateX(0) }
+}
 /* vòng sóng lan toả nhẹ phía sau nút */
 #bxZalo::before{
   content:''; position:absolute; inset:-3px; border-radius:999px;
@@ -7013,16 +7056,15 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   86%{ opacity:.85 }
   100%{ transform:scale(1.45); opacity:0 }
 }
-/* Điện thoại: thu gọn còn hình tròn, nâng lên cao hơn thanh điều hướng dưới đáy */
+/* Điện thoại: nâng lên cao hơn thanh điều hướng dưới đáy */
 @media(max-width:768px){
   #bxZalo{
-    right:14px;
+    right:14px; width:44px; height:44px;
     bottom:84px;                                   /* dự phòng nếu env() không dùng được */
     bottom:calc(84px + env(safe-area-inset-bottom));
-    padding:0; width:52px; height:52px; justify-content:center; gap:0;
   }
   #bxZalo .bxz-chu{ display:none }
-  #bxZalo svg{ width:25px; height:25px }
+  #bxZalo svg{ width:23px; height:23px }
 }
 /* Thầy cô đã bật chế độ giảm chuyển động thì đứng yên */
 @media (prefers-reduced-motion: reduce){
@@ -7043,35 +7085,28 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
 </a>
 
 <script>
-/* ===== Lời giới thiệu ở Bảng điều khiển ===== */
-/* Nút "Bắt đầu cùng Bút Xanh": chưa khai thời khoá biểu thì đưa tới Thời khoá biểu,
-   khai rồi thì đưa thẳng tới Lịch báo giảng — đúng việc thầy cô cần làm tiếp. */
-window.BX_introBatDau=function(){
-  var coTKB=false;
-  try{
-    var v=JSON.parse(localStorage.getItem('butxanh_tkb')||'null');
-    coTKB=!!(v && Array.isArray(v.slots) && v.slots.some(function(s){ return s && String(s.mon||'').trim(); }));
-  }catch(e){}
-  try{ showView(coTKB?'lich':'tkb'); }catch(e){}
-  try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(e){ window.scrollTo(0,0); }
+/* ===== Màn chào có lời giới thiệu ===== */
+/* Đóng màn chào ngay khi thầy cô bấm "Bắt đầu cùng Bút Xanh" — không phải ngồi đợi. */
+window.BX_dongManChao=function(){
+  var sp=document.getElementById('splash'); if(!sp) return;
+  sp.style.animation='none';
+  sp.style.transition='opacity .45s ease';
+  sp.style.opacity='0';
+  setTimeout(function(){ try{ sp.style.visibility='hidden'; }catch(e){} }, 480);
+  try{ window.__bxManChaoXong && window.__bxManChaoXong(); }catch(e){}
 };
 
-/* Chạy lại hiệu ứng mỗi khi thầy cô quay về Bảng điều khiển (không thì chỉ chạy
-   đúng một lần lúc mới mở trang, vào lại sẽ thấy trang tĩnh). */
-window.BX_introRun=function(){
-  var e=document.getElementById('bxIntro'); if(!e) return;
-  e.classList.remove('bxi-go');
-  void e.offsetWidth;                 /* buộc trình duyệt vẽ lại để hiệu ứng chạy từ đầu */
-  e.classList.add('bxi-go');
-};
+/* Đếm ngược trên màn chào để thầy cô biết còn bao lâu nữa thì vào việc. */
 (function(){
-  var goc=window.showView;
-  if(typeof goc!=='function') return;
-  window.showView=function(v){
-    var kq=goc.apply(this,arguments);
-    if(v==='dashboard'){ try{ BX_introRun(); }catch(e){} }
-    return kq;
-  };
+  var sp=document.getElementById('splash');
+  if(!sp || sp.classList.contains('quick')) return;      /* chế độ loé nhanh thì khỏi đếm */
+  var o=document.getElementById('bxiDem'); if(!o) return;
+  var con=Math.round((window.__bxSplashHet||9800)/1000) - 1;
+  var t=setInterval(function(){
+    con--;
+    if(con<=0 || getComputedStyle(sp).visibility==='hidden'){ clearInterval(t); return; }
+    var b=o.querySelector('b'); if(b) b.textContent=con;
+  },1000);
 })();
 </script>
 </body>
