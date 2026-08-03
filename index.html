@@ -879,8 +879,6 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 .sl-detail-sub{font-size:13px;color:var(--ink2);margin-top:2px}
 .sl-subj-go{margin-top:2px;font-size:12.5px;font-weight:700;color:var(--sc);opacity:.92}
 .sl-detail-meta{flex:1;min-width:0}
-.sl-openall{margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;background:var(--green-soft);border:1px solid #bfe7cd;color:var(--green-dark);font-weight:600;font-size:13px;text-decoration:none;white-space:nowrap;transition:.14s}
-.sl-openall:hover{background:var(--green);border-color:var(--green);color:#fff}
 .sl-edit-btn{margin-left:auto;padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink2);font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap}
 .sl-edit-btn.on{background:var(--green);border-color:var(--green);color:#fff}
 .sl-folder-btn{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border-radius:12px;background:var(--green-soft);border:1px solid #bfe7cd;color:var(--green-dark);font-weight:600;font-size:14px;text-decoration:none;cursor:pointer;margin-bottom:12px}
@@ -1945,7 +1943,7 @@ window.bxMergeKho = function(){
           <p><b>Để làm gì:</b> lấy sẵn slide PowerPoint cho từng tiết, khỏi mất công tự làm.</p>
           <ul class="hlp-list">
             <li>Chọn <b>Lớp → Môn</b> rồi xem các tuần. Tuần <b>tô màu xanh</b> là tuần đã có bài giảng.</li>
-            <li>Bấm vào <b>tuần</b> để mở slide của tuần đó, hoặc bấm <b>📂 Mở cả môn</b> để xem toàn bộ bài giảng của môn.</li>
+            <li>Bấm vào <b>tuần</b> để mở slide của tuần đó trên Google Drive.</li>
             <li>Slide mở trên Google Drive — xem trực tiếp hoặc tải về máy đều được.</li>
           </ul>
         </div>
@@ -2918,7 +2916,6 @@ function BX_slideDetail(lop,mon){
   h+='<div class="sl-detail-head" style="--sc:'+m.c+'">'+
        '<span class="sl-subj-ic big">'+m.ic+'</span>'+
        '<div class="sl-detail-meta"><div class="sl-detail-title">'+mon+'</div><div class="sl-detail-sub">Lớp '+lop+' · <b>'+(e.has||[]).length+'/'+BX_SLIDE_WEEKS+'</b> tuần đã có bài giảng</div></div>'+
-       (e.folder?'<a class="sl-openall" href="'+BX_escAttr(e.folder)+'" target="_blank" rel="noopener">📂 Mở cả môn</a>':'')+
      '</div>';
   h+='<div class="sl-legend"><span class="sl-week has" style="pointer-events:none;padding:3px 9px"><span class="sl-week-n">Tuần</span><span class="sl-week-ic">↗</span></span> đã có bài giảng &nbsp;·&nbsp; <span class="sl-week soft" style="pointer-events:none;padding:3px 9px"><span class="sl-week-n">Tuần</span></span> mở thư mục (chưa có bài, sẽ bổ sung dần)</div>';
   var g='', hasSet={}; (e.has||[]).forEach(function(w){hasSet[String(w)]=1;});
