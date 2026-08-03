@@ -1121,6 +1121,40 @@ window.bxMergeKho = function(){
     return '5';
   };
   window.BX_khoDaCo=function(x){ var t=trangThai[window.BX_khoiCuaLop(x)||String(x||'')]; return !!(t&&t.xong); };
+  /* ===== NẠP DỮ LIỆU QUA LUỒNG PHỤ (Web Worker) — 3/8/2026 =====
+     Trước: chèn <script> → điện thoại phải phân tích 3-5MB NGAY TRÊN LUỒNG CHÍNH,
+     nghẽn vài giây mỗi file → chạm nút không ăn (GV phải bấm nhiều lần).
+     Nay: Worker tải + phân tích ở luồng phụ (mọi file kho/KHGD đều thuần dữ liệu
+     window.X = [...]), luồng chính chỉ nhận kết quả đã tiêu hoá (~0,2s/file).
+     Trình duyệt không hỗ trợ → tự lui về đường <script> cũ. */
+  function napQuaScript(url){
+    return new Promise(function(done){
+      var s=document.createElement('script'); s.src=url; s.async=true;
+      s.onload=function(){ done(true); }; s.onerror=function(){ done(false); };
+      document.head.appendChild(s);
+    });
+  }
+  function napQuaWorker(url){
+    return new Promise(function(done){
+      var w;
+      try{
+        if(!window.Worker||!window.URL||!window.Blob) throw 0;
+        var code='self.window={};onmessage=function(e){try{importScripts(e.data);postMessage({ok:1,data:self.window});}catch(err){postMessage({ok:0,msg:String((err&&err.message)||err)});}};';
+        w=new Worker(URL.createObjectURL(new Blob([code],{type:'text/javascript'})));
+      }catch(e){ napQuaScript(url).then(done); return; }
+      var henGio=setTimeout(function(){ try{w.terminate();}catch(e){} napQuaScript(url).then(done); },90000);
+      w.onmessage=function(ev){
+        clearTimeout(henGio);
+        var m=ev.data||{};
+        try{ w.terminate(); }catch(e){}
+        if(m.ok&&m.data){ for(var k in m.data){ try{ window[k]=m.data[k]; }catch(e){} } done(true); }
+        else napQuaScript(url).then(done);
+      };
+      w.onerror=function(){ clearTimeout(henGio); try{w.terminate();}catch(e){} napQuaScript(url).then(done); };
+      try{ w.postMessage(new URL(url, location.href).href); }
+      catch(e){ clearTimeout(henGio); try{w.terminate();}catch(_){ } napQuaScript(url).then(done); }
+    });
+  }
   /* Bảo đảm kho của một lớp đã sẵn sàng; trả về Promise. Gọi nhiều lần cũng chỉ tải 1 lần. */
   window.BX_ensureKho=function(lopHoacKhoi){
     var khoi=window.BX_khoiCuaLop(lopHoacKhoi)||String(lopHoacKhoi||'').replace(/\D/g,'').slice(0,1);
@@ -1132,10 +1166,7 @@ window.bxMergeKho = function(){
       var i=0;
       (function tiep(){
         if(i>=ds.length){ try{ window.bxMergeKho(); }catch(e){} t.xong=true; veLai(); xong(true); return; }
-        var s=document.createElement('script'); s.src=ds[i++]+'?v='+V; s.async=true;
-        s.onload=function(){ try{ window.bxMergeKho(); }catch(e){} tiep(); };
-        s.onerror=function(){ tiep(); };
-        document.head.appendChild(s);
+        napQuaWorker(ds[i++]+'?v='+V).then(function(){ try{ window.bxMergeKho(); }catch(e){} tiep(); });
       })();
     });
     return t.p;
@@ -1159,11 +1190,10 @@ window.bxMergeKho = function(){
     var f=window.BX_KHGD_FILES[khoi];
     if(!f) return Promise.resolve(false);
     if(ttKHGD[khoi]) return ttKHGD[khoi];
-    ttKHGD[khoi]=new Promise(function(xong){
-      var s=document.createElement('script'); s.src=f+'?v='+VK; s.async=true;
-      s.onload=function(){ try{ if(window.__bxKHGDDaVe) window.__bxKHGDDaVe(); }catch(e){} xong(true); };
-      s.onerror=function(){ delete ttKHGD[khoi]; xong(false); };
-      document.head.appendChild(s);
+    ttKHGD[khoi]=napQuaWorker(f+'?v='+VK).then(function(ok){
+      if(!ok){ delete ttKHGD[khoi]; return false; }
+      try{ if(window.__bxKHGDDaVe) window.__bxKHGDDaVe(); }catch(e){}
+      return true;
     });
     return ttKHGD[khoi];
   };
