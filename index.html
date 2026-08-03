@@ -484,15 +484,45 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
    - MẶC ĐỊNH (lần mở đầu tiên trong ngày): giới thiệu đầy đủ, tan sau ~9,4 giây.
    - .quick (các lần mở sau trong ngày): chỉ loé logo, tan sau ~1,8 giây.
    Để mặc định là bản đầy đủ — nếu JS lỗi thì màn vẫn tự tan, không kẹt. */
-#splash{position:fixed;inset:0;z-index:9999;overflow-y:auto;overflow-x:hidden;background:radial-gradient(circle at 50% 38%,#f4fbf7 0%,#e3f6ec 55%,#d2efdf 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:18px 14px;animation:splashHide .8s ease 8.6s forwards}
+/* Bản đầy đủ CHỜ thầy cô bấm, không tự tan. Vẫn để một lưới an toàn 60 giây:
+   nếu JavaScript hỏng thì màn chào tự tan chứ không kẹt lại che mất app. */
+#splash{position:fixed;inset:0;z-index:9999;overflow-y:auto;overflow-x:hidden;background:radial-gradient(circle at 50% 38%,#f4fbf7 0%,#e3f6ec 55%,#d2efdf 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:18px 14px;animation:splashHide .8s ease 60s forwards}
 #splash.quick{overflow:hidden;animation:splashHide .6s ease 1.2s forwards}
+/* Tạm ẩn khối giới thiệu cho tới khi CSS của nó (nằm cuối trang) được nạp —
+   tránh loé biểu tượng SVG dạng thô. Dòng cởi khoá ở cuối trang. */
+#splash .sp-intro{visibility:hidden}
 /* Chế độ đầy đủ: ẩn logo lớn vì khối giới thiệu đã có linh vật và tên rồi */
 #splash:not(.quick) .sp-art,#splash:not(.quick) .sp-name,#splash:not(.quick) .sp-tag{display:none}
 #splash.quick .sp-intro{display:none}
-#splash .sp-intro{position:relative;z-index:3;width:100%;max-width:1000px;margin:auto}
+/* visibility:visible — cởi khoá cho khối giới thiệu.
+   CSS tạo hình cho khối này nằm ở cuối trang, nên phía trên đã tạm ẩn nó đi;
+   nếu không, mấy biểu tượng SVG sẽ loé ra dạng thô (đen, phình to) lúc trang
+   mới tải, trước khi kịp có CSS. */
+#splash .sp-intro{position:relative;z-index:3;width:100%;max-width:1000px;margin:auto;visibility:visible}
 #splash .sp-intro .bx-intro{box-shadow:0 18px 50px rgba(15,90,55,.13)}
-#splash .bxi-dem{margin-top:9px;font-size:13px;color:#5c7a68}
-#splash .bxi-dem b{color:var(--green-dark);font-weight:800}
+/* --- Phần chọn lớp / vào thẳng, gộp ngay trong màn chào --- */
+#splash .sp-chon,#splash .sp-vao{margin-top:16px}
+#splash:not(.cu) .sp-vao{display:none}          /* người mới → hiện hàng chọn lớp */
+#splash.cu .sp-chon{display:none}               /* người cũ  → hiện nút vào thẳng */
+#splash .sp-ask{font-size:16px;font-weight:800;color:#243;margin-bottom:11px}
+#splash .sp-lops{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-width:460px;margin:0 auto}
+#splash .sp-lop{border:2px solid #d7ebdf;background:#f6fbf8;border-radius:16px;padding:14px 2px 10px;cursor:pointer;font-family:inherit;transition:transform .15s ease,border-color .15s ease,background .15s ease}
+#splash .sp-lop:hover{border-color:var(--green);background:#eaf7ef;transform:translateY(-2px)}
+#splash .sp-lop:active{transform:scale(.94)}
+#splash .sp-lop .n{display:block;font-size:26px;font-weight:800;color:var(--green-dark);line-height:1}
+#splash .sp-lop .l{display:block;font-size:11px;color:#7b8f83;margin-top:3px;font-weight:600}
+#splash .sp-note{margin-top:13px;font-size:12.5px;color:#8a9a90;line-height:1.5;max-width:520px;margin-left:auto;margin-right:auto}
+#splash .sp-dn{margin-top:10px;background:none;border:none;color:#5c7a68;font-size:13px;font-family:inherit;text-decoration:underline;cursor:pointer;padding:6px}
+#splash .sp-dn:hover{color:var(--green-dark)}
+#splash .sp-busy{display:none;margin-top:16px;font-size:15px;font-weight:700;color:var(--green-dark)}
+#splash.dangdung .sp-chon,#splash.dangdung .sp-vao{display:none}
+#splash.dangdung .sp-busy{display:block}
+@media(max-width:520px){
+  #splash .sp-lops{gap:7px}
+  #splash .sp-lop{padding:11px 2px 8px}
+  #splash .sp-lop .n{font-size:22px}
+  #splash .sp-ask{font-size:15px}
+}
 #splash::before{content:"";position:absolute;width:min(640px,86vw);height:min(640px,86vw);border-radius:50%;background:radial-gradient(circle,rgba(39,180,109,.16),rgba(39,180,109,0) 68%);top:30%;left:50%;transform:translate(-50%,-50%)}
 #splash .sp-art{position:relative;z-index:2;width:clamp(220px,48vw,340px);height:clamp(196px,42vw,300px);background:var(--mascot) center/contain no-repeat;filter:drop-shadow(0 18px 28px rgba(15,138,82,.22));animation:spbob 2.4s ease-in-out infinite}
 #splash .sp-name{position:relative;z-index:2;font-size:clamp(34px,7.6vw,54px);font-weight:800;color:#0f7a44;letter-spacing:-.5px;line-height:1;text-shadow:0 1px 0 #fff}
@@ -950,20 +980,54 @@ window.bxMergeKho = function(){
 
       <p class="bxi-slogan">🌿 Bút Xanh — trả lại buổi tối cho thầy cô. 🌿</p>
 
-      <button class="bxi-cta" onclick="BX_dongManChao()">Bắt đầu cùng Bút Xanh <span aria-hidden="true">→</span></button>
-      <div class="bxi-dem" id="bxiDem">Tự vào sau <b>9</b> giây</div>
+      <!-- Thầy cô MỚI: chọn lớp ngay tại đây, khỏi qua thêm một màn nữa -->
+      <div class="sp-chon">
+        <div class="sp-ask">Thầy/cô đang dạy lớp mấy?</div>
+        <div class="sp-lops">
+          <button class="sp-lop" onclick="BX_chaoChonLop(1)"><span class="n">1</span><span class="l">LỚP</span></button>
+          <button class="sp-lop" onclick="BX_chaoChonLop(2)"><span class="n">2</span><span class="l">LỚP</span></button>
+          <button class="sp-lop" onclick="BX_chaoChonLop(3)"><span class="n">3</span><span class="l">LỚP</span></button>
+          <button class="sp-lop" onclick="BX_chaoChonLop(4)"><span class="n">4</span><span class="l">LỚP</span></button>
+          <button class="sp-lop" onclick="BX_chaoChonLop(5)"><span class="n">5</span><span class="l">LỚP</span></button>
+        </div>
+        <div class="sp-note">Chạm một lần — Bút Xanh dựng sẵn lịch dạy cả tuần kèm giáo án, thầy cô chỉnh lại lúc nào cũng được.</div>
+        <button class="sp-dn" onclick="BX_chaoDangNhap()">Tôi đã dùng Bút Xanh rồi — đăng nhập để lấy lại dữ liệu</button>
+      </div>
+
+      <!-- Thầy cô ĐÃ khai thời khoá biểu: vào thẳng, không hỏi lại lớp -->
+      <div class="sp-vao">
+        <button class="bxi-cta" onclick="BX_dongManChao()">Vào Bút Xanh <span aria-hidden="true">→</span></button>
+      </div>
+
+      <div class="sp-busy">⏳ Đang chuẩn bị lịch dạy cho thầy cô…</div>
     </div>
   </div>
 </div>
-<script>/* Chọn chế độ màn chào NGAY trước khi trang vẽ: mỗi ngày chỉ giới thiệu đầy đủ 1 lần */
+<script>/* Chọn chế độ màn chào NGAY trước khi trang vẽ.
+   - Mỗi ngày chỉ giới thiệu đầy đủ 1 lần; các lần mở sau chỉ loé logo rồi vào việc.
+   - Thầy cô đã khai thời khoá biểu → hiện nút "Vào Bút Xanh"; chưa khai → hiện hàng chọn lớp.
+   - Mở bằng liên kết sâu (vd butxanh.net#kho) thì không chen màn giới thiệu. */
 (function(){
   var sp=document.getElementById('splash'); if(!sp) return;
+
+  var coTKB=false;
+  try{
+    var v=JSON.parse(localStorage.getItem('butxanh_tkb')||'null');
+    coTKB=!!(v && Array.isArray(v.slots) && v.slots.some(function(s){ return s && String(s.mon||'').trim(); }));
+  }catch(e){}
+  if(coTKB) sp.classList.add('cu');
+
+  var lienKetSau=false;
+  try{ lienKetSau=!!(location.hash && location.hash.length>1); }catch(e){}
+
   var homNay=new Date().toLocaleDateString('en-CA');           // dạng 2026-08-03
   var daXem=false;
   try{ daXem=(localStorage.getItem('butxanh_intro_ngay')===homNay); }catch(e){}
-  if(daXem){ sp.classList.add('quick'); window.__bxSplashHet=2000; }
-  else{
-    window.__bxSplashHet=9800;
+
+  if(daXem || lienKetSau){
+    sp.classList.add('quick'); window.__bxSplashHet=2000;
+  }else{
+    window.__bxSplashHet=0;      /* 0 = chờ thầy cô bấm, không tự tan */
     try{ localStorage.setItem('butxanh_intro_ngay',homNay); }catch(e){}
   }
 })();
@@ -6856,7 +6920,10 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
       setTimeout(show, (window.__bxSplashHet||3200) + 600);
     } else show();
   }
-  if(document.readyState==='complete') hien(); else window.addEventListener('load', hien);
+  /* 3/8/2026: hộp chọn lớp này ĐÃ GỘP vào màn chào (khối .sp-chon trong #splash)
+     nên không tự hiện nữa — tránh bắt thầy cô qua hai màn liên tiếp.
+     Vẫn giữ nguyên bộ máy bên trên vì màn chào gọi lại BX_wcChonLop/BX_wcDangNhap. */
+  window.__bxHopChonLopCu = hien;   /* giữ lối gọi tay, phòng khi cần dùng lại */
 })();
 </script>
 
@@ -7096,18 +7163,38 @@ window.BX_dongManChao=function(){
   try{ window.__bxManChaoXong && window.__bxManChaoXong(); }catch(e){}
 };
 
-/* Đếm ngược trên màn chào để thầy cô biết còn bao lâu nữa thì vào việc. */
-(function(){
+/* Thầy cô MỚI bấm chọn lớp ngay trên màn chào.
+   Dùng lại đúng bộ máy cũ (BX_wcChonLop): ghi hồ sơ lớp, dựng thời khoá biểu mẫu,
+   nạp kho giáo án của khối rồi sinh lịch báo giảng. Màn chào ở lại hiện dòng
+   "đang chuẩn bị…" cho tới khi app chuyển sang Lịch báo giảng mới tan. */
+window.BX_chaoChonLop=function(n){
   var sp=document.getElementById('splash');
-  if(!sp || sp.classList.contains('quick')) return;      /* chế độ loé nhanh thì khỏi đếm */
-  var o=document.getElementById('bxiDem'); if(!o) return;
-  var con=Math.round((window.__bxSplashHet||9800)/1000) - 1;
-  var t=setInterval(function(){
-    con--;
-    if(con<=0 || getComputedStyle(sp).visibility==='hidden'){ clearInterval(t); return; }
-    var b=o.querySelector('b'); if(b) b.textContent=con;
-  },1000);
-})();
+  if(sp) sp.classList.add('dangdung');
+  var goc=window.showView, xongRoi=false;
+  var xong=function(){
+    if(xongRoi) return; xongRoi=true;
+    if(typeof goc==='function' && window.showView!==goc) window.showView=goc;
+    BX_dongManChao();
+  };
+  if(typeof goc==='function'){
+    window.showView=function(v){
+      var kq=goc.apply(this,arguments);
+      if(v==='lich') setTimeout(xong,250);
+      return kq;
+    };
+  }
+  setTimeout(xong, 9000);                    /* dự phòng: mạng chậm cũng không kẹt */
+  try{ BX_wcChonLop(n); }catch(e){ console.warn('[Màn chào] lỗi chọn lớp', e && e.message); xong(); }
+};
+
+/* "Tôi đã dùng Bút Xanh rồi" — đóng màn chào rồi mở đăng nhập Google */
+window.BX_chaoDangNhap=function(){
+  BX_dongManChao();
+  setTimeout(function(){
+    try{ BX_wcDangNhap(); }
+    catch(e){ try{ if(window.FBX && FBX.login) FBX.login(); }catch(_){} }
+  }, 200);
+};
 </script>
 </body>
 </html>
