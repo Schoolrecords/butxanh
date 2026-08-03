@@ -103,7 +103,10 @@
     if(document.getElementById('bxlic-css')) return;
     var s=document.createElement('style'); s.id='bxlic-css';
     s.textContent=[
-      '#bxlic-wm{position:fixed;inset:0;pointer-events:none;z-index:6;background-repeat:repeat;opacity:1;mix-blend-mode:multiply}',
+      /* 3/8/2026: bỏ mix-blend-mode:multiply — chế độ hoà trộn toàn màn hình rất nặng cho
+         máy yếu, là nguyên nhân iOS Safari không giữ nổi thanh điều hướng đáy khi cuộn
+         (thanh trượt theo tay vuốt). Chữ mờ 6% trên nền trắng nhìn gần như không khác. */
+      '#bxlic-wm{position:fixed;inset:0;pointer-events:none;z-index:6;background-repeat:repeat;opacity:1}',
       '.bxlic-ov{position:fixed;inset:0;background:rgba(15,30,25,.55);display:none;align-items:center;justify-content:center;z-index:99999;padding:16px}',
       '.bxlic-ov.on{display:flex}',
       '.bxlic-card{background:#fff;border-radius:16px;max-width:440px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 18px 60px rgba(0,0,0,.35);font-family:inherit}',
