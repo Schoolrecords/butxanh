@@ -517,8 +517,20 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 #splash .sp-lop{border:2px solid #d7ebdf;background:#f6fbf8;border-radius:16px;padding:14px 2px 10px;cursor:pointer;font-family:inherit;transition:transform .15s ease,border-color .15s ease,background .15s ease}
 #splash .sp-lop:hover{border-color:var(--green);background:#eaf7ef;transform:translateY(-2px)}
 #splash .sp-lop:active{transform:scale(.94)}
-#splash .sp-lop .n{display:block;font-size:26px;font-weight:800;color:var(--green-dark);line-height:1}
-#splash .sp-lop .l{display:block;font-size:11px;color:#7b8f83;margin-top:3px;font-weight:600}
+/* Chữ "LỚP" nằm TRÊN, số nằm DƯỚI — đọc từ trên xuống thành "LỚP 1", "LỚP 2" */
+#splash .sp-lop .l{display:block;font-size:11px;color:#7b8f83;font-weight:600;letter-spacing:.5px}
+#splash .sp-lop .n{display:block;font-size:26px;font-weight:800;color:var(--green-dark);line-height:1.05;margin-top:2px}
+
+/* --- Lời nhắn dành cho thầy cô đã dùng Bút Xanh --- */
+#splash .sp-cu{margin-top:14px;padding:13px 16px;border-radius:13px;background:rgba(255,255,255,.72);border:1px solid var(--green-line);max-width:620px;margin-left:auto;margin-right:auto}
+#splash .sp-cu-txt{font-size:13px;line-height:1.6;color:#4a5b51}
+#splash .sp-cu-txt b{color:var(--green-dark)}
+#splash .sp-cu-nut{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-top:11px}
+#splash .sp-btn-gg,#splash .sp-btn-vao{display:inline-flex;align-items:center;gap:8px;padding:10px 17px;border-radius:10px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;transition:.16s}
+#splash .sp-btn-gg{background:#fff;border:1px solid #dce6e0;color:#31463b}
+#splash .sp-btn-gg:hover{border-color:var(--green);background:#f6fbf8}
+#splash .sp-btn-vao{background:var(--green-dark);border:1px solid var(--green-dark);color:#fff}
+#splash .sp-btn-vao:hover{background:var(--green-deep)}
 #splash .sp-note{margin-top:13px;font-size:12.5px;color:#8a9a90;line-height:1.5;max-width:520px;margin-left:auto;margin-right:auto}
 #splash .sp-dn{margin-top:10px;background:none;border:none;color:#5c7a68;font-size:13px;font-family:inherit;text-decoration:underline;cursor:pointer;padding:6px}
 #splash .sp-dn:hover{color:var(--green-dark)}
@@ -1160,14 +1172,23 @@ window.bxMergeKho = function(){
       <div class="sp-chon">
         <div class="sp-ask">Thầy/cô đang dạy lớp mấy?</div>
         <div class="sp-lops">
-          <button class="sp-lop" onclick="BX_chaoChonLop(1)"><span class="n">1</span><span class="l">LỚP</span></button>
-          <button class="sp-lop" onclick="BX_chaoChonLop(2)"><span class="n">2</span><span class="l">LỚP</span></button>
-          <button class="sp-lop" onclick="BX_chaoChonLop(3)"><span class="n">3</span><span class="l">LỚP</span></button>
-          <button class="sp-lop" onclick="BX_chaoChonLop(4)"><span class="n">4</span><span class="l">LỚP</span></button>
-          <button class="sp-lop" onclick="BX_chaoChonLop(5)"><span class="n">5</span><span class="l">LỚP</span></button>
+          <button class="sp-lop" onclick="BX_chaoChonLop(1)"><span class="l">LỚP</span><span class="n">1</span></button>
+          <button class="sp-lop" onclick="BX_chaoChonLop(2)"><span class="l">LỚP</span><span class="n">2</span></button>
+          <button class="sp-lop" onclick="BX_chaoChonLop(3)"><span class="l">LỚP</span><span class="n">3</span></button>
+          <button class="sp-lop" onclick="BX_chaoChonLop(4)"><span class="l">LỚP</span><span class="n">4</span></button>
+          <button class="sp-lop" onclick="BX_chaoChonLop(5)"><span class="l">LỚP</span><span class="n">5</span></button>
         </div>
         <div class="sp-note">Chạm một lần — Bút Xanh dựng sẵn lịch dạy cả tuần kèm giáo án, thầy cô chỉnh lại lúc nào cũng được.</div>
-        <button class="sp-dn" onclick="BX_chaoDangNhap()">Tôi đã dùng Bút Xanh rồi — đăng nhập để lấy lại dữ liệu</button>
+        <div class="sp-cu">
+          <div class="sp-cu-txt"><b>Nếu thầy cô đã sử dụng Bút Xanh</b>, xin bỏ qua thông báo này — hãy đăng nhập Google để lấy lại dữ liệu, hoặc vào thẳng ứng dụng.</div>
+          <div class="sp-cu-nut">
+            <button class="sp-btn-gg" onclick="BX_chaoDangNhap()">
+              <svg width="17" height="17" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.3 5.1 29.4 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.2-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.3 5.1 29.4 3 24 3 16.3 3 9.7 7.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 9.9-2 13.5-5.2l-6.2-5.3C29.2 35.9 26.7 37 24 37c-5.3 0-9.7-2.6-11.3-6.9l-6.5 5C9.6 41.6 16.2 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.2 5.3C41 38 44 31.7 44 24c0-1.2-.1-2.3-.4-3.5z"/></svg>
+              Đăng nhập Google
+            </button>
+            <button class="sp-btn-vao" onclick="BX_dongManChao()">Vào thẳng ứng dụng →</button>
+          </div>
+        </div>
       </div>
 
       <!-- Thầy cô ĐÃ khai thời khoá biểu: vào thẳng, không hỏi lại lớp -->
@@ -1199,6 +1220,21 @@ window.bxMergeKho = function(){
   var homNay=new Date().toLocaleDateString('en-CA');           // dạng 2026-08-03
   var daXem=false;
   try{ daXem=(localStorage.getItem('butxanh_intro_ngay')===homNay); }catch(e){}
+
+  /* ===== THÁNG 8/2026: giới thiệu cho MỌI thiết bị, MỌI lần mở =====
+     Nhiều thầy cô còn chưa quen quy trình nên tháng này bỏ hết bộ lọc:
+     ai mở app cũng thấy đầy đủ, kể cả người đã khai thời khoá biểu, và
+     không giới hạn mỗi ngày một lần. Sang 1/9/2026 tự quay về nếp cũ,
+     không phải sửa gì thêm. */
+  var thang8=false;
+  try{ var nay=new Date(); thang8=(nay.getFullYear()===2026 && nay.getMonth()===7); }catch(e){}
+  window.__bxThang8=thang8;
+
+  if(thang8 && !lienKetSau){
+    sp.classList.remove('cu');   /* người cũ cũng thấy hàng chọn lớp */
+    window.__bxSplashHet=0;      /* chờ bấm, không tự tan */
+    return;
+  }
 
   if(daXem || lienKetSau){
     sp.classList.add('quick'); window.__bxSplashHet=2000;
@@ -7205,6 +7241,24 @@ window.BX_dongManChao=function(){
    nạp kho giáo án của khối rồi sinh lịch báo giảng. Màn chào ở lại hiện dòng
    "đang chuẩn bị…" cho tới khi app chuyển sang Lịch báo giảng mới tan. */
 window.BX_chaoChonLop=function(n){
+  /* CHỐT CHẶN: chọn lớp sẽ dựng lịch MẪU và GHI ĐÈ thời khoá biểu đang có.
+     Thầy cô đã khai lịch thật mà lỡ chạm vào thì mất sạch — nên phải hỏi lại. */
+  var daCoTKB=false;
+  try{
+    var v=JSON.parse(localStorage.getItem('butxanh_tkb')||'null');
+    daCoTKB=!!(v && Array.isArray(v.slots) && v.slots.some(function(s){ return s && String(s.mon||'').trim(); }) && !v.mau);
+  }catch(e){}
+  if(daCoTKB){
+    var hoi='Thầy/cô đã có thời khoá biểu riêng.\n\nChọn Lớp '+n+' sẽ THAY thời khoá biểu đó bằng lịch mẫu của khối '+n+'.\n\nThầy/cô có chắc muốn thay không?';
+    var tiep=function(ok){ if(ok) BX_chaoChonLopThat(n); };
+    if(window.bxConfirm){ bxConfirm(hoi).then(tiep); }
+    else { tiep(window.confirm(hoi)); }
+    return;
+  }
+  BX_chaoChonLopThat(n);
+};
+
+window.BX_chaoChonLopThat=function(n){
   var sp=document.getElementById('splash');
   if(sp) sp.classList.add('dangdung');
   var goc=window.showView, xongRoi=false;
