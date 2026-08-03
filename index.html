@@ -1473,8 +1473,8 @@ window.bxMergeKho = function(){
           <button onclick="helpGo('h-ppt')">📊 Bài giảng trình chiếu</button>
           <button onclick="helpGo('h-khdh')">📋 KHGD môn học</button>
           <button onclick="helpGo('h-hs')">👥 Học sinh cần hỗ trợ</button>
-          <button onclick="helpGo('h-khac')">🧩 Tính năng khác</button>
-          <button onclick="helpGo('h-luuy')">💡 Mẹo &amp; Câu hỏi</button>
+          <button onclick="helpGo('h-khac')">🧩 Mục còn lại</button>
+          <button onclick="helpGo('h-luuy')">💡 Câu hỏi hay gặp</button>
         </div>
 
         <div class="hlp-sec" id="h-gioithieu">
@@ -1507,105 +1507,111 @@ window.bxMergeKho = function(){
         </div>
 
         <div class="hlp-sec" id="h-login">
-          <h4><span class="hlp-num">🔐</span> Đăng nhập &amp; Đồng bộ đám mây</h4>
-          <p>Đăng nhập giúp giáo án của thầy cô được lưu trên đám mây — đổi điện thoại hay máy tính vẫn còn nguyên dữ liệu.</p>
+          <h4><span class="hlp-num">🔐</span> Đăng nhập &amp; Đồng bộ</h4>
+          <p><b>Để làm gì:</b> để dữ liệu của thầy cô nằm trên mây. Mất điện thoại, đổi máy, hay soạn ở trường rồi về nhà xem tiếp — vẫn còn nguyên.</p>
           <ul class="hlp-list">
-            <li>Bấm nút <b>đăng nhập Google</b> ở góc trên bên phải, chọn tài khoản Gmail.</li>
-            <li>Sau khi đăng nhập, mọi thay đổi <b>tự động lưu lên đám mây</b> — không cần bấm lưu thủ công.</li>
-            <li>Chấm màu cạnh chuông báo cho biết trạng thái: <b>xanh</b> = đã lưu, <b>vàng</b> = đang đồng bộ, <b>đỏ</b> = lỗi mạng.</li>
-            <li>Không đăng nhập vẫn dùng bình thường, dữ liệu lưu ngay trên máy (nên nhớ sao lưu định kỳ).</li>
+            <li>Bấm <b>Đăng nhập</b> ở góc trên bên phải, chọn tài khoản Gmail. Xong.</li>
+            <li>Từ đó mọi thứ <b>tự lưu</b>, thầy cô không phải bấm lưu gì thêm.</li>
+            <li>Chấm màu cạnh chuông cho biết: <b>xanh</b> = đã lưu xong · <b>vàng</b> = đang lưu · <b>đỏ</b> = mạng trục trặc.</li>
           </ul>
+          <div class="hlp-tip">💡 <b>Không đăng nhập vẫn dùng được bình thường</b> — nhưng dữ liệu chỉ nằm trong máy này. Nếu vậy, thỉnh thoảng vào <b>⚙️ Cài đặt → Sao lưu</b> tải file dự phòng cho chắc.</div>
         </div>
 
         <div class="hlp-sec" id="h-tkb">
-          <h4><span class="hlp-num">📅</span> Thời khóa biểu (TKB)</h4>
-          <p>Là bảng gốc để Bút Xanh sinh ra Lịch báo giảng và nhắc lịch dạy.</p>
+          <h4><span class="hlp-num">📅</span> Thời khóa biểu</h4>
+          <p><b>Để làm gì:</b> đây là việc thầy cô làm <b>một lần duy nhất</b>. Cả app chạy được là nhờ bảng này.</p>
           <ul class="hlp-list">
-            <li>Gõ (hoặc chọn) tên môn vào từng ô theo Thứ – Buổi – Tiết.</li>
-            <li>Bấm <b>📅 Nghỉ lễ / dạy bù</b> để khai báo ngày nghỉ, ngày dạy bù đặc biệt.</li>
-            <li>Bấm <b>💾 Lưu thời khóa biểu</b> để lưu, hoặc <b>✨ Lưu &amp; tạo LBG tuần này</b> để lưu và dựng lịch báo giảng ngay.</li>
+            <li>Gõ tên môn vào từng ô theo Thứ – Buổi – Tiết. Ô nào trống là tiết nghỉ.</li>
+            <li>Xong thì bấm <b>✨ Lưu &amp; tạo LBG tuần này</b> — vừa lưu, vừa dựng luôn lịch báo giảng.</li>
+            <li>Có nghỉ lễ hay dạy bù? Bấm <b>📅 Nghỉ lễ / dạy bù</b> khai báo, lịch sẽ tự tránh ngày đó.</li>
           </ul>
+          <div class="hlp-tip">💡 Ngại gõ tay? Bấm <b>📥 Tải mẫu TKB</b>, điền vào Excel rồi <b>📤 Đưa TKB lên</b> — nhanh hơn nhiều.</div>
         </div>
 
         <div class="hlp-sec" id="h-lbg">
-          <h4><span class="hlp-num">📆</span> Lịch báo giảng (LBG)</h4>
-          <p>Bảng chi tiết các tiết dạy trong tuần: Thứ, ngày, tiết, môn, tên bài, đồ dùng dạy học.</p>
+          <h4><span class="hlp-num">📆</span> Lịch báo giảng</h4>
+          <p><b>Để làm gì:</b> bảng lịch dạy cả tuần để nộp tổ, nộp trường — thứ, ngày, tiết, môn, tên bài, đồ dùng.</p>
           <ul class="hlp-list">
-            <li><b>✨ Tạo LBG tuần này:</b> tự dựng lịch cả tuần từ Thời khóa biểu.</li>
-            <li><b>✏️ Sửa LBG:</b> mở bảng chỉnh từng tiết (đổi tên bài, đồ dùng…).</li>
-            <li><b>📥 Tải mẫu Lịch Báo Giảng:</b> xuất file Excel lịch tuần hiện tại để in hoặc lưu trữ.</li>
+            <li><b>✨ Tạo LBG tuần này</b> — app tự dựng cả tuần từ thời khóa biểu, kèm sẵn tên bài theo chương trình.</li>
+            <li><b>✏️ Sửa LBG</b> — muốn đổi tên bài hay đồ dùng tiết nào thì sửa tiết đó.</li>
+            <li><b>📥 Tải LBG về máy</b> — ra file Excel, in hoặc nộp được ngay.</li>
           </ul>
-          <div class="hlp-tip">💡 Đổi tuần bằng bộ chọn <b>Tuần</b> ở đầu trang; mỗi tuần có lịch riêng.</div>
+          <div class="hlp-tip">💡 Đổi tuần bằng ô <b>Tuần</b> ở đầu trang. Mỗi tuần một lịch riêng, làm tuần nào lưu tuần đó.</div>
         </div>
 
         <div class="hlp-sec" id="h-khbd">
-          <h4><span class="hlp-num">📄</span> Kế hoạch bài dạy (KHBD / giáo án)</h4>
-          <p>Trung tâm của Bút Xanh — nơi soạn và tải giáo án từng tiết theo CV 2345 và CT GDPT 2018.</p>
+          <h4><span class="hlp-num">📄</span> Kế hoạch bài dạy (giáo án)</h4>
+          <p><b>Để làm gì:</b> nơi thầy cô soạn và lấy giáo án từng tiết, đúng mẫu Công văn 2345 và Chương trình GDPT 2018.</p>
           <ul class="hlp-list">
-            <li>Bấm vào <b>một tiết</b> trong danh sách → Bút Xanh tự lấy giáo án từ <b>Kho giáo án số</b> và cá nhân hóa theo hồ sơ thầy cô.</li>
-            <li>Chỉnh sửa trực tiếp trong ô nội dung; bản sửa là <b>của riêng thầy cô</b>, không đè lên bản gốc.</li>
-            <li>Dùng nhóm nút <b>✨ AI hỗ trợ</b>: Bổ sung hoạt động · Rút gọn · Thêm phân hóa · Hỗ trợ HS khuyết tật · Rà soát · Tạo dàn ý PPT.</li>
-            <li>Bấm <b>💾 Lưu vào kho</b> để giữ lại, và <b>📄 Tải Word</b> để có file in/ký.</li>
+            <li>Bấm vào <b>một tiết</b> → app tự lấy giáo án sẵn trong Kho, đã điền tên thầy cô, lớp, trường.</li>
+            <li>Sửa thẳng trong ô nội dung. <b>Bản sửa là của riêng thầy cô</b>, bản gốc trong Kho không hề đổi.</li>
+            <li>Lỡ sửa hỏng? Bấm <b>↩ Bản gốc</b> là lấy lại được bản ban đầu.</li>
+            <li>Nhóm nút <b>✨ AI hỗ trợ</b> giúp: thêm hoạt động · rút gọn · thêm phân hóa · hỗ trợ HS khuyết tật · rà soát · tạo dàn ý PowerPoint.</li>
+            <li>Bấm <b>📄 Tải Word</b> để có file in và ký.</li>
           </ul>
-          <div class="hlp-tip">💡 Muốn cả tuần một lần? Ở <b>Lịch báo giảng</b> bấm <b>📦 Tạo KHBD Tuần…</b> để gộp tất cả tiết thành một file Word.</div>
+          <div class="hlp-tip">💡 <b>Cần cả tuần một lúc?</b> Sang <b>Lịch báo giảng</b> bấm <b>📦 Tạo KHBD Tuần…</b> — gộp hết các tiết trong tuần thành một file Word duy nhất.</div>
         </div>
 
         <div class="hlp-sec" id="h-kho">
           <h4><span class="hlp-num">📁</span> Kho giáo án</h4>
-          <p>Thư viện giáo án số soạn sẵn theo chuẩn Kết nối tri thức, đủ các môn từ lớp 1 đến lớp 5.</p>
+          <p><b>Để làm gì:</b> kho giáo án soạn sẵn theo bộ <b>Kết nối tri thức</b>, đủ các môn từ lớp 1 đến lớp 5 — dùng được ngay, không phải soạn từ đầu.</p>
           <ul class="hlp-list">
-            <li>Chọn <b>Lớp → Môn → Tuần</b> để xem danh sách các tiết có sẵn.</li>
-            <li>Bấm <b>⬇ Tải tiết này (Word)</b> để tải một tiết, hoặc tải cả tuần một lần.</li>
-            <li>Mọi giáo án đều có thể mang sang mục KHBD để chỉnh sửa và cá nhân hóa.</li>
+            <li>Chọn <b>Lớp → Môn → Tuần</b> để xem các tiết có sẵn.</li>
+            <li>Bấm <b>⬇ Tải tiết này (Word)</b> cho một tiết, hoặc tải cả tuần một lần.</li>
+            <li>Muốn sửa cho hợp lớp mình thì mang sang mục <b>Kế hoạch bài dạy</b>.</li>
           </ul>
+          <div class="hlp-tip">💡 Chưa nhập thời khóa biểu vẫn vào Kho lấy giáo án bình thường được ạ.</div>
         </div>
 
         <div class="hlp-sec" id="h-ppt">
-          <h4><span class="hlp-num">📊</span> Bài giảng trình chiếu (PowerPoint)</h4>
-          <p>Thư viện link bài giảng PowerPoint theo lớp &amp; môn, mở/tải trực tiếp từ Google Drive.</p>
+          <h4><span class="hlp-num">📊</span> Bài giảng trình chiếu</h4>
+          <p><b>Để làm gì:</b> lấy sẵn slide PowerPoint cho từng tiết, khỏi mất công tự làm.</p>
           <ul class="hlp-list">
-            <li>Chọn <b>Lớp</b> → chọn <b>Môn</b> → xem các tuần. Tuần <b>tô màu xanh</b> là đã có bài giảng.</li>
-            <li>Bấm <b>🔗 Mở Google Drive</b> để xem hoặc tải slide về máy.</li>
-            <li>Muốn dùng slide riêng? Bấm <b>✏️ Chỉnh sửa</b>, dán link Drive của thầy cô rồi <b>💾 Lưu link</b>.</li>
+            <li>Chọn <b>Lớp → Môn</b> rồi xem các tuần. Tuần <b>tô màu xanh</b> là tuần đã có bài giảng.</li>
+            <li>Bấm vào <b>tuần</b> để mở slide của tuần đó, hoặc bấm <b>📂 Mở cả môn</b> để xem toàn bộ bài giảng của môn.</li>
+            <li>Slide mở trên Google Drive — xem trực tiếp hoặc tải về máy đều được.</li>
           </ul>
         </div>
 
         <div class="hlp-sec" id="h-khdh">
-          <h4><span class="hlp-num">📋</span> KHGD môn học (Phân phối chương trình)</h4>
-          <p>Kế hoạch giáo dục từng môn — bảng phân phối chương trình cả năm để trình ký.</p>
+          <h4><span class="hlp-num">📋</span> KHGD môn học</h4>
+          <p><b>Để làm gì:</b> bảng phân phối chương trình cả năm của từng môn — hồ sơ đầu năm phải nộp.</p>
           <ul class="hlp-list">
-            <li>Chọn <b>Lớp → Môn</b> để xem bảng phân phối chương trình.</li>
-            <li>Bấm vào ô để chỉnh sửa; bản sửa lưu riêng theo từng môn, <b>không đè bản gốc</b>.</li>
-            <li>Bấm <b>📄 Tải KHDH về máy</b> để xuất file Word khổ A4 ngang, sẵn sàng trình ký.</li>
+            <li>Chọn <b>Lớp → Môn</b> để xem bảng cả năm.</li>
+            <li>Bấm vào ô nào để sửa ô đó; bản sửa lưu riêng, <b>không đè bản gốc</b>.</li>
+            <li>Bấm <b>📄 Tải KHDH về máy</b> — ra file Word khổ ngang, trình ký được luôn.</li>
           </ul>
         </div>
 
         <div class="hlp-sec" id="h-hs">
           <h4><span class="hlp-num">👥</span> Học sinh cần hỗ trợ</h4>
-          <p>Quản lý nhóm học sinh cần quan tâm để Bút Xanh tự đưa biện pháp hỗ trợ vào giáo án.</p>
+          <p><b>Để làm gì:</b> khai một lần danh sách em cần quan tâm, sau đó <b>mọi giáo án tự có phần hỗ trợ các em ấy</b> — thầy cô không phải nhớ và gõ lại từng bài.</p>
           <ul class="hlp-list">
-            <li>Bấm <b>➕ Thêm nhóm/HS</b>, ghi loại hỗ trợ (đọc chậm, tính toán yếu, hòa nhập…) và biện pháp.</li>
-            <li>Mục <b>IV — Điều chỉnh, hỗ trợ HS</b> trong KHBD sẽ tự lấy nội dung từ đây.</li>
+            <li>Bấm <b>➕ Thêm nhóm/HS</b>, ghi rõ cần hỗ trợ gì (đọc chậm, tính toán yếu, khuyết tật hòa nhập…) và biện pháp.</li>
+            <li>Phần <b>IV — Điều chỉnh, hỗ trợ học sinh</b> trong giáo án sẽ tự lấy nội dung từ đây.</li>
           </ul>
         </div>
 
         <div class="hlp-sec" id="h-khac">
-          <h4><span class="hlp-num">🧩</span> Các tính năng khác</h4>
+          <h4><span class="hlp-num">🧩</span> Những mục còn lại</h4>
           <ul class="hlp-list">
-            <li><b>🔔 Bút Xanh nhắc thầy cô:</b> tự nhắc việc cần làm theo lịch tuần (chuông ở góc trên phải).</li>
-            <li><b>📚 Tài liệu &amp; Học liệu:</b> lưu và tra cứu học liệu, tài liệu tham khảo theo môn.</li>
-            <li><b>📊 Thống kê &amp; Báo cáo:</b> theo dõi tiến độ soạn giáo án, xuất báo cáo Word.</li>
-            <li><b>⚙️ Cài đặt:</b> hồ sơ giáo viên, cách hiển thị Mục IV, và <b>Sao lưu / Khôi phục</b> toàn bộ dữ liệu (file JSON).</li>
+            <li><b>🔔 Nhắc việc</b> — chuông ở góc trên phải, nhắc việc cần làm theo lịch tuần.</li>
+            <li><b>📚 Tài liệu &amp; Học liệu</b> — chỗ cất tài liệu tham khảo theo môn.</li>
+            <li><b>📊 Thống kê &amp; Báo cáo</b> — xem đã soạn được bao nhiêu, xuất báo cáo Word.</li>
+            <li><b>⚙️ Cài đặt</b> — hồ sơ giáo viên, và <b>Sao lưu / Khôi phục</b> toàn bộ dữ liệu.</li>
           </ul>
         </div>
 
         <div class="hlp-sec" id="h-luuy">
-          <h4><span class="hlp-num">💡</span> Mẹo &amp; Câu hỏi thường gặp</h4>
-          <div class="hlp-faq"><div class="q">Bút Xanh có dùng được trên điện thoại không?</div><div class="a">Có. App được thiết kế ưu tiên cho điện thoại — mở trình duyệt và truy cập <b>butxanh.net</b> là dùng được ngay, không cần cài đặt.</div></div>
-          <div class="hlp-faq"><div class="q">Chỉnh sửa giáo án có làm hỏng bản gốc không?</div><div class="a">Không. Mọi chỉnh sửa đều lưu thành bản riêng của thầy cô; bản gốc trong Kho luôn được giữ nguyên.</div></div>
-          <div class="hlp-faq"><div class="q">Đổi máy thì dữ liệu có còn không?</div><div class="a">Nếu đã <b>đăng nhập Google</b>, dữ liệu đồng bộ trên đám mây và tự có lại khi đăng nhập ở máy mới. Nếu chưa đăng nhập, hãy vào <b>Cài đặt → Sao lưu</b> để tải file dự phòng.</div></div>
-          <div class="hlp-faq"><div class="q">Tôi dạy nhiều lớp thì sao?</div><div class="a">Dùng bộ chọn <b>Lớp</b> ở đầu trang để chuyển qua lại; mỗi lớp có lịch và giáo án riêng.</div></div>
-          <div class="hlp-tip">🌼 <b>Bút Xanh luôn đồng hành cùng thầy cô.</b> Chúc thầy cô có những giờ dạy nhẹ nhàng và hiệu quả!</div>
+          <h4><span class="hlp-num">💡</span> Câu hỏi thầy cô hay gặp</h4>
+          <div class="hlp-faq"><div class="q">Dùng trên điện thoại được không?</div><div class="a">Được, và app làm ra là để dùng trên điện thoại trước. Mở trình duyệt vào <b>butxanh.net</b> là xong, <b>không phải cài đặt gì cả</b>.</div></div>
+          <div class="hlp-faq"><div class="q">Tôi sửa giáo án thì bản gốc có hỏng không?</div><div class="a">Không ạ. Bản sửa là bản riêng của thầy cô. Bản gốc trong Kho luôn còn nguyên, và có nút <b>↩ Bản gốc</b> để lấy lại bất cứ lúc nào.</div></div>
+          <div class="hlp-faq"><div class="q">Đổi điện thoại thì dữ liệu còn không?</div><div class="a">Còn, nếu thầy cô đã <b>đăng nhập Google</b> — chỉ cần đăng nhập lại ở máy mới là có đủ. Nếu chưa đăng nhập thì vào <b>⚙️ Cài đặt → Sao lưu</b> tải file dự phòng trước khi đổi máy.</div></div>
+          <div class="hlp-faq"><div class="q">Tôi dạy nhiều lớp / nhiều khối thì sao?</div><div class="a">Dùng được hết ạ. Đổi lớp bằng ô <b>Lớp</b> ở đầu trang, mỗi lớp có lịch và giáo án riêng. Giáo viên bộ môn dạy nhiều khối cũng khai đủ trong thời khóa biểu là app nhận hết.</div></div>
+          <div class="hlp-faq"><div class="q">Bút Xanh có mất phí không?</div><div class="a"><b>Thời khóa biểu và Lịch báo giảng dùng miễn phí.</b> Phần tải giáo án Word, KHGD môn học và tải từ Kho cần bản quyền <b>99.000đ/máy/năm học</b>. Bấm <b>🔓 Kích hoạt bản quyền</b> trong app sẽ hiện mã và hướng dẫn chuyển khoản; xong khoảng 5–30 giây là tự mở khoá.</div></div>
+          <div class="hlp-faq"><div class="q">Đang dùng mà mất mạng thì sao?</div><div class="a">Thầy cô cứ làm tiếp bình thường, dữ liệu lưu trong máy. Khi có mạng lại app tự đẩy lên đám mây. Chỉ lưu ý: <b>đừng xoá dữ liệu trình duyệt</b> khi chưa đồng bộ xong (chấm cạnh chuông chưa xanh).</div></div>
+          <div class="hlp-faq"><div class="q">Tôi làm sai, hỏng hết rồi, cứu được không?</div><div class="a">Được ạ. Giáo án có nút <b>↩ Bản gốc</b>; toàn bộ dữ liệu có <b>⚙️ Cài đặt → Khôi phục</b>; nếu đã đăng nhập thì còn bản trên đám mây nữa. Vướng gì thầy cô cứ hỏi trong nhóm Zalo.</div></div>
+          <div class="hlp-tip">🌼 <b>Còn thắc mắc gì, thầy cô bấm nút “Nhóm Zalo hỗ trợ” ở góc dưới bên phải màn hình nhé.</b> Chúc thầy cô có những giờ dạy nhẹ nhàng và hiệu quả!</div>
         </div>
       </div>
     </div>
