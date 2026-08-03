@@ -874,6 +874,12 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 .sl-badge{font-size:12px;font-weight:600;color:var(--muted);background:#f1f4f2;padding:3px 10px;border-radius:999px}
 .sl-badge.on{color:var(--green-dark);background:var(--green-soft)}
 .sl-back{background:none;border:none;color:var(--green-dark);font-weight:600;font-size:14px;cursor:pointer;padding:4px 0;margin-bottom:10px}
+/* Dải chọn nhanh môn khác ngay trong trang chi tiết — khỏi phải quay ra lưới môn */
+.sl-mon-bar{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.sl-mon-chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink2);font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap;transition:.14s;font-family:inherit}
+.sl-mon-chip:hover{border-color:#bfe7cd;background:var(--green-soft2)}
+.sl-mon-chip.on{background:var(--mc,var(--green));border-color:var(--mc,var(--green));color:#fff;box-shadow:0 4px 10px rgba(20,60,40,.18)}
+.sl-mon-chip .ic{font-size:15px;line-height:1}
 .sl-detail-head{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:18px;background:linear-gradient(135deg,#fff,var(--green-soft2));border:1px solid var(--line);border-left:5px solid var(--sc);margin-bottom:14px}
 .sl-detail-title{font-weight:800;font-size:19px;color:var(--ink)}
 .sl-detail-sub{font-size:13px;color:var(--ink2);margin-top:2px}
@@ -2894,6 +2900,8 @@ function renderSlides(){
   }).join('');
   var body = el('sl-body'); if(!body) return;
   body.innerHTML = _slideSel.mon ? BX_slideDetail(_slideSel.lop,_slideSel.mon) : BX_slideSubjGrid(_slideSel.lop);
+  /* Cuộn chip môn đang xem vào giữa dải (màn hẹp dải bị tràn ngang) */
+  try{ var c=body.querySelector('.sl-mon-chip.on'); if(c&&c.scrollIntoView) c.scrollIntoView({block:'nearest',inline:'center'}); }catch(e){}
 }
 /* Lưới an toàn cho nút Tuần: một số máy trường bị tiện ích/cài đặt chặn mở tab mới
    (gặp thật 3/8/2026 — bấm không thấy gì, tưởng app đơ). App tự mở tab bằng
@@ -2926,6 +2934,12 @@ function BX_slideSubjGrid(lop){
 function BX_slideDetail(lop,mon){
   var m=BX_SLIDE_META[mon]||{ic:'📘',c:'#1FA45C'}, e=BX_slideEntry(lop,mon), h='';
   h+='<button class="sl-back" onclick="BX_slideBack()">← Tất cả môn</button>';
+  /* Dải chọn nhanh môn khác — chuyển thẳng môn không phải quay ra lưới (góp ý thầy Chung 3/8) */
+  var subs=BX_SLIDE_SUBJECTS[lop]||[];
+  h+='<div class="sl-mon-bar">'+subs.map(function(s,i){
+    var mm=BX_SLIDE_META[s]||{ic:'📘',c:'#1FA45C'};
+    return '<button class="sl-mon-chip'+(s===mon?' on':'')+'" style="--mc:'+mm.c+'" onclick="BX_slideOpenIdx('+i+')" title="Xem bài giảng '+s+'"><span class="ic">'+mm.ic+'</span>'+s+'</button>';
+  }).join('')+'</div>';
   h+='<div class="sl-detail-head" style="--sc:'+m.c+'">'+
        '<span class="sl-subj-ic big">'+m.ic+'</span>'+
        '<div class="sl-detail-meta"><div class="sl-detail-title">'+mon+'</div><div class="sl-detail-sub">Lớp '+lop+' · <b>'+(e.has||[]).length+'/'+BX_SLIDE_WEEKS+'</b> tuần đã có bài giảng</div></div>'+
