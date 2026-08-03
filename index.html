@@ -1454,15 +1454,16 @@ window.bxMergeKho = function(){
   <div class="modal hlp-modal">
     <div class="modal-head" style="padding:0;border:none;position:relative">
       <div class="hlp-hero" style="flex:1">
-        <span class="hlp-badge">📖 HƯỚNG DẪN SỬ DỤNG</span>
-        <h3>Bút Xanh — Trợ lý đắc lực của thầy cô</h3>
-        <p>Soạn giáo án, quản lý lịch dạy và hồ sơ chuyên môn — nhanh, gọn, mọi lúc mọi nơi trên điện thoại.</p>
+        <span class="hlp-badge">🌱 GIỚI THIỆU &amp; HƯỚNG DẪN</span>
+        <h3>Nhập thời khóa biểu một lần — Bút Xanh lo trọn cả tuần!</h3>
+        <p>Ít thao tác hơn – hồ sơ gọn hơn – thêm thời gian cho học sinh và gia đình.</p>
       </div>
       <button class="close" onclick="closeModal('help-overlay')" style="position:absolute;top:14px;right:16px;color:#fff">×</button>
     </div>
     <div class="modal-body hlp-body">
       <div class="hlp-wrap">
         <div class="hlp-toc">
+          <button onclick="helpGo('h-gioithieu')">🌱 Bút Xanh là gì?</button>
           <button onclick="helpGo('h-start')">🚀 Bắt đầu nhanh</button>
           <button onclick="helpGo('h-login')">🔐 Đăng nhập &amp; Đồng bộ</button>
           <button onclick="helpGo('h-tkb')">📅 Thời khóa biểu</button>
@@ -1476,17 +1477,33 @@ window.bxMergeKho = function(){
           <button onclick="helpGo('h-luuy')">💡 Mẹo &amp; Câu hỏi</button>
         </div>
 
+        <div class="hlp-sec" id="h-gioithieu">
+          <h4><span class="hlp-num">🌱</span> Bút Xanh là gì?</h4>
+          <div style="background:linear-gradient(135deg,#f2fbf6,#e6f7ee);border:1px solid #cfeadb;border-left:4px solid #1FA45C;border-radius:12px;padding:15px 16px;margin:6px 0 14px">
+            <div style="font-size:17px;font-weight:800;color:#0E7A41;line-height:1.45;margin-bottom:9px">
+              Nhập thời khóa biểu một lần — Bút Xanh lo trọn cả tuần! 🌱
+            </div>
+            <p style="margin:0 0 10px">Thầy cô chỉ cần nhập <b>thời khóa biểu cá nhân</b>, Bút Xanh sẽ tự động tạo <b>Lịch báo giảng</b>, kết nối từng tiết với <b>kế hoạch bài dạy</b> và <b>kho giáo án</b>; đồng thời hỗ trợ tích hợp <b>năng lực số</b>, <b>ứng dụng AI</b>, <b>giáo dục địa phương</b> và cá nhân hóa hoạt động cho từng nhóm học sinh, kể cả <b>học sinh khuyết tật hòa nhập</b>.</p>
+            <p style="margin:0 0 10px;font-weight:600;color:#15834A">Ít thao tác hơn – hồ sơ gọn hơn – thêm thời gian cho học sinh và gia đình.</p>
+            <div style="font-size:16px;font-weight:800;color:#0E7A41;font-style:italic">Bút Xanh — trả lại buổi tối cho thầy cô.</div>
+          </div>
+          <div class="hlp-tip">🤝 <b>Cần hỗ trợ?</b> Bấm nút <b>“Nhóm Zalo hỗ trợ”</b> màu xanh ở góc dưới bên phải màn hình để vào nhóm, hỏi gì cũng được ạ.</div>
+        </div>
+
         <div class="hlp-sec" id="h-start">
-          <h4><span class="hlp-num">🚀</span> Bắt đầu nhanh trong 5 bước</h4>
-          <p>Chỉ cần làm theo 5 bước dưới đây là thầy cô có bộ hồ sơ dạy học đầy đủ cho cả tuần:</p>
+          <h4><span class="hlp-num">🚀</span> Bắt đầu nhanh — chỉ 2 việc</h4>
+          <p>Thầy cô <b>chỉ phải làm 2 việc</b>, những phần còn lại Bút Xanh tự lo:</p>
           <ol class="hlp-steps">
-            <li><b>Khai báo hồ sơ:</b> Vào <span class="hlp-key">⚙️ Cài đặt</span> điền họ tên, trường, lớp giảng dạy, tổ chuyên môn, năm học. Bút Xanh dùng thông tin này để tự điền vào mọi văn bản.</li>
-            <li><b>Tạo Thời khóa biểu:</b> Vào <span class="hlp-key">📅 Thời khóa biểu</span>, nhập môn theo từng tiết rồi bấm <b>💾 Lưu thời khóa biểu</b>.</li>
-            <li><b>Sinh Lịch báo giảng:</b> Vào <span class="hlp-key">📆 Lịch báo giảng</span>, bấm <b>✨ Tạo LBG tuần này</b> — Bút Xanh tự dựng lịch dạy cả tuần từ TKB.</li>
-            <li><b>Soạn Kế hoạch bài dạy:</b> Vào <span class="hlp-key">📄 Kế hoạch bài dạy</span>, bấm vào từng tiết → Bút Xanh lấy sẵn giáo án từ Kho, thầy cô chỉnh lại cho phù hợp.</li>
-            <li><b>Tải Word &amp; bài giảng:</b> Bấm <b>📄 Tải Word</b> để in/ký, và mở <span class="hlp-key">📊 Bài giảng trình chiếu</span> để lấy slide PowerPoint.</li>
+            <li><b>Điền hồ sơ một lần:</b> Vào <span class="hlp-key">⚙️ Cài đặt</span> — họ tên, trường, lớp, tổ chuyên môn, năm học. Từ đó về sau mọi văn bản tự điền sẵn, không phải gõ lại.</li>
+            <li><b>Nhập thời khóa biểu:</b> Vào <span class="hlp-key">📅 Thời khóa biểu</span>, điền môn theo từng tiết, rồi bấm <b>✨ Lưu &amp; tạo LBG tuần này</b>.</li>
           </ol>
-          <div class="hlp-tip">💡 <b>Mẹo:</b> Chưa cần làm hết ngay. Thầy cô có thể mở thẳng mục <b>Kho giáo án</b> để tải giáo án bất kỳ môn/lớp nào về dùng ngay.</div>
+          <p style="margin-top:12px"><b>Xong! Ngay lúc đó thầy cô đã có:</b></p>
+          <ul class="hlp-list">
+            <li><b>Lịch báo giảng</b> cả tuần, đủ thứ – ngày – tiết – môn – tên bài – đồ dùng.</li>
+            <li>Mỗi tiết đã <b>nối sẵn với giáo án</b> trong Kho — bấm vào là xem, sửa, tải Word.</li>
+            <li><b>Bài giảng trình chiếu</b> và <b>KHGD môn học</b> tương ứng của tuần đó.</li>
+          </ul>
+          <div class="hlp-tip">💡 <b>Chưa muốn nhập gì cả?</b> Cứ mở thẳng <b>📁 Kho giáo án</b> — tải giáo án bất kỳ môn nào, lớp nào về dùng ngay.</div>
         </div>
 
         <div class="hlp-sec" id="h-login">
@@ -6781,5 +6798,69 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   if(document.readyState==='complete') hien(); else window.addEventListener('load', hien);
 })();
 </script>
+
+<!-- ==================== NÚT NỔI: NHÓM ZALO HỖ TRỢ ====================
+     Nút độc lập, không thuộc menu nào. Lay động nhẹ để thầy cô nhận ra,
+     nhưng z-index thấp hơn lớp phủ (overlay=60) nên không đè lên hộp thoại. -->
+<style>
+#bxZalo{
+  position:fixed; right:18px; bottom:20px; z-index:55;
+  display:inline-flex; align-items:center; gap:9px;
+  padding:11px 17px 11px 13px; border-radius:999px;
+  background:linear-gradient(135deg,#0068FF,#0091FF);
+  color:#fff; text-decoration:none; font-weight:700; font-size:14.5px;
+  box-shadow:0 8px 22px rgba(0,86,204,.36), 0 2px 6px rgba(0,0,0,.14);
+  border:2px solid rgba(255,255,255,.55);
+  animation:bxZaloLac 6s ease-in-out 3s infinite;
+  transition:transform .22s ease, box-shadow .22s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+#bxZalo:hover,#bxZalo:focus-visible{ transform:translateY(-3px) scale(1.04); box-shadow:0 12px 28px rgba(0,86,204,.45); animation-play-state:paused; }
+#bxZalo:active{ transform:scale(.96) }
+#bxZalo svg{ width:22px; height:22px; flex:none }
+/* vòng sóng lan toả nhẹ phía sau nút */
+#bxZalo::before{
+  content:''; position:absolute; inset:-3px; border-radius:999px;
+  border:2px solid rgba(0,120,255,.55); opacity:0;
+  animation:bxZaloSong 6s ease-out 3s infinite; pointer-events:none;
+}
+@keyframes bxZaloLac{
+  0%,84%,100%{ transform:rotate(0) }
+  86%{ transform:rotate(-7deg) } 88%{ transform:rotate(6deg) }
+  90%{ transform:rotate(-5deg) } 92%{ transform:rotate(4deg) } 94%{ transform:rotate(0) }
+}
+@keyframes bxZaloSong{
+  0%,80%{ transform:scale(1); opacity:0 }
+  86%{ opacity:.85 }
+  100%{ transform:scale(1.45); opacity:0 }
+}
+/* Điện thoại: thu gọn còn hình tròn, nâng lên cao hơn thanh điều hướng dưới đáy */
+@media(max-width:768px){
+  #bxZalo{
+    right:14px;
+    bottom:84px;                                   /* dự phòng nếu env() không dùng được */
+    bottom:calc(84px + env(safe-area-inset-bottom));
+    padding:0; width:52px; height:52px; justify-content:center; gap:0;
+  }
+  #bxZalo .bxz-chu{ display:none }
+  #bxZalo svg{ width:25px; height:25px }
+}
+/* Thầy cô đã bật chế độ giảm chuyển động thì đứng yên */
+@media (prefers-reduced-motion: reduce){
+  #bxZalo, #bxZalo::before{ animation:none }
+}
+@media print{ #bxZalo{ display:none } }
+</style>
+
+<a id="bxZalo" href="https://zalo.me/g/fazifdg2xasiajb623uj" target="_blank" rel="noopener noreferrer"
+   title="Vào nhóm Zalo để được hỗ trợ sử dụng Bút Xanh" aria-label="Nhóm Zalo hỗ trợ Bút Xanh">
+  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M12 3C6.9 3 2.8 6.5 2.8 10.9c0 2.5 1.3 4.7 3.4 6.1-.1.8-.6 2.3-.7 2.7 0 0-.1.3.1.4.2.1.4 0 .4 0 .5-.1 2.5-1.2 3.4-1.7.8.2 1.7.3 2.6.3 5.1 0 9.2-3.5 9.2-7.8S17.1 3 12 3z"
+          fill="#fff"/>
+    <path d="M8.1 9.1h3.1c.2 0 .3.2.2.4l-2.6 3.4h2.4c.2 0 .3.1.3.3s-.1.3-.3.3H7.9c-.2 0-.3-.2-.2-.4l2.6-3.4H8.1c-.2 0-.3-.1-.3-.3s.1-.3.3-.3zm4.6 0c.2 0 .3.1.3.3v4c0 .2-.1.3-.3.3s-.3-.1-.3-.3v-4c0-.2.1-.3.3-.3zm2.9 1.1c.9 0 1.6.7 1.6 1.6s-.7 1.6-1.6 1.6-1.6-.7-1.6-1.6.7-1.6 1.6-1.6zm0 .7c-.5 0-.9.4-.9.9s.4.9.9.9.9-.4.9-.9-.4-.9-.9-.9z"
+          fill="#0068FF"/>
+  </svg>
+  <span class="bxz-chu">Nhóm Zalo hỗ trợ</span>
+</a>
 </body>
 </html>
