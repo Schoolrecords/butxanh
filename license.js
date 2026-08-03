@@ -34,7 +34,7 @@
     // Ghi nhiều email thì cách nhau bằng dấu phẩy.
     EMAIL_ADMIN: 'chungsongthinh@gmail.com, xebatcheotrt@gmail.com',
     SO_LAN_DOI_MAY_TOI_DA: 2,                  // đổi máy tối đa / năm học
-    HOTLINE: 'Zalo/ĐT thầy Chung'              // hiển thị khi hết lượt đổi máy
+    HOTLINE: 'Dự án Bút Xanh (qua nhóm Zalo)'  // hiển thị khi hết lượt đổi máy (đổi 3/8/2026 theo lời thầy)
   };
 
   /* ------------------------------------------------------------------ *
@@ -326,7 +326,7 @@
         '<button class="bxlic-btn" onclick="BXLIC_switchDevice()">📲 Dùng bản quyền trên máy này</button>'+
         '<button class="bxlic-btn sec" onclick="BXLIC_close(\'bxlic-dev\')">Để sau</button>'
       : '<p style="font-size:14px;line-height:1.6">Bản quyền đã <b>hết lượt đổi thiết bị</b> trong năm học này. '+
-        'Vui lòng liên hệ <b>'+esc(CONFIG.HOTLINE)+'</b> để được hỗ trợ chuyển máy.</p>'+
+        'Vui lòng liên hệ <b>'+esc(CONFIG.HOTLINE)+'</b> để được hỗ trợ!</p>'+
         '<button class="bxlic-btn sec" onclick="BXLIC_close(\'bxlic-dev\')">Đã hiểu</button>';
     o.innerHTML='<div class="bxlic-card"><div class="bxlic-hd"><h3>🔐 Thiết bị mới</h3>'+
       '<button class="x" onclick="BXLIC_close(\'bxlic-dev\')">×</button></div>'+
