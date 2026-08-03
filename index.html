@@ -2895,6 +2895,19 @@ function renderSlides(){
   var body = el('sl-body'); if(!body) return;
   body.innerHTML = _slideSel.mon ? BX_slideDetail(_slideSel.lop,_slideSel.mon) : BX_slideSubjGrid(_slideSel.lop);
 }
+/* Lưới an toàn cho nút Tuần: một số máy trường bị tiện ích/cài đặt chặn mở tab mới
+   (gặp thật 3/8/2026 — bấm không thấy gì, tưởng app đơ). App tự mở tab bằng
+   window.open: bị chặn thì hàm trả về null → hỏi mở Drive ngay tại trang này. */
+window.BX_slideWeekClick=function(ev,a){
+  if(ev.ctrlKey||ev.metaKey||ev.shiftKey||ev.altKey) return true;  /* GV chủ ý mở kiểu khác — không can thiệp */
+  var url=a.href, w=null;
+  try{ w=window.open(url,'_blank'); }catch(e){}
+  if(w){ try{ w.opener=null; }catch(e){} return false; }           /* mở được — cắt liên kết ngược cho an toàn */
+  BX_confirm({title:'Không mở được tab mới',
+    html:'Trình duyệt (hoặc tiện ích cài thêm) đang chặn mở tab mới tới Google Drive.<br><br>Bút Xanh sẽ mở thư mục bài giảng <b>ngay tại trang này</b> — xem xong thầy cô bấm nút <b>← Quay lại</b> của trình duyệt để trở về Bút Xanh.',
+    okText:'Mở tại trang này',cancelText:'Thôi'}, function(){ location.href=url; });
+  return false;
+};
 window.BX_slideLop=function(l){ _slideSel.lop=l; _slideSel.mon=null; renderSlides(); };
 window.BX_slideOpenIdx=function(i){ var subs=BX_SLIDE_SUBJECTS[_slideSel.lop]||[]; if(subs[i]){ _slideSel.mon=subs[i]; renderSlides(); } };
 window.BX_slideBack=function(){ _slideSel.mon=null; renderSlides(); };
@@ -2923,7 +2936,7 @@ function BX_slideDetail(lop,mon){
     var url=e.weeks[String(i)]||e.folder||'';
     var hc=hasSet[String(i)];
     if(url){
-      g+='<a class="sl-week '+(hc?'has':'soft')+'" href="'+BX_escAttr(url)+'" target="_blank" rel="noopener" title="Mở Tuần '+i+(hc?' — đã có bài giảng':' trên Google Drive')+'"><span class="sl-week-n">Tuần '+i+'</span>'+(hc?'<span class="sl-week-ic">↗</span>':'')+'</a>';
+      g+='<a class="sl-week '+(hc?'has':'soft')+'" href="'+BX_escAttr(url)+'" target="_blank" rel="noopener" onclick="return BX_slideWeekClick(event,this)" title="Mở Tuần '+i+(hc?' — đã có bài giảng':' trên Google Drive')+'"><span class="sl-week-n">Tuần '+i+'</span>'+(hc?'<span class="sl-week-ic">↗</span>':'')+'</a>';
     } else {
       g+='<span class="sl-week muted"><span class="sl-week-n">Tuần '+i+'</span></span>';
     }
