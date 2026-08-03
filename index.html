@@ -537,6 +537,55 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 #splash .sp-busy{display:none;margin-top:16px;font-size:15px;font-weight:700;color:var(--green-dark)}
 #splash.dangdung .sp-chon,#splash.dangdung .sp-vao{display:none}
 #splash.dangdung .sp-busy{display:block}
+/* ===== CO THEO CHIỀU CAO MÀN HÌNH =====
+   Máy tính của thầy cô mỗi máy một cỡ màn. Nếu khối "Nếu thầy cô đã sử dụng
+   Bút Xanh…" bị đẩy xuống dưới đáy thì cô nào đã có lịch thật sẽ không thấy
+   lối thoát, dễ chọn bừa một lớp và mất lịch. Nên màn càng thấp thì nén càng
+   mạnh, cốt sao mọi thứ nằm gọn trong một màn. */
+@media (max-height:900px){
+  #splash{padding:8px 14px;gap:6px}
+  #splash .bxi-mascot{width:70px;height:70px;margin-bottom:0}
+  #splash .bxi-hi{font-size:24px;margin:0 0 6px}
+  #splash .bxi-desc{font-size:14px;line-height:1.55}
+  #splash .bxi-punch{margin-top:8px;font-size:14.5px}
+  #splash .bxi-invite{font-size:16px;margin-top:5px}
+  #splash .bxi-feats{margin-top:9px;padding:8px 6px}
+  #splash .bxi-ic{width:38px;height:38px;margin-bottom:5px}
+  #splash .bxi-bens{margin-top:7px;padding:8px 8px}
+  #splash .bxi-slogan{font-size:16px;margin-top:8px}
+  #splash .sp-chon,#splash .sp-vao{margin-top:8px}
+  #splash .sp-ask{font-size:15px;margin-bottom:8px}
+  #splash .sp-lop{padding:9px 2px 7px}
+  #splash .sp-lop .n{font-size:22px}
+  #splash .sp-note{margin-top:7px;font-size:12px;line-height:1.4}
+  #splash .sp-cu{margin-top:8px;padding:9px 14px}
+  #splash .sp-cu-nut{margin-top:8px}
+}
+@media (max-height:760px){
+  #splash .bxi-mascot{width:60px;height:60px}
+  #splash .bxi-hi{font-size:21px;margin:0 0 5px}
+  #splash .bxi-desc{font-size:13.5px;line-height:1.5}
+  #splash .bxi-punch{margin-top:7px;font-size:14px}
+  #splash .bxi-invite{font-size:15px;margin-top:4px}
+  #splash .bxi-feats{margin-top:9px;padding:7px 5px}
+  #splash .bxi-feat{font-size:11.5px;line-height:1.4;padding:3px 8px}
+  #splash .bxi-ic{width:33px;height:33px;margin-bottom:4px}
+  #splash .bxi-ic svg{width:18px;height:18px}
+  #splash .bxi-bens{margin-top:7px;padding:7px 8px}
+  #splash .bxi-ben{font-size:12px;padding:0 13px}
+  #splash .bxi-slogan{font-size:15px;margin-top:8px}
+  #splash .sp-chon,#splash .sp-vao{margin-top:8px}
+  #splash .sp-ask{font-size:14px;margin-bottom:7px}
+  #splash .sp-lop{padding:8px 2px 6px}
+  #splash .sp-lop .n{font-size:20px}
+  #splash .sp-lop .l{font-size:10px}
+  #splash .sp-note{margin-top:7px;font-size:11.5px;line-height:1.4}
+  #splash .sp-cu{margin-top:8px;padding:9px 12px}
+  #splash .sp-cu-txt{font-size:12.5px;line-height:1.5}
+  #splash .sp-cu-nut{margin-top:8px;gap:7px}
+  #splash .sp-btn-gg,#splash .sp-btn-vao{padding:8px 14px;font-size:12.5px}
+}
+
 /* ===== ĐIỆN THOẠI: nén lại để thầy cô thấy được gần hết mà ít phải cuộn =====
    Trước đây 5 thẻ tính năng xếp dọc, mỗi thẻ một khối cao ~190px → riêng chúng
    đã chiếm gần cả màn hình. Nay đổi thành 5 dòng ngang gọn (biểu tượng bên trái,
