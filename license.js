@@ -129,7 +129,6 @@
       '@keyframes bxlicPulse{0%,100%{box-shadow:0 3px 10px rgba(11,128,67,.32)}50%{box-shadow:0 3px 16px rgba(11,128,67,.6)}}',
       '.bxlic-headbtn.ok{background:transparent;color:#0b8043;border:1.5px solid #bfe6cf;font-weight:600;box-shadow:none;animation:none;cursor:default}',
       '@media(max-width:640px){.bxlic-headbtn{padding:7px 12px;font-size:13px}}',
-      '.bxlic-admin{position:fixed;right:16px;bottom:16px;z-index:9998;background:#334155;color:#fff;border:0;border-radius:24px;padding:9px 15px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.22)}',
       '.bxlic-tbl{width:100%;border-collapse:collapse;font-size:13px}',
       '.bxlic-tbl th,.bxlic-tbl td{border:1px solid #e3e8e5;padding:6px 8px;text-align:left;vertical-align:middle}',
       '.bxlic-tbl th{background:#f2f7f4;position:sticky;top:0}',
@@ -357,11 +356,11 @@
     }
     renderAdminBtn();
   }
+  /* 3/8/2026: bỏ nút nổi "Quản trị bản quyền" — trên điện thoại nó đè lên thanh điều hướng
+     đáy (z-index cao hơn) làm nút "Nhắc"/"Thêm" bấm không ăn. Lối vào chuyển sang menu
+     tài khoản góc phải (index.html renderUI gọi BXLIC.openAdmin khi BXLIC.isAdmin()). */
   function renderAdminBtn(){
-    var a=document.getElementById('bxlic-adminbtn');
-    if(!isAdmin()){ if(a) a.remove(); return; }
-    if(!a){ a=document.createElement('button'); a.id='bxlic-adminbtn'; a.className='bxlic-admin';
-      a.textContent='⚙ Quản trị bản quyền'; a.onclick=openAdmin; document.body.appendChild(a); }
+    var a=document.getElementById('bxlic-adminbtn'); if(a) a.remove();
   }
 
   /* ------------------------------------------------------------------ *
