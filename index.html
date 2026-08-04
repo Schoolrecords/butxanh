@@ -6821,7 +6821,7 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   /* Đăng nhập: popup là luồng chính (không phụ thuộc cookie bên thứ ba).
      Chuyển trang (redirect) qua but-xanh.firebaseapp.com dễ mất phiên khi trình duyệt
      chặn cookie → chỉ là đường cùng, và phải được thầy cô đồng ý trước. */
-  var popupBlocked=0;
+  var popupBlocked=0, dangDangNhap=false;
   function loginBusy(on){
     var b=box&&box.querySelector('.fb-btn'); if(!b) return;
     if(on){ b.disabled=true; b.style.opacity='.7'; b.innerHTML='⏳ Đang đăng nhập…'; }
@@ -6830,9 +6830,15 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   window.FBX={
     login:function(){
       if(!auth) return;
+      /* Chỉ cho MỘT cửa sổ đăng nhập tại một thời điểm. Mở cái thứ hai là Google huỷ
+         cả hai (auth/cancelled-popup-request) — thầy cô ngồi nhìn màn hình không nhúc
+         nhích mà chẳng biết vì sao. Đã bắt gặp thật trong Console ngày 4/8/2026. */
+      if(dangDangNhap){ try{ if(auth.currentUser===null) console.warn('[ĐB] đang có cửa sổ đăng nhập — bỏ qua lượt bấm này'); }catch(e){} return; }
+      dangDangNhap=true;
       var p=new firebase.auth.GoogleAuthProvider();
       loginBusy(true);
-      auth.signInWithPopup(p).catch(function(e){
+      auth.signInWithPopup(p).then(function(){ dangDangNhap=false; }).catch(function(e){
+        dangDangNhap=false;
         loginBusy(false);
         console.warn('[ĐB] đăng nhập lỗi',e);
         var code=(e&&e.code)||'';

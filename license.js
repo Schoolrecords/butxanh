@@ -207,7 +207,24 @@
     return u;
   }
   function showActivate(){
-    if(!user){ try{ if(window.FBX) FBX.login(); }catch(e){} return; }
+    /* CHƯA đăng nhập: KHÔNG được tự mở cửa sổ đăng nhập Google (4/8/2026).
+       Trước đây mỗi lần bấm nút tải Word lúc chưa đăng nhập là app lặng lẽ gọi
+       signInWithPopup. Cửa sổ Google bật ra sau lưng / bị chặn / thầy cô không để ý →
+       tưởng nút chết nên bấm tiếp → hai cửa sổ tranh nhau, Google huỷ cả hai
+       (auth/cancelled-popup-request), mà cửa sổ đang giữ con trỏ nên bấm gì trên
+       trang cũng không ăn, kể cả ô nhập ở màn Cài đặt. Nay hỏi rõ rồi mới mở, và
+       cửa sổ chỉ bật ra từ đúng cú bấm nút "Đăng nhập Google" của thầy cô. */
+    if(!user){
+      var moDangNhap=function(){ try{ if(window.FBX) FBX.login(); }catch(e){} };
+      if(typeof window.BX_confirm==='function'){
+        window.BX_confirm({
+          title:'Cần đăng nhập để tải về máy',
+          html:'Bút Xanh ghi bản quyền theo tài khoản Google của thầy cô, nên cần đăng nhập trước khi tải giáo án về máy tính.<br><br>Bấm <b>Đăng nhập Google</b> — một <b>cửa sổ nhỏ của Google</b> sẽ hiện ra, thầy cô chọn tài khoản ngay trong cửa sổ đó ạ. Nếu không thấy cửa sổ, thầy cô xem thanh tác vụ dưới màn hình hoặc gỡ chặn cửa sổ bật lên cho butxanh.net.',
+          okText:'Đăng nhập Google', cancelText:'Để sau'
+        }, moDangNhap);
+      } else moDangNhap();
+      return;
+    }
     var maCK=maCKof(user.uid);
     var dyn=vietqrURL(maCK);                          // QR động (ưu tiên khi có SO_TK)
     var qrSrc = dyn || CONFIG.QR_IMG || '';          // chưa có SO_TK → dùng ảnh tĩnh tạm
