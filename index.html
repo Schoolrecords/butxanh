@@ -78,12 +78,17 @@ svg{display:block}
 .nav a .chev{margin-left:auto;width:15px;height:15px;opacity:.7}
 .badge-new{margin-left:auto;background:var(--red);color:#fff;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:7px;letter-spacing:.5px}
 
-.tip{flex:0 0 auto;margin-top:10px;background:#FAFCF7;border:1px solid var(--green-line);border-radius:16px;padding:14px 14px 0;overflow:hidden;text-align:center}
-.tip h4{font-size:13.5px;color:var(--green-dark);margin-bottom:11px;font-weight:700}
-.tip ul{text-align:left;display:inline-block}
-.tip li{list-style:none;font-size:12.5px;color:#46604F;display:flex;gap:8px;padding:4px 2px;font-weight:500;align-items:flex-start}
-.tip li .ck{color:var(--green);flex-shrink:0;margin-top:1px}
-.tip .mascot{width:calc(100% + 28px);height:150px;margin:6px -14px 0;background:var(--mascot) no-repeat center bottom;background-size:contain}
+/* Thanh cố định dưới menu (4/8/2026): trước đây là ô giới thiệu cao ~265px (khẩu hiệu
+   + 3 gạch đầu dòng + linh vật 150px) — chiếm gần 7cm, ép thanh menu còn quá ngắn nên
+   thầy cô phải cuộn mới tới các mục dưới. Nay gói lại còn ~60px (~1,6cm), trả lại
+   khoảng 200px chiều cao cho menu. Linh vật dùng lại đúng ảnh đã có sẵn trong trang
+   (biến --mascot) nên KHÔNG tải thêm tệp nào. */
+.tip{flex:0 0 auto;margin-top:10px;background:#FAFCF7;border:1px solid var(--green-line);border-radius:14px;padding:6px 9px;overflow:hidden;display:flex;align-items:center;gap:8px}
+.tip .mascot{width:38px;height:46px;flex:0 0 38px;background:var(--mascot) no-repeat center bottom;background-size:contain}
+.tip .cr{min-width:0;line-height:1.28}
+.tip .cr small{display:block;font-size:9.8px;font-weight:600;color:#5B7365;letter-spacing:.1px;white-space:nowrap}
+.tip .cr b{display:block;font-size:12.5px;font-weight:800;color:var(--green-dark);letter-spacing:-.1px;margin-top:1px}
+.tip .leaf{margin-left:auto;width:15px;height:15px;color:var(--green);opacity:.5;flex:0 0 15px}
 
 /* ---------- VÙNG NỘI DUNG ---------- */
 .main{flex:1;min-width:0;overflow-x:hidden;display:flex;flex-direction:column;align-items:center;padding:18px 24px 26px}
@@ -1385,15 +1390,11 @@ window.bxMergeKho = function(){
       <a data-view="caidat"><svg class="icn ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3.9a7 7 0 00-2-1.2L16.2 2H7.8L7.4 4.4a7 7 0 00-2 1.2L3.1 4.7l-2 3.4 2 1.5A7 7 0 003 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.3-.9c.6.5 1.3.9 2 1.2l.4 2.4h8.4l.4-2.4c.7-.3 1.4-.7 2-1.2l2.3.9 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/></svg> Cài đặt</a>
     </nav>
 
+    <!-- Thanh cố định dưới menu: linh vật + bản quyền, gọn ~1,6cm để menu dài ra -->
     <div class="tip">
-      <h4>Bút Xanh luôn bên thầy cô</h4>
-      <ul>
-        <li><svg class="ck" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-11"/></svg> Tiết kiệm thời gian</li>
-        <li><svg class="ck" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-11"/></svg> Giảm áp lực hồ sơ</li>
-        <li><svg class="ck" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-11"/></svg> Nâng cao chất lượng dạy học</li>
-      </ul>
-      <!-- LINH VẬT BÚT XANH -->
       <div class="mascot" role="img" aria-label="Linh vật Bút Xanh"></div>
+      <div class="cr"><small>© 2026 · Bản quyền thuộc</small><b>Nhóm Bút Xanh</b></div>
+      <svg class="leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20C4 11 10 5 20 4c1 9-4 15-12 15H4z"/><path d="M4.5 19.5C7 16 10.5 13.5 15 11.5"/></svg>
     </div>
   </aside>
 
@@ -6334,8 +6335,12 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   };
   /* Khóa đồng bộ — phần chữ (bỏ butxanh_khofiles vì tệp Word nặng, để v2 dùng Storage) */
   var KEYS=['butxanh_profile','butxanh_tkb','butxanh_tkb_exc','butxanh_lbg_weeks','butxanh_lbg_meta','butxanh_khbd','butxanh_khbd_edits','butxanh_hocsinh','butxanh_hoclieu','butxanh_bank'];
-  var auth=null, db=null, user=null, lastPushed=null, loopT=null, busy=false, seeded=false, reloadT=null, curRef=null, lastVals={};
+  var KEYSET={}; KEYS.forEach(function(k){ KEYSET[k]=1; });
+  var auth=null, db=null, user=null, busy=false, seeded=false, reloadT=null, curRef=null, lastVals={};
   var dirty=false, hadUser=false, intentionalLogout=false;   // dirty: có thay đổi chưa đẩy lên đám mây
+  var dangApDung=false;                                      // đang ghi dữ liệu từ đám mây xuống → đừng coi là người dùng sửa
+  var dirtyKeys={}, flushT=null, tickT=null, lichKtT=null, thuLaiT=null, soLanThuLai=0;
+
   /* ===== TIẾT KIỆM BĂNG THÔNG & CHỐNG ĐỒNG BỘ VÒNG TRÒN (31/7/2026) =====
      Trước đây app nghe TOÀN BỘ gói dữ liệu; mỗi lần ghi lại kéo về cả gói, hai tab/hai máy
      có thể đẩy qua đẩy lại không dứt → tốn hàng GB băng thông Firebase (tốn tiền thật).
@@ -6357,6 +6362,27 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     pushLog.push(now); return true;
   }
   var box=document.getElementById('fb-auth');
+
+  /* ===== ĐO HIỆU NĂNG ĐỒNG BỘ (4/8/2026) =====
+     Bật bằng địa chỉ có ?dev=1, hoặc gõ trong Console: localStorage.butxanh_dev='1'
+     Xem bất cứ lúc nào: BXPERF.bao()   — bản phát hành không in gì ra Console. */
+  var DEV=false; try{ DEV=/[?&]dev=1/.test(location.search)||localStorage.getItem('butxanh_dev')==='1'; }catch(e){}
+  var PERF=window.BXPERF={
+    tLogin:0, msSanSang:0, byteXuong:0, byteLen:0, khoaXuong:0, khoaLen:0,
+    lanVe:0, msTron:0, msGhi:0, soNghe:0,
+    coMay:function(){ var n=0; try{ for(var k in localStorage){ if(Object.prototype.hasOwnProperty.call(localStorage,k)) n+=(localStorage.getItem(k)||'').length; } }catch(e){} return n; },
+    bao:function(){
+      return { 'Đăng nhập → dùng được (ms)':Math.round(PERF.msSanSang),
+               'Tải xuống (KB)':+(PERF.byteXuong/1024).toFixed(1),
+               'Đẩy lên (KB)':+(PERF.byteLen/1024).toFixed(1),
+               'Số phần đã tải':PERF.khoaXuong, 'Số phần đã đẩy':PERF.khoaLen,
+               'Số lần vẽ lại':PERF.lanVe,
+               'Thời gian trộn (ms)':Math.round(PERF.msTron), 'Thời gian ghi máy (ms)':Math.round(PERF.msGhi),
+               'Dữ liệu trên máy (KB)':+(PERF.coMay()/1024).toFixed(1),
+               'Kênh đang nghe':PERF.soNghe };
+    }
+  };
+  function inPerf(nhan){ if(!DEV) return; try{ console.log('[ĐB·đo] '+nhan, PERF.bao()); }catch(e){} }
 
   function gather(){ var o={}; KEYS.forEach(function(k){ var v=localStorage.getItem(k); if(v!=null) o[k]=v; }); return o; }
   function hasLocalData(){ return !!(localStorage.getItem('butxanh_schedule')||localStorage.getItem('butxanh_khbd')||localStorage.getItem('butxanh_hocsinh')); }
@@ -6388,52 +6414,96 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   function saveTs(t){ try{ localStorage.setItem('butxanh_sync_ts',JSON.stringify(t)); }catch(e){} }
   function ensureInitTs(){ var t=loadTs(), ch=false, now=Date.now(); KEYS.forEach(function(k){ if(localStorage.getItem(k)!=null && t[k]==null){ t[k]=now; ch=true; } }); if(ch) saveTs(t); }
   function snapVals(){ lastVals={}; KEYS.forEach(function(k){ lastVals[k]=localStorage.getItem(k); }); }
-  // Phát hiện phần nào vừa đổi → đóng dấu thời gian phần đó. Trả về true nếu có thay đổi.
-  function stampChanges(){ var t=loadTs(), ch=false, now=Date.now(); KEYS.forEach(function(k){ var v=localStorage.getItem(k); if(v!==lastVals[k]){ lastVals[k]=v; t[k]=now; ch=true; } }); if(ch) saveTs(t); return ch; }
-  // Danh sách CỤ THỂ các phần vừa đổi (để chỉ đẩy phần đó — nhanh hơn nhiều)
-  function changedKeys(){ var t=loadTs(), ch=[], now=Date.now(); KEYS.forEach(function(k){ var v=localStorage.getItem(k); if(v!==lastVals[k]){ lastVals[k]=v; t[k]=now; ch.push(k); } }); if(ch.length){ saveTs(t); dirty=true; } return ch; }
 
-  /* ----- Lưới an toàn: sao lưu cục bộ trước khi áp dữ liệu trộn (để khôi phục được) ----- */
-  function backupLocal(data){
+  /* ===== ĐÁNH DẤU THEO SỰ KIỆN — bỏ vòng quét 2,5 giây (4/8/2026) =====
+     Cũ: cứ 2,5 giây lại đọc cả 10 vùng dữ liệu (máy dùng nhiều có tới vài MB) rồi
+     so từng chuỗi để ĐOÁN xem có gì đổi — vừa tốn, vừa chỉ đúng khi app đang mở.
+     Mới: chính chỗ ghi dữ liệu báo "vùng này vừa đổi". Đóng dấu thời gian ngay lúc
+     sửa nên cả những sửa đổi lúc chưa đăng nhập / mất mạng cũng không bị bỏ sót. */
+  var GHI_TRE=1200;                       // gộp các thao tác liên tiếp thành một lần đẩy
+  function markCloudDirty(key, giaTri){
+    if(!KEYSET[key] || dangApDung) return;
+    var v=(giaTri===undefined)?localStorage.getItem(key):giaTri;   // chỗ ghi đưa sẵn giá trị → khỏi đọc lại vài trăm KB
+    if(lastVals[key]===v) return;         // ghi lại y hệt → không tính là thay đổi
+    lastVals[key]=v;
+    var t=loadTs(); t[key]=Date.now(); saveTs(t);
+    dirtyKeys[key]=1; dirty=true;
+    if(!user||!seeded||!db) return;
+    if(flushT) clearTimeout(flushT);
+    flushT=setTimeout(function(){ flushT=null; flushDirty(); }, GHI_TRE);
+  }
+  window.BX_markDirty=markCloudDirty;
+  /* Bắt MỌI đường ghi (kể cả những chỗ gọi thẳng localStorage.setItem).
+     Phải vá ở Storage.prototype, KHÔNG gán vào chính localStorage — gán thẳng vào
+     đối tượng localStorage sẽ tạo ra một mục dữ liệu tên "setItem". */
+  (function vaDuongGhi(){
     try{
+      var SP=window.Storage&&window.Storage.prototype;
+      if(!SP||!SP.setItem||SP.__bxDaVa) return;
+      var _set=SP.setItem, _rm=SP.removeItem;
+      SP.setItem=function(k,v){ _set.call(this,k,v); if(this===window.localStorage){ try{ markCloudDirty(String(k), String(v)); }catch(e){} } };
+      SP.removeItem=function(k){ _rm.call(this,k); if(this===window.localStorage){ try{ markCloudDirty(String(k), null); }catch(e){} } };
+      SP.__bxDaVa=true;
+    }catch(e){}
+  })();
+
+  /* Nhường một nhịp cho giao diện vẽ xong rồi mới làm việc nặng.
+     rAF chạy TRƯỚC lượt vẽ, nên phải rAF + setTimeout(0) mới thật sự "vẽ trước, tính sau". */
+  function nhuongRoiLam(fn){ try{ requestAnimationFrame(function(){ setTimeout(fn,0); }); }catch(e){ setTimeout(fn,0); } }
+
+  /* ----- Lưới an toàn: sao lưu cục bộ TRƯỚC khi ghi đè (chỉ những phần sắp bị thay) ----- */
+  function backupLocal(keys){
+    try{
+      if(!keys||!keys.length) return;
+      var cu={}; keys.forEach(function(k){ cu[k]=localStorage.getItem(k); });
       var arr; try{ arr=JSON.parse(localStorage.getItem('butxanh_sync_bak')||'[]'); }catch(e){ arr=[]; }
       if(!Array.isArray(arr)) arr=[];
-      arr.unshift({ at:new Date().toLocaleString('vi-VN'), data:data }); arr=arr.slice(0,3);
+      arr.unshift({ at:new Date().toLocaleString('vi-VN'), data:cu }); arr=arr.slice(0,3);
       try{ localStorage.setItem('butxanh_sync_bak',JSON.stringify(arr)); }
       catch(e){ try{ localStorage.setItem('butxanh_sync_bak',JSON.stringify(arr.slice(0,1))); }catch(_){ } }
     }catch(e){}
   }
 
-  function startLoop(){ stopLoop(); loopT=setInterval(function(){
-    if(!user||busy||!seeded) return;
-    var ch=changedKeys(); if(ch.length) pushKeys(ch);
-  }, 2500); }
-  function stopLoop(){ if(loopT){ clearInterval(loopT); loopT=null; } }
+  /* Nhịp an toàn 30 giây: chỉ để đẩy lại phần lỡ đẩy hỏng (mất mạng giữa chừng).
+     KHÔNG đọc localStorage nếu không có gì đang chờ — gần như không tốn gì. */
+  function startLoop(){ stopLoop(); tickT=setInterval(function(){
+    if(!user||!seeded||busy) return;
+    if(Object.keys(dirtyKeys).length) flushDirty();
+  }, 30000); }
+  function stopLoop(){ if(tickT){ clearInterval(tickT); tickT=null; } if(flushT){ clearTimeout(flushT); flushT=null; } }
 
-  // Đẩy NGAY các phần vừa đổi (gọi khi bấm Lưu) — không đợi vòng lặp
-  window.__bxFlush=function(){ if(!user||!seeded) return; if(busy){ dirty=true; return; } var ch=changedKeys(); if(ch.length) pushKeys(ch); };
+  // Đẩy NGAY các phần vừa đổi (gọi khi bấm Lưu) — không đợi hết nhịp gộp
+  function flushDirty(){
+    if(!db||!user||!seeded||busy) return;
+    var ks=Object.keys(dirtyKeys);
+    if(!ks.length){ dirty=false; return; }
+    pushKeys(ks);
+  }
+  window.__bxFlush=function(){ if(!user||!seeded) return; if(flushT){ clearTimeout(flushT); flushT=null; } flushDirty(); };
 
-  function pushCurrent(){ pushData(gather(), loadTs()); }
-  // Chỉ ghi các phần thay đổi lên đám mây (update path con) — tương thích ngược với bản đọc cũ
-  function pushKeys(keys){
+  // Chỉ ghi các phần thay đổi lên đám mây (update nhiều nhánh, một lượt) — tương thích ngược bản đọc cũ
+  function pushKeys(keys, laHatGiong){
     if(!db||!user||!keys||!keys.length){ return; }
     if(!pushAllowed()){ dirty=true; return; }
     busy=true; setStatus('syncing');
-    var ts=loadTs(), upd={ updatedAt:firebase.database.ServerValue.TIMESTAMP };
-    keys.forEach(function(k){ var v=localStorage.getItem(k); upd['data/'+k]=(v!=null?v:null); upd['ts/'+k]=ts[k]||Date.now(); });
+    var ts=loadTs(), upd={ updatedAt:firebase.database.ServerValue.TIMESTAMP }, byte=0;
+    if(laHatGiong) upd.app='butxanh';
+    keys.forEach(function(k){
+      var v=localStorage.getItem(k);
+      upd['data/'+k]=(v!=null?v:null); upd['ts/'+k]=ts[k]||Date.now();
+      byte+=(v?v.length:0);
+    });
+    PERF.byteLen+=byte; PERF.khoaLen+=keys.length;
     db.ref('users/'+user.uid).update(upd)
-      .then(function(){ busy=false; dirty=false; lastPushed=JSON.stringify(gather()); setStatus('synced'); })
-      .catch(function(e){ console.warn('[ĐB] đẩy phần lỗi',e); busy=false; setStatus('error'); });
-  }
-  function pushData(data, ts){
-    if(!db||!user) return;
-    if(!pushAllowed()){ dirty=true; busy=false; return; }
-    busy=true; setStatus('syncing');
-    var dataStr=JSON.stringify(data);
-    db.ref('users/'+user.uid).set({ data:data, ts:ts, updatedAt:firebase.database.ServerValue.TIMESTAMP, app:'butxanh' })
-      .then(function(){ lastPushed=dataStr; busy=false; dirty=false; setStatus('synced'); })
+      .then(function(){
+        busy=false;
+        keys.forEach(function(k){ delete dirtyKeys[k]; });
+        dirty=Object.keys(dirtyKeys).length>0;
+        setStatus(dirty?'syncing':'synced');
+        if(dirty) flushDirty();
+      })
       .catch(function(e){
-        console.warn('[ĐB] push lỗi',e); busy=false; setStatus('error');
+        console.warn('[ĐB] đẩy phần lỗi',e); busy=false; setStatus('error');
         var code=(e&&(e.code||e.message))||'';
         if(/permission/i.test(code) && !window.__fbPermAlert){
           window.__fbPermAlert=true;
@@ -6478,70 +6548,164 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     }
     return {str:(lts>=cts?lstr:cstr),ts:Math.max(lts,cts)};
   };
-  // Trộn toàn bộ → {data:{key:str}, ts:{key:ms}}
-  function mergeAll(local,cloud,lts,cts){
-    var data={}, ts={};
+
+  /* Những phần mà MỘT TRONG HAI bên đã sửa kể từ lần đồng bộ trước.
+     Mốc thời gian chỉ đổi khi có người ghi, và mỗi lần đẩy đều chép mốc của máy lên
+     đám mây → hai mốc BẰNG NHAU nghĩa là hai bên y hệt nhau, khỏi cần tải về đối chiếu.
+     So sánh KHÁC NHAU (không phải "đám mây mới hơn") để không bỏ sót trường hợp
+     thầy cô sửa lúc mất mạng ở máy này còn máy kia đã kịp đẩy lên trước đó. */
+  function phanKhacNhau(cts){
+    var lts=loadTs(), ds=[];
     KEYS.forEach(function(k){
-      var r=window.BX_mergeKey(k, (local&&local[k]!=null)?local[k]:null, (cloud&&cloud[k]!=null)?cloud[k]:null, lts[k], cts[k]);
-      if(r){ data[k]=r.str; ts[k]=r.ts; }
+      var coMay=(localStorage.getItem(k)!=null);
+      var c=(cts&&cts[k]!=null)?(+cts[k]||0):null;
+      var l=(lts[k]!=null)?(+lts[k]||0):null;
+      if(c===null&&!coMay) return;                 // hai bên đều trống
+      if(c===null||l===null||c!==l) ds.push(k);
     });
-    return {data:data, ts:ts};
+    return ds;
   }
-  function applyData(data,ts){
-    try{ KEYS.forEach(function(k){ if(data&&data[k]!=null) localStorage.setItem(k,data[k]); else localStorage.removeItem(k); }); }catch(e){}
-    if(ts) saveTs(ts);
-    /* Dữ liệu từ máy khác có thể chứa lớp mà máy này chưa nạp kho */
-    try{ if(window.BX_ensureKhoTheoLich) window.BX_ensureKhoTheoLich(); }catch(e){}
-    var soft=false;
-    if(typeof window.BX_reloadFromStorage==='function'){ try{ window.BX_reloadFromStorage(); soft=true; }catch(e){} }
-    snapVals(); lastPushed=JSON.stringify(gather()); setStatus('synced');
-    if(!soft){ if(reloadT) clearTimeout(reloadT); reloadT=setTimeout(function(){ try{ location.reload(); }catch(e){} }, 700); }
+
+  /* Tải VỀ ĐÚNG những phần khác nhau (không kéo cả gói), trộn, ghi máy, rồi đẩy ngược
+     phần nào đám mây còn thiếu. `sanCo` là gói đã có sẵn (đường tương thích bản cũ). */
+  function tronVaAp(ds, cts, sanCo){
+    if(!ds||!ds.length){ ketThucDongBo(); return; }
+    var lay = sanCo
+      ? Promise.resolve(ds.map(function(k){ return {k:k, v:(typeof sanCo[k]==='string')?sanCo[k]:null}; }))
+      : Promise.all(ds.map(function(k){
+          return curRef.child('data/'+k).once('value')
+            .then(function(s){ var v=s.val(); PERF.byteXuong+=(typeof v==='string'?v.length:0); return {k:k, v:(typeof v==='string')?v:null}; })
+            .catch(function(e){ console.warn('[ĐB] tải phần lỗi',k,e); return {k:k, v:null, loi:true}; });
+        }));
+    PERF.khoaXuong+=ds.length;
+    lay.then(function(res){
+      var lts=loadTs(), apDung={}, tsMoi={}, canDay=[], t0=(window.performance&&performance.now)?performance.now():0;
+      res.forEach(function(r){
+        if(r.loi) return;                                   // tải hỏng → để nhịp sau thử lại
+        var lstr=localStorage.getItem(r.k), cstr=r.v;
+        var m=window.BX_mergeKey(r.k, lstr, cstr, +lts[r.k]||0, (cts&&+cts[r.k])||0);
+        if(!m) return;
+        if(m.str!==lstr) apDung[r.k]=m.str;
+        if(m.str!==cstr) canDay.push(r.k);
+        tsMoi[r.k]=m.ts;
+      });
+      if(t0) PERF.msTron+=performance.now()-t0;
+      var kAp=Object.keys(apDung);
+      dangApDung=true;
+      try{
+        if(kAp.length){
+          backupLocal(kAp);
+          var g0=(window.performance&&performance.now)?performance.now():0;
+          kAp.forEach(function(k){ try{ localStorage.setItem(k, apDung[k]); lastVals[k]=apDung[k]; }catch(e){} });
+          if(g0) PERF.msGhi+=performance.now()-g0;
+        }
+        // Phần nào phải đẩy lên thì đóng dấu MỚI để máy khác nhận ra là có bản mới
+        var t=loadTs(), now=Date.now();
+        canDay.forEach(function(k){ tsMoi[k]=Math.max(tsMoi[k]||0, now); });
+        Object.keys(tsMoi).forEach(function(k){ t[k]=tsMoi[k]; });
+        saveTs(t);
+      } finally { dangApDung=false; }
+
+      seeded=true; busy=false;
+      if(canDay.length){ canDay.forEach(function(k){ dirtyKeys[k]=1; }); pushKeys(canDay); }
+      else setStatus('synced');
+      if(kAp.length) veLaiManHinh(kAp);
+      ketThucDongBo();
+    });
   }
-  /* Một listener xử lý cả lần đầu lẫn cập nhật realtime — TRỘN tự động theo từng phần, giữ bản mới nhất, KHÔNG hỏi. */
-  function onCloud(snap){
-    var v=snap.val(), cloud=(v&&v.data)?v.data:null, cts=(v&&v.ts&&typeof v.ts==='object')?v.ts:{};
-    seeded=true;
-    var local=gather(), lts=loadTs();
-    if(!cloud){ busy=false; pushData(local,lts); return; }   // đám mây trống → đẩy local lên
-    var m=mergeAll(local,cloud,lts,cts), mStr=JSON.stringify(m.data), lStr=JSON.stringify(local), cStr=JSON.stringify(cloud);
-    if(mStr!==lStr){ backupLocal(local); applyData(m.data,m.ts); }   // máy có phần cũ hơn → cập nhật mượt (im lặng)
-    else if(m.ts){ saveTs(m.ts); }
-    if(mStr!==cStr){ pushData(m.data,m.ts); }                        // đám mây thiếu phần nào → đẩy bản trộn lên
-    else { lastPushed=cStr; busy=false; setStatus('synced'); }
+  function veLaiManHinh(ks){
+    PERF.lanVe++;
+    /* Chỉ đi nạp thêm kho khi phần vừa đổi có thể chứa LỚP mới (máy khác dạy lớp khác) */
+    if(ks.indexOf('butxanh_tkb')>=0||ks.indexOf('butxanh_lbg_weeks')>=0||ks.indexOf('butxanh_khbd')>=0){
+      try{ if(window.BX_ensureKhoTheoLich) window.BX_ensureKhoTheoLich(); }catch(e){}
+    }
+    if(typeof window.BX_reloadFromStorage==='function'){ try{ window.BX_reloadFromStorage(); return; }catch(e){} }
+    if(reloadT) clearTimeout(reloadT); reloadT=setTimeout(function(){ try{ location.reload(); }catch(e){} }, 700);
   }
-  /* Chỉ nghe DẤU THỜI GIAN. Có nơi khác mới hơn mới tải dữ liệu về — tiết kiệm ~100 lần băng thông. */
-  function onCloudTs(snap, thu){
+  function ketThucDongBo(){
+    seeded=true; soLanThuLai=0;
+    if(thuLaiT){ clearTimeout(thuLaiT); thuLaiT=null; }
+    if(!PERF.msSanSang && PERF.tLogin) PERF.msSanSang=((window.performance&&performance.now)?performance.now():0)-PERF.tLogin;
+    if(!tsRefDaNghe && tsRef){ tsRefDaNghe=true; tsRef.on('value', onCloudTs); PERF.soNghe=1; }
+    if(Object.keys(dirtyKeys).length) flushDirty();     // sửa lúc chưa đăng nhập/mất mạng → đẩy nốt
+    inPerf('xong');
+  }
+  var tsRefDaNghe=false;
+
+  /* Đám mây chưa có mốc theo phần: tài khoản mới, hoặc bản ghi kiểu cũ → xử một lần rồi tự chuẩn hoá */
+  function nganhCu(){
+    curRef.once('value').then(function(snap){
+      var v=snap.val(), cloud=(v&&v.data)?v.data:null;
+      PERF.byteXuong+=(v?JSON.stringify(v).length:0);
+      if(!cloud){                                        // tài khoản mới tinh → đưa dữ liệu máy này lên
+        var ds=KEYS.filter(function(k){ return localStorage.getItem(k)!=null; });
+        seeded=true; busy=false;
+        if(ds.length) pushKeys(ds, true); else setStatus('synced');
+        ketThucDongBo(); return;
+      }
+      var cts={}, vts=(v&&v.ts&&typeof v.ts==='object')?v.ts:{};
+      KEYS.forEach(function(k){ if(cloud[k]!=null) cts[k]=+vts[k]||1; });
+      tronVaAp(KEYS.filter(function(k){ return cloud[k]!=null||localStorage.getItem(k)!=null; }), cts, cloud);
+    }).catch(function(e){ console.warn('[ĐB] nạp lần đầu lỗi',e); busy=false; setStatus('error'); });
+  }
+
+  /* Chỉ nghe DẤU THỜI GIAN (vài trăm byte). Có phần nào lệch mới tải ĐÚNG phần đó về. */
+  function onCloudTs(snap){
     if(!seeded) return;
     var cts=(snap&&typeof snap.val==='function')?snap.val():snap;
     if(!cts||typeof cts!=='object') return;
-    if(busy){                                 // đang bận đẩy → hẹn kiểm tra lại, đừng bỏ sót
-      if((thu||0)<6) setTimeout(function(){ onCloudTs(cts,(thu||0)+1); }, 1500);
+    if(busy){                                            // đang bận đẩy → hẹn kiểm tra lại, đừng bỏ sót
+      if(!lichKtT) lichKtT=setTimeout(function(){ lichKtT=null; onCloudTs(cts); }, 1500);
       return;
     }
-    var lts=loadTs(), moiHon=false;
-    for(var k in cts){ if(cts.hasOwnProperty(k) && (+cts[k]||0) > (+lts[k]||0)){ moiHon=true; break; } }
-    if(!moiHon) return;                       // chính mình vừa đẩy, hoặc không có gì mới → không tải
-    if(!curRef) return;
-    curRef.once('value').then(onCloud).catch(function(e){ console.warn('[ĐB] tải dữ liệu lỗi',e); });
+    var ds=phanKhacNhau(cts);
+    if(!ds.length) return;                               // chính mình vừa đẩy → không tải gì cả
+    busy=true; setStatus('syncing');
+    nhuongRoiLam(function(){ tronVaAp(ds, cts); });
   }
+
   function startSync(){
     if(!db||!user) return;
     seeded=false; busy=true; setStatus('syncing'); ensureInitTs(); snapVals();
     curRef=db.ref('users/'+user.uid);
-    tsRef=db.ref('users/'+user.uid+'/ts');
-    curRef.once('value')                       // lần đầu: tải trọn gói một lần rồi trộn như cũ
-      .then(function(snap){ onCloud(snap); tsRef.on('value', onCloudTs); })
-      .catch(function(e){ console.warn('[ĐB] nạp lần đầu lỗi',e); busy=false; setStatus('error'); });
+    tsRef=db.ref('users/'+user.uid+'/ts'); tsRefDaNghe=false;
+    PERF.tLogin=(window.performance&&performance.now)?performance.now():0;
+    /* Việc đầu tiên chỉ là đọc bảng mốc thời gian — vài trăm byte, gần như tức thì.
+       Trước đây bước này kéo TOÀN BỘ dữ liệu (máy dùng nhiều: vài MB) rồi trộn ngay
+       trên luồng chính → thầy cô bấm nút gì cũng không ăn suốt mấy giây sau đăng nhập. */
+    tsRef.once('value').then(function(snap){
+      var cts=snap.val();
+      PERF.byteXuong+=(cts?JSON.stringify(cts).length:0);
+      if(!cts||typeof cts!=='object'){ nganhCu(); return; }
+      var ds=phanKhacNhau(cts);
+      if(!ds.length){ busy=false; seeded=true; setStatus('synced'); ketThucDongBo(); return; }
+      nhuongRoiLam(function(){ tronVaAp(ds, cts); });
+    }).catch(function(e){
+      console.warn('[ĐB] đọc mốc thời gian lỗi',e); busy=false; setStatus('error');
+      /* Mạng 4G chập chờn hay làm hỏng đúng lượt đọc đầu tiên. Trước đây hỏng là
+         thôi, cả phiên không đồng bộ nữa mà thầy cô không biết → thử lại vài lần.
+         Lỗi phân quyền thì thử lại cũng vô ích, để dành cho lần đăng nhập sau. */
+      var ma=(e&&(e.code||e.message))||'';
+      if(/permission/i.test(ma)) return;
+      if(soLanThuLai>=3) return;
+      var cho=[8000,20000,45000][soLanThuLai++];
+      if(thuLaiT) clearTimeout(thuLaiT);
+      thuLaiT=setTimeout(function(){ thuLaiT=null; if(user&&db&&!seeded) startSync(); }, cho);
+    });
   }
   function stopSync(){
     if(tsRef){ try{ tsRef.off('value', onCloudTs); }catch(e){} tsRef=null; }
-    curRef=null; pushLog=[]; syncPaused=0;
+    tsRefDaNghe=false; PERF.soNghe=0; soLanThuLai=0;
+    if(thuLaiT){ clearTimeout(thuLaiT); thuLaiT=null; }
+    if(lichKtT){ clearTimeout(lichKtT); lichKtT=null; }
+    if(reloadT){ clearTimeout(reloadT); reloadT=null; }
+    curRef=null; pushLog=[]; syncPaused=0; busy=false;
   }
   function onAuth(u){
     user=u; renderUI();
     if(u){ hadUser=true; startSync(); startLoop(); }
     else {
-      stopSync(); stopLoop(); seeded=false; lastPushed=null; setStatus('off');
+      stopSync(); stopLoop(); seeded=false; dirtyKeys={}; dirty=false; setStatus('off');
       if(hadUser && !intentionalLogout){   // phiên bị rớt ngoài ý muốn
         try{ bxAlert('⚠️ Thầy/cô vừa bị đăng xuất khỏi tài khoản Google (thường do trình duyệt chặn cookie hoặc mạng làm rớt phiên).\n\n✅ Dữ liệu VẪN AN TOÀN trên máy này — không mất gì. Hãy bấm “Đăng nhập” lại để tiếp tục đồng bộ lên đám mây.'); }catch(e){}
       }
@@ -6591,17 +6755,30 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     },
     logout:function(){ intentionalLogout=true; if(auth) auth.signOut(); var m=document.getElementById('fb-menu'); if(m)m.style.display='none'; },
     flush:function(){ if(window.__bxFlush) window.__bxFlush(); },
-    syncNow:function(){ var m=document.getElementById('fb-menu'); if(m)m.style.display='none'; if(user) pushCurrent(); },
+    syncNow:function(){
+      var m=document.getElementById('fb-menu'); if(m)m.style.display='none';
+      if(!user||!db) return;
+      var ds=KEYS.filter(function(k){ return localStorage.getItem(k)!=null; });
+      if(!ds.length) return;
+      var t=loadTs(), now=Date.now(); ds.forEach(function(k){ t[k]=now; dirtyKeys[k]=1; }); saveTs(t);
+      if(flushT){ clearTimeout(flushT); flushT=null; }
+      pushKeys(ds);
+    },
     restore:function(){
       var mm=document.getElementById('fb-menu'); if(mm)mm.style.display='none';
       var arr; try{ arr=JSON.parse(localStorage.getItem('butxanh_sync_bak')||'[]'); }catch(e){ arr=[]; }
       if(!arr||!arr.length){ bxAlert('Chưa có bản sao lưu tự động nào để khôi phục.'); return; }
       var b=arr[0], doRestore=function(){
-        var d=b.data||{}, now=Date.now(), t=loadTs();
-        KEYS.forEach(function(k){ if(d[k]!=null) localStorage.setItem(k,d[k]); else localStorage.removeItem(k); t[k]=now; });
-        saveTs(t); snapVals();
+        /* Bản sao lưu mới chỉ chứa ĐÚNG những phần từng bị ghi đè → chỉ đụng vào các
+           phần có trong bản sao, tuyệt đối không xoá những phần không nằm trong đó.
+           (Mỗi lượt setItem/removeItem tự đóng dấu thời gian và xếp hàng đẩy lên mây.) */
+        var d=b.data||{};
+        Object.keys(d).forEach(function(k){
+          if(!KEYSET[k]) return;
+          if(d[k]!=null) localStorage.setItem(k,d[k]); else localStorage.removeItem(k);
+        });
         if(typeof window.BX_reloadFromStorage==='function'){ try{ window.BX_reloadFromStorage(); }catch(e){ location.reload(); } } else { location.reload(); }
-        if(user) pushCurrent();
+        if(window.__bxFlush) window.__bxFlush();
       };
       if(typeof window.BX_confirm==='function'){ window.BX_confirm({title:'Khôi phục dữ liệu',html:'Khôi phục về bản đã lưu lúc <b>'+esc(b.at||'')+'</b>?<br>Bản này sẽ thay cho dữ liệu hiện trên máy và được đồng bộ lên đám mây.',okText:'Khôi phục',cancelText:'Hủy'}, doRestore); }
       else { bxConfirm('Khôi phục về bản lúc '+(b.at||'')+'?',{okText:'Khôi phục'}).then(function(ok){ if(ok) doRestore(); }); }
