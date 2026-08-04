@@ -48,6 +48,12 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 /* Phản hồi chạm tức thì trên điện thoại (tránh cảm giác trễ do thiếu :active) */
 .btn-xs,.btn,.pill,.chip,.wk-btn,.wk-nav,.btn-start,.btn-upload,.bxc-btn,.intg-tg{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .btn-xs:active,.btn:active,.pill:active,.chip:active,.wk-btn:active,.wk-nav:active,.btn-start:active,.btn-upload:active,.bxc-btn:active,.intg-tg:active{transform:scale(.96);transition:transform .04s}
+/* Phản hồi chạm cho menu trái và các thẻ ở màn Bài giảng trình chiếu (4/8/2026).
+   Trước đây mấy chỗ này KHÔNG có :active nào, nên lúc luồng chính đang bận (đang nạp
+   kho) thầy cô bấm mà không thấy gì nhúc nhích — tưởng nút hỏng nên bấm đi bấm lại.
+   :active do trình duyệt tự vẽ, KHÔNG cần JavaScript, nên vẫn nhạy khi máy đang bận. */
+.sl-chip:active,.sl-subj-card:active,.sl-mon-chip:active{transform:scale(.96);transition:transform .04s}
+.nav a:active{background:var(--green-soft);transform:scale(.985);transition:transform .04s}
 @media (hover:none){
   /* Tắt sticky-hover trên thiết bị cảm ứng: phản hồi dùng :active thay cho :hover */
   .btn-xs:hover{border-color:var(--line);color:var(--ink2)}
@@ -2207,8 +2213,8 @@ window.bxMergeKho = function(){
       <h3 class="wx-title">Bút Xanh <span>thông báo!</span></h3>
       <p class="wx-msg" id="week-msg">Kế hoạch bài dạy <b>Tuần 12</b> của thầy cô đã tạo xong, thầy cô xem trước khi lưu về máy tính của mình!</p>
       <div class="wx-acts">
-        <button class="btn" onclick="previewWeekKhbd()">👁 Xem trước kế hoạch</button>
-        <button class="btn ghost" onclick="downloadWeekKHBD()">⬇ Lưu về máy tính</button>
+        <button class="btn" onclick="bxNutBan(this,'Đang dựng bản xem trước…',previewWeekKhbd)">👁 Xem trước kế hoạch</button>
+        <button class="btn ghost" onclick="bxNutBan(this,'Đang tạo tệp Word…',downloadWeekKHBD)">⬇ Lưu về máy tính</button>
       </div>
     </div>
   </div>
@@ -2854,7 +2860,14 @@ function updateBellCount(){
   }catch(e){}
 }
 document.querySelector('.nav').addEventListener('click',function(e){
-  const a=e.target.closest('a[data-view]'); if(!a) return; showView(a.dataset.view);
+  const a=e.target.closest('a[data-view]'); if(!a) return;
+  const v=a.dataset.view;
+  /* Sáng nút NGAY rồi mới vẽ màn. Trước đây showView() chạy thẳng trong sự kiện bấm nên
+     trình duyệt không kịp vẽ ô xanh trước — thầy cô bấm menu là màn hình đứng im 0,2-0,5
+     giây (máy yếu còn lâu hơn) rồi mọi thứ mới nhảy một lượt, y như nút bị đơ.
+     Thanh điều hướng đáy trên điện thoại đã vá kiểu này từ 3/8, nay vá nốt menu bên trái. */
+  document.querySelectorAll('.nav a').forEach(function(x){ x.classList.toggle('active', x.dataset.view===v); });
+  requestAnimationFrame(function(){ setTimeout(function(){ showView(v); },0); });
 });
 window.addEventListener('hashchange',()=>showView((location.hash||'#dashboard').slice(1)));
 
@@ -3270,7 +3283,29 @@ function buildScheduleXlsx(filled){
     F('xl/worksheets/sheet1.xml',_scheduleSheetXml(filled))
   ]);
 }
-function _downloadBlob(name,blob){ if(window.BXLIC && BXLIC.needPaid && BXLIC.needPaid(name) && !BXLIC.canDownload()){ BXLIC.showActivate(); return; } try{ if(typeof _bxSafeFileName==='function') name=_bxSafeFileName(name); }catch(e){} const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); setTimeout(()=>{try{URL.revokeObjectURL(a.href);}catch(e){}},1500); }
+/* Tệp này đòi bản quyền mà thầy cô chưa kích hoạt? → mở hộp kích hoạt, trả về true.
+   Phải hỏi Ở ĐẦU mỗi việc tạo tệp. Trước đây chỉ hỏi ở bước cuối (_downloadBlob) nên
+   thầy cô chưa trả phí bấm "Lưu về máy tính" phải chờ dựng xong cả tập Word (22 giáo án,
+   kèm tải ảnh từ máy chủ) rồi mới thấy hộp kích hoạt — nhìn y như nút bị đơ. (4/8/2026) */
+function _bxChuaTraPhi(name){
+  try{ if(window.BXLIC && BXLIC.needPaid && BXLIC.needPaid(name) && !BXLIC.canDownload()){ BXLIC.showActivate(); return true; } }catch(e){}
+  return false;
+}
+function _downloadBlob(name,blob){ if(_bxChuaTraPhi(name)) return; try{ if(typeof _bxSafeFileName==='function') name=_bxSafeFileName(name); }catch(e){} const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); setTimeout(()=>{try{URL.revokeObjectURL(a.href);}catch(e){}},1500); }
+/* Nút chạy việc nặng: đổi sang trạng thái "đang làm" và ĐỂ TRÌNH DUYỆT VẼ XONG rồi mới
+   chạy. rAF chạy TRƯỚC lượt vẽ nên phải rAF + setTimeout(0) mới thật sự thấy nút đổi
+   trước. Không có bước này thì thầy cô bấm mà màn hình đứng im, tưởng máy treo. */
+window.bxNutBan=function(btn, chu, viec){
+  if(!btn||btn.dataset.bxBan==='1'){ if(!btn) try{ viec(); }catch(e){} return; }
+  var cu=btn.innerHTML, cuDis=btn.disabled;
+  btn.dataset.bxBan='1'; btn.disabled=true;
+  btn.innerHTML='<span class="spinner" style="display:inline-block;vertical-align:-2px;width:13px;height:13px;border-width:2px"></span> '+(chu||'Đang xử lý…');
+  requestAnimationFrame(function(){ setTimeout(function(){
+    var tra=function(){ try{ btn.innerHTML=cu; btn.disabled=cuDis; delete btn.dataset.bxBan; }catch(e){} };
+    var kq; try{ kq=viec(); }catch(e){ tra(); throw e; }
+    if(kq&&typeof kq.then==='function') kq.then(tra,tra); else tra();
+  },0); });
+};
 function downloadScheduleTemplate(){ _downloadBlob('Mau_Lich_Bao_Giang_ButXanh.xlsx', buildScheduleXlsx(false)); }
 function exportScheduleXls(){ _downloadBlob(`Lich_Bao_Giang_Tuan${state.week}_Lop${state.klass}.xlsx`, buildScheduleXlsx(true)); }
 
@@ -3589,13 +3624,15 @@ function downloadWeekKHBD(){
   const rows=state.schedule||[];
   if(!rows.length){ bxAlert('Tuần '+state.week+' chưa có tiết nào trong thời khoá biểu.'); return; }
   const fname=`KHBD_Tuan${state.week}_Lop${state.klass}.docx`;
-  /* Ưu tiên bản KÈM ẢNH (DOM->docx); lỗi thì fallback bản chữ */
+  if(_bxChuaTraPhi(fname)) return;                      // chưa kích hoạt → hỏi ngay, đừng dựng tệp
+  const dong=function(){ closeModal('week-overlay'); closeModal('preview-overlay'); };
+  /* Ưu tiên bản KÈM ẢNH (DOM->docx); lỗi thì fallback bản chữ.
+     Chỉ đóng cửa sổ KHI TỆP ĐÃ XONG — đóng sớm thì thầy cô không biết máy còn đang làm. */
   if(typeof window.dlWeekImg==='function' && typeof _weekKhbdItems==='function'){
-    window.dlWeekImg(_weekKhbdItems(), fname);
-  } else {
-    _downloadBlob(fname, buildWeekKhbdDocx(rows));
+    return Promise.resolve(window.dlWeekImg(_weekKhbdItems(), fname)).then(dong, dong);
   }
-  closeModal('week-overlay'); closeModal('preview-overlay');
+  _downloadBlob(fname, buildWeekKhbdDocx(rows));
+  dong();
 }
 /* HTML 1 giáo án dạng trang A4 (mục III = bảng 2 cột) cho trang xem trước */
 function lessonPreviewHtml(L,row){
@@ -6239,9 +6276,12 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
   function lessonEl(L,row){var d=document.createElement('div');d.className='a4page';d.style.cssText='position:absolute;left:-99999px;top:0;width:794px';d.innerHTML=window.khoLessonToHtml(L,row||{});document.body.appendChild(d);return d;}
 
   /* ====== API tải Word có ảnh ====== */
-  window.dlLessonImg=async function(L,row,fname){var el=lessonEl(L,row);try{var blob=await elsToDocxBlob([el]);_downloadBlob(fname,blob);}catch(e){console.error('dlLessonImg',e);try{_downloadBlob(fname,buildKhbdDocxFromLesson(L,row));}catch(e2){bxAlert('Lỗi tạo Word: '+e.message);}}finally{el.remove();}};
-  window.dlWeekImg=async function(items,fname){var els=items.map(function(it){return lessonEl(it.L,it.r);});try{var blob=await elsToDocxBlob(els);_downloadBlob(fname,blob);}catch(e){console.error('dlWeekImg',e);try{_downloadBlob(fname,buildWeekKhbdDocx());}catch(e2){bxAlert('Lỗi tạo Word: '+e.message);}}finally{els.forEach(function(e){e.remove();});}};
-  window.dlElImg=async function(el,fname){try{var blob=await elsToDocxBlob([el]);_downloadBlob(fname,blob);}catch(e){console.error('dlElImg',e);bxAlert('Lỗi tạo Word: '+e.message);}};
+  /* Hỏi bản quyền NGAY ĐẦU — đây mới là chỗ việc nặng bắt đầu (dựng DOM từng giáo án,
+     tải ảnh kho từ máy chủ, dựng XML, nén zip). Hỏi ở đây thì thầy cô chưa kích hoạt
+     thấy hộp kích hoạt tức thì thay vì ngồi chờ mấy giây rồi mới thấy. */
+  window.dlLessonImg=async function(L,row,fname){if(_bxChuaTraPhi(fname))return;var el=lessonEl(L,row);try{var blob=await elsToDocxBlob([el]);_downloadBlob(fname,blob);}catch(e){console.error('dlLessonImg',e);try{_downloadBlob(fname,buildKhbdDocxFromLesson(L,row));}catch(e2){bxAlert('Lỗi tạo Word: '+e.message);}}finally{el.remove();}};
+  window.dlWeekImg=async function(items,fname){if(_bxChuaTraPhi(fname))return;var els=items.map(function(it){return lessonEl(it.L,it.r);});try{var blob=await elsToDocxBlob(els);_downloadBlob(fname,blob);}catch(e){console.error('dlWeekImg',e);try{_downloadBlob(fname,buildWeekKhbdDocx());}catch(e2){bxAlert('Lỗi tạo Word: '+e.message);}}finally{els.forEach(function(e){e.remove();});}};
+  window.dlElImg=async function(el,fname){if(_bxChuaTraPhi(fname))return;try{var blob=await elsToDocxBlob([el]);_downloadBlob(fname,blob);}catch(e){console.error('dlElImg',e);bxAlert('Lỗi tạo Word: '+e.message);}};
 
   /* ====== Modal KHBD: Xem (như Kho) + Sửa + Lưu ====== */
   function editKey(L,row){return 'khbd|'+(row.lop||'')+'|'+(L.tuan||row.tuan||'')+'|'+(row.tiet||L.tiet||'')+'|'+(L.mon||'')+'|'+(L.bai||'');}
