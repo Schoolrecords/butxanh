@@ -248,13 +248,10 @@
           '<div class="bxlic-row"><span>Nội dung CK</span><span><b id="bxlic-mack">'+esc(noiDungCKof(maCK))+'</b> '+
              '<button class="bxlic-copy" onclick="BXLIC_copy(\''+esc(noiDungCKof(maCK))+'\')">Sao chép</button></span></div>'+
           '<div class="bxlic-mini">📌 Chuyển khoản <b>ghi đúng nội dung trên</b> — giữ nguyên cả chữ <b>SEVQR</b> ở đầu, app sẽ <b>tự mở khoá</b> sau ít phút.</div>'+
-          (dyn?('<button class="bxlic-btn sec" style="margin-top:8px" onclick="BXLIC_saveQR()">💾 Lưu ảnh mã QR về máy</button>'+
-                '<details class="bxlic-help"><summary>📱 Đang dùng điện thoại, quét mã thế nào?</summary>'+
-                  '<div>1️⃣ Bấm <b>Lưu ảnh mã QR về máy</b> ở trên.<br>'+
-                  '2️⃣ Mở app ngân hàng ▸ <b>Quét mã QR</b> ▸ chọn <b>ảnh từ thư viện</b>.<br>'+
-                  '3️⃣ App tự điền <b>đủ số tiền và nội dung</b> — chỉ bấm xác nhận.<br>'+
-                  '<i>Mở bằng máy tính thì quét thẳng bằng điện thoại là xong.</i></div>'+
-                '</details>'):'')+
+          /* 4/8/2026: bỏ nút "Lưu ảnh mã QR về máy" và mục hướng dẫn "Đang dùng điện
+             thoại, quét mã thế nào?" — thầy cô nay đã quá quen quét mã thanh toán,
+             hai mục này chỉ làm cửa sổ dài thêm và bắt phải cân nhắc thêm một bước.
+             Hàm BXLIC_saveQR vẫn giữ trong tệp phòng khi cần dùng lại. */
           '<button class="bxlic-btn" onclick="BXLIC_reportPaid()">✅ Tôi đã chuyển khoản</button>'+
           '<button class="bxlic-btn sec" onclick="BXLIC_close(\'bxlic-activate\')">Để sau</button>'+
         '</div>'+
