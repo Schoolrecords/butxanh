@@ -83,14 +83,17 @@ svg{display:block}
    thầy cô phải cuộn mới tới các mục dưới. Nay gói lại còn ~60px (~1,6cm), trả lại
    khoảng 200px chiều cao cho menu. Linh vật dùng lại đúng ảnh đã có sẵn trong trang
    (biến --mascot) nên KHÔNG tải thêm tệp nào. */
-.tip{flex:0 0 auto;margin-top:10px;border:0;border-radius:14px;padding:6px 10px 6px 6px;overflow:hidden;display:flex;align-items:center;gap:9px;
-  background:linear-gradient(135deg,var(--green),var(--green-dark));box-shadow:0 6px 14px rgba(31,164,92,.30)}
-/* Linh vật đặt trên đĩa trắng: nền đã là màu xanh nên để trực tiếp sẽ chìm màu */
-.tip .mascot{width:44px;height:44px;flex:0 0 44px;border-radius:50%;background:#fff var(--mascot) no-repeat center bottom;background-size:86% auto;box-shadow:0 1px 4px rgba(0,0,0,.14)}
+/* Nền xanh NHẠT + chữ xanh đậm (4/8/2026). Bản xanh đặc trước đó chữ trắng chỉ đạt
+   tương phản 3,2:1 — dưới ngưỡng dễ đọc 4,5:1, nhạt thêm nữa thì càng mờ. Đảo lại
+   thành nền nhạt/chữ đậm đạt 6,1:1: vừa nhạt như thầy Chung muốn, vừa rõ chữ hơn. */
+.tip{flex:0 0 auto;margin-top:10px;border:1px solid #BFE4D0;border-radius:14px;padding:5px 10px 5px 5px;overflow:hidden;display:flex;align-items:center;gap:9px;
+  background:linear-gradient(135deg,#E4F5EB,#CDEEDC);box-shadow:0 3px 9px rgba(31,164,92,.14)}
+/* Linh vật đặt trên đĩa trắng cho nổi khỏi nền xanh */
+.tip .mascot{width:43px;height:43px;flex:0 0 43px;border-radius:50%;background:#fff var(--mascot) no-repeat center bottom;background-size:86% auto;box-shadow:0 1px 3px rgba(14,122,65,.18)}
 .tip .cr{min-width:0;line-height:1.28}
-.tip .cr small{display:block;font-size:9.8px;font-weight:600;color:rgba(255,255,255,.9);letter-spacing:.1px;white-space:nowrap}
-.tip .cr b{display:block;font-size:12.5px;font-weight:800;color:#fff;letter-spacing:-.1px;margin-top:1px}
-.tip .leaf{margin-left:auto;width:15px;height:15px;color:#fff;opacity:.6;flex:0 0 15px}
+.tip .cr small{display:block;font-size:9.8px;font-weight:600;color:#2E6B48;letter-spacing:.1px;white-space:nowrap}
+.tip .cr b{display:block;font-size:12.5px;font-weight:800;color:#0B5F33;letter-spacing:-.1px;margin-top:1px}
+.tip .leaf{margin-left:auto;width:15px;height:15px;color:var(--green);opacity:.75;flex:0 0 15px}
 
 /* ---------- VÙNG NỘI DUNG ---------- */
 .main{flex:1;min-width:0;overflow-x:hidden;display:flex;flex-direction:column;align-items:center;padding:18px 24px 26px}
@@ -7584,20 +7587,20 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
    đó là gì. Nay chữ "Nhóm Zalo hỗ trợ" hiện thẳng ngay trên nút, mọi máy đều thấy. */
 #bxZalo{
   position:fixed; right:18px; bottom:20px; z-index:55;
-  display:inline-flex; align-items:center; gap:9px;
-  height:46px; padding:0 17px 0 13px; border-radius:999px;
+  display:inline-flex; align-items:center; gap:7px;
+  height:37px; padding:0 14px 0 10px; border-radius:999px;   /* 80% cỡ cũ (46px) */
   background:linear-gradient(135deg,#0068FF,#0091FF);
   color:#fff; text-decoration:none;
-  font-size:13.5px; font-weight:700; letter-spacing:.1px; line-height:1;
-  box-shadow:0 6px 18px rgba(0,86,204,.34), 0 2px 6px rgba(0,0,0,.12);
-  border:2px solid rgba(255,255,255,.55);
+  font-size:11px; font-weight:700; letter-spacing:.1px; line-height:1;
+  box-shadow:0 5px 14px rgba(0,86,204,.32), 0 2px 5px rgba(0,0,0,.12);
+  border:1.6px solid rgba(255,255,255,.55);
   animation:bxZaloLac 6s ease-in-out 3s infinite;
   transition:transform .22s ease, box-shadow .22s ease;
   -webkit-tap-highlight-color:transparent;
 }
 #bxZalo:hover,#bxZalo:focus-visible{ transform:translateY(-3px) scale(1.04); box-shadow:0 12px 26px rgba(0,86,204,.45); animation-play-state:paused; }
 #bxZalo:active{ transform:scale(.96) }
-#bxZalo svg{ width:24px; height:24px; flex:none }
+#bxZalo svg{ width:19px; height:19px; flex:none }
 #bxZalo .bxz-chu{ white-space:nowrap }
 /* vòng sóng lan toả nhẹ phía sau nút */
 #bxZalo::before{
@@ -7619,16 +7622,11 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
 /* Điện thoại: nâng lên cao hơn thanh điều hướng dưới đáy */
 @media(max-width:768px){
   #bxZalo{
-    right:14px; height:44px; padding:0 15px 0 11px; font-size:13px; gap:8px;
+    right:14px; height:35px; padding:0 12px 0 9px; font-size:10.5px; gap:6px;
     bottom:84px;                                   /* dự phòng nếu env() không dùng được */
     bottom:calc(84px + env(safe-area-inset-bottom));
   }
-  #bxZalo svg{ width:22px; height:22px }
-}
-/* Máy hẹp: rút gọn chữ để nút không chiếm quá nửa bề ngang màn hình */
-@media(max-width:400px){
-  #bxZalo .bxz-chu{ font-size:12.5px }
-  #bxZalo{ padding:0 13px 0 10px }
+  #bxZalo svg{ width:18px; height:18px }
 }
 /* Thầy cô đã bật chế độ giảm chuyển động thì đứng yên */
 @media (prefers-reduced-motion: reduce){
