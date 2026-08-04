@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-04 · 4';
+  var PB='2026-08-04 · 5';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -85,6 +85,8 @@
     },0); });
   }, {capture:true, passive:true});
   window.BX_docLoi=function(){ try{ console.table(DS); }catch(e){ console.log(DS); } return DS; };
+  /* Cho phần còn lại của app tự khai báo trục trặc (kể cả khi không có ngoại lệ nào) */
+  window.BX_ghiLoi=function(loai,tin,noi){ ghi(loai,{tin:tin,noi:noi}); };
 })();
 </script>
 <link rel="icon" type="image/png" sizes="256x256" href="favicon.png?v=3">
@@ -2948,7 +2950,20 @@ document.querySelector('.nav').addEventListener('click',function(e){
      giây (máy yếu còn lâu hơn) rồi mọi thứ mới nhảy một lượt, y như nút bị đơ.
      Thanh điều hướng đáy trên điện thoại đã vá kiểu này từ 3/8, nay vá nốt menu bên trái. */
   document.querySelectorAll('.nav a').forEach(function(x){ x.classList.toggle('active', x.dataset.view===v); });
-  requestAnimationFrame(function(){ setTimeout(function(){ showView(v); },0); });
+  /* TỰ KIỂM (4/8/2026): có cô báo bấm menu mà màn hình đứng nguyên, Console sạch, máy
+     em thử đủ kiểu không tái hiện được. Nay chính chỗ này tự kiểm chứng: vẽ xong mà màn
+     KHÔNG đổi thì ghi lại vào BX_LOI để thầy cô bấm "Chép chi tiết" gửi về. */
+  var t0=(window.performance&&performance.now)?performance.now():0;
+  requestAnimationFrame(function(){ setTimeout(function(){
+    var loi='';
+    try{ showView(v); }catch(err){ loi=(err&&err.message)||String(err); }
+    try{
+      var a=document.querySelector('.view.active');
+      var d=Math.round(((window.performance&&performance.now)?performance.now():0)-t0);
+      if(loi) window.BX_ghiLoi&&BX_ghiLoi('menu lỗi','bấm "'+v+'" → showView nổ lỗi: '+loi, 'menu bên trái');
+      else if(!a||a.id!=='v-'+v) window.BX_ghiLoi&&BX_ghiLoi('menu không đổi màn','bấm "'+v+'" nhưng màn đang mở vẫn là '+((a&&a.id)||'(không có)')+' sau '+d+'ms', 'menu bên trái');
+    }catch(e){}
+  },0); });
 });
 window.addEventListener('hashchange',()=>showView((location.hash||'#dashboard').slice(1)));
 
