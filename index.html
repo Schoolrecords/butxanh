@@ -52,6 +52,33 @@
   window.addEventListener('unhandledrejection', function(e){
     var r=e&&e.reason; ghi('lời hứa hỏng', { tin:(r&&(r.message||r))||'không rõ', noi:(r&&r.stack)?String(r.stack).split('\n')[1]||'':'' });
   });
+
+  /* ----- THEO DÕI CÚ BẤM -----
+     "Nút bị đơ" có thể là ba chuyện rất khác nhau: (a) luồng chính đang bận nên trình
+     duyệt chưa kịp nhận cú bấm, (b) nhận rồi nhưng chỗ xử lý chạy lâu, (c) chỗ được bấm
+     vốn KHÔNG có xử lý nào. Ba cái đó cần ba cách sửa khác hẳn nhau, nên phải đo mới
+     biết. Chỉ ghi lại khi thực sự chậm (>600ms) để không làm phiền. */
+  var moTaGon=function(el){
+    try{
+      if(!el||!el.tagName) return '?';
+      var s=el.tagName.toLowerCase();
+      if(el.id) s+='#'+el.id;
+      if(el.className&&typeof el.className==='string') s+='.'+el.className.trim().split(/\s+/).slice(0,2).join('.');
+      var chu=(el.innerText||el.value||'').trim().replace(/\s+/g,' ').slice(0,40);
+      return s+(chu?(' "'+chu+'"'):'');
+    }catch(e){ return '?'; }
+  };
+  var CHAM=600;
+  document.addEventListener('pointerdown', function(e){
+    var t0=(window.performance&&performance.now)?performance.now():0, el=e.target;
+    var coXuLy=false;
+    try{ coXuLy=!!(el.closest&&(el.closest('[onclick]')||el.closest('a[href]')||el.closest('button')||el.closest('input,select,textarea,label'))); }catch(_){}
+    requestAnimationFrame(function(){ setTimeout(function(){
+      var d=((window.performance&&performance.now)?performance.now():0)-t0;
+      if(d>CHAM) ghi('bấm chậm', { tin:'chờ '+Math.round(d)+'ms mới xử lý được cú bấm'+(coXuLy?'':' · chỗ này KHÔNG có xử lý nào'), noi:moTaGon(el) });
+    },0); });
+  }, {capture:true, passive:true});
+  window.BX_docLoi=function(){ try{ console.table(DS); }catch(e){ console.log(DS); } return DS; };
 })();
 </script>
 <link rel="icon" type="image/png" sizes="256x256" href="favicon.png?v=3">
@@ -3417,7 +3444,22 @@ function openSavedKHBD(id){
   el('btn-gen').textContent='↻ Soạn lại'; el('khbd-overlay').classList.add('show');
 }
 function downloadSavedKHBD(id){ const k=state.khbd.find(x=>x.id===id); if(!k)return; state.current=k; el('khbd-text').value=k.content; downloadKHBD(); }
-function renderKHBDView(){ renderBankSchedule(); renderKHBDChips(); renderKHBDList(); }
+/* ===== KHAI BÁO TRƯỚC CHO CÁC HÀM VẼ CÀI Ở CUỐI TRANG (4/8/2026) =====
+   renderBankSchedule / renderKHDH chỉ được cài ở khối OVERRIDE phía dưới bằng
+   `window.X = function(){…}`. Nhưng `showView(BX_manHinhMoDau())` lại chạy Ở GIỮA
+   trang — nên thầy cô mở thẳng vào butxanh.net/#khbd (đánh dấu trang, hoặc F5 lúc
+   đang ở màn Kế hoạch bài dạy) là lượt vẽ đầu gọi tên trần khi hàm CHƯA tồn tại:
+   "Uncaught ReferenceError: renderBankSchedule is not defined" → cả lượt vẽ chết
+   giữa chừng, màn hình dựng dở và các nút không ăn. Thầy Chung gặp thật 4/8/2026,
+   bắt được nhờ bộ ghi lỗi. Bản tạm không làm gì; khối OVERRIDE ghi đè rồi tự vẽ lại. */
+var renderBankSchedule = function(){};
+var renderKHDH = function(){};
+/* Mỗi mảnh vẽ tự chịu trách nhiệm: một mảnh hỏng không được kéo sập cả màn hình */
+function renderKHBDView(){
+  try{ renderBankSchedule(); }catch(e){ console.error('[Bút Xanh] vẽ lịch kho lỗi',e); }
+  try{ renderKHBDChips(); }catch(e){ console.error('[Bút Xanh] vẽ thẻ tiết lỗi',e); }
+  try{ renderKHBDList(); }catch(e){ console.error('[Bút Xanh] vẽ danh sách KHBD lỗi',e); }
+}
 function renderKHBDChips(){
   const box=el('khbd-tiet-chips'); if(!box)return;
   const wk=el('khbd-week'); if(wk) wk.textContent=state.week;
