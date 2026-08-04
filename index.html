@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-04 · 6';
+  var PB='2026-08-04 · 7';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -6697,9 +6697,36 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
 
   // Trộn 1 phần dữ liệu → {str,ts}. Mảng (giáo án/học sinh/học liệu/kho) hợp nhất theo id (không mất mục mới);
   // bản đồ tuần (LBG) hợp nhất theo tuần; phần còn lại lấy bản mới hơn theo mốc thời gian.
+  /* RỖNG KHÔNG BAO GIỜ ĐƯỢC GHI ĐÈ DỮ LIỆU THẬT (4/8/2026) —————————————
+     Lỗi thật: đám mây giữ butxanh_tkb rỗng ("" hoặc {"slots":[]}) kèm mốc thời gian
+     mới hơn (do có lần đăng nhập trên máy/trình duyệt khác lúc chưa khai thời khoá
+     biểu). Luật cũ "mốc mới hơn thì thắng" liền ghi đè, XOÁ SẠCH thời khoá biểu của
+     thầy cô — mà mất TKB là mất luôn lịch báo giảng và giáo án theo tuần, màn hình
+     tụt về lịch mẫu ("(theo PPCT)", "Đang cập nhật kho"). Nay: bên nào rỗng thì bên
+     đó thua, bất kể mốc thời gian. Bản có thật sẽ được đẩy ngược lên sửa đám mây. */
+  function _rong(s){
+    if(s==null) return true;
+    var t=String(s).trim();
+    if(t===''||t==='null'||t==='undefined') return true;
+    try{
+      var v=JSON.parse(t);
+      if(v==null) return true;
+      if(Array.isArray(v)) return v.length===0;
+      if(typeof v==='object'){
+        var ks=Object.keys(v);
+        if(!ks.length) return true;
+        if(Array.isArray(v.slots) && v.slots.length===0) return true;   /* TKB chưa có tiết nào */
+      }
+    }catch(e){}
+    return false;
+  }
+  window.BX_rongKhongDangKe=_rong;
   window.BX_mergeKey=function(key,lstr,cstr,lts,cts){
     lts=lts||0; cts=cts||0;
     if(lstr==null&&cstr==null) return null;
+    var lR=_rong(lstr), cR=_rong(cstr);
+    if(cR&&!lR) return {str:lstr,ts:Math.max(lts,cts)};   /* mây rỗng → giữ bản trên máy */
+    if(lR&&!cR) return {str:cstr,ts:Math.max(lts,cts)};   /* máy rỗng → lấy bản trên mây */
     if(lstr==null) return {str:cstr,ts:cts};
     if(cstr==null) return {str:lstr,ts:lts};
     if(lstr===cstr) return {str:lstr,ts:Math.max(lts,cts)};
