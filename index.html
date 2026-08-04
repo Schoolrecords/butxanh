@@ -83,12 +83,14 @@ svg{display:block}
    thầy cô phải cuộn mới tới các mục dưới. Nay gói lại còn ~60px (~1,6cm), trả lại
    khoảng 200px chiều cao cho menu. Linh vật dùng lại đúng ảnh đã có sẵn trong trang
    (biến --mascot) nên KHÔNG tải thêm tệp nào. */
-.tip{flex:0 0 auto;margin-top:10px;background:#FAFCF7;border:1px solid var(--green-line);border-radius:14px;padding:6px 9px;overflow:hidden;display:flex;align-items:center;gap:8px}
-.tip .mascot{width:38px;height:46px;flex:0 0 38px;background:var(--mascot) no-repeat center bottom;background-size:contain}
+.tip{flex:0 0 auto;margin-top:10px;border:0;border-radius:14px;padding:6px 10px 6px 6px;overflow:hidden;display:flex;align-items:center;gap:9px;
+  background:linear-gradient(135deg,var(--green),var(--green-dark));box-shadow:0 6px 14px rgba(31,164,92,.30)}
+/* Linh vật đặt trên đĩa trắng: nền đã là màu xanh nên để trực tiếp sẽ chìm màu */
+.tip .mascot{width:44px;height:44px;flex:0 0 44px;border-radius:50%;background:#fff var(--mascot) no-repeat center bottom;background-size:86% auto;box-shadow:0 1px 4px rgba(0,0,0,.14)}
 .tip .cr{min-width:0;line-height:1.28}
-.tip .cr small{display:block;font-size:9.8px;font-weight:600;color:#5B7365;letter-spacing:.1px;white-space:nowrap}
-.tip .cr b{display:block;font-size:12.5px;font-weight:800;color:var(--green-dark);letter-spacing:-.1px;margin-top:1px}
-.tip .leaf{margin-left:auto;width:15px;height:15px;color:var(--green);opacity:.5;flex:0 0 15px}
+.tip .cr small{display:block;font-size:9.8px;font-weight:600;color:rgba(255,255,255,.9);letter-spacing:.1px;white-space:nowrap}
+.tip .cr b{display:block;font-size:12.5px;font-weight:800;color:#fff;letter-spacing:-.1px;margin-top:1px}
+.tip .leaf{margin-left:auto;width:15px;height:15px;color:#fff;opacity:.6;flex:0 0 15px}
 
 /* ---------- VÙNG NỘI DUNG ---------- */
 .main{flex:1;min-width:0;overflow-x:hidden;display:flex;flex-direction:column;align-items:center;padding:18px 24px 26px}
@@ -7577,63 +7579,56 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
      Nút độc lập, không thuộc menu nào. Lay động nhẹ để thầy cô nhận ra,
      nhưng z-index thấp hơn lớp phủ (overlay=60) nên không đè lên hộp thoại. -->
 <style>
-/* Nút tròn nhỏ, chỉ biểu tượng — rê chuột mới hiện chữ, đỡ choán chỗ */
+/* Nút dạng THANH DÀI (4/8/2026): trước là nút tròn 46px chỉ có biểu tượng, phải rê
+   chuột mới hiện chữ — trên điện thoại thì không rê được nên thầy cô không biết nút
+   đó là gì. Nay chữ "Nhóm Zalo hỗ trợ" hiện thẳng ngay trên nút, mọi máy đều thấy. */
 #bxZalo{
   position:fixed; right:18px; bottom:20px; z-index:55;
-  display:inline-flex; align-items:center; justify-content:center;
-  width:46px; height:46px; border-radius:50%;
+  display:inline-flex; align-items:center; gap:9px;
+  height:46px; padding:0 17px 0 13px; border-radius:999px;
   background:linear-gradient(135deg,#0068FF,#0091FF);
   color:#fff; text-decoration:none;
+  font-size:13.5px; font-weight:700; letter-spacing:.1px; line-height:1;
   box-shadow:0 6px 18px rgba(0,86,204,.34), 0 2px 6px rgba(0,0,0,.12);
   border:2px solid rgba(255,255,255,.55);
   animation:bxZaloLac 6s ease-in-out 3s infinite;
   transition:transform .22s ease, box-shadow .22s ease;
   -webkit-tap-highlight-color:transparent;
 }
-#bxZalo:hover,#bxZalo:focus-visible{ transform:translateY(-3px) scale(1.06); box-shadow:0 12px 26px rgba(0,86,204,.45); animation-play-state:paused; }
-#bxZalo:active{ transform:scale(.94) }
+#bxZalo:hover,#bxZalo:focus-visible{ transform:translateY(-3px) scale(1.04); box-shadow:0 12px 26px rgba(0,86,204,.45); animation-play-state:paused; }
+#bxZalo:active{ transform:scale(.96) }
 #bxZalo svg{ width:24px; height:24px; flex:none }
-/* Chữ thành nhãn nổi bên trái, chỉ hiện khi rê chuột trên máy tính */
-#bxZalo .bxz-chu{
-  position:absolute; right:56px; top:50%; transform:translateY(-50%) translateX(6px);
-  white-space:nowrap; background:#12324d; color:#fff;
-  font-size:13px; font-weight:700; padding:7px 12px; border-radius:9px;
-  opacity:0; visibility:hidden; pointer-events:none;
-  transition:opacity .2s ease, transform .2s ease, visibility .2s;
-  box-shadow:0 6px 16px rgba(0,0,0,.2);
-}
-#bxZalo .bxz-chu::after{
-  content:''; position:absolute; left:100%; top:50%; transform:translateY(-50%);
-  border:6px solid transparent; border-left-color:#12324d;
-}
-@media (hover:hover){
-  #bxZalo:hover .bxz-chu,#bxZalo:focus-visible .bxz-chu{ opacity:1; visibility:visible; transform:translateY(-50%) translateX(0) }
-}
+#bxZalo .bxz-chu{ white-space:nowrap }
 /* vòng sóng lan toả nhẹ phía sau nút */
 #bxZalo::before{
   content:''; position:absolute; inset:-3px; border-radius:999px;
   border:2px solid rgba(0,120,255,.55); opacity:0;
   animation:bxZaloSong 6s ease-out 3s infinite; pointer-events:none;
 }
+/* Nút đã là thanh dài: lắc xoay trông kỳ, đổi thành nhún ngang nhẹ cho vừa dáng */
 @keyframes bxZaloLac{
-  0%,84%,100%{ transform:rotate(0) }
-  86%{ transform:rotate(-7deg) } 88%{ transform:rotate(6deg) }
-  90%{ transform:rotate(-5deg) } 92%{ transform:rotate(4deg) } 94%{ transform:rotate(0) }
+  0%,84%,100%{ transform:translateX(0) }
+  86%{ transform:translateX(-4px) } 88%{ transform:translateX(3px) }
+  90%{ transform:translateX(-3px) } 92%{ transform:translateX(2px) } 94%{ transform:translateX(0) }
 }
 @keyframes bxZaloSong{
   0%,80%{ transform:scale(1); opacity:0 }
-  86%{ opacity:.85 }
-  100%{ transform:scale(1.45); opacity:0 }
+  86%{ opacity:.8 }
+  100%{ transform:scale(1.06,1.32); opacity:0 }   /* thanh dài nên nở ngang ít, dọc nhiều */
 }
 /* Điện thoại: nâng lên cao hơn thanh điều hướng dưới đáy */
 @media(max-width:768px){
   #bxZalo{
-    right:14px; width:44px; height:44px;
+    right:14px; height:44px; padding:0 15px 0 11px; font-size:13px; gap:8px;
     bottom:84px;                                   /* dự phòng nếu env() không dùng được */
     bottom:calc(84px + env(safe-area-inset-bottom));
   }
-  #bxZalo .bxz-chu{ display:none }
-  #bxZalo svg{ width:23px; height:23px }
+  #bxZalo svg{ width:22px; height:22px }
+}
+/* Máy hẹp: rút gọn chữ để nút không chiếm quá nửa bề ngang màn hình */
+@media(max-width:400px){
+  #bxZalo .bxz-chu{ font-size:12.5px }
+  #bxZalo{ padding:0 13px 0 10px }
 }
 /* Thầy cô đã bật chế độ giảm chuyển động thì đứng yên */
 @media (prefers-reduced-motion: reduce){
