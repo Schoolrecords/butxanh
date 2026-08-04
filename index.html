@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-04 · 5';
+  var PB='2026-08-04 · 6';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -590,6 +590,18 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
    (dùng justify-content:center sẽ cắt cụt đầu linh vật và dòng chữ cuối). */
 #splash{position:fixed;inset:0;z-index:9999;overflow-y:auto;overflow-x:hidden;background:radial-gradient(circle at 50% 38%,#f4fbf7 0%,#e3f6ec 55%,#d2efdf 100%);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:16px;padding:18px 14px;animation:splashHide .8s ease 60s forwards}
 #splash.quick{overflow:hidden;animation:splashHide .6s ease 1.2s forwards}
+/* ===== MÀN CHÀO ĐÃ TẮT THÌ TUYỆT ĐỐI KHÔNG ĐƯỢC ĂN CÚ BẤM NỮA (4/8/2026) =====
+   #splash phủ kín màn hình ở z-index 9999. Trước đây lúc tắt chỉ đặt opacity:0 +
+   visibility:hidden lên CHÍNH #splash — nhưng con `.sp-intro` lại tự đặt
+   visibility:visible (dòng dưới), mà visibility là thuộc tính KẾ THỪA nên con GHI ĐÈ
+   cha: khối 782×626 đó vẫn nhận chuột dù mắt không nhìn thấy. Và opacity:0 thì KHÔNG
+   chặn chuột. Hậu quả: đóng màn chào xong, mọi cú bấm đều rơi vào lớp vô hình này —
+   bấm menu không đổi màn, ô xanh không nhảy, ô nhập không gõ được.
+   Chỉ xảy ra với người mở THẲNG butxanh.net trong tháng 8/2026 (nhánh `thang8` không
+   gán class `quick`, nên `.sp-intro` không bị display:none) — tức là gần như mọi thầy
+   cô dùng thử. Mở bằng liên kết có sẵn #… thì lại không dính, nên rất khó tái hiện. */
+#splash.dang-tat{pointer-events:none}
+#splash.tat{display:none!important}
 /* Tạm ẩn khối giới thiệu cho tới khi CSS của nó (nằm cuối trang) được nạp —
    tránh loé biểu tượng SVG dạng thô. Dòng cởi khoá ở cuối trang. */
 #splash .sp-intro{visibility:hidden}
@@ -7820,12 +7832,25 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
 /* Đóng màn chào ngay khi thầy cô bấm "Bắt đầu cùng Bút Xanh" — không phải ngồi đợi. */
 window.BX_dongManChao=function(){
   var sp=document.getElementById('splash'); if(!sp) return;
+  sp.classList.add('dang-tat');          /* ngừng ăn cú bấm NGAY, không đợi mờ dần xong */
   sp.style.animation='none';
   sp.style.transition='opacity .45s ease';
   sp.style.opacity='0';
-  setTimeout(function(){ try{ sp.style.visibility='hidden'; }catch(e){} }, 480);
+  setTimeout(function(){ try{ sp.style.visibility='hidden'; sp.classList.add('tat'); }catch(e){} }, 480);
   try{ window.__bxManChaoXong && window.__bxManChaoXong(); }catch(e){}
 };
+/* Màn chào còn một đường tắt nữa: tự tan bằng hiệu ứng CSS `splashHide` (bản `quick`
+   sau 1,2s, bản thường sau 60s). Đường đó không đi qua BX_dongManChao nên phải chặn
+   riêng, nếu không vẫn để lại đúng lớp vô hình ăn cú bấm như trên. */
+(function chanManChaoAnCuBam(){
+  var sp=document.getElementById('splash'); if(!sp) return;
+  var tat=function(){ try{ sp.classList.add('tat'); }catch(e){} };
+  try{ sp.addEventListener('animationend', function(e){ if(!e.animationName||e.animationName==='splashHide') tat(); }); }catch(e){}
+  /* Lưới cuối: nếu vì lý do nào đó màn chào đã trong suốt mà vẫn còn nhận chuột thì gỡ hẳn */
+  setTimeout(function(){
+    try{ if(getComputedStyle(sp).opacity==='0'||getComputedStyle(sp).visibility==='hidden') tat(); }catch(e){}
+  }, 65000);
+})();
 
 /* Thầy cô MỚI bấm chọn lớp ngay trên màn chào.
    Dùng lại đúng bộ máy cũ (BX_wcChonLop): ghi hồ sơ lớp, dựng thời khoá biểu mẫu,
