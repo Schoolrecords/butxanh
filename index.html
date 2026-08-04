@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-04 · 7';
+  var PB='2026-08-04 · 8';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -2337,6 +2337,28 @@ window.bxMergeKho = function(){
    - Tạm thời (ảnh trong repo):  'kho-media/'
    - Firebase công khai:         'https://storage.googleapis.com/but-xanh.firebasestorage.app/kho-media/' */
 window.KHO_MEDIA_BASE = 'https://storage.googleapis.com/but-xanh.firebasestorage.app/kho-media/';
+/* ===== ẢNH KHO DÙNG WEBP (4/8/2026) =====
+   Ảnh minh hoạ trong giáo án vốn là PNG/JPG rất nặng (trung bình 575 KB, cả kho
+   1.389 MB). Chuyển sang WebP q80 còn 203 MB — nhẹ hơn 85,4% mà mắt không phân biệt
+   được (đã dựng ảnh so sánh cạnh nhau để nghiệm thu, kể cả ảnh có chữ nhỏ).
+   Ý nghĩa: thầy cô mở giáo án trên 4G nhanh hơn hẳn, và chi phí Cloud Storage ở mốc
+   1.000 giáo viên giảm từ ~2,46 triệu xuống ~370 nghìn đồng một năm học.
+
+   BA ĐIỀU BẮT BUỘC GIỮ:
+   1. Ảnh gốc .png/.jpg VẪN NẰM NGUYÊN trên máy chủ — không xoá.
+   2. Bản XUẤT WORD phải dùng ảnh GỐC, vì Word KHÔNG đọc được WebP. Vì vậy mỗi thẻ
+      <img> mang thêm data-goc, và đường dựng .docx đọc data-goc thay cho src.
+   3. Thiếu tệp .webp nào thì onerror tự lui về ảnh gốc — hỏng một ảnh không làm
+      trống cả giáo án. */
+window.BX_anhWeb = function(url){ return String(url||'').replace(/\.(png|jpe?g)(\?[^]*)?$/i, '.webp$2'); };
+window.BX_theAnh = function(url, lop, alt){
+  var e = function(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+  var goc = String(url||''), web = window.BX_anhWeb(goc);
+  var chung = ' class="'+e(lop||'kho-img')+'" loading="lazy"' + (alt?(' alt="'+e(alt)+'"'):'');
+  if(web === goc) return '<img'+chung+' src="'+e(goc)+'">';
+  return '<img'+chung+' src="'+e(web)+'" data-goc="'+e(goc)+'"'+
+         ' onerror="if(this.dataset.goc&&this.src!==this.dataset.goc){this.onerror=null;this.src=this.dataset.goc;}">';
+};
 
 /* ---------- 1) DỮ LIỆU LỊCH (mẫu chuẩn Tuần 12 - Lớp 5A) ---------- */
 const state = {
@@ -3772,7 +3794,7 @@ function lessonPreviewHtml(L,row){
   const lop=row.lop||state.klass, tuan=L.tuan||row.tuan||state.week;
   const tiet=row.ppct||row.tiet||L.tiet||'', ngay=_ngayFull(row.date);
   const esc=_xe, _IMGB=(window.KHO_MEDIA_BASE||'kho-media/');
-  const imgify=s=>esc(s==null?'':s).replace(/〖IMG:([^〗]+)〗/g,function(m,p){return '<img class="kho-img" loading="lazy" src="'+_IMGB+esc(p)+'">';});
+  const imgify=s=>esc(s==null?'':s).replace(/〖IMG:([^〗]+)〗/g,function(m,p){return window.BX_theAnh(_IMGB+p,'kho-img');});
   const nl=s=>imgify(s).replace(/\n/g,'<br>');
   const nlYccd=s=>String(s==null?'':s).split('\n').map(line=>{const seg=imgify(line); return _isYccdHead(line)?('<b>'+seg+'</b>'):seg;}).join('<br>');
   let h='<div class="a4">';
@@ -6264,7 +6286,7 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
   };
   /* Dựng giáo án dạng trang A4 (HTML phẳng) — khớp bố cục bản Word */
   var KHO_MEDIA_BASE=(window.KHO_MEDIA_BASE||'kho-media/');   // đổi sang URL Firebase Storage khi lên production
-  function _khoImg(p){ return '<img class="kho-img" loading="lazy" src="'+esc(KHO_MEDIA_BASE+p)+'" alt="Hình minh hoạ trong giáo án">'; }
+  function _khoImg(p){ return window.BX_theAnh(KHO_MEDIA_BASE+p,'kho-img','Hình minh hoạ trong giáo án'); }
   function _richSeg(line){ return String(line).split(/(〖IMG:[^〗]+〗)/).map(function(part){ var m=part.match(/^〖IMG:(.+)〗$/); return m?_khoImg(m[1]):esc(part); }).join(''); }
   function mline(t){ return String(t==null?'':t).replace(/\r/g,'').split('\n').map(_richSeg).join('<br>'); }
   function para(t){ return '<p>'+mline(t)+'</p>'; }
@@ -6361,7 +6383,7 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
   function inlineRuns(node,ctx,base){var s='';node.childNodes.forEach(function(ch){
     if(ch.nodeType===3){s+=runT(ch.nodeValue,base);}
     else if(ch.nodeType===1){var t=ch.tagName.toLowerCase();
-      if(t==='img'){s+=runImg(ctx,ch.getAttribute('src'));}
+      if(t==='img'){s+=runImg(ctx,ch.getAttribute('data-goc')||ch.getAttribute('src'));}   /* data-goc = anh GOC: Word khong doc duoc WebP */
       else if(t==='br'){s+='<w:r>'+rpr(base)+'<w:br/></w:r>';}
       else if(t==='b'||t==='strong'){var b2={size:base.size,bold:true};s+=inlineRuns(ch,ctx,b2);}
       else{s+=inlineRuns(ch,ctx,base);}
@@ -6402,7 +6424,7 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
     return _zipStore(files, (typeof BX_MIME!=='undefined'?BX_MIME.docx:undefined));
   }
   async function elsToDocxBlob(els){
-    var srcs=[];els.forEach(function(el){Array.prototype.forEach.call(el.querySelectorAll('img'),function(im){var s=im.getAttribute('src');if(s&&srcs.indexOf(s)<0)srcs.push(s);});});
+    var srcs=[];els.forEach(function(el){Array.prototype.forEach.call(el.querySelectorAll('img'),function(im){var s=im.getAttribute('data-goc')||im.getAttribute('src');if(s&&srcs.indexOf(s)<0)srcs.push(s);});});
     var ctx=await buildImgCtx(srcs);
     var pb='<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
     var body=els.map(function(el,i){return (i?pb:'')+a4Body(el,ctx);}).join('');
