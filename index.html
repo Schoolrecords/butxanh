@@ -13,11 +13,17 @@
    Nay lỗi được ghi lại và hiện một dòng nhỏ có nút CHÉP CHI TIẾT để gửi nhóm hỗ trợ.
    Đặt ngay đầu <head> để bắt được cả lỗi xảy ra lúc trang đang dựng. */
 (function(){
+  /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
+     (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
+     rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
+  var PB='2026-08-04 · 4';
+  window.BX_PHIENBAN=PB;
+  try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
   window.BX_LOI=DS;
   function ghi(loai,thongTin){
     try{
-      var d={ luc:new Date().toLocaleString('vi-VN'), loai:loai, tin:String(thongTin&&thongTin.tin||thongTin||''),
+      var d={ luc:new Date().toLocaleString('vi-VN'), banApp:PB, loai:loai, tin:String(thongTin&&thongTin.tin||thongTin||''),
               noi:String((thongTin&&thongTin.noi)||''), man:(location.hash||'#dashboard'), may:navigator.userAgent };
       DS.push(d); if(DS.length>20) DS.shift();
       try{ console.error('[Bút Xanh · lỗi]', d); }catch(e){}
