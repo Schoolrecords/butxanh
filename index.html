@@ -6,6 +6,54 @@
 <title>Bút Xanh — Trợ lý đắc lực của thầy cô</title>
 <meta name="description" content="Soạn Giáo án, lên Lịch báo giảng, hỗ trợ bài giảng trình chiếu giúp thầy cô.">
 <meta name="theme-color" content="#1FA45C">
+<script>
+/* ===== BẮT LỖI KỸ THUẬT (4/8/2026) =====
+   Từ trước tới nay lỗi JavaScript bị nuốt im lặng: một hàm hỏng giữa chừng là nút bấm
+   xong không thấy gì, thầy cô chỉ biết báo "nút bị đơ" mà không ai lần ra được vì sao.
+   Nay lỗi được ghi lại và hiện một dòng nhỏ có nút CHÉP CHI TIẾT để gửi nhóm hỗ trợ.
+   Đặt ngay đầu <head> để bắt được cả lỗi xảy ra lúc trang đang dựng. */
+(function(){
+  var DS=[], daHien=false;
+  window.BX_LOI=DS;
+  function ghi(loai,thongTin){
+    try{
+      var d={ luc:new Date().toLocaleString('vi-VN'), loai:loai, tin:String(thongTin&&thongTin.tin||thongTin||''),
+              noi:String((thongTin&&thongTin.noi)||''), man:(location.hash||'#dashboard'), may:navigator.userAgent };
+      DS.push(d); if(DS.length>20) DS.shift();
+      try{ console.error('[Bút Xanh · lỗi]', d); }catch(e){}
+      hien();
+    }catch(e){}
+  }
+  function hien(){
+    if(daHien||!document.body) return; daHien=true;
+    try{
+      var t=document.createElement('div');
+      t.id='bx-loi-toast';
+      t.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:16px;z-index:99998;max-width:calc(100vw - 24px);'+
+        'background:#8a2b12;color:#fff;font:600 13px/1.35 system-ui,Segoe UI,Roboto,sans-serif;padding:10px 12px;border-radius:11px;'+
+        'box-shadow:0 8px 22px rgba(0,0,0,.28);display:flex;align-items:center;gap:9px';
+      t.innerHTML='<span style="flex:1">⚠️ Bút Xanh gặp trục trặc kỹ thuật ở thao tác vừa rồi.</span>'+
+        '<button type="button" id="bx-loi-chep" style="flex:none;background:#fff;color:#8a2b12;border:0;border-radius:8px;padding:6px 10px;font:700 12px system-ui;cursor:pointer">Chép chi tiết</button>'+
+        '<button type="button" id="bx-loi-dong" style="flex:none;background:transparent;color:#fff;border:0;font-size:18px;line-height:1;cursor:pointer;padding:0 2px">×</button>';
+      document.body.appendChild(t);
+      t.querySelector('#bx-loi-dong').onclick=function(){ t.remove(); daHien=false; };
+      t.querySelector('#bx-loi-chep').onclick=function(){
+        var vb=JSON.stringify(DS,null,1);
+        try{ navigator.clipboard.writeText(vb).then(function(){ alert('Đã chép chi tiết lỗi. Thầy cô dán vào nhóm Zalo hỗ trợ giúp Dự án nhé!'); },function(){ nhac(vb); }); }
+        catch(e){ nhac(vb); }
+      };
+    }catch(e){}
+  }
+  function nhac(vb){ try{ window.prompt('Thầy cô bôi đen rồi Ctrl+C để chép, gửi vào nhóm Zalo hỗ trợ giúp Dự án nhé:', vb.slice(0,1800)); }catch(e){} }
+  window.addEventListener('error', function(e){
+    if(e && e.target && e.target!==window && e.target.tagName) return;   /* ảnh/script hỏng — không phải lỗi thao tác */
+    ghi('lỗi', { tin:(e&&e.message)||'không rõ', noi:((e&&e.filename)||'')+':'+((e&&e.lineno)||'') });
+  });
+  window.addEventListener('unhandledrejection', function(e){
+    var r=e&&e.reason; ghi('lời hứa hỏng', { tin:(r&&(r.message||r))||'không rõ', noi:(r&&r.stack)?String(r.stack).split('\n')[1]||'':'' });
+  });
+})();
+</script>
 <link rel="icon" type="image/png" sizes="256x256" href="favicon.png?v=3">
 <link rel="apple-touch-icon" href="favicon.png?v=3">
 <meta property="og:type" content="website">
@@ -2983,14 +3031,23 @@ function renderSlides(){
 /* Lưới an toàn cho nút Tuần: một số máy trường bị tiện ích/cài đặt chặn mở tab mới
    (gặp thật 3/8/2026 — bấm không thấy gì, tưởng app đơ). App tự mở tab bằng
    window.open: bị chặn thì hàm trả về null → hỏi mở Drive ngay tại trang này. */
+/* Mở link ra tab mới, CÓ lưới an toàn. Mọi chỗ mở link trong app phải đi qua đây:
+   bị chặn thì hỏi mở ngay tại trang, không bao giờ để thầy cô bấm mà không thấy gì. */
+window.BX_moLink=function(url, ten){
+  if(!url) return;
+  var w=null;
+  try{ w=window.open(url,'_blank'); }catch(e){}
+  if(w){ try{ w.opener=null; }catch(e){} return; }                 /* mở được — cắt liên kết ngược cho an toàn */
+  var moTa=ten||'trang này';
+  if(typeof BX_confirm==='function'){
+    BX_confirm({title:'Không mở được tab mới',
+      html:'Trình duyệt (hoặc tiện ích cài thêm) đang chặn Bút Xanh mở tab mới tới '+moTa+'.<br><br>Bút Xanh sẽ mở <b>ngay tại trang này</b> — xem xong thầy cô bấm nút <b>← Quay lại</b> của trình duyệt để trở về Bút Xanh.<br><br>💡 Muốn mở tab mới như thường: bấm biểu tượng <b>cửa sổ bật lên bị chặn</b> ở cuối thanh địa chỉ, chọn <b>«Luôn cho phép»</b> cho butxanh.net.',
+      okText:'Mở tại trang này',cancelText:'Thôi'}, function(){ location.href=url; });
+  } else if(confirm('Trình duyệt đang chặn mở tab mới. Mở ngay tại trang này?')) location.href=url;
+};
 window.BX_slideWeekClick=function(ev,a){
   if(ev.ctrlKey||ev.metaKey||ev.shiftKey||ev.altKey) return true;  /* GV chủ ý mở kiểu khác — không can thiệp */
-  var url=a.href, w=null;
-  try{ w=window.open(url,'_blank'); }catch(e){}
-  if(w){ try{ w.opener=null; }catch(e){} return false; }           /* mở được — cắt liên kết ngược cho an toàn */
-  BX_confirm({title:'Không mở được tab mới',
-    html:'Trình duyệt (hoặc tiện ích cài thêm) đang chặn mở tab mới tới Google Drive.<br><br>Bút Xanh sẽ mở thư mục bài giảng <b>ngay tại trang này</b> — xem xong thầy cô bấm nút <b>← Quay lại</b> của trình duyệt để trở về Bút Xanh.',
-    okText:'Mở tại trang này',cancelText:'Thôi'}, function(){ location.href=url; });
+  BX_moLink(a.href,'thư mục bài giảng trên Google Drive');
   return false;
 };
 window.BX_slideLop=function(l){ _slideSel.lop=l; _slideSel.mon=null; renderSlides(); };
@@ -4169,7 +4226,10 @@ function openHl(title,link,subject){
   let url=(link||'').trim();
   if(url){ if(!/^https?:\/\//i.test(url)) url='https://'+url; }
   else { url='https://www.google.com/search?q='+encodeURIComponent(((title||'')+' '+(subject||'')+' lớp 5').trim()); }
-  window.open(url,'_blank','noopener');
+  /* 4/8/2026: trước đây gọi thẳng window.open rồi bỏ mặc — máy nào chặn cửa sổ bật lên
+     là bấm thẻ học liệu KHÔNG THẤY GÌ, thầy cô tưởng app đơ. Nút Tuần ở màn Bài giảng
+     đã có lưới an toàn từ 3/8, chỗ này thì chưa. Nay dùng chung BX_moLink. */
+  BX_moLink(url, link?'học liệu này':'trang tìm kiếm Google');
 }
 function renderHocLieu(){
   const all=allHocLieu();
