@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-05 · 3';
+  var PB='2026-08-05 · 4';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1294,7 +1294,7 @@ window.bxMergeKho = function(){
      Trước: khgd-lop1..4 (~500KB) tải cho mọi người + KHGD lớp 5 nhúng ngay trong
      index.html (~160KB). Nay: lớp 5 tách ra khgd-lop5.js, cả 5 file nạp lười.
      Khối 5 luôn nạp kèm (sau khởi động) vì Bản đồ chương trình/dashboard dựa vào. */
-  var VK='20260803-l5', ttKHGD={};
+  var VK='20260805-hdtn4', ttKHGD={};
   window.BX_KHGD_FILES={'1':'khgd-lop1.js','2':'khgd-lop2.js','3':'khgd-lop3.js','4':'khgd-lop4.js','5':'khgd-lop5.js'};
   window.BX_ensureKHGD=function(lopHoacKhoi){
     var khoi=window.BX_khoiCuaLop(lopHoacKhoi)||String(lopHoacKhoi||'').replace(/\D/g,'').slice(0,1);
