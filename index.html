@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-05 · 10';
+  var PB='2026-08-05 · 11';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -5929,7 +5929,14 @@ window.__bxKHGDDaVe=function(){
   bxGomKHGD();
   try{
     var h=(location.hash||'').slice(1);
-    if(h==='khdh' && typeof window.renderKHDH==='function') window.renderKHDH();
+    /* Phải dựng lại CẢ hai ô Lớp/Môn, không chỉ vẽ lại bảng. Từ 5/8/2026 màn này
+       mở sẵn ở khối thầy cô dạy (không còn mặc định khối 5 vốn luôn nạp sẵn), nên
+       lúc dựng lần đầu kho KHGD của khối đó thường CHƯA về → ô Môn rỗng, và nếu chỉ
+       gọi renderKHDH() thì bảng có dữ liệu mà ô Môn vẫn trống mãi. */
+    if(h==='khdh'){
+      if(typeof window.BX_khgdRebuild==='function') window.BX_khgdRebuild();
+      else if(typeof window.renderKHDH==='function') window.renderKHDH();
+    }
     if(h==='map'  && typeof window.renderProgramMap==='function') window.renderProgramMap();
   }catch(e){}
 };
@@ -6119,6 +6126,7 @@ function styleOnce(){
     '#v-khdh .khdh-filters select,#v-khdh .khdh-filters input{padding:7px 10px;border:1px solid #d6e2da;border-radius:8px}';
   document.head.appendChild(s);
 }
+var _daKeoKHGD={};
 function rebuild(){
   var v=document.getElementById('v-khdh'); if(!v) return;
   styleOnce();
@@ -6131,6 +6139,12 @@ function rebuild(){
     try{ if(window.BX_ensureKHGD) window.BX_ensureKHGD(window.BX_curLop); }catch(e){}
   }
   var dsMon=monXemDuoc(curLop());
+  if(!dsMon.length && !_daKeoKHGD[curLop()]){
+    /* Kho KHGD của lớp này chưa về (nạp lười theo lớp) → kéo về rồi dựng lại.
+       Chỉ thử ĐÚNG MỘT LẦN cho mỗi lớp, tránh quay vòng nếu lớp đó thật sự trống. */
+    _daKeoKHGD[curLop()]=1;
+    try{ if(window.BX_ensureKHGD) window.BX_ensureKHGD(curLop()).then(function(){ try{ rebuild(); }catch(e){} }); }catch(e){}
+  }
   if(dsMon.length && dsMon.indexOf(cur())<0) window.BX_curSubject=dsMon[0];
   var subs=dsMon.map(function(s){return '<option'+(s===cur()?' selected':'')+'>'+esc(s)+'</option>';}).join('');
   var lops=dsLop.map(function(l){return '<option value="'+l+'"'+(l===curLop()?' selected':'')+'>Lớp '+l+'</option>';}).join('');
