@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-05 · 2';
+  var PB='2026-08-05 · 3';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1307,6 +1307,18 @@ window.bxMergeKho = function(){
       return true;
     });
     return ttKHGD[khoi];
+  };
+  /* Các KHỐI thầy cô thực sự dạy — lấy từ lớp đã khai + thời khoá biểu / lịch báo
+     giảng. GV chủ nhiệm ra 1 khối; GV bộ môn (Âm nhạc, Thể dục, Tiếng Anh, Tin học,
+     Mĩ thuật) ra đủ các khối họ đứng lớp. Lớp bản quyền dùng hàm này để gắn khối
+     cho từng thầy cô, nên KHÔNG thêm khối 5 mặc định như BX_ensureKhoTheoLich. */
+  window.BX_khoiGVDay=function(){
+    var ks={}, k0=window.BX_khoiHienTai();
+    if(k0) ks[k0]=1;
+    ['butxanh_tkb','butxanh_schedule','butxanh_lbg_weeks','butxanh_khbd'].forEach(function(k){
+      try{ _gomKhoi(localStorage.getItem(k), ks); }catch(e){}
+    });
+    return Object.keys(ks).filter(function(k){ return /^[1-5]$/.test(k); }).sort();
   };
   window.BX_ensureKhoTheoLich=function(){
     var ks={}, k0=window.BX_khoiHienTai();
@@ -3427,7 +3439,13 @@ function buildScheduleXlsx(filled){
    thầy cô chưa trả phí bấm "Lưu về máy tính" phải chờ dựng xong cả tập Word (22 giáo án,
    kèm tải ảnh từ máy chủ) rồi mới thấy hộp kích hoạt — nhìn y như nút bị đơ. (4/8/2026) */
 function _bxChuaTraPhi(name){
-  try{ if(window.BXLIC && BXLIC.needPaid && BXLIC.needPaid(name) && !BXLIC.canDownload()){ BXLIC.showActivate(); return true; } }catch(e){}
+  try{
+    if(!(window.BXLIC && BXLIC.needPaid && BXLIC.needPaid(name))) return false;
+    if(!BXLIC.canDownload()){ BXLIC.showActivate(); return true; }
+    /* Đã trả phí nhưng tệp thuộc KHỐI khác — một bản quyền chỉ dùng cho khối
+       thầy cô dạy, không lấy được cả 5 khối (5/8/2026). */
+    if(BXLIC.canDownloadKhoi && !BXLIC.canDownloadKhoi(name)) return true;
+  }catch(e){}
   return false;
 }
 function _downloadBlob(name,blob){ if(_bxChuaTraPhi(name)) return; try{ if(typeof _bxSafeFileName==='function') name=_bxSafeFileName(name); }catch(e){} const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); setTimeout(()=>{try{URL.revokeObjectURL(a.href);}catch(e){}},1500); }
@@ -3911,7 +3929,22 @@ function importBank(input){
   rd.readAsText(f,'utf-8');
 }
 function exportBankJson(){
-  const blob=new Blob([JSON.stringify(bankAll(),null,2)],{type:'application/json'});
+  /* Tên tệp này không mang khối nên cổng bản quyền không lọc theo khối được →
+     phải LỌC NGAY Ở ĐÂY, nếu không thì khoá KHBD/KHDH theo khối thành vô nghĩa:
+     chỉ cần xuất JSON một lần là lấy trọn giáo án cả 5 khối. (5/8/2026) */
+  let ds=[];
+  try{ if(window.BXLIC&&BXLIC.dsKhoi&&!(BXLIC.isAdmin&&BXLIC.isAdmin())) ds=BXLIC.dsKhoi()||[]; }catch(e){}
+  let rows=bankAll();
+  if(ds.length){
+    const truoc=rows.length;
+    rows=rows.filter(function(r){
+      const k=String((r&&(r.lop||r.khoi))||'').replace(/\D/g,'').slice(0,1);
+      return !k || ds.indexOf(k)>=0;
+    });
+    if(rows.length<truoc) bxAlert('Bản quyền của thầy/cô dùng cho khối '+ds.join(', ')+
+      '. Tệp xuất ra gồm '+rows.length+' giáo án thuộc khối đó (bỏ qua '+(truoc-rows.length)+' giáo án khối khác).');
+  }
+  const blob=new Blob([JSON.stringify(rows,null,2)],{type:'application/json'});
   _downloadBlob('KhoGiaoAn_ButXanh.json', blob);
 }
 function clearBankImport(){
@@ -4726,7 +4759,22 @@ function resetSchedule(){ bxConfirm('Khôi phục lịch mẫu ban đầu? Lịc
 /* ---------- 16c) TẢI TẤT CẢ KHBD (Word gộp) ---------- */
 function downloadAllKHBD(){
   if(!state.khbd.length){ bxAlert('Chưa có KHBD nào trong kho để tải.'); return; }
-  _downloadBlob(`KHBD_TatCa_${state.khbd.length}bai.docx`, buildKhbdDocx(state.khbd));
+  /* Tên tệp gộp không mang khối nên cổng bản quyền không lọc theo khối được →
+     lọc ngay tại đây, cùng lẽ với exportBankJson. (5/8/2026) */
+  let ds=[];
+  try{ if(window.BXLIC&&BXLIC.dsKhoi&&!(BXLIC.isAdmin&&BXLIC.isAdmin())) ds=BXLIC.dsKhoi()||[]; }catch(e){}
+  let bai=state.khbd;
+  if(ds.length){
+    const truoc=bai.length;
+    bai=bai.filter(function(b){
+      const k=String((b&&b.lop)||'').replace(/\D/g,'').slice(0,1);
+      return !k || ds.indexOf(k)>=0;
+    });
+    if(!bai.length){ bxAlert('Bản quyền của thầy/cô dùng cho khối '+ds.join(', ')+', mà kho chưa có giáo án nào thuộc khối đó.'); return; }
+    if(bai.length<truoc) bxAlert('Bản quyền của thầy/cô dùng cho khối '+ds.join(', ')+
+      '. Tệp gồm '+bai.length+' bài thuộc khối đó (bỏ qua '+(truoc-bai.length)+' bài khối khác).');
+  }
+  _downloadBlob(`KHBD_TatCa_${bai.length}bai.docx`, buildKhbdDocx(bai));
 }
 
 /* ---------- 17) KHỞI ĐỘNG ---------- */

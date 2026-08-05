@@ -34,7 +34,14 @@
     // Ghi nhiều email thì cách nhau bằng dấu phẩy.
     EMAIL_ADMIN: 'chungsongthinh@gmail.com, xebatcheotrt@gmail.com',
     SO_LAN_DOI_MAY_TOI_DA: 2,                  // đổi máy tối đa / năm học
-    HOTLINE: 'Dự án Bút Xanh (qua nhóm Zalo)'  // hiển thị khi hết lượt đổi máy (đổi 3/8/2026 theo lời thầy)
+    HOTLINE: 'Dự án Bút Xanh (qua nhóm Zalo)', // hiển thị khi hết lượt đổi máy (đổi 3/8/2026 theo lời thầy)
+    /* KHOÁ THEO KHỐI LỚP (5/8/2026 — thầy Chung chốt):
+       Một bản quyền chỉ tải được giáo án & KHDH của KHỐI thầy cô dạy, không lấy
+       được cả 5 khối. Lần tải đầu tiên, app tự gắn khối theo THỜI KHOÁ BIỂU đã
+       khai: GV chủ nhiệm ra 1 khối, GV bộ môn (Âm nhạc, Thể dục, Tiếng Anh, Tin
+       học, Mĩ thuật) ra đủ khối họ đứng lớp — không ai phải xin phép. Gắn xong
+       thì khoá lại; đổi phải nhờ quản trị (nút "Sửa khối" ở trang Quản trị). */
+    KHOA_THEO_KHOI: true
   };
 
   /* ------------------------------------------------------------------ *
@@ -397,8 +404,8 @@
       var html='<div class="bxlic-note" style="margin:0 0 12px">Chờ xác nhận: <b>'+waiting.length+'</b> · Tổng tài khoản: <b>'+uids.length+'</b>. '+
         'Bấm <b>Kích hoạt</b> sau khi đã nhận được 99.000đ (đối chiếu Nội dung CK).</div>';
       html+='<div style="overflow:auto;max-height:60vh"><table class="bxlic-tbl"><thead><tr>'+
-        '<th>Họ tên / Email</th><th>Mã CK</th><th>Trạng thái</th><th>Năm học</th><th>Hết hạn</th><th>Đổi máy</th><th>Thao tác</th></tr></thead><tbody>';
-      if(!rows.length){ html+='<tr><td colspan="7" style="text-align:center;color:#889;padding:16px">Chưa có tài khoản nào yêu cầu.</td></tr>'; }
+        '<th>Họ tên / Email</th><th>Mã CK</th><th>Trạng thái</th><th>Năm học</th><th>Hết hạn</th><th>Đổi máy</th><th>Khối</th><th>Thao tác</th></tr></thead><tbody>';
+      if(!rows.length){ html+='<tr><td colspan="8" style="text-align:center;color:#889;padding:16px">Chưa có tài khoản nào yêu cầu.</td></tr>'; }
       rows.forEach(function(x){
         var r=x.r, ok=!!r.daTraPhi;
         html+='<tr>'+
@@ -408,9 +415,11 @@
           '<td>'+esc(r.namHoc||'—')+'</td>'+
           '<td>'+fmtDate(r.ngayHetHan)+'</td>'+
           '<td>'+(r.soLanDoiMay||0)+'/'+CONFIG.SO_LAN_DOI_MAY_TOI_DA+'</td>'+
+          '<td><b>'+esc(r.khoi||'—')+'</b></td>'+
           '<td style="white-space:nowrap">'+
             '<button class="bxlic-mini" onclick="BXLIC_activate(\''+x.uid+'\')">'+(ok?'Gia hạn':'Kích hoạt')+'</button>'+
             '<button class="bxlic-mini d" onclick="BXLIC_resetDevice(\''+x.uid+'\')">Reset máy</button>'+
+            '<button class="bxlic-mini d" onclick="BXLIC_setKhoi(\''+x.uid+'\')">Sửa khối</button>'+
             (ok?'<button class="bxlic-mini r" onclick="BXLIC_lock(\''+x.uid+'\')">Khoá</button>':'')+
           '</td>'+
         '</tr>';
@@ -437,6 +446,24 @@
     var upd={}; upd['licenses/'+uid+'/device']=null; upd['licenses/'+uid+'/soLanDoiMay']=0;
     db.ref().update(upd).then(function(){ openAdmin(); }).catch(function(){});
   };
+  /* Sửa khối cho một bản quyền. Dùng khi thầy cô chuyển khối giữa năm, hoặc GV
+     bộ môn cần mở thêm khối. Để TRỐNG rồi OK = xoá gắn kết, lần tải sau app tự
+     gắn lại theo thời khoá biểu hiện tại. */
+  window.BXLIC_setKhoi=function(uid){
+    db.ref('licenses/'+uid).once('value').then(function(s){
+      var r=s.val()||{};
+      var cu=String(r.khoi||'');
+      var v=prompt('Khối lớp được phép tải giáo án & KHDH của '+(r.hoTen||r.email||uid)+'\n\n'+
+                   'Ghi các khối cách nhau bằng dấu phẩy, VD:  4     hoặc  1,2,3,4,5\n'+
+                   'Để trống = xoá gắn kết, lần tải sau app tự gắn lại theo thời khoá biểu.', cu);
+      if(v===null) return;                       // bấm Huỷ
+      var ds=String(v).split(/[^1-5]+/).filter(Boolean)
+                .filter(function(k,i,a){ return a.indexOf(k)===i; }).sort();
+      db.ref('licenses/'+uid+'/khoi').set(ds.length?ds.join(','):null)
+        .then(function(){ openAdmin(); })
+        .catch(function(e){ if(window.bxAlert) bxAlert('Không lưu được: '+((e&&e.message)||'')); });
+    }).catch(function(){});
+  };
   window.BXLIC_lock=function(uid){
     db.ref('licenses/'+uid+'/daTraPhi').set(false).then(function(){ openAdmin(); }).catch(function(){});
   };
@@ -456,9 +483,82 @@
     return RE_CAN_PHI.test(n);
   }
 
+  /* ------------------------------------------------------------------ *
+   *  KHOÁ THEO KHỐI LỚP                                                  *
+   * ------------------------------------------------------------------ */
+  /* Bóc khối lớp từ TÊN TỆP. Hai dạng đang dùng:
+       KHBD_<tên bài>_Lop5.docx · KHBD_<tên bài>_Tuan8_Lop5.docx
+       KHGD_mon_Tieng_Viet_5_2026_2027.docx   (khối nằm giữa tên môn và năm học)
+     Không nhận ra khối → trả '' (không chặn theo khối, chỉ cần đã trả phí). */
+  function khoiCuaTep(fileName){
+    var n = String(fileName||'').replace(/^.*[\\\/]/,'').replace(/\.[A-Za-z0-9]+$/,'');
+    /* KHBD: lấy LẦN CUỐI của "_Lop<khối>" — tên bài có thể chứa chữ "Lop" nên
+       phần đứng cuối mới là lớp thật. Lớp hay ghi kèm chữ cái ("Lop5A") nên
+       KHÔNG đòi ranh giới từ sau chữ số; nhưng chặn số nhiều chữ số ("Lop15"). */
+    var m = null, re = /_Lop\s*([1-5])(?![0-9])/gi, x;
+    while((x = re.exec(n)) !== null) m = x;
+    if(m) return m[1];
+    /* KHDH: KHGD_mon_<tên môn>_<khối>_<năm học> — khối là số 1 chữ số đứng
+       ngay trước năm học, hoặc là cụm cuối cùng nếu không có năm. */
+    if(/^KHGD_mon_/i.test(n)){
+      m = n.match(/_([1-5])_\d{4}/);         if(m) return m[1];
+      m = n.match(/_([1-5])$/);              if(m) return m[1];
+    }
+    return '';
+  }
+  function dsKhoi(){                                  // khối đã gắn cho bản quyền
+    var v = rec && rec.khoi;
+    if(v==null || v==='') return [];
+    return String(v).split(/[^1-5]+/).filter(Boolean);
+  }
+  function khoiGVDay(){                               // khối GV khai trong TKB
+    try{ if(typeof window.BX_khoiGVDay==='function'){ var a=window.BX_khoiGVDay(); if(a&&a.length) return a; } }catch(e){}
+    return [];
+  }
+  /* Lần tải đầu: gắn khối theo thời khoá biểu. Trả về mảng khối vừa gắn. */
+  function ganKhoiLanDau(khoiTep){
+    var ds = khoiGVDay();
+    if(!ds.length && khoiTep) ds=[khoiTep];
+    if(!ds.length) return [];
+    /* khối của tệp đang tải mà chưa có trong TKB thì gộp thêm — tránh chặn oan
+       thầy cô mới cài, chưa kịp khai thời khoá biểu */
+    if(khoiTep && ds.indexOf(khoiTep)<0) ds=ds.concat([khoiTep]);
+    ds=ds.filter(function(k,i,a){ return a.indexOf(k)===i; }).sort();
+    try{ if(user&&db) db.ref('licenses/'+user.uid+'/khoi').set(ds.join(',')); }catch(e){}
+    if(rec) rec.khoi=ds.join(',');
+    return ds;
+  }
+  function showKhoiMismatch(khoiTep, ds){
+    var o=overlay('bxlic-khoi'); o.classList.add('on');
+    o.innerHTML='<div class="bxlic-card"><div class="bxlic-hd"><h3>📘 Bản quyền theo khối lớp</h3>'+
+      '<button class="x" onclick="BXLIC_close(\'bxlic-khoi\')">×</button></div><div class="bxlic-bd">'+
+      '<p style="font-size:14px;line-height:1.7">Bản quyền của thầy/cô dùng cho <b>khối '+esc(ds.join(', '))+'</b>, '+
+      'nên chưa tải được tài liệu của <b>khối '+esc(khoiTep)+'</b>.</p>'+
+      '<p style="font-size:13.5px;line-height:1.7;color:#5b6b61">Khối được gắn theo <b>thời khoá biểu</b> thầy/cô đã khai. '+
+      'Nếu năm nay thầy/cô chuyển sang dạy khối khác, hoặc dạy bộ môn ở nhiều khối, xin nhắn '+esc(CONFIG.HOTLINE)+' để được mở thêm.</p>'+
+      '<button class="bxlic-btn" onclick="BXLIC_close(\'bxlic-khoi\')">Đã hiểu</button>'+
+      '</div></div>';
+  }
+  /* Cổng kiểm khối: trả true nếu ĐƯỢC tải. Tự mở hộp giải thích khi chặn. */
+  function canDownloadKhoi(fileName){
+    if(!CONFIG.KHOA_THEO_KHOI) return true;
+    if(isAdmin()) return true;                        // admin xem được hết
+    var k = khoiCuaTep(fileName);
+    if(!k) return true;                               // tệp không gắn với khối nào
+    var ds = dsKhoi();
+    if(!ds.length) ds = ganKhoiLanDau(k);             // lần đầu → gắn theo TKB
+    if(!ds.length) return true;                       // không xác định được → cho qua
+    if(ds.indexOf(k)>=0) return true;
+    showKhoiMismatch(k, ds);
+    return false;
+  }
+
   window.BXLIC = {
     canDownload: function(){ return paid===true; },
     needPaid: needPaid,                      // tệp này có đòi bản quyền không?
+    canDownloadKhoi: canDownloadKhoi,        // tệp này có đúng khối của thầy cô không?
+    khoiCuaTep: khoiCuaTep,
+    dsKhoi: dsKhoi,
     showActivate: showActivate,
     openAdmin: openAdmin,
     isAdmin: isAdmin
