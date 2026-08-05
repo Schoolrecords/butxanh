@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-05 · 8';
+  var PB='2026-08-05 · 9';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1320,6 +1320,42 @@ window.bxMergeKho = function(){
     });
     return Object.keys(ks).filter(function(k){ return /^[1-5]$/.test(k); }).sort();
   };
+  /* ===== PHÂN CÔNG THẬT CỦA THẦY CÔ: {khối: [môn,…]} — 5/8/2026 =====
+     BX_khoiGVDay ở trên chỉ lấy SỐ LỚP rồi vứt tên môn, nên một ô "Đạo đức lớp 1"
+     trong thời khoá biểu mở toang cả khối 1. Hàm này giữ lại CẶP (lớp, môn) để lớp
+     bản quyền cấp quyền cho đúng môn — xem chú thích "QUYỀN THEO KHỐI × MÔN" trong
+     license.js.
+     Nguồn CHÍNH là thời khoá biểu vì mỗi ô có cả môn lẫn lớp. Lịch báo giảng chỉ có
+     môn (lớp nằm ở phần đầu trang) nên tính vào khối của lớp đang chủ nhiệm. */
+  var _BX_MON_CO_KHO=['Toán','Tiếng Việt','Khoa học','Lịch sử & Địa lí','Tự nhiên và Xã hội',
+    'Đạo đức','Tin học','Công nghệ','HĐTN','Âm nhạc','Mĩ thuật','GDTC','Tiếng Anh'];
+  window.BX_phanCongGVDay=function(){
+    var pc={}, k0=window.BX_khoiHienTai();
+    function them(lop, mon){
+      var k=window.BX_khoiCuaLop(lop)||String(lop||'').replace(/\D/g,'').slice(0,1);
+      if(!/^[1-5]$/.test(k)) return;
+      if(!pc[k]) pc[k]=[];                          // khối có mặt (dù chưa rõ môn)
+      var m=String(mon||'').trim(); if(!m) return;
+      try{ if(typeof window._bxCanonSubject==='function'){ var c=window._bxCanonSubject(m); if(c) m=c; } }catch(e){}
+      /* Chỉ đếm môn CÓ TRONG KHO. Giáo dục địa phương / Tự học / Hoạt động thư viện
+         cũng nằm trên thời khoá biểu, đếm vào thì đủ 3 môn là mở nhầm trọn khối. */
+      if(_BX_MON_CO_KHO.indexOf(m)<0) return;
+      if(pc[k].indexOf(m)<0) pc[k].push(m);
+    }
+    function doc(k){ try{ return JSON.parse(localStorage.getItem(k)||'null'); }catch(e){ return null; } }
+    if(k0) them(k0,'');
+    var tkb=doc('butxanh_tkb');
+    if(tkb && Array.isArray(tkb.slots)) tkb.slots.forEach(function(s){ if(s) them(s.lop||k0, s.mon); });
+    var sch=doc('butxanh_schedule');
+    if(Array.isArray(sch)) sch.forEach(function(r){ if(r) them(r.lop||k0, r.mon); });
+    var lbg=doc('butxanh_lbg_weeks');
+    if(lbg && typeof lbg==='object' && !Array.isArray(lbg)) Object.keys(lbg).forEach(function(w){
+      var a=lbg[w]; if(Array.isArray(a)) a.forEach(function(r){ if(r) them(r.lop||k0, r.mon); });
+    });
+    var kb=doc('butxanh_khbd');
+    if(Array.isArray(kb)) kb.forEach(function(x){ if(x) them(x.lop||k0, x.mon); });
+    return pc;
+  };
   window.BX_ensureKhoTheoLich=function(){
     var ks={}, k0=window.BX_khoiHienTai();
     if(k0) ks[k0]=1;
@@ -1914,6 +1950,12 @@ window.bxMergeKho = function(){
           <button class="btn" id="set-save">Lưu hồ sơ</button>
           <span class="muted-sm" id="set-msg"></span>
         </div>
+      </div>
+      <div class="card set-card">
+        <div class="card-head"><h3>Lớp và môn tôi dạy</h3></div>
+        <div class="muted-sm" style="margin-bottom:10px">Bút Xanh chỉ hiện <b>giáo án</b> và <b>Kế hoạch giáo dục môn học</b> của phần thầy cô dạy, cho đỡ rối. Chọn nhầm thì sửa lại ở đây bất cứ lúc nào — cho tới khi kích hoạt bản quyền thì phạm vi được chốt lại.</div>
+        <div id="bxpv-tomtat" style="padding:10px 12px;background:#f2f7f4;border-radius:10px;font-size:14px;font-weight:600;color:#0b8043">—</div>
+        <div style="margin-top:12px"><button class="btn" onclick="BX_moChonPhamVi()">📘 Chọn lớp và môn tôi dạy</button></div>
       </div>
       <div class="card set-card">
         <div class="card-head"><h3>Mục IV — Điều chỉnh, hỗ trợ học sinh (trong KHBD)</h3></div>
@@ -2734,13 +2776,13 @@ function downloadKHBD(){
       const safe=(L.mon||'KHBD').replace(/[^A-Za-zÀ-ỹ0-9]/g,'');
       const fname=`KHBD_${safe}_Lop${(l.bankRow&&l.bankRow.lop)||state.klass}.docx`;
       if(typeof window.dlLessonImg==='function') window.dlLessonImg(L,l.bankRow,fname);
-      else _downloadBlob(fname, buildKhbdDocxFromLesson(L,l.bankRow));
+      else _downloadBlob(fname, buildKhbdDocxFromLesson(L,l.bankRow), L.mon);
       return;
     }
   }
   const it={mon:l.mon,bai:l.bai,lop:l.lop||state.klass,tuan:l.tuan||state.week,content:el('khbd-text').value};
   const safe=(l.mon||'KHBD').replace(/[^A-Za-zÀ-ỹ0-9]/g,'');
-  _downloadBlob(`KHBD_${safe}_Tuan${it.tuan}_Lop${it.lop}.docx`, buildKhbdDocx([it]));
+  _downloadBlob(`KHBD_${safe}_Tuan${it.tuan}_Lop${it.lop}.docx`, buildKhbdDocx([it]), l.mon);
 }
 
 /* ---------- 5) TẢI / ĐỌC LỊCH BÁO GIẢNG (AI) ---------- */
@@ -3471,17 +3513,39 @@ function buildScheduleXlsx(filled){
    Phải hỏi Ở ĐẦU mỗi việc tạo tệp. Trước đây chỉ hỏi ở bước cuối (_downloadBlob) nên
    thầy cô chưa trả phí bấm "Lưu về máy tính" phải chờ dựng xong cả tập Word (22 giáo án,
    kèm tải ảnh từ máy chủ) rồi mới thấy hộp kích hoạt — nhìn y như nút bị đơ. (4/8/2026) */
-function _bxChuaTraPhi(name){
+function _bxChuaTraPhi(name, mon){
   try{
     if(!(window.BXLIC && BXLIC.needPaid && BXLIC.needPaid(name))) return false;
     if(!BXLIC.canDownload()){ BXLIC.showActivate(); return true; }
-    /* Đã trả phí nhưng tệp thuộc KHỐI khác — một bản quyền chỉ dùng cho khối
-       thầy cô dạy, không lấy được cả 5 khối (5/8/2026). */
-    if(BXLIC.canDownloadKhoi && !BXLIC.canDownloadKhoi(name)) return true;
+    /* Đã trả phí nhưng tệp thuộc KHỐI/MÔN ngoài phân công — một bản quyền chỉ dùng
+       cho khối thầy cô chủ nhiệm, cộng đúng những môn được phân công dạy thêm ở lớp
+       khác (5/8/2026). Tên tệp KHBD không mang tên môn nên nơi gọi truyền vào `mon`. */
+    if(BXLIC.canDownloadKhoi && !BXLIC.canDownloadKhoi(name, mon)) return true;
   }catch(e){}
   return false;
 }
-function _downloadBlob(name,blob){ if(_bxChuaTraPhi(name)) return; try{ if(typeof _bxSafeFileName==='function') name=_bxSafeFileName(name); }catch(e){} const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); setTimeout(()=>{try{URL.revokeObjectURL(a.href);}catch(e){}},1500); }
+function _downloadBlob(name,blob,mon){ if(_bxChuaTraPhi(name,mon)) return; try{ if(typeof _bxSafeFileName==='function') name=_bxSafeFileName(name); }catch(e){} const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); setTimeout(()=>{try{URL.revokeObjectURL(a.href);}catch(e){}},1500); }
+/* ⚠️ MỌI ĐƯỜNG XUẤT HÀNG LOẠT phải đi qua hàm này. Tên tệp gộp không mang khối/môn
+   nên cổng bản quyền theo tên tệp không bắt được — thêm chức năng xuất hàng loạt mới
+   mà quên gọi _bxLocTheoQuyen thì việc khoá theo lớp/môn thành vô nghĩa. (5/8/2026) */
+function _bxLocTheoQuyen(rows){
+  try{
+    if(!(window.BXLIC && BXLIC.duocPhep)) return rows;
+    if(BXLIC.isAdmin && BXLIC.isAdmin()) return rows;
+    return rows.filter(function(r){
+      const k=String((r&&(r.lop||r.khoi))||'').replace(/\D/g,'').slice(0,1);
+      if(!k) return true;                                  // không rõ khối → không loại oan
+      return BXLIC.duocPhep(k, (r&&r.mon)||'', true);      // im=true: lọc thầm, không mở hộp
+    });
+  }catch(e){ return rows; }
+}
+function _bxLoiNhanQuyen(){
+  try{ if(window.BXLIC&&BXLIC.moTaQuyen&&BXLIC.quyenTheoKhoi){
+        const t=BXLIC.moTaQuyen(BXLIC.quyenTheoKhoi());
+        if(t) return 'Bản quyền của thầy/cô dùng cho '+t+'.';
+  } }catch(e){}
+  return 'Bản quyền của thầy/cô có phạm vi giới hạn.';
+}
 /* Nút chạy việc nặng: đổi sang trạng thái "đang làm" và ĐỂ TRÌNH DUYỆT VẼ XONG rồi mới
    chạy. rAF chạy TRƯỚC lượt vẽ nên phải rAF + setTimeout(0) mới thật sự thấy nút đổi
    trước. Không có bước này thì thầy cô bấm mà màn hình đứng im, tưởng máy treo. */
@@ -3792,7 +3856,7 @@ function exportBankWord(idx){
   const safe=((L.mon||'')+'_'+(L.bai||'')).replace(/[^A-Za-zÀ-ỹ0-9]/g,'').slice(0,40);
   const fname='KHBD_'+safe+'_Lop'+(r.lop||state.klass)+'.docx';
   if(typeof window.dlLessonImg==='function') window.dlLessonImg(L,r,fname);
-  else _downloadBlob(fname, buildKhbdDocxFromLesson(L,r));
+  else _downloadBlob(fname, buildKhbdDocxFromLesson(L,r), L.mon);
 }
 /* Gộp TẤT CẢ giáo án trong tuần (theo lịch báo giảng) thành 1 file Word — mục tiêu lõi của Bút Xanh */
 /* Khung KHBD trống từ 1 tiết trong lịch (khi kho chưa có bài) — để nút "Tạo KHBD Tuần"
@@ -3962,21 +4026,14 @@ function importBank(input){
   rd.readAsText(f,'utf-8');
 }
 function exportBankJson(){
-  /* Tên tệp này không mang khối nên cổng bản quyền không lọc theo khối được →
-     phải LỌC NGAY Ở ĐÂY, nếu không thì khoá KHBD/KHDH theo khối thành vô nghĩa:
-     chỉ cần xuất JSON một lần là lấy trọn giáo án cả 5 khối. (5/8/2026) */
-  let ds=[];
-  try{ if(window.BXLIC&&BXLIC.dsKhoi&&!(BXLIC.isAdmin&&BXLIC.isAdmin())) ds=BXLIC.dsKhoi()||[]; }catch(e){}
+  /* Tên tệp này không mang khối/môn nên cổng bản quyền không lọc được →
+     phải LỌC NGAY Ở ĐÂY, nếu không thì khoá KHBD/KHDH thành vô nghĩa: chỉ cần xuất
+     JSON một lần là lấy trọn giáo án cả 5 khối. (5/8/2026, lọc tới MÔN từ 5/8) */
   let rows=bankAll();
-  if(ds.length){
-    const truoc=rows.length;
-    rows=rows.filter(function(r){
-      const k=String((r&&(r.lop||r.khoi))||'').replace(/\D/g,'').slice(0,1);
-      return !k || ds.indexOf(k)>=0;
-    });
-    if(rows.length<truoc) bxAlert('Bản quyền của thầy/cô dùng cho khối '+ds.join(', ')+
-      '. Tệp xuất ra gồm '+rows.length+' giáo án thuộc khối đó (bỏ qua '+(truoc-rows.length)+' giáo án khối khác).');
-  }
+  const truoc=rows.length;
+  rows=_bxLocTheoQuyen(rows);
+  if(rows.length<truoc) bxAlert(_bxLoiNhanQuyen()+
+    ' Tệp xuất ra gồm '+rows.length+' giáo án trong phạm vi đó (bỏ qua '+(truoc-rows.length)+' giáo án ngoài phạm vi).');
   const blob=new Blob([JSON.stringify(rows,null,2)],{type:'application/json'});
   _downloadBlob('KhoGiaoAn_ButXanh.json', blob);
 }
@@ -4792,21 +4849,13 @@ function resetSchedule(){ bxConfirm('Khôi phục lịch mẫu ban đầu? Lịc
 /* ---------- 16c) TẢI TẤT CẢ KHBD (Word gộp) ---------- */
 function downloadAllKHBD(){
   if(!state.khbd.length){ bxAlert('Chưa có KHBD nào trong kho để tải.'); return; }
-  /* Tên tệp gộp không mang khối nên cổng bản quyền không lọc theo khối được →
+  /* Tên tệp gộp không mang khối/môn nên cổng bản quyền không lọc được →
      lọc ngay tại đây, cùng lẽ với exportBankJson. (5/8/2026) */
-  let ds=[];
-  try{ if(window.BXLIC&&BXLIC.dsKhoi&&!(BXLIC.isAdmin&&BXLIC.isAdmin())) ds=BXLIC.dsKhoi()||[]; }catch(e){}
-  let bai=state.khbd;
-  if(ds.length){
-    const truoc=bai.length;
-    bai=bai.filter(function(b){
-      const k=String((b&&b.lop)||'').replace(/\D/g,'').slice(0,1);
-      return !k || ds.indexOf(k)>=0;
-    });
-    if(!bai.length){ bxAlert('Bản quyền của thầy/cô dùng cho khối '+ds.join(', ')+', mà kho chưa có giáo án nào thuộc khối đó.'); return; }
-    if(bai.length<truoc) bxAlert('Bản quyền của thầy/cô dùng cho khối '+ds.join(', ')+
-      '. Tệp gồm '+bai.length+' bài thuộc khối đó (bỏ qua '+(truoc-bai.length)+' bài khối khác).');
-  }
+  const truoc=state.khbd.length;
+  const bai=_bxLocTheoQuyen(state.khbd);
+  if(!bai.length){ bxAlert(_bxLoiNhanQuyen()+' Kho chưa có giáo án nào trong phạm vi đó.'); return; }
+  if(bai.length<truoc) bxAlert(_bxLoiNhanQuyen()+
+    ' Tệp gồm '+bai.length+' bài trong phạm vi đó (bỏ qua '+(truoc-bai.length)+' bài ngoài phạm vi).');
   _downloadBlob(`KHBD_TatCa_${bai.length}bai.docx`, buildKhbdDocx(bai));
 }
 
@@ -5804,7 +5853,9 @@ window.exportKHGDMonWord=function(){
     var slug=SUBJ.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D').replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,'');
     var yr=(state.year||'2026-2027').replace(/[^0-9]/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,'');
     var blob=buildKHGDMonDocx();
-    _downloadBlob('KHGD_mon_'+slug+'_'+(window.BX_curLop||'5')+'_'+yr+'.docx', blob);
+    /* Truyền thẳng tên môn vào cổng bản quyền — không trông vào việc bóc lại từ
+       phần slug đã bỏ dấu của tên tệp. (5/8/2026) */
+    _downloadBlob('KHGD_mon_'+slug+'_'+(window.BX_curLop||'5')+'_'+yr+'.docx', blob, SUBJ);
   }catch(e){ bxAlert('Không xuất được KHGD: '+e.message); }
 };
 window.buildKHGDMonDocx=buildKHGDMonDocx; /* expose để kiểm thử / sinh lại file Word */
@@ -5887,6 +5938,43 @@ function subjectsOf(lop){ var KH=window.BX_KHGD_G[lop]||{}; var has=function(s){
   return SUBJ_ORDER.filter(has).concat(Object.keys(KH).filter(function(s){return SUBJ_ORDER.indexOf(s)<0&&has(s);})); }
 var NAVY='#002060';
 function curLop(){ return window.BX_curLop||'5'; }
+
+/* ===== XEM KHGD MÔN HỌC THEO PHÂN CÔNG — 5/8/2026 (thầy Chung chốt) =====
+   Kế hoạch giáo dục môn học phải cá nhân hoá: thầy cô dạy lớp nào thì chỉ xem và
+   tải KHGD của lớp đó. Trước đây ô "Lớp" liệt kê đủ cả 5 lớp và ai cũng xem được
+   trọn bảng cả năm của mọi khối — cổng bản quyền chỉ đứng ở cửa TẢI.
+   Phạm vi lấy theo quyền đã gắn cho bản quyền; chưa đăng nhập hoặc chưa kích hoạt
+   thì lấy tạm theo thời khoá biểu đã khai (chính sách: XEM được khối mình, chỉ TẢI
+   mới cần bản quyền). Không xác định được thì KHÔNG chặn — thầy cô mới cài, chưa
+   khai gì vẫn xem được để biết nội dung có đáng mua hay không. */
+function quyenXem(){
+  try{ if(window.BXLIC && BXLIC.isAdmin && BXLIC.isAdmin()) return null; }catch(e){}
+  var q=null;
+  try{ if(window.BXLIC && BXLIC.quyenHienHanh) q=BXLIC.quyenHienHanh(); }catch(e){}
+  return (q && Object.keys(q).length) ? q : null;      // null = không chặn
+}
+function khopMon(a,b){
+  var f=function(s){
+    var c=(typeof window._bxCanonSubject==='function' && window._bxCanonSubject(s))||s;
+    return (typeof _normTxt==='function')?_normTxt(c):String(c||'').toLowerCase();
+  };
+  return f(a)===f(b);
+}
+/* Lọc mà không còn gì thì TRẢ NGUYÊN danh sách — thà mở rộng còn hơn khoá nhầm
+   làm thầy cô mở màn KHDH ra thấy trống trơn. */
+function lopXemDuoc(){
+  var q=quyenXem(); if(!q) return window.BX_LOPS.slice();
+  var ds=window.BX_LOPS.filter(function(l){ return q[window.BX_khoiCuaLop(l)||l]!==undefined; });
+  return ds.length?ds:window.BX_LOPS.slice();
+}
+function monXemDuoc(l){
+  var tatCa=subjectsOf(l), q=quyenXem();
+  if(!q) return tatCa;
+  var v=q[window.BX_khoiCuaLop(l)||l];
+  if(v===undefined || v==='*') return tatCa;
+  var ds=tatCa.filter(function(s){ return v.some(function(m){ return khopMon(m,s); }); });
+  return ds.length?ds:tatCa;
+}
 bxGomKHGD();
 document.addEventListener('DOMContentLoaded', bxGomKHGD);
 function cur(){ return window.BX_curSubject||subjectsOf(curLop())[0]||'Tiếng Việt'; }
@@ -5913,12 +6001,14 @@ function clearEditUI(){ EDIT=false;
   var b=document.getElementById('khdh-edit-btn'); if(b){b.innerHTML='✏️ Chỉnh sửa KHDH';b.className='btn';}
   var h=document.getElementById('khdh-edit-hint'); if(h)h.style.display='none';
 }
-window.BX_khgdSetLop=function(l){ window.BX_curLop=l;
-  var subs=subjectsOf(l); if(subs.indexOf(window.BX_curSubject)<0) window.BX_curSubject=subs[0]||'';
+window.BX_khgdSetLop=function(l){
+  if(lopXemDuoc().indexOf(String(l))<0) return;   // lớp ngoài phân công — không đổi sang
+  window.BX_curLop=l;
+  var subs=monXemDuoc(l); if(subs.indexOf(window.BX_curSubject)<0) window.BX_curSubject=subs[0]||'';
   clearEditUI(); rebuild();   // đổi lớp -> dựng lại cả danh sách môn
   try{ if(window.BX_ensureKho) window.BX_ensureKho(l).then(function(){ try{ rebuild(); }catch(e){} }); }catch(e){}
   /* KHGD lớp đó có thể chưa về (nạp lười theo lớp) — kéo về rồi dựng lại bảng */
-  try{ if(window.BX_ensureKHGD) window.BX_ensureKHGD(l).then(function(){ try{ var subs2=subjectsOf(l); if(subs2.indexOf(window.BX_curSubject)<0) window.BX_curSubject=subs2[0]||''; rebuild(); }catch(e){} }); }catch(e){}
+  try{ if(window.BX_ensureKHGD) window.BX_ensureKHGD(l).then(function(){ try{ var subs2=monXemDuoc(l); if(subs2.indexOf(window.BX_curSubject)<0) window.BX_curSubject=subs2[0]||''; rebuild(); }catch(e){} }); }catch(e){}
 };
 window.BX_khgdSetSubject=function(s){ window.BX_curSubject=s; clearEditUI();
   var t=document.getElementById('khdh-title'); if(t)t.textContent=titleText();
@@ -6033,8 +6123,23 @@ function rebuild(){
   var v=document.getElementById('v-khdh'); if(!v) return;
   styleOnce();
   var weeks=''; for(var t=1;t<=35;t++) weeks+='<option value="'+t+'">Tuần '+t+'</option>';
-  var subs=subjectsOf(curLop()).map(function(s){return '<option'+(s===cur()?' selected':'')+'>'+esc(s)+'</option>';}).join('');
-  var lops=window.BX_LOPS.map(function(l){return '<option value="'+l+'"'+(l===curLop()?' selected':'')+'>Lớp '+l+'</option>';}).join('');
+  /* Chỉ hiện lớp & môn thầy cô được phân công — xem chú thích "XEM KHGD MÔN HỌC
+     THEO PHÂN CÔNG". Lớp/môn đang chọn mà nay ngoài phạm vi thì chuyển về cái đầu. */
+  var dsLop=lopXemDuoc();
+  if(dsLop.indexOf(curLop())<0){
+    window.BX_curLop=dsLop[0];
+    try{ if(window.BX_ensureKHGD) window.BX_ensureKHGD(window.BX_curLop); }catch(e){}
+  }
+  var dsMon=monXemDuoc(curLop());
+  if(dsMon.length && dsMon.indexOf(cur())<0) window.BX_curSubject=dsMon[0];
+  var subs=dsMon.map(function(s){return '<option'+(s===cur()?' selected':'')+'>'+esc(s)+'</option>';}).join('');
+  var lops=dsLop.map(function(l){return '<option value="'+l+'"'+(l===curLop()?' selected':'')+'>Lớp '+l+'</option>';}).join('');
+  var hepHon=(dsLop.length<window.BX_LOPS.length)||(dsMon.length<subjectsOf(curLop()).length);
+  var ghiChu=hepHon
+    ? '<div style="margin:6px 0;padding:8px 10px;background:#eef6ff;border:1px solid #bcdcff;border-radius:8px;font-size:12.5px;color:#234">'+
+      '📘 Đang hiện <b>Kế hoạch giáo dục môn học của lớp và môn thầy/cô được phân công</b> (theo thời khoá biểu đã khai). '+
+      'Nếu năm nay được phân công thêm, thầy/cô cập nhật thời khoá biểu hoặc nhắn quản trị để mở thêm.</div>'
+    : '';
   v.innerHTML='<div class="card">'+
     '<div class="khdh-bar">'+
       '<h3 id="khdh-title" style="margin:0;color:'+NAVY+'">'+esc(titleText())+'</h3>'+
@@ -6050,6 +6155,7 @@ function rebuild(){
       '<label class="select"><span>Tuần</span><select id="khdh-tuan" onchange="BX_khgdSetFilter()"><option value="">Tất cả tuần</option>'+weeks+'</select></label>'+
       '<input id="khdh-q" placeholder="Tìm tên bài / nội dung / chủ đề…" oninput="BX_khgdSetFilter()" style="flex:1;min-width:180px">'+
     '</div>'+
+    ghiChu+
     '<div id="khdh-edit-hint" style="display:none;margin:6px 0;padding:8px 10px;background:#fff8e6;border:1px solid #f0d089;border-radius:8px;font-size:13px;color:#7a5b12">✏️ <b>Đang chỉnh sửa theo kế hoạch riêng của trường.</b> Bấm vào ô để sửa (Phân môn, Nội dung/Tên bài, Thời lượng, Tiết KH, Nội dung điều chỉnh). Bản sửa lưu riêng theo từng môn — KHÔNG đè gốc, theo vào file khi <b>Tải KHDH về máy</b>.</div>'+
     '<div id="khdh-info" style="font-size:13px;color:#5b6b61;margin-bottom:6px"></div>'+
     '<div class="khgd-wrap"><div id="khdh-table"></div></div>'+
@@ -6057,6 +6163,9 @@ function rebuild(){
   renderKHDH();
 }
 function init(){ rebuild(); }
+/* Bảng chọn "Lớp và môn tôi dạy" gọi lại hàm này sau khi thầy cô đổi phạm vi —
+   renderKHDH() chỉ vẽ lại BẢNG, còn hai ô Lớp/Môn phải dựng lại mới đúng. */
+window.BX_khgdRebuild=rebuild;
 if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded',init);
 console.log('[Bút Xanh] KHDH UI đa môn ('+window.BX_SUBJECTS.length+' môn) đã nạp.');
 })();
@@ -6285,7 +6394,10 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
   }
 
   window.renderKhoBrowser=function(){
-    var all=lessons();
+    /* Lọc NGAY ĐẦU theo phạm vi thầy cô dạy — một chỗ này lo cho cả ô Lớp, ô Môn,
+       ô Tuần, danh sách tiết và con số thống kê phía trên. Thầy Chung chốt 5/8/2026:
+       chọn lớp 3 thì khoá luôn phần XEM của các lớp khác, không chỉ khoá cửa tải. */
+    var all=_bxLocTheoQuyen(lessons());
     var hs=document.getElementById('kho-hero-stat');
     if(hs){
       var byMon={}; all.forEach(function(L){byMon[L.mon]=(byMon[L.mon]||0)+1;});
@@ -6517,9 +6629,30 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
   /* Hỏi bản quyền NGAY ĐẦU — đây mới là chỗ việc nặng bắt đầu (dựng DOM từng giáo án,
      tải ảnh kho từ máy chủ, dựng XML, nén zip). Hỏi ở đây thì thầy cô chưa kích hoạt
      thấy hộp kích hoạt tức thì thay vì ngồi chờ mấy giây rồi mới thấy. */
-  window.dlLessonImg=async function(L,row,fname){if(_bxChuaTraPhi(fname))return;var el=lessonEl(L,row);try{var blob=await elsToDocxBlob([el]);_downloadBlob(fname,blob);}catch(e){console.error('dlLessonImg',e);try{_downloadBlob(fname,buildKhbdDocxFromLesson(L,row));}catch(e2){bxAlert('Lỗi tạo Word: '+e.message);}}finally{el.remove();}};
-  window.dlWeekImg=async function(items,fname){if(_bxChuaTraPhi(fname))return;var els=items.map(function(it){return lessonEl(it.L,it.r);});try{var blob=await elsToDocxBlob(els);_downloadBlob(fname,blob);}catch(e){console.error('dlWeekImg',e);try{_downloadBlob(fname,buildWeekKhbdDocx());}catch(e2){bxAlert('Lỗi tạo Word: '+e.message);}}finally{els.forEach(function(e){e.remove();});}};
-  window.dlElImg=async function(el,fname){if(_bxChuaTraPhi(fname))return;try{var blob=await elsToDocxBlob([el]);_downloadBlob(fname,blob);}catch(e){console.error('dlElImg',e);bxAlert('Lỗi tạo Word: '+e.message);}};
+  /* Tên tệp KHBD không mang tên môn → lấy môn ngay từ bài đang tải rồi đưa vào cổng
+     bản quyền, để khoá theo lớp × môn có hiệu lực ở cả ba đường tải này. (5/8/2026) */
+  function _monCuaBai(L,row){ return (L&&L.mon)||(row&&row.mon)||''; }
+  window.dlLessonImg=async function(L,row,fname){var mn=_monCuaBai(L,row);if(_bxChuaTraPhi(fname,mn))return;var el=lessonEl(L,row);try{var blob=await elsToDocxBlob([el]);_downloadBlob(fname,blob,mn);}catch(e){console.error('dlLessonImg',e);try{_downloadBlob(fname,buildKhbdDocxFromLesson(L,row),mn);}catch(e2){bxAlert('Lỗi tạo Word: '+e.message);}}finally{el.remove();}};
+  window.dlWeekImg=async function(items,fname){
+    if(_bxChuaTraPhi(fname))return;
+    /* Tệp cả tuần gộp nhiều môn nên cổng theo tên tệp chỉ chặn được tới khối —
+       lọc thêm từng bài để đúng cả môn. Bài không rõ lớp thì giữ, tránh loại oan. */
+    var truoc=items.length;
+    items=_bxLocTheoQuyen(items.map(function(it){
+      return {lop:(it.L&&it.L.lop)||(it.r&&it.r.lop)||'', mon:_monCuaBai(it.L,it.r), _it:it};
+    })).map(function(x){ return x._it; });
+    if(!items.length){ bxAlert(_bxLoiNhanQuyen()+' Tuần này chưa có tiết nào trong phạm vi đó.'); return; }
+    if(items.length<truoc) bxAlert(_bxLoiNhanQuyen()+' Tệp gồm '+items.length+' tiết trong phạm vi đó (bỏ qua '+(truoc-items.length)+' tiết ngoài phạm vi).');
+    var els=items.map(function(it){return lessonEl(it.L,it.r);});
+    try{var blob=await elsToDocxBlob(els);_downloadBlob(fname,blob);}
+    catch(e){console.error('dlWeekImg',e);
+      /* Đường lui buildWeekKhbdDocx() dựng lại TRỌN tuần từ lịch nên sẽ bỏ qua phần
+         vừa lọc — chỉ dùng khi không có tiết nào bị lọc, kẻo lọt tiết ngoài phạm vi. */
+      try{ if(items.length===truoc){ _downloadBlob(fname,buildWeekKhbdDocx()); }
+           else { bxAlert('Chưa tạo được tệp Word cho tuần này. Thầy/cô tải từng tiết giúp em nhé.'); } }
+      catch(e2){bxAlert('Lỗi tạo Word: '+e.message);}}
+    finally{els.forEach(function(e){e.remove();});}};
+  window.dlElImg=async function(el,fname,mon){if(_bxChuaTraPhi(fname,mon))return;try{var blob=await elsToDocxBlob([el]);_downloadBlob(fname,blob,mon);}catch(e){console.error('dlElImg',e);bxAlert('Lỗi tạo Word: '+e.message);}};
 
   /* ====== Modal KHBD: Xem (như Kho) + Sửa + Lưu ====== */
   function editKey(L,row){return 'khbd|'+(row.lop||'')+'|'+(L.tuan||row.tuan||'')+'|'+(row.tiet||L.tiet||'')+'|'+(L.mon||'')+'|'+(L.bai||'');}
@@ -6540,7 +6673,7 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
     if(be)be.style.display=''; if(bs)bs.style.display='none';
     var br=document.getElementById('kho-prev-restore'); if(br)br.style.display=(edits[key]!=null)?'':'none';
     var dl=document.getElementById('kho-prev-dl');
-    if(dl){dl.textContent='⬇ Tải tiết này (Word)';dl.onclick=function(){window.dlElImg(b,'KHBD_'+safeName(L.mon)+'_Tuan'+(L.tuan||row.tuan||'')+'_Lop'+(row.lop||'')+'.docx');};}
+    if(dl){dl.textContent='⬇ Tải tiết này (Word)';dl.onclick=function(){window.dlElImg(b,'KHBD_'+safeName(L.mon)+'_Tuan'+(L.tuan||row.tuan||'')+'_Lop'+(row.lop||'')+'.docx',L.mon);};}
     var sc=document.querySelector('#kho-prev-overlay .kho-prev-scroll'); if(sc)sc.scrollTop=0;
     var ov=document.getElementById('kho-prev-overlay'); if(ov)ov.classList.add('show');
   };
@@ -7126,8 +7259,230 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
 })();
 </script>
 
-<!-- Lớp bản quyền (License) — tách riêng để an toàn, dễ cập nhật -->
-<script src="license.js"></script>
+<!-- ============ PHẠM VI DẠY: LỚP & MÔN THẦY CÔ DẠY — 5/8/2026 ============
+     Thầy Chung chốt: thầy cô TỰ CHỌN phạm vi, thay vì để app suy ngầm từ thời khoá biểu.
+       · Chủ nhiệm một lớp   → mở trọn khối đó, khoá 4 khối còn lại (cả giáo án lẫn KHGD)
+       · Dạy môn chuyên      → mở đúng môn đó ở MỌI khối CÓ môn ấy, các môn khác khoá
+       · Dạy thêm ở lớp khác → thêm từng cặp (khối, môn) cho trường hợp ngoại lệ
+     Lựa chọn lưu ở localStorage `butxanh_phamvi`, kèm sẵn chuỗi quyền đúng định dạng
+     license.js đọc ("3:*|1:Đạo đức"). SỬA THOẢI MÁI tới khi kích hoạt bản quyền; kích
+     hoạt xong thì chốt lại, muốn đổi phải nhờ quản trị.
+     ⚠️ KHÔNG chèn bước nào vào lúc mở app — màn chào từng gây lỗi "nút đơ" (3/8/2026).
+     Bảng chỉ bật khi thầy cô vào Kho giáo án / KHGD môn học lần đầu, luôn bỏ qua được,
+     và luôn mở lại được ở Cài đặt ▸ Lớp và môn tôi dạy. -->
+<script>
+(function(){
+"use strict";
+var KEY='butxanh_phamvi', KEY_HOAN='butxanh_phamvi_hoan';
+
+/* Khối nào CÓ môn nào — theo bảng phân phối chương trình của chính app.
+   Tin học · Công nghệ · Tiếng Anh chỉ có từ khối 3 · Khoa học và Lịch sử & Địa lí chỉ
+   khối 4-5 · Tự nhiên và Xã hội chỉ khối 1-3. Ghi sai bảng này là mở nhầm hoặc khoá
+   oan trọn một khối, nên sửa chương trình thì phải sửa cả đây. */
+var MON_KHOI={
+  'Tiếng Việt':'12345','Toán':'12345','HĐTN':'12345','Đạo đức':'12345',
+  'Âm nhạc':'12345','Mĩ thuật':'12345','GDTC':'12345',
+  'Tự nhiên và Xã hội':'123','Khoa học':'45','Lịch sử & Địa lí':'45',
+  'Tiếng Anh':'345','Tin học':'345','Công nghệ':'345'
+};
+var MON_CHUYEN=['Tiếng Anh','Tin học','Công nghệ','Âm nhạc','Mĩ thuật','GDTC'];
+var MON_TATCA=Object.keys(MON_KHOI);
+var KHOI=['1','2','3','4','5'];
+function esc(s){ return (s==null?'':String(s)).replace(/[<>&"]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];}); }
+function monCuaKhoi(k){ return MON_TATCA.filter(function(m){ return MON_KHOI[m].indexOf(String(k))>=0; }); }
+
+/* ---------- Lưu / đọc ---------- */
+function docTT(){ try{ var v=JSON.parse(localStorage.getItem(KEY)||'null'); if(v&&typeof v==='object') return v; }catch(e){} return null; }
+function luuTT(tt){ try{ localStorage.setItem(KEY, JSON.stringify(tt)); }catch(e){} }
+/* license.js gọi hàm này để lấy phạm vi thầy cô đã chọn (ưu tiên hơn suy từ TKB) */
+window.BX_quyenDaChon=function(){ var tt=docTT(); return (tt&&tt.quyen)||''; };
+
+/* Trạng thái bảng chọn → chuỗi quyền "3:*|1:Đạo đức" */
+function dungQuyen(tt){
+  var q={};
+  function themMon(k,m){ if(q[k]==='*') return; q[k]=(q[k]||[]).concat([m]); }
+  if(tt.kieu==='chuyen'){
+    (tt.monChuyen||[]).forEach(function(m){
+      (MON_KHOI[m]||'').split('').forEach(function(k){ themMon(k,m); });
+    });
+  } else if(tt.khoiCN){ q[tt.khoiCN]='*'; }
+  (tt.them||[]).forEach(function(x){
+    if(!x||!x.khoi) return;
+    if(!x.mon){ q[x.khoi]='*'; return; }             // thêm TRỌN một khối nữa
+    themMon(x.khoi, x.mon);
+  });
+  return Object.keys(q).sort().map(function(k){
+    var v=q[k];
+    if(v==='*') return k+':*';
+    return k+':'+v.filter(function(m,i,a){return a.indexOf(m)===i;}).sort().join(',');
+  }).join('|');
+}
+function moTa(chuoi){
+  if(!chuoi) return 'Chưa chọn — app đang tạm suy theo thời khoá biểu.';
+  return chuoi.split('|').map(function(ph){
+    var i=ph.indexOf(':'), k=ph.slice(0,i), v=ph.slice(i+1);
+    return 'Lớp '+k+': '+(v==='*'?'tất cả các môn':v);
+  }).join(' · ');
+}
+/* Đã kích hoạt bản quyền và đã gắn phạm vi → chốt, không cho tự đổi nữa */
+function daKhoa(){ try{ return !!(window.BXLIC && BXLIC.daKhoaQuyen && BXLIC.daKhoaQuyen()); }catch(e){ return false; } }
+
+/* Gợi ý sẵn theo thời khoá biểu đã khai, để phần lớn thầy cô chỉ việc bấm Xong */
+function goiY(){
+  var tt={kieu:'cn', khoiCN:'', monChuyen:[], them:[]};
+  try{
+    var pc=(typeof window.BX_phanCongGVDay==='function')?window.BX_phanCongGVDay():{};
+    var ks=Object.keys(pc).filter(function(k){ return /^[1-5]$/.test(k); });
+    var chinh='', nhieuNhat=-1;
+    ks.forEach(function(k){ if((pc[k]||[]).length>nhieuNhat){ nhieuNhat=(pc[k]||[]).length; chinh=k; } });
+    if(chinh){ tt.khoiCN=chinh;
+      ks.forEach(function(k){ if(k!==chinh) (pc[k]||[]).forEach(function(m){ tt.them.push({khoi:k,mon:m}); }); });
+    }
+  }catch(e){}
+  if(!tt.khoiCN){ try{ tt.khoiCN=window.BX_khoiHienTai?window.BX_khoiHienTai():'5'; }catch(e){ tt.khoiCN='5'; } }
+  return tt;
+}
+
+/* ---------- Bảng chọn ---------- */
+var TT=null;
+function o(){ var x=document.getElementById('bxpv-ov');
+  if(!x){ x=document.createElement('div'); x.id='bxpv-ov';
+    x.style.cssText='position:fixed;inset:0;background:rgba(15,30,25,.55);display:none;align-items:center;justify-content:center;z-index:99998;padding:16px';
+    x.addEventListener('click',function(e){ if(e.target===x) dong(); });
+    document.body.appendChild(x); }
+  return x; }
+function dong(){ var x=document.getElementById('bxpv-ov'); if(x) x.style.display='none'; }
+window.BX_pvDong=dong;
+
+function ve(){
+  var khoa=daKhoa();
+  var chuoi=dungQuyen(TT);
+  var h='<div style="background:#fff;border-radius:16px;max-width:560px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 18px 60px rgba(0,0,0,.35)">'+
+    '<div style="background:linear-gradient(135deg,#0f9d58,#0b8043);color:#fff;padding:16px 20px;border-radius:16px 16px 0 0;display:flex;justify-content:space-between;align-items:center">'+
+      '<h3 style="margin:0;font-size:17px">📘 Lớp và môn thầy/cô dạy</h3>'+
+      '<button onclick="BX_pvDong()" style="background:transparent;border:0;color:#fff;font-size:24px;line-height:1;cursor:pointer">×</button></div>'+
+    '<div style="padding:18px 20px;font-size:14px;line-height:1.6">';
+  if(khoa){
+    h+='<div style="background:#fff8e6;border:1px solid #ffe2a8;border-radius:10px;padding:10px 12px;color:#7a5b00;margin-bottom:12px">'+
+       '🔒 Bản quyền đã kích hoạt nên phạm vi được <b>chốt lại</b>. Thầy/cô cần đổi thì nhắn quản trị giúp em ạ.</div>'+
+       '<div style="padding:10px 12px;background:#f2f7f4;border-radius:10px"><b>'+esc(moTa(chuoi))+'</b></div>'+
+       '<button onclick="BX_pvDong()" style="display:block;width:100%;margin-top:14px;padding:12px;border:0;border-radius:10px;background:#eef3f0;color:#334;font-size:15px;cursor:pointer">Đóng</button>'+
+       '</div></div>';
+    o().innerHTML=h; return;
+  }
+  h+='<div style="color:#5b6b61;margin-bottom:12px">Bút Xanh sẽ chỉ hiện <b>giáo án và Kế hoạch giáo dục môn học</b> của phần thầy/cô dạy, cho đỡ rối.</div>';
+
+  h+='<label style="display:flex;gap:8px;align-items:flex-start;padding:8px 0;cursor:pointer">'+
+     '<input type="radio" name="bxpv-kieu" '+(TT.kieu!=='chuyen'?'checked':'')+' onchange="BX_pvSet(\'kieu\',\'cn\')" style="margin-top:4px">'+
+     '<span><b>Tôi chủ nhiệm một lớp</b><br><span style="color:#5b6b61;font-size:13px">Mở trọn các môn của khối đó.</span></span></label>';
+  if(TT.kieu!=='chuyen'){
+    h+='<div style="margin:2px 0 10px 26px"><select onchange="BX_pvSet(\'khoiCN\',this.value)" style="padding:7px 10px;border:1px solid #d6e2da;border-radius:8px">'+
+       KHOI.map(function(k){ return '<option value="'+k+'"'+(k===TT.khoiCN?' selected':'')+'>Khối '+k+'</option>'; }).join('')+'</select></div>';
+  }
+
+  h+='<label style="display:flex;gap:8px;align-items:flex-start;padding:8px 0;cursor:pointer;border-top:1px dashed #e3e8e5">'+
+     '<input type="radio" name="bxpv-kieu" '+(TT.kieu==='chuyen'?'checked':'')+' onchange="BX_pvSet(\'kieu\',\'chuyen\')" style="margin-top:4px">'+
+     '<span><b>Hoặc: các thầy cô dạy môn chuyên</b><br><span style="color:#5b6b61;font-size:13px">Mở đúng môn đó ở mọi khối có môn ấy.</span></span></label>';
+  if(TT.kieu==='chuyen'){
+    h+='<div style="margin:2px 0 10px 26px;display:flex;flex-wrap:wrap;gap:6px">'+
+      MON_CHUYEN.map(function(m){
+        var on=(TT.monChuyen||[]).indexOf(m)>=0;
+        return '<button type="button" onclick="BX_pvMon(\''+esc(m)+'\')" style="padding:6px 12px;border-radius:20px;cursor:pointer;font-size:13px;'+
+          (on?'background:#0b8043;color:#fff;border:1px solid #0b8043':'background:#fff;color:#334;border:1px solid #d6e2da')+'">'+
+          (on?'✓ ':'')+esc(m)+'</button>';
+      }).join('')+'</div>'+
+      '<div style="margin:0 0 10px 26px;font-size:12.5px;color:#5b6b61">Khối được mở tính theo chương trình: Tin học · Công nghệ · Tiếng Anh có từ <b>khối 3</b>; Âm nhạc · Mĩ thuật · Giáo dục thể chất có <b>đủ khối 1–5</b>.</div>';
+  }
+
+  h+='<div style="border-top:1px dashed #e3e8e5;padding-top:10px;margin-top:6px"><b>Tôi dạy thêm ở lớp khác</b> '+
+     '<span style="color:#5b6b61;font-size:13px">(nếu có)</span></div>';
+  (TT.them||[]).forEach(function(x,i){
+    var dsMon=monCuaKhoi(x.khoi||'1');
+    h+='<div style="display:flex;gap:6px;align-items:center;margin:6px 0">'+
+      '<select onchange="BX_pvThem('+i+',\'khoi\',this.value)" style="padding:6px 8px;border:1px solid #d6e2da;border-radius:8px">'+
+        KHOI.map(function(k){ return '<option value="'+k+'"'+(k===x.khoi?' selected':'')+'>Khối '+k+'</option>'; }).join('')+'</select>'+
+      '<select onchange="BX_pvThem('+i+',\'mon\',this.value)" style="flex:1;padding:6px 8px;border:1px solid #d6e2da;border-radius:8px">'+
+        '<option value="">— Tất cả các môn —</option>'+
+        dsMon.map(function(m){ return '<option'+(m===x.mon?' selected':'')+'>'+esc(m)+'</option>'; }).join('')+'</select>'+
+      '<button type="button" onclick="BX_pvXoa('+i+')" title="Bỏ dòng này" style="border:1px solid #f0c4c9;background:#fdeef0;color:#b00020;border-radius:8px;padding:6px 10px;cursor:pointer">✕</button></div>';
+  });
+  h+='<button type="button" onclick="BX_pvThemDong()" style="margin-top:4px;border:1px dashed #bfe6cf;background:#f4fbf7;color:#0b8043;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:13px">+ Thêm lớp/môn</button>';
+
+  h+='<div style="margin-top:14px;padding:10px 12px;background:#eef6ff;border:1px solid #bcdcff;border-radius:10px;font-size:13px;color:#234">'+
+     'Thầy/cô sẽ xem và tải được: <b>'+esc(chuoi?moTa(chuoi):'chưa chọn gì')+'</b></div>';
+  h+='<div style="font-size:12.5px;color:#5b6b61;margin-top:8px">Chọn nhầm cũng không sao — sửa lại bất cứ lúc nào ở <b>Cài đặt ▸ Lớp và môn tôi dạy</b>, cho tới khi kích hoạt bản quyền.</div>';
+  h+='<button onclick="BX_pvXong()" style="display:block;width:100%;margin-top:12px;padding:12px;border:0;border-radius:10px;background:#0b8043;color:#fff;font-size:15px;font-weight:600;cursor:pointer">Xong</button>'+
+     '<button onclick="BX_pvDeSau()" style="display:block;width:100%;margin-top:8px;padding:12px;border:0;border-radius:10px;background:#eef3f0;color:#334;font-size:15px;cursor:pointer">Để sau</button>';
+  h+='</div></div>';
+  o().innerHTML=h;
+}
+window.BX_pvSet=function(k,v){ TT[k]=v; ve(); };
+window.BX_pvMon=function(m){ var a=TT.monChuyen||(TT.monChuyen=[]); var i=a.indexOf(m); if(i<0) a.push(m); else a.splice(i,1); ve(); };
+window.BX_pvThem=function(i,k,v){ if(TT.them[i]){ TT.them[i][k]=v;
+  if(k==='khoi' && TT.them[i].mon && monCuaKhoi(v).indexOf(TT.them[i].mon)<0) TT.them[i].mon='';  /* khối mới không có môn cũ */
+  ve(); } };
+window.BX_pvThemDong=function(){ (TT.them||(TT.them=[])).push({khoi:'1',mon:''}); ve(); };
+window.BX_pvXoa=function(i){ TT.them.splice(i,1); ve(); };
+window.BX_pvDeSau=function(){ try{ localStorage.setItem(KEY_HOAN,'1'); }catch(e){} dong(); };
+window.BX_pvXong=function(){
+  var chuoi=dungQuyen(TT);
+  if(!chuoi){ if(window.bxAlert) bxAlert('Thầy/cô chọn giúp em lớp chủ nhiệm, hoặc ít nhất một môn chuyên ạ.'); return; }
+  TT.quyen=chuoi; luuTT(TT);
+  try{ localStorage.removeItem(KEY_HOAN); }catch(e){}
+  dong(); capNhat();
+  if(window.bxAlert) bxAlert('✓ Đã lưu. Bút Xanh sẽ hiện: '+moTa(chuoi)+'.\n\nĐổi lại bất cứ lúc nào ở Cài đặt ▸ Lớp và môn tôi dạy.');
+};
+/* Đổi phạm vi thì hai màn phụ thuộc phải vẽ lại: KHGD môn học (đổi cả ô Lớp/Môn)
+   và Kho giáo án. Bọc try riêng để một màn lỗi không kéo màn kia. */
+function capNhat(){
+  try{ if(window.BXLIC && BXLIC.quenQuyen) BXLIC.quenQuyen(); }catch(e){}   /* đổi phạm vi → bỏ bộ nhớ tạm */
+  /* Kéo sẵn kho & KHGD của các khối vừa chọn — thầy cô có thể chọn khối chưa từng
+     mở (kho nạp lười theo lớp), không kéo về thì màn Kho hiện trống trơn. */
+  try{
+    (window.BX_quyenDaChon()||'').split('|').forEach(function(ph){
+      var k=ph.split(':')[0];
+      if(!/^[1-5]$/.test(k)) return;
+      try{ if(window.BX_ensureKho) window.BX_ensureKho(k); }catch(e){}
+      try{ if(window.BX_ensureKHGD) window.BX_ensureKHGD(k); }catch(e){}
+    });
+  }catch(e){}
+  try{ if(typeof window.BX_khgdRebuild==='function') window.BX_khgdRebuild(); }catch(e){}
+  try{ if(typeof window.renderKhoBrowser==='function') window.renderKhoBrowser(); }catch(e){}
+  try{ theSettings(); }catch(e){}
+}
+window.BX_moChonPhamVi=function(){
+  var tt=docTT();
+  TT = tt ? JSON.parse(JSON.stringify(tt)) : goiY();
+  if(!TT.them) TT.them=[]; if(!TT.monChuyen) TT.monChuyen=[];
+  ve(); o().style.display='flex';
+};
+
+/* ---------- Thẻ trong Cài đặt ---------- */
+function theSettings(){
+  var d=document.getElementById('bxpv-tomtat'); if(!d) return;
+  d.textContent=moTa(window.BX_quyenDaChon());
+}
+/* ---------- Bật lần đầu khi vào Kho giáo án / KHGD môn học ---------- */
+function nhacLanDau(v){
+  if(v!=='kho' && v!=='khdh' && v!=='khbd') return;
+  if(docTT()) return;                                   // đã chọn rồi
+  try{ if(localStorage.getItem(KEY_HOAN)) return; }catch(e){}   // đã bấm "Để sau"
+  setTimeout(function(){ try{ window.BX_moChonPhamVi(); }catch(e){} }, 600);
+}
+var _pvShowView=window.showView;
+window.showView=function(v){
+  var r=_pvShowView.apply(this,arguments);
+  try{ if(v==='caidat') theSettings(); else nhacLanDau(v); }catch(e){}
+  return r;
+};
+document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }catch(e){} });
+})();
+</script>
+
+<!-- Lớp bản quyền (License) — tách riêng để an toàn, dễ cập nhật.
+     ⚠️ Có dấu phiên bản ?v= vì GitHub Pages giữ bản cũ 10 phút — sửa license.js mà
+     quên đổi dấu này thì máy thầy cô vẫn chạy bản cũ. (5/8/2026) -->
+<script src="license.js?v=20260805-quyen"></script>
 
 <!-- ============ MODAL: LỊCH NGHỈ & DẠY BÙ (Phase 2 — con trỏ tiến độ) ============ -->
 <div class="overlay" id="tkbexc-overlay">

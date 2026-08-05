@@ -40,8 +40,13 @@
        được cả 5 khối. Lần tải đầu tiên, app tự gắn khối theo THỜI KHOÁ BIỂU đã
        khai: GV chủ nhiệm ra 1 khối, GV bộ môn (Âm nhạc, Thể dục, Tiếng Anh, Tin
        học, Mĩ thuật) ra đủ khối họ đứng lớp — không ai phải xin phép. Gắn xong
-       thì khoá lại; đổi phải nhờ quản trị (nút "Sửa khối" ở trang Quản trị). */
-    KHOA_THEO_KHOI: true
+       thì khoá lại; đổi phải nhờ quản trị (nút "Sửa quyền" ở trang Quản trị). */
+    KHOA_THEO_KHOI: true,
+    /* Ngưỡng để coi một khối là KHỐI CHỦ NHIỆM (mở trọn mọi môn). Khối nào thầy cô
+       dạy TỪ NGẦN NÀY MÔN trở lên thì mở trọn; ít hơn thì chỉ mở đúng môn đã khai.
+       Đặt 3 vì chủ nhiệm tiểu học luôn dạy ít nhất 5 môn, còn phân công dạy thêm ở
+       lớp khác hiếm khi quá 2 môn. Xem chú thích "QUYỀN THEO KHỐI × MÔN" bên dưới. */
+    NGUONG_MON_TRON_KHOI: 3
   };
 
   /* ------------------------------------------------------------------ *
@@ -319,8 +324,17 @@
   /* ------------------------------------------------------------------ *
    *  ÁP DỤNG TRẠNG THÁI LICENSE (nghe realtime)                          *
    * ------------------------------------------------------------------ */
+  var _quyenCu=null;
   function applyLicense(r){
     rec=r||null;
+    /* Hồ sơ bản quyền về SAU khi màn hình đã vẽ (~1 giây). Nếu phạm vi đã chốt khác
+       với cái màn KHGD đang hiện (VD quản trị vừa sửa quyền) thì phải vẽ lại, không
+       thì thầy cô nhìn thấy danh sách lớp/môn cũ cho tới khi chuyển màn. Chỉ vẽ lại
+       khi chuỗi quyền THỰC SỰ đổi, kẻo mỗi tín hiệu realtime lại reset bộ lọc. */
+    var qm=(rec&&rec.quyen)||'';
+    if(qm!==_quyenCu){ _quyenCu=qm;
+      try{ if(typeof window.BX_khgdRebuild==='function') window.BX_khgdRebuild(); }catch(e){}
+    }
     var now=Date.now();
     var okPaid = !!(rec && rec.daTraPhi) && (!rec.ngayHetHan || now<=rec.ngayHetHan);
     if(!okPaid){ setPaid(false, 0); return; }
@@ -404,7 +418,7 @@
       var html='<div class="bxlic-note" style="margin:0 0 12px">Chờ xác nhận: <b>'+waiting.length+'</b> · Tổng tài khoản: <b>'+uids.length+'</b>. '+
         'Bấm <b>Kích hoạt</b> sau khi đã nhận được 99.000đ (đối chiếu Nội dung CK).</div>';
       html+='<div style="overflow:auto;max-height:60vh"><table class="bxlic-tbl"><thead><tr>'+
-        '<th>Họ tên / Email</th><th>Mã CK</th><th>Trạng thái</th><th>Năm học</th><th>Hết hạn</th><th>Đổi máy</th><th>Khối</th><th>Thao tác</th></tr></thead><tbody>';
+        '<th>Họ tên / Email</th><th>Mã CK</th><th>Trạng thái</th><th>Năm học</th><th>Hết hạn</th><th>Đổi máy</th><th>Quyền (khối : môn)</th><th>Thao tác</th></tr></thead><tbody>';
       if(!rows.length){ html+='<tr><td colspan="8" style="text-align:center;color:#889;padding:16px">Chưa có tài khoản nào yêu cầu.</td></tr>'; }
       rows.forEach(function(x){
         var r=x.r, ok=!!r.daTraPhi;
@@ -415,11 +429,11 @@
           '<td>'+esc(r.namHoc||'—')+'</td>'+
           '<td>'+fmtDate(r.ngayHetHan)+'</td>'+
           '<td>'+(r.soLanDoiMay||0)+'/'+CONFIG.SO_LAN_DOI_MAY_TOI_DA+'</td>'+
-          '<td><b>'+esc(r.khoi||'—')+'</b></td>'+
+          '<td><b>'+esc(r.quyen||(r.khoi?(String(r.khoi).split(/[^1-5]+/).filter(Boolean).map(function(k){return k+':*';}).join('|')):'')||'—')+'</b></td>'+
           '<td style="white-space:nowrap">'+
             '<button class="bxlic-mini" onclick="BXLIC_activate(\''+x.uid+'\')">'+(ok?'Gia hạn':'Kích hoạt')+'</button>'+
             '<button class="bxlic-mini d" onclick="BXLIC_resetDevice(\''+x.uid+'\')">Reset máy</button>'+
-            '<button class="bxlic-mini d" onclick="BXLIC_setKhoi(\''+x.uid+'\')">Sửa khối</button>'+
+            '<button class="bxlic-mini d" onclick="BXLIC_setKhoi(\''+x.uid+'\')">Sửa quyền</button>'+
             (ok?'<button class="bxlic-mini r" onclick="BXLIC_lock(\''+x.uid+'\')">Khoá</button>':'')+
           '</td>'+
         '</tr>';
@@ -446,20 +460,51 @@
     var upd={}; upd['licenses/'+uid+'/device']=null; upd['licenses/'+uid+'/soLanDoiMay']=0;
     db.ref().update(upd).then(function(){ openAdmin(); }).catch(function(){});
   };
-  /* Sửa khối cho một bản quyền. Dùng khi thầy cô chuyển khối giữa năm, hoặc GV
-     bộ môn cần mở thêm khối. Để TRỐNG rồi OK = xoá gắn kết, lần tải sau app tự
-     gắn lại theo thời khoá biểu hiện tại. */
+  /* Đọc chuỗi quyền admin gõ tay. Nhận cả hai lối viết:
+       "1,3"                → mở TRỌN khối 1 và khối 3 (lối cũ, vẫn dùng được)
+       "3:* | 1:Đạo đức"    → trọn khối 3; khối 1 chỉ môn Đạo đức
+     Nhóm cách nhau bằng  |  hoặc  ;   ·   nhiều môn trong một khối cách nhau bằng dấu phẩy. */
+  function docQuyenNhap(v){
+    var s=String(v||'').trim(); if(!s) return null;
+    if(s.indexOf(':')<0){                        // lối cũ: chỉ liệt kê khối
+      var ds=s.split(/[^1-5]+/).filter(Boolean).filter(function(k,i,a){ return a.indexOf(k)===i; }).sort();
+      if(!ds.length) return null;
+      var q0={}; ds.forEach(function(k){ q0[k]='*'; }); return q0;
+    }
+    var q={};
+    s.split(/[;|]/).forEach(function(ph){
+      var i=ph.indexOf(':'); if(i<0) return;
+      var k=ph.slice(0,i).replace(/[^1-5]/g,'').slice(0,1); if(!k) return;
+      var phan=ph.slice(i+1).trim();
+      if(phan==='*'){ q[k]='*'; return; }
+      if(q[k]==='*') return;
+      var ms=phan.split(',').map(canonMon).filter(Boolean);
+      if(ms.length) q[k]=(q[k]||[]).concat(ms).filter(function(m,j,a){ return a.indexOf(m)===j; }).sort();
+    });
+    return Object.keys(q).length?q:null;
+  }
+  /* Sửa quyền cho một bản quyền. Dùng khi thầy cô chuyển khối giữa năm, hoặc được
+     phân công dạy thêm một môn ở lớp khác. Để TRỐNG rồi OK = xoá gắn kết, lần tải
+     sau app tự gắn lại theo thời khoá biểu hiện tại. */
   window.BXLIC_setKhoi=function(uid){
     db.ref('licenses/'+uid).once('value').then(function(s){
       var r=s.val()||{};
-      var cu=String(r.khoi||'');
-      var v=prompt('Khối lớp được phép tải giáo án & KHDH của '+(r.hoTen||r.email||uid)+'\n\n'+
-                   'Ghi các khối cách nhau bằng dấu phẩy, VD:  4     hoặc  1,2,3,4,5\n'+
+      var cu=String(r.quyen||'') ||
+             String(r.khoi||'').split(/[^1-5]+/).filter(Boolean).map(function(k){return k+':*';}).join('|');
+      var v=prompt('Quyền tải giáo án & KHDH của '+(r.hoTen||r.email||uid)+'\n\n'+
+                   'Mỗi khối một nhóm, cách nhau bằng dấu |\n'+
+                   '   <khối>:*            = trọn khối, mọi môn\n'+
+                   '   <khối>:<môn>,<môn>  = chỉ mấy môn đó\n\n'+
+                   'VD:  3:*|1:Đạo đức      (chủ nhiệm lớp 3, dạy thêm Đạo đức lớp 1)\n'+
+                   'VD:  1:Âm nhạc|2:Âm nhạc|3:Âm nhạc   (giáo viên Âm nhạc)\n'+
+                   'Vẫn nhận lối cũ chỉ ghi khối, VD:  1,3  = trọn khối 1 và 3.\n\n'+
                    'Để trống = xoá gắn kết, lần tải sau app tự gắn lại theo thời khoá biểu.', cu);
       if(v===null) return;                       // bấm Huỷ
-      var ds=String(v).split(/[^1-5]+/).filter(Boolean)
-                .filter(function(k,i,a){ return a.indexOf(k)===i; }).sort();
-      db.ref('licenses/'+uid+'/khoi').set(ds.length?ds.join(','):null)
+      var q=docQuyenNhap(v);
+      var upd={};
+      upd['licenses/'+uid+'/quyen']=q?ghiQuyen(q):null;
+      upd['licenses/'+uid+'/khoi']=q?Object.keys(q).sort().join(','):null;
+      db.ref().update(upd)
         .then(function(){ openAdmin(); })
         .catch(function(e){ if(window.bxAlert) bxAlert('Không lưu được: '+((e&&e.message)||'')); });
     }).catch(function(){});
@@ -475,17 +520,96 @@
        1) KHBD_*        — giáo án Word (từng tiết / cả tuần / tất cả / tải từ Kho)
        2) KHGD_mon_*    — Kế hoạch giáo dục môn học (Word)
        3) KhoGiaoAn_*   — xuất TOÀN BỘ kho giáo án ra JSON (nếu mở, việc khoá Word thành vô nghĩa)
+       4) KHDH_*        — xuất bảng Kế hoạch dạy học ra JSON (cùng lẽ với mục 3; thêm 5/8/2026
+                          vì tên tệp KHDH_MonHoc_ButXanh.json không khớp mẫu KHGD_mon_ nên lọt cổng)
      MIỄN PHÍ: link bài giảng trình chiếu, mẫu trống (Mau_*), lịch báo giảng, thời khoá biểu,
      danh sách học sinh, báo cáo thống kê, sao lưu dữ liệu cá nhân, bài giảng PPTX tự tạo… */
-  var RE_CAN_PHI = /^(KHBD_|KHGD_mon_|KhoGiaoAn_)/i;
+  var RE_CAN_PHI = /^(KHBD_|KHGD_mon_|KhoGiaoAn_|KHDH_)/i;
   function needPaid(fileName){
     var n = String(fileName||'').replace(/^.*[\\\/]/,'');
     return RE_CAN_PHI.test(n);
   }
 
   /* ------------------------------------------------------------------ *
-   *  KHOÁ THEO KHỐI LỚP                                                  *
+   *  QUYỀN THEO KHỐI × MÔN                                               *
    * ------------------------------------------------------------------ */
+  /* 5/8/2026 — thầy Chung chốt làm MỊN tới môn.
+     Trước: bản quyền gắn theo KHỐI, nên chỉ một ô "Đạo đức lớp 1" trong thời khoá
+     biểu là mở toang cả khối 1 (tải được luôn Toán 1, Tiếng Việt 1…).
+     Nay ghi ở  licenses/<uid>/quyen  dạng chuỗi:
+         "3:*|1:Đạo đức"      → trọn khối 3; khối 1 chỉ môn Đạo đức
+     QUY TẮC TỰ GẮN theo thời khoá biểu thầy cô đã khai:
+       · khối dạy TỪ 3 MÔN trở lên → mở TRỌN khối ("3:*"). Đây là khối chủ nhiệm;
+         mở trọn để không chặn oan khi dạy thay hoặc quên khai một môn vào TKB.
+       · khối chỉ 1-2 môn          → mở ĐÚNG môn đó ("1:Đạo đức").
+     Nhờ vậy GV bộ môn (Âm nhạc, GDTC, Tiếng Anh…) dạy 1 môn ở cả 5 khối vẫn ra
+     đúng môn của mình ở từng khối, không ai phải xin phép.
+     Trường `khoi` cũ VẪN ĐỌC ĐƯỢC (coi như trọn khối) để bản quyền đã bán không bị
+     gián đoạn; mỗi lần gắn lại app ghi CẢ HAI trường. */
+
+  /* Đưa tên môn về một dạng chuẩn để so sánh: thời khoá biểu ghi "HĐTN"/"Thể dục",
+     kho ghi "Hoạt động trải nghiệm"/"GDTC" — không quy về cùng dạng là chặn oan. */
+  function canonMon(m){
+    var s=String(m||'').trim(); if(!s) return '';
+    try{ if(typeof window._bxCanonSubject==='function'){ var c=window._bxCanonSubject(s); if(c) return c; } }catch(e){}
+    return s;
+  }
+  function khoaMon(m){
+    return String(canonMon(m)).toLowerCase().normalize('NFD')
+      .replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').replace(/[^a-z0-9]+/g,'');
+  }
+
+  /* Chuỗi "3:*|1:Đạo đức" → {'3':'*', '1':['Đạo đức']}
+     Tham số `r` chỉ dùng khi cần đọc hồ sơ khác (kiểm thử); bỏ trống = hồ sơ đang đăng nhập. */
+  function docQuyen(r){
+    var hs = r || rec;
+    var q={}, s = hs && hs.quyen;
+    if(s){
+      String(s).split('|').forEach(function(ph){
+        var i=ph.indexOf(':'); if(i<0) return;
+        var k=ph.slice(0,i).replace(/[^1-5]/g,'').slice(0,1); if(!k) return;
+        var v=ph.slice(i+1).trim();
+        if(v==='*'){ q[k]='*'; return; }
+        if(q[k]==='*') return;
+        var ds=v.split(',').map(canonMon).filter(Boolean);
+        if(ds.length) q[k]=(q[k]||[]).concat(ds);
+      });
+    }
+    /* Bản quyền bán trước 5/8/2026 chỉ có trường `khoi` → coi như trọn khối */
+    if(!Object.keys(q).length && hs && hs.khoi){
+      String(hs.khoi).split(/[^1-5]+/).filter(Boolean).forEach(function(k){ q[k]='*'; });
+    }
+    return q;
+  }
+  function ghiQuyen(q){
+    return Object.keys(q).sort().map(function(k){
+      return k+':'+(q[k]==='*'?'*':q[k].join(','));
+    }).join('|');
+  }
+  /* Phân công {khối:[môn]} → quyền {khối:'*'|[môn]}. Hàm THUẦN, tách riêng để kiểm thử. */
+  function tinhQuyen(phanCong){
+    var q={}, nguong=CONFIG.NGUONG_MON_TRON_KHOI||3;
+    Object.keys(phanCong||{}).forEach(function(k){
+      if(!/^[1-5]$/.test(k)) return;
+      var ds=(phanCong[k]||[]).map(canonMon).filter(Boolean);
+      ds=ds.filter(function(m,i,a){ return a.indexOf(m)===i; });
+      if(!ds.length) return;                       // khối có mặt nhưng không rõ môn
+      q[k]=(ds.length>=nguong)?'*':ds.sort();
+    });
+    return q;
+  }
+  /* Lõi kiểm quyền — THUẦN. mon rỗng (tệp gộp không mang tên môn) thì chỉ cần có
+     quyền ở khối đó; việc lọc từng bài do nơi gọi tự làm (xem exportBankJson). */
+  function thuQuyen(q, khoi, mon){
+    if(!khoi) return true;
+    var v=q[khoi];
+    if(v===undefined) return false;
+    if(v==='*') return true;
+    if(!mon) return true;
+    var k=khoaMon(mon);
+    return v.some(function(m){ return khoaMon(m)===k; });
+  }
+
   /* Bóc khối lớp từ TÊN TỆP. Hai dạng đang dùng:
        KHBD_<tên bài>_Lop5.docx · KHBD_<tên bài>_Tuan8_Lop5.docx
        KHGD_mon_Tieng_Viet_5_2026_2027.docx   (khối nằm giữa tên môn và năm học)
@@ -506,59 +630,144 @@
     }
     return '';
   }
-  function dsKhoi(){                                  // khối đã gắn cho bản quyền
-    var v = rec && rec.khoi;
-    if(v==null || v==='') return [];
-    return String(v).split(/[^1-5]+/).filter(Boolean);
+  /* Bóc MÔN từ tên tệp KHGD môn học: KHGD_mon_Dao_Duc_1_2026_2027.docx → "Đạo đức".
+     Tên tệp KHBD KHÔNG mang tên môn ở nhiều đường tải, nên những nơi đó truyền
+     thẳng tên môn vào cổng qua tham số `mon` thay vì trông vào tên tệp. */
+  function monCuaTep(fileName){
+    var n = String(fileName||'').replace(/^.*[\\\/]/,'').replace(/\.[A-Za-z0-9]+$/,'');
+    var m = n.match(/^KHGD_mon_(.+?)_[1-5](?:_\d{4}.*)?$/i);
+    return m ? canonMon(m[1].replace(/_+/g,' ').trim()) : '';
   }
-  function khoiGVDay(){                               // khối GV khai trong TKB
-    try{ if(typeof window.BX_khoiGVDay==='function'){ var a=window.BX_khoiGVDay(); if(a&&a.length) return a; } }catch(e){}
-    return [];
+  function dsKhoi(){          // các khối CÓ quyền (dùng cho bộ lọc xuất hàng loạt)
+    return Object.keys(docQuyen()).sort();
   }
-  /* Lần tải đầu: gắn khối theo thời khoá biểu. Trả về mảng khối vừa gắn. */
-  function ganKhoiLanDau(khoiTep){
-    var ds = khoiGVDay();
-    if(!ds.length && khoiTep) ds=[khoiTep];
-    if(!ds.length) return [];
-    /* khối của tệp đang tải mà chưa có trong TKB thì gộp thêm — tránh chặn oan
-       thầy cô mới cài, chưa kịp khai thời khoá biểu */
-    if(khoiTep && ds.indexOf(khoiTep)<0) ds=ds.concat([khoiTep]);
-    ds=ds.filter(function(k,i,a){ return a.indexOf(k)===i; }).sort();
-    try{ if(user&&db) db.ref('licenses/'+user.uid+'/khoi').set(ds.join(',')); }catch(e){}
-    if(rec) rec.khoi=ds.join(',');
-    return ds;
+  function dsMon(khoi){       // '*' = trọn khối · mảng = mấy môn · null = không có quyền
+    var v=docQuyen()[String(khoi||'').replace(/\D/g,'').slice(0,1)];
+    return (v===undefined)?null:v;
   }
-  function showKhoiMismatch(khoiTep, ds){
+  function phanCongGVDay(){   // phân công {khối:[môn]} lấy từ thời khoá biểu
+    try{ if(typeof window.BX_phanCongGVDay==='function'){ var a=window.BX_phanCongGVDay(); if(a) return a; } }catch(e){}
+    return {};
+  }
+  /* Phạm vi thầy cô TỰ CHỌN ở bảng "Lớp và môn tôi dạy" (index.html) — ưu tiên hơn
+     việc suy ngầm từ thời khoá biểu. */
+  function quyenDaChon(){
+    try{ if(typeof window.BX_quyenDaChon==='function'){
+      var s=window.BX_quyenDaChon();
+      if(s){ var q=docQuyenNhap(s); if(q && Object.keys(q).length) return q; }
+    } }catch(e){}
+    return null;
+  }
+  /* Quyền ĐANG CÓ HIỆU LỰC, theo thứ tự ưu tiên:
+       1) đã gắn vào bản quyền (rec.quyen / rec.khoi) — kích hoạt xong là chốt
+       2) thầy cô tự chọn ở bảng "Lớp và môn tôi dạy"
+       3) suy tạm từ thời khoá biểu (khi chưa chọn gì) */
+  /* ⚠️ HIỆU NĂNG: hàm này bị gọi cho TỪNG TIẾT khi lọc kho giáo án (hàng nghìn lần
+     mỗi lần vẽ màn Kho). Không nhớ kết quả thì mỗi tiết lại phân tích lại thời khoá
+     biểu + lịch báo giảng từ localStorage → màn hình đứng vài giây, đúng kiểu lỗi
+     "nút đơ" đã tốn công chẩn đoán hôm 3/8. Nhớ theo khoá = phạm vi đã gắn + phạm vi
+     tự chọn; riêng đường suy từ thời khoá biểu thì nhớ tạm 5 giây vì không có cách
+     rẻ để biết thầy cô vừa sửa thời khoá biểu. Sửa xong gọi quenQuyen() cho chắc. */
+  var _qNho=null, _qKhoa='', _qLuc=0;
+  function quyenHienHanh(){
+    var gan=(rec&&rec.quyen)||'', chon='';
+    if(!gan){ try{ if(typeof window.BX_quyenDaChon==='function') chon=window.BX_quyenDaChon()||''; }catch(e){} }
+    var khoa=gan+' '+chon+' '+((rec&&rec.khoi)||'');
+    var duaVaoTKB=(!gan && !chon && !(rec&&rec.khoi)), now=Date.now();
+    if(_qNho && _qKhoa===khoa && (!duaVaoTKB || now-_qLuc<5000)) return _qNho;
+    var q=docQuyen();
+    if(!Object.keys(q).length){
+      var c=quyenDaChon();
+      q=(c && Object.keys(c).length) ? c : tinhQuyen(phanCongGVDay());
+    }
+    _qNho=q; _qKhoa=khoa; _qLuc=now;
+    return q;
+  }
+  function quenQuyen(){ _qNho=null; _qKhoa=''; }
+  function daKhoaQuyen(){ return !!(paid && rec && rec.quyen); }
+  /* Chốt phạm vi vào bản quyền. CHỈ ghi khi ĐÃ TRẢ PHÍ — trước đó thầy cô còn được
+     đổi lựa chọn thoải mái (thầy Chung chốt 5/8/2026). */
+  function ganQuyenLanDau(khoiTep){
+    var q=quyenDaChon();
+    if(!q){
+      var pc=phanCongGVDay(); q=tinhQuyen(pc);
+      if(!Object.keys(q).length){
+        /* Chưa chọn, chưa khai thời khoá biểu → giữ nếp cũ: mở TRỌN khối đang có,
+           để thầy cô mới cài không bị chặn oan. */
+        Object.keys(pc).forEach(function(k){ if(/^[1-5]$/.test(k)) q[k]='*'; });
+        if(!Object.keys(q).length && khoiTep) q[khoiTep]='*';
+      }
+    }
+    if(!Object.keys(q).length) return {};
+    if(!paid) return q;                                 // chưa kích hoạt → dùng, chưa chốt
+    var chuoi=ghiQuyen(q), ks=Object.keys(q).sort().join(',');
+    try{ if(user&&db){ var u={};
+      u['licenses/'+user.uid+'/quyen']=chuoi;
+      u['licenses/'+user.uid+'/khoi']=ks;             // giữ trường cũ cho trang Quản trị
+      db.ref().update(u); } }catch(e){}
+    if(rec){ rec.quyen=chuoi; rec.khoi=ks; }
+    return q;
+  }
+  /* Câu chữ cho thầy cô đọc: "khối 3 (mọi môn) · khối 1 (Đạo đức)" */
+  function moTaQuyen(q){
+    var ks=Object.keys(q||{}).sort();
+    if(!ks.length) return '';
+    return ks.map(function(k){
+      return 'khối '+k+' ('+(q[k]==='*'?'mọi môn':q[k].join(', '))+')';
+    }).join(' · ');
+  }
+  function showKhoiMismatch(khoiTep, monTep, q){
     var o=overlay('bxlic-khoi'); o.classList.add('on');
-    o.innerHTML='<div class="bxlic-card"><div class="bxlic-hd"><h3>📘 Bản quyền theo khối lớp</h3>'+
+    var thu = monTep ? ('môn <b>'+esc(canonMon(monTep))+'</b> của <b>khối '+esc(khoiTep)+'</b>')
+                     : ('tài liệu <b>khối '+esc(khoiTep)+'</b>');
+    o.innerHTML='<div class="bxlic-card"><div class="bxlic-hd"><h3>📘 Bản quyền theo lớp và môn</h3>'+
       '<button class="x" onclick="BXLIC_close(\'bxlic-khoi\')">×</button></div><div class="bxlic-bd">'+
-      '<p style="font-size:14px;line-height:1.7">Bản quyền của thầy/cô dùng cho <b>khối '+esc(ds.join(', '))+'</b>, '+
-      'nên chưa tải được tài liệu của <b>khối '+esc(khoiTep)+'</b>.</p>'+
-      '<p style="font-size:13.5px;line-height:1.7;color:#5b6b61">Khối được gắn theo <b>thời khoá biểu</b> thầy/cô đã khai. '+
-      'Nếu năm nay thầy/cô chuyển sang dạy khối khác, hoặc dạy bộ môn ở nhiều khối, xin nhắn '+esc(CONFIG.HOTLINE)+' để được mở thêm.</p>'+
+      '<p style="font-size:14px;line-height:1.7">Bản quyền của thầy/cô dùng cho <b>'+esc(moTaQuyen(q))+'</b>, '+
+      'nên chưa mở được '+thu+'.</p>'+
+      '<p style="font-size:13.5px;line-height:1.7;color:#5b6b61">Phần được mở gắn theo <b>thời khoá biểu</b> thầy/cô đã khai: '+
+      'khối nào dạy từ '+(CONFIG.NGUONG_MON_TRON_KHOI||3)+' môn trở lên thì mở trọn khối, khối chỉ dạy một vài môn '+
+      'thì mở đúng môn đó. Nếu năm nay thầy/cô được phân công thêm, xin nhắn '+esc(CONFIG.HOTLINE)+' để được mở thêm.</p>'+
       '<button class="bxlic-btn" onclick="BXLIC_close(\'bxlic-khoi\')">Đã hiểu</button>'+
       '</div></div>';
   }
-  /* Cổng kiểm khối: trả true nếu ĐƯỢC tải. Tự mở hộp giải thích khi chặn. */
-  function canDownloadKhoi(fileName){
+  /* Cổng kiểm quyền theo (KHỐI, MÔN). Trả true nếu ĐƯỢC.
+     im=true → chỉ trả lời, không mở hộp giải thích (dùng khi lọc danh sách). */
+  function duocPhep(khoi, mon, im){
     if(!CONFIG.KHOA_THEO_KHOI) return true;
     if(isAdmin()) return true;                        // admin xem được hết
-    var k = khoiCuaTep(fileName);
-    if(!k) return true;                               // tệp không gắn với khối nào
-    var ds = dsKhoi();
-    if(!ds.length) ds = ganKhoiLanDau(k);             // lần đầu → gắn theo TKB
-    if(!ds.length) return true;                       // không xác định được → cho qua
-    if(ds.indexOf(k)>=0) return true;
-    showKhoiMismatch(k, ds);
+    var k=String(khoi||'').replace(/\D/g,'').slice(0,1);
+    if(!k) return true;                               // không rõ khối → không chặn
+    var q=quyenHienHanh();
+    if(!Object.keys(q).length) return true;           // không xác định được → cho qua
+    /* Đã trả phí mà chưa chốt phạm vi → chốt đúng MỘT lần (ganQuyenLanDau đặt luôn
+       rec.quyen nên lần gọi sau không vào đây nữa). */
+    if(paid && rec && !rec.quyen){ try{ ganQuyenLanDau(k); quenQuyen(); }catch(e){} }
+    if(thuQuyen(q,k,mon)) return true;
+    if(!im) showKhoiMismatch(k, mon, q);
     return false;
+  }
+  function canDownloadKhoi(fileName, mon){
+    var k=khoiCuaTep(fileName);
+    if(!k) return true;                               // tệp không gắn với khối nào
+    return duocPhep(k, mon||monCuaTep(fileName));
   }
 
   window.BXLIC = {
     canDownload: function(){ return paid===true; },
     needPaid: needPaid,                      // tệp này có đòi bản quyền không?
-    canDownloadKhoi: canDownloadKhoi,        // tệp này có đúng khối của thầy cô không?
+    canDownloadKhoi: canDownloadKhoi,        // tệp này có đúng khối/môn của thầy cô không?
+    duocPhep: duocPhep,                      // (khối, môn, im) — cổng chính, dùng được ở mọi nơi
     khoiCuaTep: khoiCuaTep,
+    monCuaTep: monCuaTep,
     dsKhoi: dsKhoi,
+    dsMon: dsMon,
+    quyenTheoKhoi: docQuyen,                 // {khối:'*'|[môn]} đã gắn cho bản quyền
+    quyenHienHanh: quyenHienHanh,            // quyền đang có hiệu lực (gắn → tự chọn → TKB)
+    quenQuyen: quenQuyen,                    // xoá bộ nhớ tạm — gọi sau khi đổi phạm vi
+    daKhoaQuyen: daKhoaQuyen,                // đã kích hoạt & đã chốt phạm vi?
+    tinhQuyen: tinhQuyen,                    // {khối:[môn]} → quyền (hàm thuần, có kiểm thử)
+    thuQuyen: thuQuyen,                      // (quyền, khối, môn) → bool (hàm thuần)
+    moTaQuyen: moTaQuyen,
     showActivate: showActivate,
     openAdmin: openAdmin,
     isAdmin: isAdmin
