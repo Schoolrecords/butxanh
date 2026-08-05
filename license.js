@@ -638,11 +638,15 @@
     var m = n.match(/^KHGD_mon_(.+?)_[1-5](?:_\d{4}.*)?$/i);
     return m ? canonMon(m[1].replace(/_+/g,' ').trim()) : '';
   }
-  function dsKhoi(){          // các khối CÓ quyền (dùng cho bộ lọc xuất hàng loạt)
-    return Object.keys(docQuyen()).sort();
+  /* Các khối thầy cô có quyền. ⚠️ Phải dựa vào quyenHienHanh() chứ KHÔNG phải
+     docQuyen(): docQuyen chỉ đọc phạm vi đã gắn vào bản quyền trên Firebase, nên
+     thầy cô CHƯA đăng nhập luôn ra rỗng — đã một lần làm màn Kho báo nhầm "chưa có
+     giáo án" trong lúc chờ tải kho. */
+  function dsKhoi(){
+    return Object.keys(quyenHienHanh()).sort();
   }
   function dsMon(khoi){       // '*' = trọn khối · mảng = mấy môn · null = không có quyền
-    var v=docQuyen()[String(khoi||'').replace(/\D/g,'').slice(0,1)];
+    var v=quyenHienHanh()[String(khoi||'').replace(/\D/g,'').slice(0,1)];
     return (v===undefined)?null:v;
   }
   function phanCongGVDay(){   // phân công {khối:[môn]} lấy từ thời khoá biểu

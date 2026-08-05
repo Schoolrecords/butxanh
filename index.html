@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-05 · 11';
+  var PB='2026-08-05 · 12';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -6430,7 +6430,11 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
          ghi "Chưa có giáo án", đọc y như mất dữ liệu. Nay báo ĐANG TẢI và tự vẽ
          lại; quá 4 lượt (~5 giây) mà vẫn trống thì mới báo trống thật. */
       var dsK=[]; try{ if(window.BXLIC&&BXLIC.dsKhoi) dsK=BXLIC.dsKhoi()||[]; }catch(e){}
-      if(_khoChoLan<4){
+      /* Chờ CHỪNG NÀO kho còn đang về — đếm lượt thôi thì không đủ: mạng 3G tải
+         kho vài MB lâu hơn 5 giây là lại hiện nhầm "chưa có giáo án". Sau khi kho
+         đã về vẫn cho thêm 4 lượt vì bộ nhớ tạm danh sách tiết cập nhật trễ ~0,4s. */
+      var chuaVe=dsK.filter(function(k){ return !(window.BX_khoDaCo && window.BX_khoDaCo(k)); });
+      if(chuaVe.length || _khoChoLan<4){
         _khoChoLan++;
         dsK.forEach(function(k){ try{ if(window.BX_ensureKho) window.BX_ensureKho(k); }catch(e){} });
         if(hs) hs.innerHTML='<span class="kh-pill">⏳ Đang tải kho giáo án…</span>';
@@ -7541,7 +7545,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
 <!-- Lớp bản quyền (License) — tách riêng để an toàn, dễ cập nhật.
      ⚠️ Có dấu phiên bản ?v= vì GitHub Pages giữ bản cũ 10 phút — sửa license.js mà
      quên đổi dấu này thì máy thầy cô vẫn chạy bản cũ. (5/8/2026) -->
-<script src="license.js?v=20260805-quyen2"></script>
+<script src="license.js?v=20260805-quyen3"></script>
 
 <!-- ============ MODAL: LỊCH NGHỈ & DẠY BÙ (Phase 2 — con trỏ tiến độ) ============ -->
 <div class="overlay" id="tkbexc-overlay">
