@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-05 · 4';
+  var PB='2026-08-05 · 5';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -2023,6 +2023,7 @@ window.bxMergeKho = function(){
         <div class="hlp-toc">
           <button onclick="helpGo('h-gioithieu')">🌱 Bút Xanh là gì?</button>
           <button onclick="helpGo('h-start')">🚀 Bắt đầu nhanh</button>
+          <button onclick="helpGo('h-ghep')">📦 Ghép giáo án cả tuần</button>
           <button onclick="helpGo('h-login')">🔐 Đăng nhập &amp; Đồng bộ</button>
           <button onclick="helpGo('h-tkb')">📅 Thời khóa biểu</button>
           <button onclick="helpGo('h-lbg')">📆 Lịch báo giảng</button>
@@ -2041,10 +2042,18 @@ window.bxMergeKho = function(){
             <div style="font-size:17px;font-weight:800;color:#0E7A41;line-height:1.45;margin-bottom:9px">
               Nhập thời khóa biểu một lần — Bút Xanh lo trọn cả tuần! 🌱
             </div>
-            <p style="margin:0 0 10px">Thầy cô chỉ cần nhập <b>thời khóa biểu cá nhân</b>, Bút Xanh sẽ tự động tạo <b>Lịch báo giảng</b>, kết nối từng tiết với <b>kế hoạch bài dạy</b> và <b>kho giáo án</b>; đồng thời hỗ trợ tích hợp <b>năng lực số</b>, <b>ứng dụng AI</b>, <b>giáo dục địa phương</b> và cá nhân hóa hoạt động cho từng nhóm học sinh, kể cả <b>học sinh khuyết tật hòa nhập</b>.</p>
+            <p style="margin:0 0 10px">Thầy cô chỉ cần nhập <b>thời khóa biểu của mình</b>. Bút Xanh tự dựng <b>Lịch báo giảng</b>, nối từng tiết với <b>giáo án</b> có sẵn trong Kho, rồi <b>gộp cả tuần thành một tệp Word</b> để in và trình ký.</p>
             <p style="margin:0 0 10px;font-weight:600;color:#15834A">Ít thao tác hơn – hồ sơ gọn hơn – thêm thời gian cho học sinh và gia đình.</p>
             <div style="font-size:16px;font-weight:800;color:#0E7A41;font-style:italic">Bút Xanh — trả lại buổi tối cho thầy cô.</div>
           </div>
+
+          <div style="background:#fffdf5;border:1px solid #f0d089;border-left:4px solid #E8A317;border-radius:12px;padding:15px 16px;margin:0 0 14px">
+            <div style="font-size:15.5px;font-weight:800;color:#8a6410;margin-bottom:8px">⭐ Điều Bút Xanh làm được mà nơi khác chưa làm</div>
+            <p style="margin:0 0 9px">Giáo án thì thầy cô nào cũng đã có sẵn khá nhiều. Cái mất thời gian là <b>ghép chúng lại theo đúng tuần của mình</b>: mở từng tệp, chép từng bài, xếp lại theo thứ – tiết, sửa đầu trang cho khớp lớp, rồi mới in được.</p>
+            <p style="margin:0 0 9px"><b>Bút Xanh làm việc đó thay thầy cô.</b> Vì đã biết thời khóa biểu, app lấy đúng những tiết thầy cô dạy trong tuần — đủ mọi môn, đúng thứ tự — rồi <b>ghép thành MỘT tệp Word duy nhất</b>, mỗi giáo án một trang, đã điền sẵn tên trường, tên thầy cô, lớp, tuần.</p>
+            <p style="margin:0;font-weight:600;color:#8a6410">Một lần bấm thay cho cả buổi tối chép nối thủ công.</p>
+          </div>
+
           <div class="hlp-tip">🤝 <b>Cần hỗ trợ?</b> Bấm nút <b>“Nhóm Zalo hỗ trợ”</b> màu xanh ở góc dưới bên phải màn hình để vào nhóm, hỏi gì cũng được ạ.</div>
         </div>
 
@@ -2059,9 +2068,28 @@ window.bxMergeKho = function(){
           <ul class="hlp-list">
             <li><b>Lịch báo giảng</b> cả tuần, đủ thứ – ngày – tiết – môn – tên bài – đồ dùng.</li>
             <li>Mỗi tiết đã <b>nối sẵn với giáo án</b> trong Kho — bấm vào là xem, sửa, tải Word.</li>
+            <li><b>Giáo án cả tuần gộp một tệp Word</b> — bấm <b>📦 Tạo KHBD Tuần</b> ở Lịch báo giảng.</li>
             <li><b>Bài giảng trình chiếu</b> và <b>KHGD môn học</b> tương ứng của tuần đó.</li>
           </ul>
           <div class="hlp-tip">💡 <b>Chưa muốn nhập gì cả?</b> Cứ mở thẳng <b>📁 Kho giáo án</b> — tải giáo án bất kỳ môn nào, lớp nào về dùng ngay.</div>
+        </div>
+
+        <div class="hlp-sec" id="h-ghep">
+          <h4><span class="hlp-num">📦</span> Ghép giáo án cả tuần thành một tệp Word</h4>
+          <p><b>Để làm gì:</b> đây là việc Bút Xanh làm tốt nhất. Thay vì mở mười mấy tệp giáo án rời rồi chép nối thủ công, thầy cô bấm <b>một lần</b> là có trọn tuần trong một tệp, in ra ký được ngay.</p>
+          <ol class="hlp-steps">
+            <li>Vào <span class="hlp-key">📆 Lịch báo giảng</span>, chọn đúng <b>tuần</b> ở ô đầu trang.</li>
+            <li>Bấm <span class="hlp-key">📦 Tạo KHBD Tuần</span> — app hiện bảng các tiết trong tuần để thầy cô xem trước.</li>
+            <li>Xem qua thấy đúng thì bấm <span class="hlp-key">⬇ Lưu về máy tính</span>.</li>
+          </ol>
+          <p style="margin-top:10px"><b>Tệp Word nhận được:</b></p>
+          <ul class="hlp-list">
+            <li>Gồm <b>đủ các tiết, đủ các môn</b> thầy cô dạy trong tuần, xếp đúng thứ tự thứ – tiết.</li>
+            <li><b>Mỗi giáo án một trang riêng</b>, đúng mẫu Công văn 2345 — in ra là dùng được.</li>
+            <li>Đã điền sẵn <b>trường, tổ, họ tên thầy cô, lớp, tuần, tiết</b> theo hồ sơ ở Cài đặt.</li>
+            <li>Tiết nào thầy cô đã sửa riêng thì lấy <b>bản đã sửa</b>, không lấy bản gốc.</li>
+          </ul>
+          <div class="hlp-tip">💡 <b>Muốn cả tuần của một môn thôi?</b> Vào <b>📁 Kho giáo án</b>, chọn Lớp – Môn – Tuần rồi bấm <b>Tải cả tuần</b>.</div>
         </div>
 
         <div class="hlp-sec" id="h-login">
@@ -2107,7 +2135,7 @@ window.bxMergeKho = function(){
             <li>Nhóm nút <b>✨ AI hỗ trợ</b> giúp: thêm hoạt động · rút gọn · thêm phân hóa · hỗ trợ HS khuyết tật · rà soát · tạo dàn ý PowerPoint.</li>
             <li>Bấm <b>📄 Tải Word</b> để có file in và ký.</li>
           </ul>
-          <div class="hlp-tip">💡 <b>Cần cả tuần một lúc?</b> Sang <b>Lịch báo giảng</b> bấm <b>📦 Tạo KHBD Tuần…</b> — gộp hết các tiết trong tuần thành một file Word duy nhất.</div>
+          <div class="hlp-tip">💡 <b>Cần cả tuần một lúc?</b> Xem mục <b>📦 Ghép giáo án cả tuần</b> ở trên — bấm một lần là có trọn tuần trong một tệp Word.</div>
         </div>
 
         <div class="hlp-sec" id="h-kho">
@@ -2165,8 +2193,9 @@ window.bxMergeKho = function(){
           <div class="hlp-faq"><div class="q">Dùng trên điện thoại được không?</div><div class="a">Được, và app làm ra là để dùng trên điện thoại trước. Mở trình duyệt vào <b>butxanh.net</b> là xong, <b>không phải cài đặt gì cả</b>.</div></div>
           <div class="hlp-faq"><div class="q">Tôi sửa giáo án thì bản gốc có hỏng không?</div><div class="a">Không ạ. Bản sửa là bản riêng của thầy cô. Bản gốc trong Kho luôn còn nguyên, và có nút <b>↩ Bản gốc</b> để lấy lại bất cứ lúc nào.</div></div>
           <div class="hlp-faq"><div class="q">Đổi điện thoại thì dữ liệu còn không?</div><div class="a">Còn, nếu thầy cô đã <b>đăng nhập Google</b> — chỉ cần đăng nhập lại ở máy mới là có đủ. Nếu chưa đăng nhập thì vào <b>⚙️ Cài đặt → Sao lưu</b> tải file dự phòng trước khi đổi máy.</div></div>
-          <div class="hlp-faq"><div class="q">Tôi dạy nhiều lớp / nhiều khối thì sao?</div><div class="a">Dùng được hết ạ. Đổi lớp bằng ô <b>Lớp</b> ở đầu trang, mỗi lớp có lịch và giáo án riêng. Giáo viên bộ môn dạy nhiều khối cũng khai đủ trong thời khóa biểu là app nhận hết.</div></div>
-          <div class="hlp-faq"><div class="q">Bút Xanh có mất phí không?</div><div class="a"><b>Thời khóa biểu và Lịch báo giảng dùng miễn phí.</b> Phần tải giáo án Word, KHGD môn học và tải từ Kho cần bản quyền <b>99.000đ/máy/năm học</b>. Bấm <b>🔓 Kích hoạt bản quyền</b> trong app sẽ hiện mã và hướng dẫn chuyển khoản; xong khoảng 5–30 giây là tự mở khoá.</div></div>
+          <div class="hlp-faq"><div class="q">Tôi dạy nhiều lớp / nhiều khối thì sao?</div><div class="a">Dùng được hết ạ. Đổi lớp bằng ô <b>Lớp</b> ở đầu trang, mỗi lớp có lịch và giáo án riêng. Thầy cô bộ môn (Âm nhạc, Thể dục, Mĩ thuật, Tiếng Anh, Tin học) dạy nhiều khối thì <b>khai đủ các lớp đó trong thời khóa biểu</b> — app nhận hết, và bản quyền cũng tự mở cho đúng những khối ấy.</div></div>
+          <div class="hlp-faq"><div class="q">Bút Xanh có mất phí không?</div><div class="a"><b>Thời khóa biểu và Lịch báo giảng dùng miễn phí</b>, cùng với mẫu trống, danh sách học sinh, thống kê và bài giảng trình chiếu. Phần <b>tải giáo án Word</b> và <b>KHGD môn học</b> cần bản quyền <b>99.000đ/máy/năm học</b>. Bấm <b>🔓 Kích hoạt bản quyền</b> trong app sẽ hiện mã và hướng dẫn chuyển khoản; xong khoảng 5–30 giây là tự mở khoá.</div></div>
+          <div class="hlp-faq"><div class="q">Bản quyền dùng được cho khối lớp nào?</div><div class="a">Cho <b>đúng khối thầy cô đang dạy</b>. Lần tải đầu tiên, app tự xem <b>thời khóa biểu</b> thầy cô đã khai để biết mình dạy khối nào — cô chủ nhiệm lớp 4 thì mở khối 4; thầy cô bộ môn dạy cả năm khối thì mở đủ cả năm. <b>Thầy cô không phải khai báo hay xin phép gì thêm.</b><br>Nếu giữa năm chuyển sang dạy khối khác, hoặc được phân thêm lớp, xin nhắn trong <b>nhóm Zalo</b> để nhóm hỗ trợ mở thêm giúp ạ.</div></div>
           <div class="hlp-faq"><div class="q">Đang dùng mà mất mạng thì sao?</div><div class="a">Thầy cô cứ làm tiếp bình thường, dữ liệu lưu trong máy. Khi có mạng lại app tự đẩy lên đám mây. Chỉ lưu ý: <b>đừng xoá dữ liệu trình duyệt</b> khi chưa đồng bộ xong (chấm cạnh chuông chưa xanh).</div></div>
           <div class="hlp-faq"><div class="q">Tôi làm sai, hỏng hết rồi, cứu được không?</div><div class="a">Được ạ. Giáo án có nút <b>↩ Bản gốc</b>; toàn bộ dữ liệu có <b>⚙️ Cài đặt → Khôi phục</b>; nếu đã đăng nhập thì còn bản trên đám mây nữa. Vướng gì thầy cô cứ hỏi trong nhóm Zalo.</div></div>
           <div class="hlp-tip">🌼 <b>Còn thắc mắc gì, thầy cô bấm nút “Nhóm Zalo hỗ trợ” ở góc dưới bên phải màn hình nhé.</b> Chúc thầy cô có những giờ dạy nhẹ nhàng và hiệu quả!</div>
