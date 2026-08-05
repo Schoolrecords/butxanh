@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-05 · 7';
+  var PB='2026-08-05 · 8';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -2632,7 +2632,11 @@ function hoatdongTableXml(blocks){
 /* Chuẩn hóa chuỗi để so khớp môn (bỏ dấu, đ->d, chỉ giữ chữ-số) */
 function _bxNorm(s){ return String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').replace(/[^a-z0-9]/g,''); }
 /* Dòng tiêu đề con trong YCCD cần tô đậm: "1. Năng lực đặc thù", "2. Năng lực chung", "3. Phẩm chất" */
-function _isYccdHead(s){ return /^\s*\d+\s*[.\)]\s*(năng lực|phẩm chất)/i.test(String(s||'')); }
+/* Dòng TIÊU ĐỀ trong mục I (Yêu cầu cần đạt) → in đậm khi xem và khi xuất Word.
+   5/8/2026: bổ sung "Tích hợp" (2.915 dòng, gồm cả mục ghi mã năng lực số theo
+   Thông tư 02/2025), "Kiến thức", và bắt cả lỗi gõ "Phảm chất" có sẵn trong kho.
+   Trước đó chỉ nhận "năng lực" và "phẩm chất" nên mục 4 hiện nhạt hơn ba mục kia. */
+function _isYccdHead(s){ return /^\s*\d+\s*[.\)]\s*(năng lực|phẩm chất|phảm chất|tích hợp|nội dung tích hợp|kiến thức)/i.test(String(s||'')); }
 /* Một dòng mô tả 1 nhóm HS (cá nhân hóa từ menu "Học sinh cần hỗ trợ") */
 function _bxIVGroupLine(g){
   var head=((g.name||'').trim())||hsTypeLabel(g), meta=[];
