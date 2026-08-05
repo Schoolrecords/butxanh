@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-05 · 9';
+  var PB='2026-08-05 · 10';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1953,7 +1953,7 @@ window.bxMergeKho = function(){
       </div>
       <div class="card set-card">
         <div class="card-head"><h3>Lớp và môn tôi dạy</h3></div>
-        <div class="muted-sm" style="margin-bottom:10px">Bút Xanh chỉ hiện <b>giáo án</b> và <b>Kế hoạch giáo dục môn học</b> của phần thầy cô dạy, cho đỡ rối. Chọn nhầm thì sửa lại ở đây bất cứ lúc nào — cho tới khi kích hoạt bản quyền thì phạm vi được chốt lại.</div>
+        <div class="muted-sm" style="margin-bottom:10px">Bút Xanh chỉ hiện <b>giáo án</b> và <b>Kế hoạch giáo dục môn học</b> của phần thầy cô dạy, cho đỡ rối. Mỗi bản quyền dùng cho <b>một lớp chủ nhiệm</b>, hoặc <b>môn chuyên</b> của thầy cô dạy bộ môn. Chọn nhầm thì sửa lại ở đây bất cứ lúc nào — cho tới khi kích hoạt bản quyền thì phạm vi được chốt lại. Được phân công <b>dạy thêm ở lớp khác</b> thì nhắn nhóm Bút Xanh để mở thêm.</div>
         <div id="bxpv-tomtat" style="padding:10px 12px;background:#f2f7f4;border-radius:10px;font-size:14px;font-weight:600;color:#0b8043">—</div>
         <div style="margin-top:12px"><button class="btn" onclick="BX_moChonPhamVi()">📘 Chọn lớp và môn tôi dạy</button></div>
       </div>
@@ -7289,28 +7289,48 @@ var MON_CHUYEN=['Tiếng Anh','Tin học','Công nghệ','Âm nhạc','Mĩ thu�
 var MON_TATCA=Object.keys(MON_KHOI);
 var KHOI=['1','2','3','4','5'];
 function esc(s){ return (s==null?'':String(s)).replace(/[<>&"]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];}); }
-function monCuaKhoi(k){ return MON_TATCA.filter(function(m){ return MON_KHOI[m].indexOf(String(k))>=0; }); }
+function khoiCuaMon(m){ return (MON_KHOI[m]||'').split(''); }
 
 /* ---------- Lưu / đọc ---------- */
-function docTT(){ try{ var v=JSON.parse(localStorage.getItem(KEY)||'null'); if(v&&typeof v==='object') return v; }catch(e){} return null; }
+/* 🔴 LỖ HỔNG ĐÃ VÁ (5/8/2026, thầy Chung phát hiện ngay khi test): bản đầu có mục
+   "Tôi dạy thêm ở lớp khác" cho chọn "— Tất cả các môn —" và thêm bao nhiêu dòng
+   cũng được → MỘT bản quyền mở được HAI khối trọn vẹn, hai giáo viên dùng chung
+   một bản quyền là xong. Nay thầy cô CHỈ tự chọn được một trong hai:
+     · chủ nhiệm ĐÚNG MỘT khối (trọn môn), hoặc
+     · dạy môn chuyên (tối đa TOI_DA_MON_CHUYEN môn, mở ở các khối có môn ấy).
+   Ca ngoại lệ (chủ nhiệm một lớp + dạy thêm vài môn lớp khác) do NHÓM BÚT XANH mở
+   tay ở trang Quản trị ▸ Sửa quyền — không để thầy cô tự cấp cho mình. */
+var TOI_DA_MON_CHUYEN=2;
+/* Phạm vi tự chọn HỢP LỆ? Nhiều nhất MỘT khối được mở trọn môn. Quyền do quản trị
+   cấp nằm ở Firebase (rec.quyen) và KHÔNG đi qua đây nên không bị siết oan. */
+function hopLe(chuoi){
+  if(!chuoi) return true;
+  var soTron=0, ph=chuoi.split('|');
+  for(var i=0;i<ph.length;i++){ if(ph[i].slice(ph[i].indexOf(':')+1)==='*') soTron++; }
+  return soTron<=1;
+}
+function docTT(){
+  try{ var v=JSON.parse(localStorage.getItem(KEY)||'null');
+    if(v && typeof v==='object'){
+      /* Lựa chọn lưu từ bản có lỗ hổng → bỏ đi, hỏi lại thầy cô cho đúng */
+      if(!hopLe(v.quyen||'')){ localStorage.removeItem(KEY); localStorage.removeItem(KEY_HOAN); return null; }
+      return v;
+    }
+  }catch(e){}
+  return null;
+}
 function luuTT(tt){ try{ localStorage.setItem(KEY, JSON.stringify(tt)); }catch(e){} }
 /* license.js gọi hàm này để lấy phạm vi thầy cô đã chọn (ưu tiên hơn suy từ TKB) */
 window.BX_quyenDaChon=function(){ var tt=docTT(); return (tt&&tt.quyen)||''; };
 
-/* Trạng thái bảng chọn → chuỗi quyền "3:*|1:Đạo đức" */
+/* Trạng thái bảng chọn → chuỗi quyền: "3:*" hoặc "3:Tin học|4:Tin học|5:Tin học" */
 function dungQuyen(tt){
   var q={};
-  function themMon(k,m){ if(q[k]==='*') return; q[k]=(q[k]||[]).concat([m]); }
   if(tt.kieu==='chuyen'){
-    (tt.monChuyen||[]).forEach(function(m){
-      (MON_KHOI[m]||'').split('').forEach(function(k){ themMon(k,m); });
+    (tt.monChuyen||[]).slice(0,TOI_DA_MON_CHUYEN).forEach(function(m){
+      khoiCuaMon(m).forEach(function(k){ q[k]=(q[k]||[]).concat([m]); });
     });
   } else if(tt.khoiCN){ q[tt.khoiCN]='*'; }
-  (tt.them||[]).forEach(function(x){
-    if(!x||!x.khoi) return;
-    if(!x.mon){ q[x.khoi]='*'; return; }             // thêm TRỌN một khối nữa
-    themMon(x.khoi, x.mon);
-  });
   return Object.keys(q).sort().map(function(k){
     var v=q[k];
     if(v==='*') return k+':*';
@@ -7326,18 +7346,21 @@ function moTa(chuoi){
 }
 /* Đã kích hoạt bản quyền và đã gắn phạm vi → chốt, không cho tự đổi nữa */
 function daKhoa(){ try{ return !!(window.BXLIC && BXLIC.daKhoaQuyen && BXLIC.daKhoaQuyen()); }catch(e){ return false; } }
+function HOTLINE(){ try{ if(window.BXLIC && BXLIC.hotline) return BXLIC.hotline(); }catch(e){} return 'nhóm Zalo Bút Xanh'; }
 
-/* Gợi ý sẵn theo thời khoá biểu đã khai, để phần lớn thầy cô chỉ việc bấm Xong */
+/* Gợi ý sẵn theo thời khoá biểu đã khai, để phần lớn thầy cô chỉ việc bấm Xong.
+   Chỉ gợi ý KHỐI DẠY NHIỀU MÔN NHẤT — các khối lẻ (dạy thêm) không tự thêm vào,
+   vì phần đó nay thuộc quyền quản trị. */
 function goiY(){
-  var tt={kieu:'cn', khoiCN:'', monChuyen:[], them:[]};
+  var tt={kieu:'cn', khoiCN:'', monChuyen:[]};
   try{
     var pc=(typeof window.BX_phanCongGVDay==='function')?window.BX_phanCongGVDay():{};
-    var ks=Object.keys(pc).filter(function(k){ return /^[1-5]$/.test(k); });
     var chinh='', nhieuNhat=-1;
-    ks.forEach(function(k){ if((pc[k]||[]).length>nhieuNhat){ nhieuNhat=(pc[k]||[]).length; chinh=k; } });
-    if(chinh){ tt.khoiCN=chinh;
-      ks.forEach(function(k){ if(k!==chinh) (pc[k]||[]).forEach(function(m){ tt.them.push({khoi:k,mon:m}); }); });
-    }
+    Object.keys(pc).forEach(function(k){
+      if(!/^[1-5]$/.test(k)) return;
+      if((pc[k]||[]).length>nhieuNhat){ nhieuNhat=(pc[k]||[]).length; chinh=k; }
+    });
+    if(chinh) tt.khoiCN=chinh;
   }catch(e){}
   if(!tt.khoiCN){ try{ tt.khoiCN=window.BX_khoiHienTai?window.BX_khoiHienTai():'5'; }catch(e){ tt.khoiCN='5'; } }
   return tt;
@@ -7391,25 +7414,16 @@ function ve(){
           (on?'background:#0b8043;color:#fff;border:1px solid #0b8043':'background:#fff;color:#334;border:1px solid #d6e2da')+'">'+
           (on?'✓ ':'')+esc(m)+'</button>';
       }).join('')+'</div>'+
-      '<div style="margin:0 0 10px 26px;font-size:12.5px;color:#5b6b61">Khối được mở tính theo chương trình: Tin học · Công nghệ · Tiếng Anh có từ <b>khối 3</b>; Âm nhạc · Mĩ thuật · Giáo dục thể chất có <b>đủ khối 1–5</b>.</div>';
+      '<div style="margin:0 0 10px 26px;font-size:12.5px;color:#5b6b61">Chọn tối đa <b>'+TOI_DA_MON_CHUYEN+' môn</b>. Khối được mở tính theo chương trình: Tin học · Công nghệ · Tiếng Anh có từ <b>khối 3</b>; Âm nhạc · Mĩ thuật · Giáo dục thể chất có <b>đủ khối 1–5</b>.</div>';
   }
-
-  h+='<div style="border-top:1px dashed #e3e8e5;padding-top:10px;margin-top:6px"><b>Tôi dạy thêm ở lớp khác</b> '+
-     '<span style="color:#5b6b61;font-size:13px">(nếu có)</span></div>';
-  (TT.them||[]).forEach(function(x,i){
-    var dsMon=monCuaKhoi(x.khoi||'1');
-    h+='<div style="display:flex;gap:6px;align-items:center;margin:6px 0">'+
-      '<select onchange="BX_pvThem('+i+',\'khoi\',this.value)" style="padding:6px 8px;border:1px solid #d6e2da;border-radius:8px">'+
-        KHOI.map(function(k){ return '<option value="'+k+'"'+(k===x.khoi?' selected':'')+'>Khối '+k+'</option>'; }).join('')+'</select>'+
-      '<select onchange="BX_pvThem('+i+',\'mon\',this.value)" style="flex:1;padding:6px 8px;border:1px solid #d6e2da;border-radius:8px">'+
-        '<option value="">— Tất cả các môn —</option>'+
-        dsMon.map(function(m){ return '<option'+(m===x.mon?' selected':'')+'>'+esc(m)+'</option>'; }).join('')+'</select>'+
-      '<button type="button" onclick="BX_pvXoa('+i+')" title="Bỏ dòng này" style="border:1px solid #f0c4c9;background:#fdeef0;color:#b00020;border-radius:8px;padding:6px 10px;cursor:pointer">✕</button></div>';
-  });
-  h+='<button type="button" onclick="BX_pvThemDong()" style="margin-top:4px;border:1px dashed #bfe6cf;background:#f4fbf7;color:#0b8043;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:13px">+ Thêm lớp/môn</button>';
 
   h+='<div style="margin-top:14px;padding:10px 12px;background:#eef6ff;border:1px solid #bcdcff;border-radius:10px;font-size:13px;color:#234">'+
      'Thầy/cô sẽ xem và tải được: <b>'+esc(chuoi?moTa(chuoi):'chưa chọn gì')+'</b></div>';
+  /* Ca ngoại lệ do nhóm Bút Xanh mở tay — KHÔNG để thầy cô tự cấp thêm lớp cho mình,
+     nếu không thì một bản quyền dùng chung được cho hai giáo viên. */
+  h+='<div style="margin-top:10px;padding:10px 12px;background:#fff8e6;border:1px solid #ffe2a8;border-radius:10px;font-size:12.5px;color:#7a5b00;line-height:1.6">'+
+     'Thầy/cô <b>chủ nhiệm một lớp mà được phân công dạy thêm vài môn ở lớp khác</b>? '+
+     'Nhắn giúp em qua '+esc(HOTLINE())+' kèm <b>lớp và môn</b> được phân công — nhóm Bút Xanh sẽ mở thêm cho thầy/cô.</div>';
   h+='<div style="font-size:12.5px;color:#5b6b61;margin-top:8px">Chọn nhầm cũng không sao — sửa lại bất cứ lúc nào ở <b>Cài đặt ▸ Lớp và môn tôi dạy</b>, cho tới khi kích hoạt bản quyền.</div>';
   h+='<button onclick="BX_pvXong()" style="display:block;width:100%;margin-top:12px;padding:12px;border:0;border-radius:10px;background:#0b8043;color:#fff;font-size:15px;font-weight:600;cursor:pointer">Xong</button>'+
      '<button onclick="BX_pvDeSau()" style="display:block;width:100%;margin-top:8px;padding:12px;border:0;border-radius:10px;background:#eef3f0;color:#334;font-size:15px;cursor:pointer">Để sau</button>';
@@ -7417,12 +7431,20 @@ function ve(){
   o().innerHTML=h;
 }
 window.BX_pvSet=function(k,v){ TT[k]=v; ve(); };
-window.BX_pvMon=function(m){ var a=TT.monChuyen||(TT.monChuyen=[]); var i=a.indexOf(m); if(i<0) a.push(m); else a.splice(i,1); ve(); };
-window.BX_pvThem=function(i,k,v){ if(TT.them[i]){ TT.them[i][k]=v;
-  if(k==='khoi' && TT.them[i].mon && monCuaKhoi(v).indexOf(TT.them[i].mon)<0) TT.them[i].mon='';  /* khối mới không có môn cũ */
-  ve(); } };
-window.BX_pvThemDong=function(){ (TT.them||(TT.them=[])).push({khoi:'1',mon:''}); ve(); };
-window.BX_pvXoa=function(i){ TT.them.splice(i,1); ve(); };
+window.BX_pvMon=function(m){
+  var a=TT.monChuyen||(TT.monChuyen=[]), i=a.indexOf(m);
+  if(i>=0){ a.splice(i,1); }
+  else {
+    /* Chặn ở đây luôn, không chỉ cắt lúc lưu — thầy cô phải thấy rõ vì sao không
+       tick thêm được, kẻo tưởng nút hỏng. */
+    if(a.length>=TOI_DA_MON_CHUYEN){
+      if(window.bxAlert) bxAlert('Mỗi bản quyền chọn tối đa '+TOI_DA_MON_CHUYEN+' môn chuyên ạ.\n\nThầy/cô dạy nhiều môn hơn thì nhắn '+HOTLINE()+' để nhóm Bút Xanh mở thêm.');
+      return;
+    }
+    a.push(m);
+  }
+  ve();
+};
 window.BX_pvDeSau=function(){ try{ localStorage.setItem(KEY_HOAN,'1'); }catch(e){} dong(); };
 window.BX_pvXong=function(){
   var chuoi=dungQuyen(TT);
@@ -7482,7 +7504,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
 <!-- Lớp bản quyền (License) — tách riêng để an toàn, dễ cập nhật.
      ⚠️ Có dấu phiên bản ?v= vì GitHub Pages giữ bản cũ 10 phút — sửa license.js mà
      quên đổi dấu này thì máy thầy cô vẫn chạy bản cũ. (5/8/2026) -->
-<script src="license.js?v=20260805-quyen"></script>
+<script src="license.js?v=20260805-quyen2"></script>
 
 <!-- ============ MODAL: LỊCH NGHỈ & DẠY BÙ (Phase 2 — con trỏ tiến độ) ============ -->
 <div class="overlay" id="tkbexc-overlay">

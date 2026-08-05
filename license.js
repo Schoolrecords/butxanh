@@ -765,6 +765,7 @@
     quyenHienHanh: quyenHienHanh,            // quyền đang có hiệu lực (gắn → tự chọn → TKB)
     quenQuyen: quenQuyen,                    // xoá bộ nhớ tạm — gọi sau khi đổi phạm vi
     daKhoaQuyen: daKhoaQuyen,                // đã kích hoạt & đã chốt phạm vi?
+    hotline: function(){ return CONFIG.HOTLINE||''; },
     tinhQuyen: tinhQuyen,                    // {khối:[môn]} → quyền (hàm thuần, có kiểm thử)
     thuQuyen: thuQuyen,                      // (quyền, khối, môn) → bool (hàm thuần)
     moTaQuyen: moTaQuyen,
