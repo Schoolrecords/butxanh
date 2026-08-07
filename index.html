@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-05 · 12';
+  var PB='2026-08-07 · 13';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -5458,7 +5458,18 @@ var BX_MAP_PAL=['#cfe8d4','#cfe0f5','#f7e3c4','#e6d6f2','#cdeaf0','#f7d6dc','#dd
 function BX_mapNorm(s){ return String(s==null?'':s).replace(/\s+/g,' ').trim(); }
 function BX_mapSubjects(){ return (window.BX_SUBJECTS&&window.BX_SUBJECTS.length)?window.BX_SUBJECTS:Object.keys(window.BX_KHGD||{}); }
 function BX_mapLastPeriod(rows){ var mx=0; rows.forEach(function(r){ String(r[6]||'').split(/[^0-9]+/).forEach(function(x){ var n=parseInt(x,10); if(n>mx)mx=n; }); }); return mx; }
-function BX_rowPeriods(r){ return String(r[6]||'').split(/[^0-9]+/).filter(Boolean).length || (r[6]?1:0); }
+/* Số tiết của MỘT DÒNG KHDH, đọc từ cột "Tiết KH".
+   Ô ghi khoảng "179-182" là 4 tiết chứ không phải 2 con số — đếm theo khoảng,
+   nếu không thì mọi giáo án gộp từ 3 tiết trở lên đều bị tính thiếu (7/8/2026). */
+function BX_rowPeriods(r){
+  var s=String(r[6]||'').trim(); if(!s) return 0;
+  var m=s.match(/^(\d+)\s*[-–—+]\s*(\d+)$/);
+  if(m){ var a=+m[1], b=+m[2]; if(b>=a) return b-a+1; }
+  return s.split(/[^0-9]+/).filter(Boolean).length || 1;
+}
+/* Màn "KHDH môn học" nằm ở khối script khác nên không thấy hàm khai báo ở đây —
+   đưa ra window để cả hai màn cùng đếm tiết theo một cách. */
+window.BX_rowPeriods=BX_rowPeriods;
 function BX_isReview(name){ return /(ôn tập|kiểm tra|đánh giá)/i.test(BX_mapNorm(name)); }
 function BX_mapTopics(rows){
   var seen={}, order=[];
@@ -6092,7 +6103,10 @@ window.BX_khgdResetRow=function(i){ var E=window.BX_khgdEdit, L=curLop(), s=cur(
 window.renderKHDH=function(){
   var box=document.getElementById('khdh-table'); if(!box) return;
   box.innerHTML=tableHtml(false);
-  var D=data(), tiet=0; D.forEach(function(r){ if(r[6]) tiet++; });
+  /* Đếm TIẾT chứ không đếm DÒNG: một dòng có thể là giáo án gộp nhiều tiết
+     ("Bài 1 – TIẾT 1 - 2: ĐỌC"). Đếm dòng làm Tiếng Việt lớp 2 hiện ra 219 tiết
+     thay vì 350 tiết/năm theo Chương trình GDPT 2018 (thầy Chung phát hiện 7/8/2026). */
+  var D=data(), tiet=0; D.forEach(function(r){ tiet+=BX_rowPeriods(r); });
   var L=window.BX_khgdEdit[curLop()], s=L&&L[cur()], ne=s?Object.keys(s).length:0;
   var info=document.getElementById('khdh-info');
   if(info) info.innerHTML='Môn <b>'+esc(cur())+'</b> · Lớp <b>'+esc(curLop())+'</b> · <b>'+D.length+'</b> dòng / ~'+tiet+' tiết · bám SGK + tích hợp NLS/AI (TT02·CV3456)'+(ne?(' · <b style="color:'+NAVY+'">'+ne+' dòng trường đã chỉnh</b>'):'');
