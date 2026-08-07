@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-07 · 14';
+  var PB='2026-08-08 · 15';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -6415,6 +6415,14 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
     if(opts.indexOf(val)>=0) s.value=String(val);
   }
   function rowOf(L){ return {lop:L.lop,mon:L.mon,bai:L.bai,tuan:L._tuan,tiet:L._tiet,ppct:L._tiet}; }
+  /* ĐẾM TIẾT chứ không đếm BẢN GHI: một bản ghi có thể là giáo án gộp nhiều tiết
+     ("Bài 1 – TIẾT 1 - 2: ĐỌC"). Đếm bản ghi làm Tiếng Việt lớp 2 hiện 219 tiết thay vì
+     339, tuần 1 hiện 7 thay vì 10 (8/8/2026). Dùng chung BX_lessonSpan với màn Lịch báo giảng. */
+  function soTiet(list){
+    var f=window.BX_lessonSpan, n=0;
+    (list||[]).forEach(function(L){ n += f ? f(L) : 1; });
+    return n;
+  }
   function findByKey(key){
     var a=lessons();
     for(var i=0;i<a.length;i++){ if((a[i].lop+'|'+a[i].mon+'|'+a[i]._tuan+'|'+a[i]._tiet)===key) return a[i]; }
@@ -6431,7 +6439,7 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
     if(hs){
       var byMon={}; all.forEach(function(L){byMon[L.mon]=(byMon[L.mon]||0)+1;});
       var weeks=uniq(all.map(function(L){return L._tuan;}).filter(Boolean)).length;
-      hs.innerHTML='<span class="kh-pill">📘 '+all.length+' tiết</span>'
+      hs.innerHTML='<span class="kh-pill">📘 '+soTiet(all)+' tiết</span>'
         +'<span class="kh-pill">📚 '+Object.keys(byMon).length+' môn</span>'
         +'<span class="kh-pill">🗓️ '+weeks+' tuần có giáo án</span>';
     }
@@ -6479,7 +6487,7 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
     var box=document.getElementById('kho-tiet-list'),
         sum=document.getElementById('kho-summary'),
         dl=document.getElementById('kho-dl-week');
-    if(sum) sum.innerHTML = rows.length ? ('Lớp '+ST.lop+' · <b>'+esc(ST.mon)+'</b> · Tuần '+ST.tuan+' — <b>'+rows.length+'</b> tiết') : '';
+    if(sum) sum.innerHTML = rows.length ? ('Lớp '+ST.lop+' · <b>'+esc(ST.mon)+'</b> · Tuần '+ST.tuan+' — <b>'+soTiet(rows)+'</b> tiết') : '';
     if(dl) dl.disabled=!rows.length;
     if(!box) return;
     if(!rows.length){
@@ -7712,6 +7720,21 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     var s=String((L&&L.bai)||'');
     // BỎ DẤU + thường hoá để bắt mọi kiểu "tiết/TIẾT" (kể cả chữ có dấu tổ hợp unicode)
     var sx=(s.normalize?s.normalize('NFD').replace(/[̀-ͯ]/g,''):s).toLowerCase();
+    /* (8/8/2026) Tên bài hay có NHIỀU cụm "tiết": cụm đầu thường là độ dài CẢ BÀI, còn cụm
+       "(Tiết …)" CUỐI CÙNG mới là phần mà BẢN GHI NÀY dạy. Vd:
+         "Bài 24: BẠN NHỎ TRONG NHÀ (Tiết 1+2) – LUYỆN TỪ VÀ CÂU (Tiết 4)" → 1 tiết (không phải 2)
+         "ÔN TẬP … ( 7 tiết) – PHẦN 1: ÔN TẬP (Tiết 3)"                    → 1 tiết (không phải 7)
+       Đọc cụm đầu làm tuần ôn tập cuối kì nở gấp 3,5 lần và Đạo đức lớp 5 lệch 6 tuần cả năm. */
+    var _cum=sx.match(/\(\s*tiet\s*\d+(?:\s*[+,\-–—]\s*\d+)*\s*\)/g);
+    if(_cum&&_cum.length){
+      var _last=_cum[_cum.length-1], _p=_last.match(/\d+/g)||['1'];
+      if(_p.length>1){
+        if(/[+,]/.test(_last)) return _p.length;                    // "(Tiết 1+2)" / "(Tiết 1,2)"
+        var _a=+_p[0], _b=+_p[_p.length-1];                          // "(Tiết 1-2)"
+        if(_b>_a&&_b-_a<=6) return _b-_a+1;
+      }
+      return 1;                                                      // "(Tiết 3)" → đúng 1 tiết
+    }
     // "tiết 1+2(+3)" → đếm số
     var mPlus=sx.match(/tiet\s*(\d+(?:\s*\+\s*\d+)+)/);
     if(mPlus) return Math.max(1,(mPlus[1].match(/\d+/g)||['1']).length);
@@ -7737,12 +7760,56 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     }
     return 1;
   }
-  function _expandLessons(list){
+  /* Màn "Kho giáo án" nằm ở khối script khác nên không thấy hàm này — đưa ra window để
+     cả hai màn cùng ĐẾM TIẾT theo một cách (giống BX_rowPeriods đã làm cho màn KHDH). */
+  window.BX_lessonSpan=_lessonSpan;
+  /* Số tiết THẬT của (lớp, môn, tuần) theo KHDH — nguồn này đã đối chiếu khớp PPCT
+     Chương trình GDPT 2018 ở cả 33 môn/lớp, nên dùng làm TRẦN cho việc nở bài.
+     Trả null nếu KHDH lớp đó chưa nạp (nạp lười) → khi ấy giữ nguyên hành vi cũ. */
+  function _khdhTietTuan(lop,mon,w){
+    try{
+      if(typeof window.BX_rowPeriods!=='function') return null;
+      var lopN=_digits(lop)||_digits(state.klass);
+      var G=(window.BX_KHGD_G&&window.BX_KHGD_G[String(lopN)])||(String(lopN)==='5'?window.BX_KHGD:null);
+      if(!G) return null;
+      var nm=_n(mon), nc=_n((typeof _bxCanonSubject==='function')?(_bxCanonSubject(mon)||mon):mon);
+      var arr=null;
+      Object.keys(G).forEach(function(k){
+        if(arr) return;
+        var kk=_n(k), kc=_n((typeof _bxCanonSubject==='function')?(_bxCanonSubject(k)||k):k);
+        if(kk===nm||kk===nc||kc===nm||kc===nc) arr=G[k];
+      });
+      if(!arr||!arr.length) return null;
+      var t=0, co=false;
+      arr.forEach(function(row){
+        if(!row||!row.length) return;
+        var m=String(row[0]||'').match(/\d+/); if(!m||parseInt(m[0],10)!==parseInt(w,10)) return;
+        co=true; t+=window.BX_rowPeriods(row);
+      });
+      return (co&&t>0)?t:null;
+    }catch(e){ return null; }
+  }
+  function _expandLessons(list,cap){
     var out=[];
     (list||[]).forEach(function(L){
       var sp=_lessonSpan(L), base=parseInt(L.tiet,10)||0;
       for(var k=0;k<sp;k++){ out.push({L:L,part:k+1,parts:sp,ppct:base?(base+k):(L.tiet||'')}); }
     });
+    /* CHẶN TRẦN: tổng ô không được vượt số tiết KHDH của tuần đó. Chỉ cắt phần NỞ THÊM
+       (part>1) từ cuối lên — KHÔNG BAO GIỜ bỏ một bản ghi gốc nào, để không mất bài. */
+    if(cap!=null && out.length>cap){
+      for(var i=out.length-1;i>=0 && out.length>cap;i--){ if(out[i].part>1) out.splice(i,1); }
+      var nhom=[];
+      out.forEach(function(E){
+        var cuoi=nhom[nhom.length-1];
+        if(cuoi&&cuoi.L===E.L) cuoi.n++; else nhom.push({L:E.L,n:1});
+      });
+      out=[];
+      nhom.forEach(function(g){
+        var base=parseInt(g.L.tiet,10)||0;
+        for(var k=0;k<g.n;k++) out.push({L:g.L,part:k+1,parts:g.n,ppct:base?(base+k):(g.L.tiet||'')});
+      });
+    }
     return out;
   }
   // Môn (lop|mon) có bất kỳ bài nào trong Kho cả năm? → phân biệt _nokho (không có môn)
@@ -7779,11 +7846,16 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     targetW=parseInt(targetW,10)||1;
     var exc=loadExc();
     var slots=_sortSlots(loadTKB());
-    var carry={};            // mon|lop -> mảng bài bị lỡ chờ dạy (đẩy sang tuần sau)
+    /* ⚠️ KHOÁ HÀNG ĐỢI phải dùng TÊN LỚP ĐẦY ĐỦ (_n) chứ KHÔNG phải _digits (8/8/2026).
+       Trước đây khoá là _digits(lop) nên "5A" và "5B" cùng ra "5" → hai lớp DÙNG CHUNG một
+       hàng đợi: mỗi ô arr.shift() một bài khác nhau, 5A nhận bài tuần này thì 5B nhận bài
+       tuần sau, và một nửa số ô bị bỏ trống. GV bộ môn dạy nhiều lớp cùng khối hỏng hoàn toàn.
+       LƯU Ý: _digits Ở lessonsForWeek/_subjHasKho là CỐ Ý (để "5A" tra được kho lop:5) — ĐỪNG đổi. */
+    var carry={};            // mon|lopĐầyĐủ -> mảng bài bị lỡ chờ dạy (đẩy sang tuần sau)
     var lwCache={};          // memo: key#pw -> bài đã trải của tuần PPCT đó
     function _newLessons(key,lop,mon,pw){
       var ck=key+'#'+pw; if(lwCache[ck]) return lwCache[ck];
-      var v=_expandLessons(lessonsForWeek(lop,mon,pw)); lwCache[ck]=v; return v;
+      var v=_expandLessons(lessonsForWeek(lop,mon,pw), _khdhTietTuan(lop,mon,pw)); lwCache[ck]=v; return v;
     }
     function _mkRow(s,lop,date,E,opts,khName){
       var L=E&&E.L, bai=L?(L.bai||''):'';
@@ -7820,7 +7892,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
         pendingK[key]=a; return a;
       };
       slots.forEach(function(s){
-        var lop=s.lop||state.klass, key=_n(s.mon)+'|'+_digits(lop);
+        var lop=s.lop||state.klass, key=_n(s.mon)+'|'+_n(lop);
         var arr=_pend(key,lop,s.mon);                 // đảm bảo carry tích luỹ kể cả tuần nghỉ
         var arrK=_pendK(key,lop,s.mon);               // hàng đợi tên bài KHDH (đồng bộ theo ô)
         if(pw===null){ if(isTarget) rows.push({day:s.day,date:_date(s.day),buoi:s.buoi,tiet:s.tiet,mon:s.mon,lop:lop,bai:'🏖️ NGHỈ — '+weekNote,tbdh:'',_gen:true,_nghi:true}); return; }
@@ -7831,7 +7903,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
       });
       if(pw!==null){
         exc.makeup.filter(function(m){return parseInt(m.tuan,10)===w;}).forEach(function(m){
-          var lop=m.lop||state.klass, key=_n(m.mon)+'|'+_digits(lop);
+          var lop=m.lop||state.klass, key=_n(m.mon)+'|'+_n(lop);
           var arr=_pend(key,lop,m.mon), arrK=_pendK(key,lop,m.mon), E=arr.shift(), Ek=arrK.shift();
           if(isTarget) rows.push(_mkRow({day:m.day,buoi:m.buoi||'Chiều',tiet:m.tiet||1,mon:m.mon},lop,_date(m.day),E,{bu:true,note:m.note},Ek));
         });
