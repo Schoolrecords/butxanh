@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-08 · 15';
+  var PB='2026-08-08 · 16';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -3571,6 +3571,8 @@ function loadKHBD(){ try{return JSON.parse(localStorage.getItem('butxanh_khbd')|
    Nay báo rõ một lần (không lặp lại quá 30 giây để khỏi phiền). */
 var _bxLuuLoiTs=0;
 function BX_luu(khoa, chuoi, tenDeHieu){
+  /* Điện thoại ở chế độ xem: nói thật là KHÔNG lưu (đừng để nút hiện "Đã lưu" giả) */
+  if(window.BX_kChan && window.BX_kChan(khoa)){ try{ if(window.BX_baoCheDoXem) BX_baoCheDoXem(); }catch(e){} return false; }
   try{ localStorage.setItem(khoa, chuoi); return true; }
   catch(e){
     var now=Date.now();
@@ -3588,6 +3590,7 @@ function BX_luu(khoa, chuoi, tenDeHieu){
 }
 function persistKHBD(){ return BX_luu('butxanh_khbd', JSON.stringify(state.khbd), 'giáo án đã lưu'); }
 function saveCurrentKHBD(){
+  if(window.BX_kChan && window.BX_kChan('butxanh_khbd')){ try{ if(window.BX_baoCheDoXem) BX_baoCheDoXem(); }catch(e){} return; }
   const l=state.current, content=el('khbd-text').value.trim(); if(!l||!content) return;
   if(l.id){
     const k=state.khbd.find(x=>x.id===l.id);
@@ -4715,6 +4718,7 @@ function exportBackup(){
   const m=el('backup-msg'); if(m){ m.textContent='✓ Đã tải bản sao lưu — hãy cất file ở nơi an toàn (USB, email, đám mây…).'; setTimeout(()=>{ if(m)m.textContent=''; },3500); }
 }
 function applyBackupData(payload){
+  if(window.BX_CHIXEM) throw new Error('Điện thoại đang ở chế độ xem — thầy/cô khôi phục sao lưu trên MÁY TÍNH nhé.');
   const obj=(payload && payload.data && typeof payload.data==='object') ? payload.data : payload;
   if(!obj || typeof obj!=='object') throw new Error('File không hợp lệ.');
   const keys=Object.keys(obj).filter(k=>k.indexOf('butxanh_')===0);
@@ -4755,6 +4759,7 @@ function reloadAllState(){
   showView(active);
 }
 function resetAllData(){
+  if(window.BX_CHIXEM){ try{ if(window.bxAlert) bxAlert('📱 Điện thoại đang ở chế độ xem nên không xoá dữ liệu tại đây được.\n\nThầy/cô thao tác trên MÁY TÍNH nhé.'); }catch(e){} return; }
   bxConfirm('Xoá TOÀN BỘ dữ liệu Bút Xanh trên trình duyệt này (hồ sơ, lịch, KHBD, học sinh, học liệu, tệp kho)? Nên sao lưu trước. KHÔNG thể hoàn tác.',{okText:'Xoá hết',cancelText:'Giữ lại'}).then(function(ok){ if(!ok)return;
     BACKUP_KEYS.forEach(k=>localStorage.removeItem(k));
     const m=el('backup-msg'); if(m) m.textContent='✓ Đã xoá. Đang đưa về mặc định…';
@@ -6814,7 +6819,7 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   };
   /* Khóa đồng bộ — phần chữ (bỏ butxanh_khofiles vì tệp Word nặng, để v2 dùng Storage) */
   var KEYS=['butxanh_profile','butxanh_tkb','butxanh_tkb_exc','butxanh_lbg_weeks','butxanh_lbg_meta','butxanh_khbd','butxanh_khbd_edits','butxanh_hocsinh','butxanh_hoclieu','butxanh_bank'];
-  var KEYSET={}; KEYS.forEach(function(k){ KEYSET[k]=1; });
+  var KEYSET=Object.create(null); KEYS.forEach(function(k){ KEYSET[k]=1; });   // create(null): khỏi dính khoá tên 'constructor'…
   var auth=null, db=null, user=null, busy=false, seeded=false, reloadT=null, curRef=null, lastVals={};
   var dirty=false, hadUser=false, intentionalLogout=false;   // dirty: có thay đổi chưa đẩy lên đám mây
   var dangApDung=false;                                      // đang ghi dữ liệu từ đám mây xuống → đừng coi là người dùng sửa
@@ -6902,6 +6907,7 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   var GHI_TRE=1200;                       // gộp các thao tác liên tiếp thành một lần đẩy
   function markCloudDirty(key, giaTri){
     if(!KEYSET[key] || dangApDung) return;
+    if(window.BX_CHIXEM) return;          // chế độ xem: không bao giờ xếp hàng đẩy lên mây
     var v=(giaTri===undefined)?localStorage.getItem(key):giaTri;   // chỗ ghi đưa sẵn giá trị → khỏi đọc lại vài trăm KB
     if(lastVals[key]===v) return;         // ghi lại y hệt → không tính là thay đổi
     lastVals[key]=v;
@@ -6912,6 +6918,58 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     flushT=setTimeout(function(){ flushT=null; flushDirty(); }, GHI_TRE);
   }
   window.BX_markDirty=markCloudDirty;
+  /* ===== CHẾ ĐỘ XEM TRÊN THIẾT BỊ CẦM TAY (8/8/2026 — Bước 1 kế hoạch 2 thiết bị) =====
+     Chính sách thầy Chung chốt: điện thoại/máy tính bảng là ÁNH XẠ của máy tính — chỉ xem,
+     không ghi ("một máy ghi, nhiều máy đọc"), loại tận gốc lỗi hai máy cùng sửa một mục.
+     Chỉ áp dụng KHI ĐÃ ĐĂNG NHẬP: khách vãng lai thử app trên điện thoại vẫn dùng tự do
+     (dữ liệu của họ chưa đồng bộ nên không đe doạ ai). 100% GV dùng máy tính lên lớp
+     nên chưa cần nút "đổi vai" — sẽ thêm ở Bước 2 cùng bản quyền 2 ngăn thiết bị. */
+  function bxLaCamTay(){
+    var ua=navigator.userAgent||'';
+    if(/Android|iPhone|iPod|IEMobile|Opera Mini|Mobile/i.test(ua)) return true;
+    if(/iPad|Tablet/i.test(ua)) return true;
+    /* iPad đời mới giả dạng máy Mac — nhận ra bằng màn cảm ứng đa điểm */
+    if((navigator.maxTouchPoints||0)>1 && /Mac/i.test(navigator.platform||'')) return true;
+    /* Android bật "Trang web cho máy tính": UA thành Linux x86_64 — nhận ra bằng
+       cảm ứng đa điểm + con trỏ chính là NGÓN TAY (laptop cảm ứng con trỏ chính là chuột) */
+    try{ if((navigator.maxTouchPoints||0)>1 && window.matchMedia && matchMedia('(pointer:coarse)').matches) return true; }catch(e){}
+    return false;
+  }
+  var _bxToastXemTs=0;
+  function bxBaoCheDoXem(){
+    var now=Date.now(); if(now-_bxToastXemTs<30000) return; _bxToastXemTs=now;
+    try{ if(window.bxAlert) bxAlert('📱 Điện thoại đang ở CHẾ ĐỘ XEM.\n\nĐể tránh ghi đè nhầm dữ liệu đã soạn, thầy/cô sửa và lưu trên MÁY TÍNH — điện thoại luôn tự hiện bản mới nhất từ đám mây.'); }catch(e){}
+  }
+  function bxCapNhatCheDoXem(){
+    window.BX_CHIXEM = !!(user && bxLaCamTay());
+    if(window.BX_CHIXEM){ dirty=false; dirtyKeys={}; }   // xoá "nợ đẩy" tích từ lúc chưa dựng cờ — hết cảnh báo rời trang oan
+    try{
+      var b=document.getElementById('bx-chixem-bar');
+      if(window.BX_CHIXEM){
+        if(!b){
+          b=document.createElement('div'); b.id='bx-chixem-bar';
+          b.style.cssText='position:fixed;left:0;right:0;z-index:899;background:#0b8043;color:#fff;font-size:12.5px;line-height:1.45;padding:6px 12px;text-align:center;box-shadow:0 -2px 10px rgba(0,0,0,.16)';
+          b.textContent='📱 Chế độ xem — soạn và sửa trên máy tính. Điện thoại luôn hiện bản mới nhất.';
+          document.body.appendChild(b);
+        }
+        /* đặt ngay TRÊN thanh điều hướng đáy (#mnav) để không che nút; đệm đáy trang để không che mép nội dung */
+        var mn=document.getElementById('mnav'), cao=0;
+        try{ if(mn && getComputedStyle(mn).display!=='none') cao=mn.getBoundingClientRect().height; }catch(e){}
+        b.style.bottom=(cao||0)+'px';
+        try{ document.body.style.setProperty('padding-bottom',(cao+(b.getBoundingClientRect().height||32))+'px'); }catch(e){}
+      } else if(b){ b.remove(); try{ document.body.style.removeProperty('padding-bottom'); }catch(e){} }
+    }catch(e){}
+  }
+  try{
+    window.addEventListener('resize', function(){ if(window.BX_CHIXEM) bxCapNhatCheDoXem(); });
+    window.addEventListener('hashchange', function(){ if(window.BX_CHIXEM) setTimeout(bxCapNhatCheDoXem,60); });   // #mnav ẩn/hiện theo màn
+  }catch(e){}
+  /* Phơi ra cho các khối script khác (BX_luu, sao lưu/khôi phục) khoá nút TƯỜNG MINH
+     thay vì chặn ngầm rồi vẫn báo "Đã lưu". lbg_meta/profile được miễn (trạng thái
+     giao diện tự ghi khi mở app — chặn sẽ bật thông báo oan khi chỉ chuyển tuần để XEM). */
+  var KHOA_MIEN={'butxanh_lbg_meta':1,'butxanh_profile':1};
+  window.BX_baoCheDoXem=bxBaoCheDoXem;
+  window.BX_kChan=function(k){ return !!(window.BX_CHIXEM && KEYSET[String(k)] && !KHOA_MIEN[String(k)]); };
   /* Bắt MỌI đường ghi (kể cả những chỗ gọi thẳng localStorage.setItem).
      Phải vá ở Storage.prototype, KHÔNG gán vào chính localStorage — gán thẳng vào
      đối tượng localStorage sẽ tạo ra một mục dữ liệu tên "setItem". */
@@ -6920,8 +6978,14 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
       var SP=window.Storage&&window.Storage.prototype;
       if(!SP||!SP.setItem||SP.__bxDaVa) return;
       var _set=SP.setItem, _rm=SP.removeItem;
-      SP.setItem=function(k,v){ _set.call(this,k,v); if(this===window.localStorage){ try{ markCloudDirty(String(k), String(v)); }catch(e){} } };
-      SP.removeItem=function(k){ _rm.call(this,k); if(this===window.localStorage){ try{ markCloudDirty(String(k), null); }catch(e){} } };
+      /* Chế độ xem: chặn NGAY TẠI ĐÂY mọi lượt ghi vào các vùng ĐỒNG BỘ (một điểm chặn
+         bắt hết mọi đường lưu). dangApDung=true là mây đang ghi xuống — luôn cho qua. */
+      SP.setItem=function(k,v){
+        if(this===window.localStorage && !dangApDung && window.BX_kChan && window.BX_kChan(k)){ bxBaoCheDoXem(); return; }
+        _set.call(this,k,v); if(this===window.localStorage){ try{ markCloudDirty(String(k), String(v)); }catch(e){} } };
+      SP.removeItem=function(k){
+        if(this===window.localStorage && !dangApDung && window.BX_kChan && window.BX_kChan(k)){ bxBaoCheDoXem(); return; }
+        _rm.call(this,k); if(this===window.localStorage){ try{ markCloudDirty(String(k), null); }catch(e){} } };
       SP.__bxDaVa=true;
     }catch(e){}
   })();
@@ -6953,6 +7017,7 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
 
   // Đẩy NGAY các phần vừa đổi (gọi khi bấm Lưu) — không đợi hết nhịp gộp
   function flushDirty(){
+    if(window.BX_CHIXEM) return;          // chế độ xem: chỉ kéo về, không đẩy đi
     if(!db||!user||!seeded||busy) return;
     var ks=Object.keys(dirtyKeys);
     if(!ks.length){ dirty=false; return; }
@@ -6962,6 +7027,7 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
 
   // Chỉ ghi các phần thay đổi lên đám mây (update nhiều nhánh, một lượt) — tương thích ngược bản đọc cũ
   function pushKeys(keys, laHatGiong){
+    if(window.BX_CHIXEM){ busy=false; setStatus('synced'); return; }   // chế độ xem: không ghi lên mây (kể cả hạt giống); đừng kẹt "đang đồng bộ"
     if(!db||!user||!keys||!keys.length){ return; }
     if(!pushAllowed()){ dirty=true; return; }
     busy=true; setStatus('syncing');
@@ -7067,6 +7133,9 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
       var c=(cts&&cts[k]!=null)?(+cts[k]||0):null;
       var l=(lts[k]!=null)?(+lts[k]||0):null;
       if(c===null&&!coMay) return;                 // hai bên đều trống
+      /* Chế độ gương (điện thoại chỉ xem): mây không có phần này thì thôi —
+         không kéo, không đẩy, khỏi lặp lại mãi ở mọi sự kiện đồng bộ */
+      if(window.BX_CHIXEM && c===null) return;
       if(c===null||l===null||c!==l) ds.push(k);
     });
     return ds;
@@ -7089,6 +7158,16 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
       res.forEach(function(r){
         if(r.loi) return;                                   // tải hỏng → để nhịp sau thử lại
         var lstr=localStorage.getItem(r.k), cstr=r.v;
+        /* CHẾ ĐỘ GƯƠNG (điện thoại chỉ xem): KHÔNG trộn — mây thắng tuyệt đối, mốc thời gian
+           chép y mốc mây để hai bên bằng nhau (hết tải lặp), canDay luôn rỗng (không đẩy).
+           Điện thoại là gương thì phải soi đúng mây, không được "có ý kiến". */
+        if(window.BX_CHIXEM){
+          if(typeof cstr==='string'){
+            if(cstr!==lstr) apDung[r.k]=cstr;
+            tsMoi[r.k]=(cts&&+cts[r.k])||Date.now();
+          }
+          return;
+        }
         var m=window.BX_mergeKey(r.k, lstr, cstr, +lts[r.k]||0, (cts&&+cts[r.k])||0);
         if(!m) return;
         if(m.str!==lstr) apDung[r.k]=m.str;
@@ -7209,6 +7288,8 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   }
   function onAuth(u){
     user=u; renderUI();
+    try{ bxCapNhatCheDoXem(); }catch(e){}
+
     if(u){ hadUser=true; startSync(); startLoop(); }
     else {
       stopSync(); stopLoop(); seeded=false; dirtyKeys={}; dirty=false; setStatus('off');
@@ -7269,6 +7350,7 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     flush:function(){ if(window.__bxFlush) window.__bxFlush(); },
     syncNow:function(){
       var m=document.getElementById('fb-menu'); if(m)m.style.display='none';
+      if(window.BX_CHIXEM){ bxBaoCheDoXem(); return; }
       if(!user||!db) return;
       var ds=KEYS.filter(function(k){ return localStorage.getItem(k)!=null; });
       if(!ds.length) return;
@@ -7278,6 +7360,7 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     },
     restore:function(){
       var mm=document.getElementById('fb-menu'); if(mm)mm.style.display='none';
+      if(window.BX_CHIXEM){ try{ bxAlert('📱 Điện thoại đang ở chế độ xem nên không khôi phục được tại đây.\n\nThầy/cô mở app trên MÁY TÍNH rồi bấm "⟲ Khôi phục bản trước" nhé.'); }catch(e){} return; }
       var arr; try{ arr=JSON.parse(localStorage.getItem('butxanh_sync_bak')||'[]'); }catch(e){ arr=[]; }
       if(!arr||!arr.length){ bxAlert('Chưa có bản sao lưu tự động nào để khôi phục.'); return; }
       var b=arr[0], doRestore=function(){
