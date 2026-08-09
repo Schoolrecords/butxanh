@@ -59,6 +59,12 @@
   function fnv(str){ var h=0x811c9dc5; str=String(str); for(var i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=(h+((h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24)))>>>0; } return h>>>0; }
   function fmtVND(n){ return (n||0).toLocaleString('vi-VN')+'đ'; }
   function fmtDate(ms){ if(!ms) return '—'; try{ return new Date(ms).toLocaleDateString('vi-VN'); }catch(e){ return '—'; } }
+  /* (9/8/2026) Giờ:phút cho cột "Kích hoạt" trang Quản trị — thầy cần biết lúc mấy giờ */
+  function fmtLuc(ms){ if(!ms) return '—'; try{ var d=new Date(ms);
+    return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+' '+('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear();
+  }catch(e){ return '—'; } }
+  /* Bỏ dấu để tìm kiếm không phân biệt hoa thường/dấu ("hoa" ra "Hoà") */
+  function bodau(s){ try{ return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d'); }catch(e){ return String(s||'').toLowerCase(); } }
 
   // Năm học mặc định theo hôm nay (từ tháng 6 tính sang năm học mới)
   function curNamHoc(){ var d=new Date(), y=d.getFullYear(), m=d.getMonth()+1, s=(m>=6)?y:y-1; return s+'-'+(s+1); }
@@ -520,20 +526,24 @@
       var waiting=uids.filter(function(u){ return v[u] && v[u].daYeuCau && !v[u].daTraPhi; });
       var rows=uids.map(function(u){ var r=v[u]||{}; return {uid:u,r:r}; })
         .sort(function(a,b){ return (b.r.yeuCauTs||0)-(a.r.yeuCauTs||0); });
-      var html='<div class="bxlic-note" style="margin:0 0 12px">Chờ xác nhận: <b>'+waiting.length+'</b> · Tổng tài khoản: <b>'+uids.length+'</b>. '+
-        'Bấm <b>Kích hoạt</b> sau khi đã nhận được 99.000đ (đối chiếu Nội dung CK).</div>';
+      var html='<div class="bxlic-note" style="margin:0 0 10px">Chờ xác nhận: <b>'+waiting.length+'</b> · Tổng tài khoản: <b>'+uids.length+'</b>. '+
+        'Bấm <b>Kích hoạt</b> sau khi đã nhận được 99.000đ (đối chiếu Nội dung CK).</div>'+
+        /* (9/8/2026) Ô tìm kiếm — GV gọi điện chỉ cần đọc TÊN hoặc EMAIL, không cần nhớ mã CK */
+        '<input id="bxlic-tim" type="search" placeholder="🔍 Tìm theo tên, email, mã CK…" oninput="BXLIC_timLoc(this.value)" '+
+        'style="width:100%;box-sizing:border-box;margin:0 0 10px;padding:10px 12px;font-size:15px;border:1.5px solid #cfe0d6;border-radius:10px;outline:none">';
       html+='<div style="overflow:auto;max-height:60vh"><table class="bxlic-tbl"><thead><tr>'+
-        '<th>Họ tên / Email</th><th>Mã CK</th><th>Trạng thái</th><th>Năm học</th><th>Hết hạn</th><th>Đổi máy</th><th>Quyền (khối : môn)</th><th>Thao tác</th></tr></thead><tbody>';
+        '<th>Họ tên / Email</th><th>Mã CK</th><th>Trạng thái</th><th>Kích hoạt lúc</th><th>Hết hạn</th><th>Đổi máy</th><th>Quyền (khối : môn)</th><th>Thao tác</th></tr></thead><tbody id="bxlic-admrows">';
       if(!rows.length){ html+='<tr><td colspan="8" style="text-align:center;color:#889;padding:16px">Chưa có tài khoản nào yêu cầu.</td></tr>'; }
       rows.forEach(function(x){
         var r=x.r, ok=!!r.daTraPhi;
-        html+='<tr>'+
+        html+='<tr data-tim="'+esc(bodau((r.hoTen||'')+' '+(r.email||'')+' '+(r.maCK||maCKof(x.uid))+' '+x.uid))+'">'+
           '<td><b>'+esc(r.hoTen||'—')+'</b><br><span style="color:#667;font-size:12px">'+esc(r.email||'')+'</span>'+(r.daYeuCau&&!ok?' <span style="color:#b00020">• chờ</span>':'')+'</td>'+
           '<td><code>'+esc(r.maCK||maCKof(x.uid))+'</code></td>'+
           '<td><span class="bxlic-tag '+(ok?'ok':'no')+'">'+(ok?'Đã trả':'Chưa')+'</span></td>'+
-          '<td>'+esc(r.namHoc||'—')+'</td>'+
+          '<td style="white-space:nowrap">'+(ok?fmtLuc(r.kichHoatTs||r.ngayTra):'—')+'</td>'+
           '<td>'+fmtDate(r.ngayHetHan)+'</td>'+
-          '<td>💻'+(r.soLanDoiMay||0)+'/'+CONFIG.SO_LAN_DOI_MAY_TOI_DA+' 📱'+(r.soLanDoiMayPhu||0)+'/'+CONFIG.SO_LAN_DOI_MAY_PHU_TOI_DA+(r.vaiSoan==='phu'?' 🔁soạn:ĐT':'')+'</td>'+
+          /* Ép SỐ hai trường client-ghi-được — chặn chèn mã vào bảng admin (phản biện 9/8) */
+          '<td>💻'+(Number(r.soLanDoiMay)||0)+'/'+CONFIG.SO_LAN_DOI_MAY_TOI_DA+' 📱'+(Number(r.soLanDoiMayPhu)||0)+'/'+CONFIG.SO_LAN_DOI_MAY_PHU_TOI_DA+(r.vaiSoan==='phu'?' 🔁soạn:ĐT':'')+'</td>'+
           '<td><b>'+esc(r.quyen||(r.khoi?(String(r.khoi).split(/[^1-5]+/).filter(Boolean).map(function(k){return k+':*';}).join('|')):'')||'—')+'</b></td>'+
           '<td style="white-space:nowrap">'+
             '<button class="bxlic-mini" onclick="BXLIC_activate(\''+x.uid+'\')">'+(ok?'Gia hạn':'Kích hoạt')+'</button>'+
@@ -550,6 +560,17 @@
       if(bd) bd.innerHTML='<div class="bxlic-note">Không đọc được danh sách. Kiểm tra Luật (Rules) Realtime Database đã cho phép admin đọc nhánh <b>licenses</b> chưa.<br><small>'+esc((e&&e.message)||'')+'</small></div>';
     });
   }
+  /* Lọc bảng quản trị theo ô tìm kiếm (không phân biệt dấu) */
+  window.BXLIC_timLoc=function(q){
+    var body=document.getElementById('bxlic-admrows'); if(!body) return;
+    var tu=bodau(q).split(/\s+/).filter(Boolean);
+    var trs=body.getElementsByTagName('tr');
+    for(var i=0;i<trs.length;i++){
+      var d=trs[i].getAttribute('data-tim')||'';
+      var hien=tu.every(function(t){ return d.indexOf(t)>=0; });
+      trs[i].style.display=hien?'':'none';
+    }
+  };
   window.BXLIC_activate=function(uid){
     var nh=curNamHoc();
     var upd={};
