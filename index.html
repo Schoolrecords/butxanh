@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-09 · 19';
+  var PB='2026-08-09 · 20';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -2067,6 +2067,7 @@ window.bxMergeKho = function(){
           <button onclick="helpGo('h-start')">🚀 Bắt đầu nhanh</button>
           <button onclick="helpGo('h-ghep')">📦 Ghép giáo án cả tuần</button>
           <button onclick="helpGo('h-login')">🔐 Đăng nhập &amp; Đồng bộ</button>
+          <button onclick="helpGo('h-dienthoai')">📱 Dùng trên điện thoại</button>
           <button onclick="helpGo('h-tkb')">📅 Thời khóa biểu</button>
           <button onclick="helpGo('h-lbg')">📆 Lịch báo giảng</button>
           <button onclick="helpGo('h-khbd')">📄 Kế hoạch bài dạy</button>
@@ -2143,6 +2144,25 @@ window.bxMergeKho = function(){
             <li>Chấm màu cạnh chuông cho biết: <b>xanh</b> = đã lưu xong · <b>vàng</b> = đang lưu · <b>đỏ</b> = mạng trục trặc.</li>
           </ul>
           <div class="hlp-tip">💡 <b>Không đăng nhập vẫn dùng được bình thường</b> — nhưng dữ liệu chỉ nằm trong máy này. Nếu vậy, thỉnh thoảng vào <b>⚙️ Cài đặt → Sao lưu</b> tải file dự phòng cho chắc.</div>
+        </div>
+
+        <div class="hlp-sec" id="h-dienthoai">
+          <h4><span class="hlp-num">📱</span> Dùng trên điện thoại</h4>
+          <p><b>Một bản quyền dùng được trên 2 máy:</b> <b>1 máy tính</b> để soạn và <b>1 điện thoại</b> để mang theo. Hai máy chung một dữ liệu, tự đồng bộ với nhau.</p>
+          <p><b>Điện thoại là “bản chiếu” của máy tính</b> — luôn hiện <b>bản mới nhất</b> thầy cô vừa soạn, và làm được:</p>
+          <ul class="hlp-list">
+            <li><b>Xem</b> lịch báo giảng, giáo án từng tiết, KHGD môn học, bài giảng trình chiếu.</li>
+            <li><b>Tải Word</b> giáo án — tải một tiết hay cả tuần đều được.</li>
+            <li>Tra cứu nhanh ngay trên lớp, hay đưa tổ trưởng xem tại chỗ.</li>
+          </ul>
+          <p><b>Còn soạn và sửa thì làm trên máy tính.</b> Đây là chủ ý, không phải máy hỏng: nếu cả hai máy cùng sửa một tiết, máy lưu sau sẽ <b>đè mất</b> bài máy kia vừa soạn. Để một máy ghi thì dữ liệu của thầy cô không bao giờ mất.</p>
+          <div class="hlp-tip">💡 Nếu bấm sửa trên điện thoại, app sẽ nhắc một câu rồi thôi — <b>không có gì hỏng cả</b>, thầy cô mở máy tính lên sửa là được.</div>
+
+          <div style="background:#fffdf5;border:1px solid #f0d089;border-left:4px solid #E8A317;border-radius:12px;padding:14px 16px;margin:12px 0 0">
+            <div style="font-size:15px;font-weight:800;color:#8a6410;margin-bottom:7px">🛠️ Máy tính hỏng giữa năm thì sao?</div>
+            <p style="margin:0 0 10px">Thầy cô <b>chuyển quyền soạn sang điện thoại</b> để soạn tạm bằng nút dưới đây. Máy tính sẽ chuyển sang chế độ xem; sửa xong máy tính, bấm lại nút này trên máy tính là quyền soạn quay về. Mỗi năm học có <b>2 lượt</b> chuyển.</p>
+            <button type="button" class="btn" onclick="bxDoiVaiTuHelp()" style="background:#0b8043;color:#fff;border:0;border-radius:10px;padding:9px 16px;font-weight:700;cursor:pointer">🔄 Chuyển quyền soạn về máy này</button>
+          </div>
         </div>
 
         <div class="hlp-sec" id="h-tkb">
@@ -2232,7 +2252,7 @@ window.bxMergeKho = function(){
 
         <div class="hlp-sec" id="h-luuy">
           <h4><span class="hlp-num">💡</span> Câu hỏi thầy cô hay gặp</h4>
-          <div class="hlp-faq"><div class="q">Dùng trên điện thoại được không?</div><div class="a">Được, và app làm ra là để dùng trên điện thoại trước. Mở trình duyệt vào <b>butxanh.net</b> là xong, <b>không phải cài đặt gì cả</b>.</div></div>
+          <div class="hlp-faq"><div class="q">Dùng trên điện thoại được không?</div><div class="a">Được ạ. Mở trình duyệt vào <b>butxanh.net</b> là xong, <b>không phải cài đặt gì cả</b>. Trên điện thoại thầy cô <b>xem và tải Word</b> thoải mái; phần <b>soạn và sửa</b> thì làm trên máy tính để hai máy không đè mất bài của nhau. Xem kỹ ở mục <b>📱 Dùng trên điện thoại</b>.</div></div>
           <div class="hlp-faq"><div class="q">Tôi sửa giáo án thì bản gốc có hỏng không?</div><div class="a">Không ạ. Bản sửa là bản riêng của thầy cô. Bản gốc trong Kho luôn còn nguyên, và có nút <b>↩ Bản gốc</b> để lấy lại bất cứ lúc nào.</div></div>
           <div class="hlp-faq"><div class="q">Đổi điện thoại thì dữ liệu còn không?</div><div class="a">Còn, nếu thầy cô đã <b>đăng nhập Google</b> — chỉ cần đăng nhập lại ở máy mới là có đủ. Nếu chưa đăng nhập thì vào <b>⚙️ Cài đặt → Sao lưu</b> tải file dự phòng trước khi đổi máy.</div></div>
           <div class="hlp-faq"><div class="q">Tôi dạy nhiều lớp / nhiều khối thì sao?</div><div class="a">Dùng được hết ạ. Đổi lớp bằng ô <b>Lớp</b> ở đầu trang, mỗi lớp có lịch và giáo án riêng. Thầy cô bộ môn (Âm nhạc, Thể dục, Mĩ thuật, Tiếng Anh, Tin học) dạy nhiều khối thì <b>khai đủ các lớp đó trong thời khóa biểu</b> — app nhận hết, và bản quyền cũng tự mở cho đúng những khối ấy.</div></div>
@@ -2534,6 +2554,18 @@ function openKHBD(idx){
 function closeModal(id){ document.getElementById(id).classList.remove("show"); }
 function openHelp(){ var ov=document.getElementById('help-overlay'); if(ov){ ov.classList.add('show'); var b=ov.querySelector('.hlp-body'); if(b) b.scrollTop=0; } }
 function helpGo(id){ var el=document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); }
+/* (9/8/2026) Van "máy tính hỏng" chuyển từ băng báo dưới màn hình vào Hướng dẫn.
+   Đóng Hướng dẫn trước rồi mới gọi, vì hộp xác nhận của license.js nằm dưới lớp phủ này.
+   Tự nói rõ khi chưa đủ điều kiện — BXLIC_doiVai() im lặng nếu chưa đăng nhập/chưa có bản quyền. */
+function bxDoiVaiTuHelp(){
+  var noi=function(m){ if(window.bxAlert) bxAlert(m); else alert(m); };
+  if(typeof window.BXLIC_doiVai!=='function'){ noi('Thầy/cô đăng nhập và kích hoạt bản quyền trước rồi mới chuyển quyền soạn được ạ.'); return; }
+  var vai=window.BXLIC_laMaySoan;
+  if(vai===null||vai===undefined){ noi('Máy này chưa gắn với bản quyền nào.\n\nThầy/cô đăng nhập Google và kích hoạt bản quyền trước, rồi quay lại nút này ạ.'); return; }
+  if(vai===true){ noi('✓ Máy này đang GIỮ quyền soạn rồi ạ — thầy/cô soạn và sửa bình thường.'); return; }
+  try{ closeModal('help-overlay'); }catch(e){}
+  setTimeout(function(){ try{ window.BXLIC_doiVai(); }catch(e){} }, 120);
+}
 
 async function generateKHBD(){
   const l=state.current; if(!l) return;
@@ -6938,7 +6970,12 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   var _bxToastXemTs=0;
   function bxBaoCheDoXem(){
     var now=Date.now(); if(now-_bxToastXemTs<30000) return; _bxToastXemTs=now;
-    try{ if(window.bxAlert) bxAlert('📱 Điện thoại đang ở CHẾ ĐỘ XEM.\n\nĐể tránh ghi đè nhầm dữ liệu đã soạn, thầy/cô sửa và lưu trên MÁY TÍNH — điện thoại luôn tự hiện bản mới nhất từ đám mây.'); }catch(e){}
+    /* (9/8/2026) Băng báo thường trực trên điện thoại đã bỏ → câu này là lời giải thích
+       chính, nên phải nói luôn đường đi tiếp. Máy tính bị chỉ-xem là ca khác hẳn. */
+    var m = bxLaCamTay()
+      ? '📱 Điện thoại đang ở CHẾ ĐỘ XEM — xem và tải Word thì được, soạn/sửa thì làm trên MÁY TÍNH.\n\nĐể hai máy không đè mất bài của nhau. Điện thoại luôn tự hiện bản mới nhất.\n\n(Máy tính hỏng? Mở ❓ Hướng dẫn → “Dùng trên điện thoại”.)'
+      : '💻 Máy này đang ở CHẾ ĐỘ XEM vì quyền soạn đang ở điện thoại.\n\nBấm “Chuyển quyền soạn về đây” ở băng dưới màn hình để soạn lại trên máy này.';
+    try{ if(window.bxAlert) bxAlert(m); }catch(e){}
   }
   function bxCapNhatCheDoXem(){
     /* (9/8/2026 — Bước 2) VAI SOẠN từ bản quyền được ưu tiên: license.js đặt BXLIC_laMaySoan
@@ -6950,18 +6987,23 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     if(window.BX_CHIXEM){ dirty=false; dirtyKeys={}; }   // xoá "nợ đẩy" tích từ lúc chưa dựng cờ — hết cảnh báo rời trang oan
     try{
       var b=document.getElementById('bx-chixem-bar');
-      if(window.BX_CHIXEM){
+      /* (9/8/2026 — thầy Chung) BỎ BĂNG BÁO trên ĐIỆN THOẠI. Điện thoại chỉ-xem là
+         trạng thái BÌNH THƯỜNG (đúng chính sách "một máy ghi, nhiều máy đọc") nên báo
+         thường trực chỉ làm thầy cô tưởng máy hỏng, lại còn che mất nội dung. Nội dung
+         này chuyển vào ✳ Hướng dẫn → "Dùng trên điện thoại", kèm nút chuyển quyền soạn.
+         Lúc thầy cô thật sự bấm sửa thì bxBaoCheDoXem() vẫn giải thích ngay tại chỗ.
+         GIỮ băng cho MÁY TÍNH bị chỉ-xem: đó là trạng thái BẤT THƯỜNG (quyền soạn đang
+         ở điện thoại) và băng này là đường quay về gần nhất. */
+      var laPC=!bxLaCamTay();
+      if(window.BX_CHIXEM && laPC){
         if(!b){
           b=document.createElement('div'); b.id='bx-chixem-bar';
           b.style.cssText='position:fixed;left:0;right:0;z-index:899;background:#0b8043;color:#fff;font-size:12.5px;line-height:1.45;padding:6px 12px;text-align:center;box-shadow:0 -2px 10px rgba(0,0,0,.16)';
           document.body.appendChild(b);
         }
-        /* nút đổi vai chỉ hiện khi bản quyền cho phép (máy đã gắn + còn lượt) — van máy tính hỏng.
-           Chữ trên băng theo HÌNH THÁI máy này: PC bị chỉ-xem (vai đang ở điện thoại) cần câu khác. */
-        var laPC=!bxLaCamTay();
-        b.innerHTML=(laPC?'💻 Máy này đang ở chế độ xem — quyền soạn đang ở điện thoại.'
-                         :'📱 Chế độ xem — soạn và sửa trên máy tính. Điện thoại luôn hiện bản mới nhất.')+
-          (window.BXLIC_coTheDoiVai?' <button type="button" onclick="try{BXLIC_doiVai()}catch(e){}" style="margin-left:8px;background:#fff;color:#0b8043;border:0;border-radius:8px;padding:2px 9px;font-size:12px;font-weight:700;cursor:pointer">'+(laPC?'Chuyển quyền soạn về đây':'Máy tính hỏng? Soạn ở đây')+'</button>':'');
+        /* nút đổi vai chỉ hiện khi bản quyền cho phép (máy đã gắn + còn lượt) — van máy tính hỏng. */
+        b.innerHTML='💻 Máy này đang ở chế độ xem — quyền soạn đang ở điện thoại.'+
+          (window.BXLIC_coTheDoiVai?' <button type="button" onclick="try{BXLIC_doiVai()}catch(e){}" style="margin-left:8px;background:#fff;color:#0b8043;border:0;border-radius:8px;padding:2px 9px;font-size:12px;font-weight:700;cursor:pointer">Chuyển quyền soạn về đây</button>':'');
         /* đặt ngay TRÊN thanh điều hướng đáy (#mnav) để không che nút; đệm đáy trang để không che mép nội dung */
         var mn=document.getElementById('mnav'), cao=0;
         try{ if(mn && getComputedStyle(mn).display!=='none') cao=mn.getBoundingClientRect().height; }catch(e){}
