@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-08 · 16';
+  var PB='2026-08-09 · 17';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -6941,7 +6941,12 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     try{ if(window.bxAlert) bxAlert('📱 Điện thoại đang ở CHẾ ĐỘ XEM.\n\nĐể tránh ghi đè nhầm dữ liệu đã soạn, thầy/cô sửa và lưu trên MÁY TÍNH — điện thoại luôn tự hiện bản mới nhất từ đám mây.'); }catch(e){}
   }
   function bxCapNhatCheDoXem(){
-    window.BX_CHIXEM = !!(user && bxLaCamTay());
+    /* (9/8/2026 — Bước 2) VAI SOẠN từ bản quyền được ưu tiên: license.js đặt BXLIC_laMaySoan
+       true  = máy này giữ quyền soạn (kể cả điện thoại đã đổi vai)  → KHÔNG chỉ-xem
+       false = máy đã gắn bản quyền nhưng quyền soạn ở máy kia       → chỉ-xem (kể cả máy tính)
+       null  = chưa rõ (chưa trả phí / bản quyền chưa về)            → theo hình thái thiết bị */
+    var vai=window.BXLIC_laMaySoan;
+    window.BX_CHIXEM = !!(user && (vai===true ? false : (vai===false ? true : bxLaCamTay())));
     if(window.BX_CHIXEM){ dirty=false; dirtyKeys={}; }   // xoá "nợ đẩy" tích từ lúc chưa dựng cờ — hết cảnh báo rời trang oan
     try{
       var b=document.getElementById('bx-chixem-bar');
@@ -6949,9 +6954,14 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
         if(!b){
           b=document.createElement('div'); b.id='bx-chixem-bar';
           b.style.cssText='position:fixed;left:0;right:0;z-index:899;background:#0b8043;color:#fff;font-size:12.5px;line-height:1.45;padding:6px 12px;text-align:center;box-shadow:0 -2px 10px rgba(0,0,0,.16)';
-          b.textContent='📱 Chế độ xem — soạn và sửa trên máy tính. Điện thoại luôn hiện bản mới nhất.';
           document.body.appendChild(b);
         }
+        /* nút đổi vai chỉ hiện khi bản quyền cho phép (máy đã gắn + còn lượt) — van máy tính hỏng.
+           Chữ trên băng theo HÌNH THÁI máy này: PC bị chỉ-xem (vai đang ở điện thoại) cần câu khác. */
+        var laPC=!bxLaCamTay();
+        b.innerHTML=(laPC?'💻 Máy này đang ở chế độ xem — quyền soạn đang ở điện thoại.'
+                         :'📱 Chế độ xem — soạn và sửa trên máy tính. Điện thoại luôn hiện bản mới nhất.')+
+          (window.BXLIC_coTheDoiVai?' <button type="button" onclick="try{BXLIC_doiVai()}catch(e){}" style="margin-left:8px;background:#fff;color:#0b8043;border:0;border-radius:8px;padding:2px 9px;font-size:12px;font-weight:700;cursor:pointer">'+(laPC?'Chuyển quyền soạn về đây':'Máy tính hỏng? Soạn ở đây')+'</button>':'');
         /* đặt ngay TRÊN thanh điều hướng đáy (#mnav) để không che nút; đệm đáy trang để không che mép nội dung */
         var mn=document.getElementById('mnav'), cao=0;
         try{ if(mn && getComputedStyle(mn).display!=='none') cao=mn.getBoundingClientRect().height; }catch(e){}
@@ -6968,6 +6978,7 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
      thay vì chặn ngầm rồi vẫn báo "Đã lưu". lbg_meta/profile được miễn (trạng thái
      giao diện tự ghi khi mở app — chặn sẽ bật thông báo oan khi chỉ chuyển tuần để XEM). */
   var KHOA_MIEN={'butxanh_lbg_meta':1,'butxanh_profile':1};
+  window.BX_capNhatCheDoXem=bxCapNhatCheDoXem;   // license.js gọi lại khi biết vai soạn (Bước 2)
   window.BX_baoCheDoXem=bxBaoCheDoXem;
   window.BX_kChan=function(k){ return !!(window.BX_CHIXEM && KEYSET[String(k)] && !KHOA_MIEN[String(k)]); };
   /* Bắt MỌI đường ghi (kể cả những chỗ gọi thẳng localStorage.setItem).
@@ -7650,7 +7661,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
 <!-- Lớp bản quyền (License) — tách riêng để an toàn, dễ cập nhật.
      ⚠️ Có dấu phiên bản ?v= vì GitHub Pages giữ bản cũ 10 phút — sửa license.js mà
      quên đổi dấu này thì máy thầy cô vẫn chạy bản cũ. (5/8/2026) -->
-<script src="license.js?v=20260805-quyen3"></script>
+<script src="license.js?v=20260809-2ngan"></script>
 
 <!-- ============ MODAL: LỊCH NGHỈ & DẠY BÙ (Phase 2 — con trỏ tiến độ) ============ -->
 <div class="overlay" id="tkbexc-overlay">

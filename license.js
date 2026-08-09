@@ -33,7 +33,10 @@
     // Tài khoản QUẢN TRỊ bản quyền (mở được trang "⚙ Quản trị bản quyền" trong app).
     // Ghi nhiều email thì cách nhau bằng dấu phẩy.
     EMAIL_ADMIN: 'chungsongthinh@gmail.com, xebatcheotrt@gmail.com',
-    SO_LAN_DOI_MAY_TOI_DA: 2,                  // đổi máy tối đa / năm học
+    SO_LAN_DOI_MAY_TOI_DA: 2,                  // đổi MÁY TÍNH (ngăn chính) tối đa / năm học
+    /* (9/8/2026 — thầy Chung chốt) Một bản quyền = 1 MÁY TÍNH (soạn) + 1 ĐIỆN THOẠI (xem + tải Word) */
+    SO_LAN_DOI_MAY_PHU_TOI_DA: 4,              // đổi ĐIỆN THOẠI (ngăn phụ) / năm học — nới hơn vì điện thoại đổi/mất thường hơn
+    SO_LAN_DOI_VAI_TOI_DA: 2,                  // đổi VAI SOẠN (máy tính ↔ điện thoại) / năm học — van dự phòng khi máy tính hỏng
     HOTLINE: 'Dự án Bút Xanh (qua nhóm Zalo)', // hiển thị khi hết lượt đổi máy (đổi 3/8/2026 theo lời thầy)
     /* KHOÁ THEO KHỐI LỚP (5/8/2026 — thầy Chung chốt):
        Một bản quyền chỉ tải được giáo án & KHDH của KHỐI thầy cô dạy, không lấy
@@ -72,13 +75,34 @@
     ].join('|');
     return fnv(parts).toString(16);
   }
+  /* (9/8/2026 — Bước 2 kế hoạch 2 thiết bị) MÃ THIẾT BỊ BỀN: chuỗi ngẫu nhiên lưu trong máy,
+     KHÔNG đổi khi trình duyệt cập nhật (vân tay deviceId() ở trên hay trôi vì lẫn userAgent —
+     nguồn của các ca "tự nhiên bị hỏi đổi máy" oan). Vân tay cũ chỉ còn dùng để NHẬN RA
+     máy đã gắn từ trước rồi nâng cấp êm. Khoá 'butxanh_devid' KHÔNG đồng bộ, không nằm trong
+     sao lưu/xoá dữ liệu — sống chết theo trình duyệt (xoá cache = coi như máy mới, tốn lượt). */
+  function devIdBen(){
+    try{
+      var id=localStorage.getItem('butxanh_devid');
+      if(!id){ id='d'+Date.now().toString(36)+Math.random().toString(36).slice(2,10); localStorage.setItem('butxanh_devid', id); }
+      return id;
+    }catch(e){ return 'fp-'+deviceId(); }
+  }
+  /* Cầm tay = điện thoại/máy tính bảng — CÙNG LUẬT với chế độ xem bxLaCamTay trong index.html */
+  function laCamTay(){
+    var ua=navigator.userAgent||'';
+    if(/Android|iPhone|iPod|IEMobile|Opera Mini|Mobile/i.test(ua)) return true;
+    if(/iPad|Tablet/i.test(ua)) return true;
+    if((navigator.maxTouchPoints||0)>1 && /Mac/i.test(navigator.platform||'')) return true;
+    try{ if((navigator.maxTouchPoints||0)>1 && window.matchMedia && matchMedia('(pointer:coarse)').matches) return true; }catch(e){}
+    return false;
+  }
   // Mã chuyển khoản ngắn, ổn định theo tài khoản (để đối soát tự động ở Phần 2)
   function maCKof(uid){ return ('BX'+fnv(uid).toString(36).toUpperCase()).slice(0,8); }
 
   /* ------------------------------------------------------------------ *
    *  TRẠNG THÁI                                                          *
    * ------------------------------------------------------------------ */
-  var auth=null, db=null, user=null, licRef=null, rec=null, dev=deviceId();
+  var auth=null, db=null, user=null, licRef=null, rec=null, dev=deviceId(), devB=devIdBen();
   var paid=false;               // đã trả phí & hợp lệ trên MÁY NÀY
   window.__bxPaid=false;
 
@@ -337,20 +361,53 @@
     }
     var now=Date.now();
     var okPaid = !!(rec && rec.daTraPhi) && (!rec.ngayHetHan || now<=rec.ngayHetHan);
-    if(!okPaid){ setPaid(false, 0); return; }
-
-    // Đã trả phí & còn hạn → kiểm tra thiết bị
-    var bound=rec.device;
-    if(!bound){                                   // chưa gắn máy → gắn máy này (lần đầu)
-      try{ db.ref('licenses/'+user.uid+'/device').set(dev); }catch(e){}
-      setPaid(true, rec.ngayHetHan||hetHanFor(rec.namHoc||curNamHoc())); return;
+    if(!okPaid){
+      window.BXLIC_laMaySoan=null; window.BXLIC_coTheDoiVai=false;
+      try{ if(window.BX_capNhatCheDoXem) window.BX_capNhatCheDoXem(); }catch(e){}
+      setPaid(false, 0); return;
     }
-    if(bound===dev){ setPaid(true, rec.ngayHetHan||hetHanFor(rec.namHoc||curNamHoc())); return; }
 
-    // Máy lạ → khoá, mời đổi máy nếu còn lượt
+    /* Đã trả phí & còn hạn → kiểm tra thiết bị.
+       (9/8/2026 — Bước 2) HAI NGĂN: devices.chinh = MÁY TÍNH (soạn) · devices.phu = ĐIỆN THOẠI
+       (xem + tải Word). Khoá theo MÃ BỀN devIdBen(); trường `device` (vân tay cũ) giữ nguyên
+       làm cầu tương thích cho license.js cũ còn trong bộ đệm máy khác. */
+    var cam=laCamTay();
+    var D=rec.devices||{};
+    var chinhId=(D.chinh&&D.chinh.id)||null, phuId=(D.phu&&D.phu.id)||null;
+    var laChinh=!!(chinhId&&chinhId===devB), laPhu=!!(phuId&&phuId===devB);
+    // Tương thích ngược: máy đã gắn theo vân tay cũ chính là ngăn chính → nâng cấp êm sang mã bền
+    if(!laChinh && !chinhId && rec.device && rec.device===dev){
+      laChinh=true;
+      try{ db.ref('licenses/'+user.uid+'/devices/chinh').set({id:devB, ts:Date.now()}); }catch(e){}
+    }
+    // Vừa kích hoạt, chưa gắn máy nào: MÁY TÍNH đầu tiên mở app thành ngăn chính
+    if(!laChinh && !laPhu && !chinhId && !rec.device && !cam){
+      laChinh=true;
+      try{
+        db.ref('licenses/'+user.uid+'/devices/chinh').set({id:devB, ts:Date.now()});
+        db.ref('licenses/'+user.uid+'/device').set(dev);   // cầu cho bản license.js cũ trong bộ đệm
+      }catch(e){}
+    }
+    // Điện thoại đầu tiên: ngăn phụ còn trống → tự gắn, KHÔNG tốn lượt
+    // (!laChinh: điện thoại từng gắn legacy thời 1-ngăn là máy CHÍNH rồi — đừng chiếm nốt ngăn phụ)
+    if(cam && !laChinh && !laPhu && !phuId){
+      laPhu=true;
+      try{ db.ref('licenses/'+user.uid+'/devices/phu').set({id:devB, ts:Date.now()}); }catch(e){}
+    }
+
+    /* Vai soạn: mặc định ngăn chính; vaiSoan='phu' = thầy cô đã chuyển quyền soạn sang điện thoại
+       (van dự phòng máy tính hỏng). Cờ này chỉ quyết CHẾ ĐỘ XEM (index.html), không đụng trả phí. */
+    var vaiPhu=(rec.vaiSoan==='phu' && !!phuId);   // vai trỏ vào ngăn rỗng (bị sửa tay) → coi như 'chinh', khỏi cảnh không máy nào soạn
+    window.BXLIC_laMaySoan=(laChinh||laPhu)?(vaiPhu?laPhu:laChinh):null;
+    window.BXLIC_coTheDoiVai=!!((laChinh||laPhu)&&((rec.soLanDoiVai||0)<CONFIG.SO_LAN_DOI_VAI_TOI_DA));
+    try{ if(window.BX_capNhatCheDoXem) window.BX_capNhatCheDoXem(); }catch(e){}
+
+    if(laChinh||laPhu){ setPaid(true, rec.ngayHetHan||hetHanFor(rec.namHoc||curNamHoc())); return; }
+
+    // Máy lạ → khoá, mời đổi máy trong đúng NGĂN của nó nếu còn lượt
     setPaid(false, 0);
-    var used=rec.soLanDoiMay||0, left=CONFIG.SO_LAN_DOI_MAY_TOI_DA-used;
-    showDeviceMismatch(left);
+    if(cam){ showDeviceMismatchPhu(CONFIG.SO_LAN_DOI_MAY_PHU_TOI_DA-(rec.soLanDoiMayPhu||0)); }
+    else { showDeviceMismatch(CONFIG.SO_LAN_DOI_MAY_TOI_DA-(rec.soLanDoiMay||0)); }
   }
 
   function showDeviceMismatch(left){
@@ -358,6 +415,7 @@
     var body = left>0
       ? '<p style="font-size:14px;line-height:1.6">Bản quyền của thầy/cô đang gắn với <b>một thiết bị khác</b>. '+
         'Thầy/cô còn <b>'+left+'</b> lượt chuyển sang máy mới trong năm học này.</p>'+
+        '<p style="font-size:12.5px;color:#667;line-height:1.5">Lưu ý: xoá dữ liệu trình duyệt/cache cũng được tính là máy mới.</p>'+
         '<button class="bxlic-btn" onclick="BXLIC_switchDevice()">📲 Dùng bản quyền trên máy này</button>'+
         '<button class="bxlic-btn sec" onclick="BXLIC_close(\'bxlic-dev\')">Để sau</button>'
       : '<p style="font-size:14px;line-height:1.6">Bản quyền đã <b>hết lượt đổi thiết bị</b> trong năm học này. '+
@@ -373,8 +431,55 @@
     var used=rec.soLanDoiMay||0;
     if(used>=CONFIG.SO_LAN_DOI_MAY_TOI_DA){ return; }
     var upd={}; upd['licenses/'+user.uid+'/device']=dev; upd['licenses/'+user.uid+'/soLanDoiMay']=used+1;
+    upd['licenses/'+user.uid+'/devices/chinh']={id:devB, ts:Date.now()};   // (9/8/2026) ghi cả mã bền ngăn chính
     db.ref().update(upd).then(function(){ closeOv('bxlic-dev'); /* listener sẽ tự mở khoá */ })
       .catch(function(){ if(window.bxAlert) bxAlert('Chưa đổi được máy (kiểm tra mạng).'); });
+  };
+  /* (9/8/2026 — Bước 2) Điện thoại lạ trong khi ngăn phụ đã gắn máy khác */
+  function showDeviceMismatchPhu(left){
+    var o=overlay('bxlic-dev');
+    var body = left>0
+      ? '<p style="font-size:14px;line-height:1.6">Bản quyền của thầy/cô đang gắn với <b>một điện thoại khác</b>. '+
+        'Mỗi bản quyền dùng được trên <b>1 máy tính + 1 điện thoại</b>; thầy/cô còn <b>'+left+'</b> lượt đổi điện thoại trong năm học này.</p>'+
+        '<p style="font-size:12.5px;color:#667;line-height:1.5">Lưu ý: xoá dữ liệu trình duyệt/cache cũng được tính là máy mới.</p>'+
+        '<button class="bxlic-btn" onclick="BXLIC_switchDevicePhu()">📲 Dùng bản quyền trên điện thoại này</button>'+
+        '<button class="bxlic-btn sec" onclick="BXLIC_close(\'bxlic-dev\')">Để sau</button>'
+      : '<p style="font-size:14px;line-height:1.6">Bản quyền đã <b>hết lượt đổi điện thoại</b> trong năm học này. '+
+        'Vui lòng liên hệ <b>'+esc(CONFIG.HOTLINE)+'</b> để được hỗ trợ!</p>'+
+        '<button class="bxlic-btn sec" onclick="BXLIC_close(\'bxlic-dev\')">Đã hiểu</button>';
+    o.innerHTML='<div class="bxlic-card"><div class="bxlic-hd"><h3>🔐 Điện thoại mới</h3>'+
+      '<button class="x" onclick="BXLIC_close(\'bxlic-dev\')">×</button></div>'+
+      '<div class="bxlic-bd">'+body+'</div></div>';
+    o.classList.add('on');
+  }
+  window.BXLIC_switchDevicePhu=function(){
+    if(!user||!db||!rec) return;
+    var used=rec.soLanDoiMayPhu||0;
+    if(used>=CONFIG.SO_LAN_DOI_MAY_PHU_TOI_DA){ return; }
+    var upd={}; upd['licenses/'+user.uid+'/devices/phu']={id:devB, ts:Date.now()}; upd['licenses/'+user.uid+'/soLanDoiMayPhu']=used+1;
+    db.ref().update(upd).then(function(){ closeOv('bxlic-dev'); /* listener sẽ tự mở khoá */ })
+      .catch(function(){ if(window.bxAlert) bxAlert('Chưa đổi được điện thoại (kiểm tra mạng).'); });
+  };
+  /* (9/8/2026 — Bước 2) ĐỔI VAI SOẠN về máy này — van dự phòng khi máy tính hỏng giữa năm.
+     Chỉ máy ĐÃ GẮN (chinh hoặc phu) mới đổi được; tốn 1 trong 2 lượt/năm. Chỉ đổi quyền SOẠN
+     (chế độ xem trong index.html), không đụng gì tới trả phí hay khối quyền. */
+  window.BXLIC_doiVai=function(){
+    if(!user||!db||!rec){ return; }
+    var D=rec.devices||{};
+    var laChinh=!!(D.chinh&&D.chinh.id===devB), laPhu=!!(D.phu&&D.phu.id===devB);
+    if(!laChinh&&!laPhu){ if(window.bxAlert) bxAlert('Máy này chưa gắn với bản quyền nên chưa đổi vai được.'); return; }
+    var vaiMoi=laPhu?'phu':'chinh';
+    if((rec.vaiSoan||'chinh')===vaiMoi){ if(window.bxAlert) bxAlert('Máy này đang giữ quyền soạn rồi ạ.'); return; }
+    var used=rec.soLanDoiVai||0;
+    if(used>=CONFIG.SO_LAN_DOI_VAI_TOI_DA){ if(window.bxAlert) bxAlert('Đã hết '+CONFIG.SO_LAN_DOI_VAI_TOI_DA+' lượt đổi vai soạn trong năm học này.\nVui lòng liên hệ '+CONFIG.HOTLINE+' để được hỗ trợ.'); return; }
+    var lam=function(){
+      var upd={}; upd['licenses/'+user.uid+'/vaiSoan']=vaiMoi; upd['licenses/'+user.uid+'/soLanDoiVai']=used+1;
+      db.ref().update(upd)
+        .then(function(){ if(window.bxAlert) bxAlert('✓ Máy này giờ là máy SOẠN.\nMáy còn lại chuyển sang chế độ xem.'); })
+        .catch(function(){ if(window.bxAlert) bxAlert('Chưa đổi được vai (kiểm tra mạng).'); });
+    };
+    if(window.bxConfirm) bxConfirm('Chuyển quyền SOẠN về máy này? Máy còn lại sẽ chỉ xem.\n(Còn '+(CONFIG.SO_LAN_DOI_VAI_TOI_DA-used)+' lượt đổi vai trong năm học)',{okText:'Chuyển'}).then(function(ok){ if(ok) lam(); });
+    else lam();
   };
 
   /* ------------------------------------------------------------------ *
@@ -428,7 +533,7 @@
           '<td><span class="bxlic-tag '+(ok?'ok':'no')+'">'+(ok?'Đã trả':'Chưa')+'</span></td>'+
           '<td>'+esc(r.namHoc||'—')+'</td>'+
           '<td>'+fmtDate(r.ngayHetHan)+'</td>'+
-          '<td>'+(r.soLanDoiMay||0)+'/'+CONFIG.SO_LAN_DOI_MAY_TOI_DA+'</td>'+
+          '<td>💻'+(r.soLanDoiMay||0)+'/'+CONFIG.SO_LAN_DOI_MAY_TOI_DA+' 📱'+(r.soLanDoiMayPhu||0)+'/'+CONFIG.SO_LAN_DOI_MAY_PHU_TOI_DA+(r.vaiSoan==='phu'?' 🔁soạn:ĐT':'')+'</td>'+
           '<td><b>'+esc(r.quyen||(r.khoi?(String(r.khoi).split(/[^1-5]+/).filter(Boolean).map(function(k){return k+':*';}).join('|')):'')||'—')+'</b></td>'+
           '<td style="white-space:nowrap">'+
             '<button class="bxlic-mini" onclick="BXLIC_activate(\''+x.uid+'\')">'+(ok?'Gia hạn':'Kích hoạt')+'</button>'+
@@ -452,12 +557,17 @@
     upd['licenses/'+uid+'/namHoc']=nh;
     upd['licenses/'+uid+'/ngayHetHan']=hetHanFor(nh);
     upd['licenses/'+uid+'/soLanDoiMay']=0;
+    upd['licenses/'+uid+'/soLanDoiMayPhu']=0;
+    upd['licenses/'+uid+'/soLanDoiVai']=0;
     upd['licenses/'+uid+'/daYeuCau']=false;
     upd['licenses/'+uid+'/kichHoatTs']=firebase.database.ServerValue.TIMESTAMP;
     db.ref().update(upd).then(function(){ openAdmin(); }).catch(function(e){ if(window.bxAlert) bxAlert('Lỗi kích hoạt: '+((e&&e.message)||'')); });
   };
   window.BXLIC_resetDevice=function(uid){
+    /* (9/8/2026) Gỡ CẢ HAI NGĂN + vai + mọi lượt — GV gắn lại từ đầu như tài khoản mới kích hoạt */
     var upd={}; upd['licenses/'+uid+'/device']=null; upd['licenses/'+uid+'/soLanDoiMay']=0;
+    upd['licenses/'+uid+'/devices']=null; upd['licenses/'+uid+'/soLanDoiMayPhu']=0;
+    upd['licenses/'+uid+'/vaiSoan']=null; upd['licenses/'+uid+'/soLanDoiVai']=0;
     db.ref().update(upd).then(function(){ openAdmin(); }).catch(function(){});
   };
   /* Đọc chuỗi quyền admin gõ tay. Nhận cả hai lối viết:
