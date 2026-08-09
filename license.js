@@ -818,7 +818,10 @@
     try{ if(user&&db){ var u={};
       u['licenses/'+user.uid+'/quyen']=chuoi;
       u['licenses/'+user.uid+'/khoi']=ks;             // giữ trường cũ cho trang Quản trị
-      db.ref().update(u); } }catch(e){}
+      /* (9/8/2026) PHẢI có .catch: suốt thời gian dài lệnh này bị Luật từ chối ÂM THẦM
+         (rules không mở quyen/khoi cho GV) nên 20/20 bản quyền trả phí không hề được chốt.
+         Rules nay đã mở kiểu "chỉ ghi được khi CHƯA có" — nếu vẫn fail thì phải thấy trong Console. */
+      db.ref().update(u).catch(function(e){ console.warn('[BXLIC] chốt quyền chưa ghi được:', (e&&e.message)||e); }); } }catch(e){}
     if(rec){ rec.quyen=chuoi; rec.khoi=ks; }
     return q;
   }
