@@ -99,6 +99,12 @@
     if(/Android|iPhone|iPod|IEMobile|Opera Mini|Mobile/i.test(ua)) return true;
     if(/iPad|Tablet/i.test(ua)) return true;
     if((navigator.maxTouchPoints||0)>1 && /Mac/i.test(navigator.platform||'')) return true;
+    /* (10/8/2026 — thầy Chung duyệt) Windows LUÔN là MÁY TÍNH. Laptop 2-in-1 gập chế độ
+       tablet có con trỏ chính = ngón tay → nhánh pointer:coarse dưới xếp nhầm "cầm tay":
+       kích hoạt lần đầu lúc đang gập là PC bị gắn vào NGĂN ĐIỆN THOẠI, chỉ-xem không băng
+       báo. Điện thoại/tablet Android-iOS không bao giờ mang UA "Windows NT" nên guard này
+       không phá nhánh nào. PHẢI cùng luật với bxLaCamTay() trong index.html. */
+    if(/Windows NT/i.test(ua)) return false;
     try{ if((navigator.maxTouchPoints||0)>1 && window.matchMedia && matchMedia('(pointer:coarse)').matches) return true; }catch(e){}
     return false;
   }

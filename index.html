@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-10 · 22';
+  var PB='2026-08-10 · 23';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -6962,6 +6962,11 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     if(/iPad|Tablet/i.test(ua)) return true;
     /* iPad đời mới giả dạng máy Mac — nhận ra bằng màn cảm ứng đa điểm */
     if((navigator.maxTouchPoints||0)>1 && /Mac/i.test(navigator.platform||'')) return true;
+    /* (10/8/2026 — thầy Chung duyệt) Windows LUÔN là MÁY TÍNH — laptop 2-in-1 gập chế độ
+       tablet có con trỏ chính = ngón tay, nhánh pointer:coarse dưới xếp nhầm "cầm tay"
+       (rủi ro ghi sổ từ 9/8). ĐT/tablet Android-iOS không mang UA "Windows NT" nên vô hại.
+       PHẢI cùng luật với laCamTay() trong license.js. */
+    if(/Windows NT/i.test(ua)) return false;
     /* Android bật "Trang web cho máy tính": UA thành Linux x86_64 — nhận ra bằng
        cảm ứng đa điểm + con trỏ chính là NGÓN TAY (laptop cảm ứng con trỏ chính là chuột) */
     try{ if((navigator.maxTouchPoints||0)>1 && window.matchMedia && matchMedia('(pointer:coarse)').matches) return true; }catch(e){}
@@ -7703,7 +7708,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
 <!-- Lớp bản quyền (License) — tách riêng để an toàn, dễ cập nhật.
      ⚠️ Có dấu phiên bản ?v= vì GitHub Pages giữ bản cũ 10 phút — sửa license.js mà
      quên đổi dấu này thì máy thầy cô vẫn chạy bản cũ. (5/8/2026) -->
-<script src="license.js?v=20260810-quantri-full"></script>
+<script src="license.js?v=20260810-winpc"></script>
 
 <!-- ============ MODAL: LỊCH NGHỈ & DẠY BÙ (Phase 2 — con trỏ tiến độ) ============ -->
 <div class="overlay" id="tkbexc-overlay">
