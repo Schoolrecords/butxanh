@@ -109,7 +109,18 @@
     return false;
   }
   // Mã chuyển khoản ngắn, ổn định theo tài khoản (để đối soát tự động ở Phần 2)
-  function maCKof(uid){ return ('BX'+fnv(uid).toString(36).toUpperCase()).slice(0,8); }
+  /* (10/8/2026) ĐỆM ĐỦ 6 KÝ TỰ. Trước đây khi fnv(uid) base36 < 6 ký tự (~1,4% tài khoản),
+     mã chỉ có 'BX'+≤5 ký tự → KHÔNG khớp regex /BX[A-Z0-9]{6}/ mà SePay dùng để bóc mã →
+     GV chuyển đủ 99k mà app không tự mở, phải chờ kích hoạt tay. Nay chèn '0' ở ĐẦU cho đủ 6.
+     ⚠️ TƯƠNG THÍCH NGƯỢC: nhóm hash ≥6 ký tự (≈98,6%, gồm cả nhóm bị cắt) GIỮ NGUYÊN mã cũ
+     (vì 'BX'+(≥6 ký tự) rồi slice(0,8) không đổi) → GV đang giữ QR cũ vẫn khớp; chỉ nhóm mã
+     ngắn (vốn đang HỎNG) mới đổi. Số base36 không bao giờ có '0' dẫn đầu nên mã đệm nằm ở
+     "khoảng riêng" (0…), không đụng mã của bất kỳ ai khác. */
+  function maCKof(uid){
+    var h=fnv(uid).toString(36).toUpperCase();
+    while(h.length<6) h='0'+h;
+    return ('BX'+h).slice(0,8);
+  }
 
   /* ------------------------------------------------------------------ *
    *  TRẠNG THÁI                                                          *
