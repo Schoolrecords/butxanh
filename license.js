@@ -153,6 +153,22 @@
       '.bxlic-ov.on{display:flex}',
       '.bxlic-card{background:#fff;border-radius:16px;max-width:440px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 18px 60px rgba(0,0,0,.35);font-family:inherit}',
       '.bxlic-card.wide{max-width:860px}',
+      /* (10/8/2026) Trang Quản trị mở TOÀN MÀN HÌNH — bảng 8 cột chen trong hộp 860px phải
+         cuộn ngang khổ sở; admin rà soát hàng chục tài khoản cần nhìn được nhiều dòng cùng lúc */
+      '.bxlic-ov.fullov{padding:0}',
+      /* min-width:0 bắt buộc: card là con flex của overlay — thiếu nó thì min-width:auto
+         lấy theo bề rộng BẢNG (~850px), card phình quá khổ điện thoại, nút Đóng bị đẩy ra ngoài */
+      '.bxlic-card.full{max-width:none;width:100%;height:100%;max-height:none;min-width:0;border-radius:0;display:flex;flex-direction:column}',
+      '.bxlic-card.full .bxlic-hd{border-radius:0;flex:0 0 auto}',
+      '.bxlic-card.full .bxlic-bd{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}',
+      '.bxlic-tblwrap{flex:1;overflow:auto;min-height:0;border:1px solid #e3e8e5;border-radius:8px}',
+      '.bxlic-hd .dong{flex:0 0 auto;background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.6);color:#fff;border-radius:9px;padding:7px 16px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}',
+      '.bxlic-hd .dong:hover{background:rgba(255,255,255,.28)}',
+      /* Điện thoại: tiêu đề dài phải tự co, không thì đẩy nút Đóng tràn khỏi mép phải */
+      '.bxlic-card.full .bxlic-hd h3{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+      '@media(max-width:640px){.bxlic-card.full .bxlic-hd{padding:12px 12px}.bxlic-card.full .bxlic-bd{padding:12px}}',
+      '.bxlic-tr-cho td{background:#fffbe8}',      /* vàng nhạt: mới đăng ký, CHỜ kích hoạt */
+      '.bxlic-tr-moi td{background:#f0f9f3}',      /* xanh nhạt: vừa kích hoạt trong 3 ngày */
       '.bxlic-hd{background:linear-gradient(135deg,#0f9d58,#0b8043);color:#fff;padding:16px 20px;border-radius:16px 16px 0 0;display:flex;justify-content:space-between;align-items:center}',
       '.bxlic-hd h3{margin:0;font-size:17px}',
       '.bxlic-hd .x{background:transparent;border:0;color:#fff;font-size:24px;line-height:1;cursor:pointer;opacity:.9}',
@@ -517,27 +533,45 @@
    * ------------------------------------------------------------------ */
   function openAdmin(){
     if(!isAdmin()||!db) return;
-    var o=overlay('bxlic-adminov'); o.classList.add('on');
-    o.innerHTML='<div class="bxlic-card wide"><div class="bxlic-hd"><h3>⚙ Quản trị bản quyền Bút Xanh</h3>'+
-      '<button class="x" onclick="BXLIC_close(\'bxlic-adminov\')">×</button></div>'+
+    /* (10/8/2026) Giữ lại chữ đang gõ trong ô tìm — các nút Kích hoạt/Khoá gọi lại
+       openAdmin() để vẽ mới, không giữ thì mỗi thao tác admin lại phải gõ tìm từ đầu */
+    var timCu=''; try{ timCu=(document.getElementById('bxlic-tim')||{}).value||''; }catch(e){}
+    var o=overlay('bxlic-adminov'); o.classList.add('on'); o.classList.add('fullov');
+    o.innerHTML='<div class="bxlic-card full"><div class="bxlic-hd"><h3>⚙ Quản trị bản quyền Bút Xanh</h3>'+
+      '<button class="dong" onclick="BXLIC_close(\'bxlic-adminov\')">✕ Đóng</button></div>'+
       '<div class="bxlic-bd" id="bxlic-admbody"><div style="padding:20px;text-align:center;color:#667">Đang tải danh sách…</div></div></div>';
     db.ref('licenses').once('value').then(function(snap){
       var v=snap.val()||{}, uids=Object.keys(v);
       var waiting=uids.filter(function(u){ return v[u] && v[u].daYeuCau && !v[u].daTraPhi; });
+      /* (10/8/2026 — thầy Chung yêu cầu) Dòng đầu là việc cần rà soát:
+         1) CHỜ XÁC NHẬN (mới đăng ký, chưa kích hoạt) — cần đối chiếu tiền về ngay;
+         2) rồi tới ai có động tĩnh gần nhất (mới kích hoạt / mới yêu cầu). */
       var rows=uids.map(function(u){ var r=v[u]||{}; return {uid:u,r:r}; })
-        .sort(function(a,b){ return (b.r.yeuCauTs||0)-(a.r.yeuCauTs||0); });
+        .sort(function(a,b){
+          var ca=(a.r.daYeuCau&&!a.r.daTraPhi)?1:0, cb=(b.r.daYeuCau&&!b.r.daTraPhi)?1:0;
+          if(ca!==cb) return cb-ca;
+          var ta=Math.max(a.r.yeuCauTs||0,a.r.kichHoatTs||0,a.r.ngayTra||0);
+          var tb=Math.max(b.r.yeuCauTs||0,b.r.kichHoatTs||0,b.r.ngayTra||0);
+          return tb-ta;
+        });
       var html='<div class="bxlic-note" style="margin:0 0 10px">Chờ xác nhận: <b>'+waiting.length+'</b> · Tổng tài khoản: <b>'+uids.length+'</b>. '+
         'Bấm <b>Kích hoạt</b> sau khi đã nhận được 99.000đ (đối chiếu Nội dung CK).</div>'+
         /* (9/8/2026) Ô tìm kiếm — GV gọi điện chỉ cần đọc TÊN hoặc EMAIL, không cần nhớ mã CK */
         '<input id="bxlic-tim" type="search" placeholder="🔍 Tìm theo tên, email, mã CK…" oninput="BXLIC_timLoc(this.value)" '+
         'style="width:100%;box-sizing:border-box;margin:0 0 10px;padding:10px 12px;font-size:15px;border:1.5px solid #cfe0d6;border-radius:10px;outline:none">';
-      html+='<div style="overflow:auto;max-height:60vh"><table class="bxlic-tbl"><thead><tr>'+
+      html+='<div class="bxlic-tblwrap"><table class="bxlic-tbl"><thead><tr>'+
         '<th>Họ tên / Email</th><th>Mã CK</th><th>Trạng thái</th><th>Kích hoạt lúc</th><th>Hết hạn</th><th>Đổi máy</th><th>Quyền (khối : môn)</th><th>Thao tác</th></tr></thead><tbody id="bxlic-admrows">';
       if(!rows.length){ html+='<tr><td colspan="8" style="text-align:center;color:#889;padding:16px">Chưa có tài khoản nào yêu cầu.</td></tr>'; }
+      var MOI_MS=3*24*60*60*1000, nowTs=Date.now();
       rows.forEach(function(x){
         var r=x.r, ok=!!r.daTraPhi;
-        html+='<tr data-tim="'+esc(bodau((r.hoTen||'')+' '+(r.email||'')+' '+(r.maCK||maCKof(x.uid))+' '+x.uid))+'">'+
-          '<td><b>'+esc(r.hoTen||'—')+'</b><br><span style="color:#667;font-size:12px">'+esc(r.email||'')+'</span>'+(r.daYeuCau&&!ok?' <span style="color:#b00020">• chờ</span>':'')+'</td>'+
+        var cho=!!(r.daYeuCau&&!ok);
+        var moi=ok && (nowTs-(r.kichHoatTs||r.ngayTra||0)<MOI_MS);
+        html+='<tr'+(cho?' class="bxlic-tr-cho"':(moi?' class="bxlic-tr-moi"':''))+
+          ' data-tim="'+esc(bodau((r.hoTen||'')+' '+(r.email||'')+' '+(r.maCK||maCKof(x.uid))+' '+x.uid))+'">'+
+          '<td><b>'+esc(r.hoTen||'—')+'</b><br><span style="color:#667;font-size:12px">'+esc(r.email||'')+'</span>'+
+            (cho?' <span style="color:#b00020;font-weight:700">• chờ</span>':'')+
+            (moi?' <span style="color:#0b8043;font-size:11px;font-weight:700">• mới kích hoạt</span>':'')+'</td>'+
           '<td><code>'+esc(r.maCK||maCKof(x.uid))+'</code></td>'+
           '<td><span class="bxlic-tag '+(ok?'ok':'no')+'">'+(ok?'Đã trả':'Chưa')+'</span></td>'+
           '<td style="white-space:nowrap">'+(ok?fmtLuc(r.kichHoatTs||r.ngayTra):'—')+'</td>'+
@@ -555,6 +589,7 @@
       });
       html+='</tbody></table></div>';
       var bd=document.getElementById('bxlic-admbody'); if(bd) bd.innerHTML=html;
+      if(timCu){ var ip=document.getElementById('bxlic-tim'); if(ip){ ip.value=timCu; BXLIC_timLoc(timCu); } }
     }).catch(function(e){
       var bd=document.getElementById('bxlic-admbody');
       if(bd) bd.innerHTML='<div class="bxlic-note">Không đọc được danh sách. Kiểm tra Luật (Rules) Realtime Database đã cho phép admin đọc nhánh <b>licenses</b> chưa.<br><small>'+esc((e&&e.message)||'')+'</small></div>';
