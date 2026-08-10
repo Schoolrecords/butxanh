@@ -929,9 +929,14 @@
     if(!k) return true;                               // không rõ khối → không chặn
     var q=quyenHienHanh();
     if(!Object.keys(q).length) return true;           // không xác định được → cho qua
-    /* Đã trả phí mà chưa chốt phạm vi → chốt đúng MỘT lần (ganQuyenLanDau đặt luôn
-       rec.quyen nên lần gọi sau không vào đây nữa). */
-    if(paid && rec && !rec.quyen){ try{ ganQuyenLanDau(k); quenQuyen(); }catch(e){} }
+    /* (10/8/2026) CHỐT PHẠM VI CHỈ Ở ĐƯỜNG TẢI THẬT (im falsy), KHÔNG chốt khi đang LỌC/XEM
+       danh sách (im=true). Trước đây điều kiện này chạy cả khi lọc kho — mà lọc gọi duocPhep
+       cho TỪNG tiết ngay lúc mở màn Kho, nên GV vừa trả phí chỉ MỞ RA XEM (chưa tải gì) đã bị
+       chốt cứng phạm vi theo thời khoá biểu hiện có; TKB khai thiếu là bị khoá oan, phải nhờ
+       "Sửa quyền". Thiết kế gốc là "gắn khối theo TKB ở LẦN TẢI ĐẦU" — nay khôi phục đúng vậy:
+       chốt xảy ra khi thầy cô thật sự bấm tải, còn lúc lướt xem quyền vẫn "mềm" (đổi được ở
+       bảng "Lớp và môn tôi dạy"). ganQuyenLanDau đặt rec.quyen nên lần tải sau không vào lại. */
+    if(!im && paid && rec && !rec.quyen){ try{ ganQuyenLanDau(k); quenQuyen(); }catch(e){} }
     if(thuQuyen(q,k,mon)) return true;
     if(!im) showKhoiMismatch(k, mon, q);
     return false;
