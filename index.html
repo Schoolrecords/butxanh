@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-10 · 28';
+  var PB='2026-08-10 · 29';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1745,12 +1745,19 @@ window.bxMergeKho = function(){
     /* Điện thoại: cho lưới rộng đủ để đọc trọn tên môn rồi vuốt ngang — trước đây ép vừa
        màn hình nên chữ bị cắt, dễ nhầm "Tiếng Việt" với "Tiếng Anh" (31/7/2026) */
     @media (max-width:760px){ .tkb-grid{font-size:11px;table-layout:auto;min-width:560px} .tkb-grid td.tkb-cell{min-width:88px;padding:3px} .tkb-card{min-height:40px;padding:5px 3px} .tkb-msel{font-size:10.5px} .tkb-grid .tkb-buoi{width:58px;padding:6px 2px} .tkb-bz .nm{font-size:12.5px} .tkb-bz svg{width:24px;height:24px} .tkb-grid .tkb-tiet{width:32px} .tkb-grid .tkb-tiet .tn{width:24px;height:24px;font-size:11px} }
+    /* (10/8/2026) Thanh nút LƯU luôn DÍNH ĐÁY màn — nhiều máy độ phân giải thấp trước đây
+       không thấy nút vì nó nằm dưới lưới, khuất khỏi màn. Sticky bottom giữ nút hiện sẵn dù
+       chưa cuộn; nút không co chữ. Trên điện thoại né thanh điều hướng đáy. */
+    #v-tkb .tkb-savebar{position:sticky;bottom:0;z-index:6;display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:18px;padding:14px 4px 8px;border-top:1px solid #e6efe9;background:#fff;box-shadow:0 -8px 18px rgba(0,0,0,.06)}
+    #v-tkb .tkb-savebar .btn{white-space:nowrap}
+    @media (max-width:760px){ #v-tkb .tkb-savebar{bottom:60px} }
     </style>
     <section class="view" id="v-tkb">
       <div class="page-head">
         <div><h2 class="ph-title">Thời khóa biểu của tôi</h2><div class="ph-sub">Lập <b>TKB</b> mỗi lần — Bút Xanh tự tạo <b>Lịch báo giảng</b> đồng thời <b>Xây dựng Kế hoạch bài dạy</b> theo tuần.</div></div>
         <div class="ph-actions">
           <input type="file" id="tkb-file" accept=".xlsx" style="display:none" onchange="bxTKBupload(this)">
+          <button class="btn-xs" onclick="bxTKBdienMau()">✨ Điền nhanh lịch mẫu</button>
           <button class="btn-xs" onclick="bxTKBdownloadTemplate()">📥 Tải mẫu TKB</button>
           <button class="btn-xs" onclick="document.getElementById('tkb-file').click()">⤴ Đưa TKB lên</button>
           <button class="btn-xs" onclick="bxOpenExc()">📅 Nghỉ lễ<span class="an-mobile"> / dạy bù</span></button>
@@ -1769,7 +1776,7 @@ window.bxMergeKho = function(){
           <span style="font-size:12.5px;color:#8aa093;flex:1;min-width:200px">💡 Chọn môn cho từng ô. Ô để trống = tiết nghỉ. Môn ngoài Kho (GDTC, Mĩ thuật…) sẽ để trống tên bài khi tạo LBG.</span>
         </div>
         <div id="tkb-view-grid" style="overflow-x:auto"></div>
-        <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid #e6efe9;padding-top:16px">
+        <div class="tkb-savebar">
           <button class="btn save" onclick="bxTKBsave()">💾 Lưu thời khóa biểu</button>
           <button class="btn solid" onclick="bxTKBsaveAndGen()">✨ Lưu &amp; tạo LBG tuần này</button>
         </div>
@@ -7837,7 +7844,13 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     var base=(typeof TKB!=='undefined'&&TKB.length)?TKB:(state.schedule||[]);
     return base.map(function(r){ return {day:r.day,buoi:r.buoi||'Sáng',tiet:r.tiet,mon:r.mon,lop:r.lop||state.klass}; });
   }
-  function loadTKB(){ var s=loadTKBraw(); return (s&&s.length)?s:defaultTKB(); }
+  /* (10/8/2026 — thầy Chung) MẶC ĐỊNH ĐỂ TRỐNG cho thầy cô tự nhập lịch THẬT của mình,
+     KHÔNG điền sẵn lịch mẫu. Trước đây chưa nhập thì trả defaultTKB (lịch DEMO đủ mọi môn),
+     làm thầy cô băn khoăn "đây là lịch của ai?" và mất niềm tin. Nay trống → nhập đúng lớp
+     mình → Lịch báo giảng + giáo án nở ra khớp chính lịch đó (khoảnh khắc "đúng bài mình cần").
+     Ai muốn tham khảo nhanh thì bấm nút "✨ Điền nhanh lịch mẫu" (dùng BX_tkbMauKhoi, đã bỏ
+     môn chuyên). defaultTKB giữ lại phòng khi cần, không còn nối vào luồng chính. */
+  function loadTKB(){ var s=loadTKBraw(); return (s&&s.length)?s:[]; }
   function hasUserTKB(){ var s=loadTKBraw(); return !!(s&&s.length); }
   function saveTKB(slots){
     if(window.BX_luu) BX_luu(TKB_KEY, JSON.stringify({slots:slots,updated:new Date().toISOString()}), 'thời khoá biểu');
@@ -8175,7 +8188,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     if(hasUserTKB()){
       s.innerHTML='<div class="notice" style="margin:0;background:#eaf6ef;border-color:#cdeed9;color:#127a45">✓ Thầy cô đã có Thời khóa biểu riêng. Bút Xanh tự tạo Lịch báo giảng theo TKB này mỗi tuần. Chỉnh ở lưới rồi bấm <b>💾 Lưu</b> để cập nhật.</div>';
     } else {
-      s.innerHTML='<div class="notice" style="margin:0;background:#fff7e6;border-color:#f0d9a8;color:#8a5a00">⚑ Đây là bước <b>thiết lập đầu tiên</b> để cá nhân hoá Bút Xanh. Lưới dưới đang gợi ý theo lịch mẫu — thầy cô chỉnh cho đúng lớp mình (hoặc bấm <b>📥 Tải mẫu TKB</b> điền rồi <b>⤴ Đưa TKB lên</b>) rồi bấm <b>💾 Lưu thời khóa biểu</b>.</div>';
+      s.innerHTML='<div class="notice" style="margin:0;background:#fff7e6;border-color:#f0d9a8;color:#8a5a00">⚑ <b>Bước thiết lập đầu tiên:</b> lập Thời khoá biểu ĐÚNG lớp mình để Bút Xanh tạo Lịch báo giảng &amp; giáo án khớp từng tuần. Bấm vào từng ô để <b>chọn môn</b> — vài phút là xong, rồi bấm <b>💾 Lưu thời khóa biểu</b>.<br><span style="color:#9a7b2e">Muốn tham khảo nhanh? Bấm <b>✨ Điền nhanh lịch mẫu</b> rồi sửa lại; hoặc <b>📥 Tải mẫu TKB</b> điền Excel rồi <b>⤴ Đưa TKB lên</b>.</span></div>';
     }
   }
   function monStyle(mon){ var m=(typeof monMeta==='function')?monMeta(mon):null; return m?('background:'+m.cs+';color:'+m.c+';border-color:'+m.cs):''; }
@@ -8216,7 +8229,25 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     if(!mon){ if(idx>=0) _work.splice(idx,1); }
     else if(idx>=0){ _work[idx].mon=mon; if(!_work[idx].lop) _work[idx].lop=_defLop(); }
     else { _work.push({day:day,buoi:buoi,tiet:tiet,mon:mon,lop:_defLop()}); }
-    renderGrid();
+    /* (10/8/2026) Cập nhật CHỈ ô vừa đổi — KHÔNG vẽ lại cả lưới. Trước đây renderGrid() dựng
+       lại toàn bộ innerHTML sau mỗi cú chọn: máy yếu giật, con trỏ VĂNG khỏi ô đang chọn,
+       nhập 25-30 ô rất mệt. Nay giữ nguyên <select> (tiêu điểm ở lại), chỉ đổi màu thẻ và
+       thêm/bớt ô nhập Lớp. Không tìm thấy thẻ thì mới vẽ lại (dự phòng). */
+    var card=(sel.closest)?sel.closest('.tkb-card'):null;
+    if(!card){ renderGrid(); return; }
+    if(mon){
+      card.classList.remove('empty'); card.style.cssText=monStyle(mon);
+      var inp=card.querySelector('.tkb-lop');
+      if(!inp){
+        inp=document.createElement('input'); inp.className='tkb-lop'; inp.placeholder='Lớp';
+        inp.setAttribute('onchange','bxTkbCellLop(this,"'+day+'","'+buoi+'",'+tiet+')');
+        card.appendChild(inp);
+      }
+      var s=_cell(day,buoi,tiet); inp.value=(s&&s.lop)||'';
+    } else {
+      card.classList.add('empty'); card.style.cssText='';
+      var cu=card.querySelector('.tkb-lop'); if(cu) cu.remove();
+    }
   };
   window.bxTkbCellLop=function(inp,day,buoi,tiet){ var s=_cell(day,buoi,tiet); if(s) s.lop=inp.value.trim(); };
   window.bxTkbAddTiet=function(buoi){ _extra[buoi]=(_extra[buoi]||0)+1; renderGrid(); };
@@ -8229,6 +8260,23 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
       var t7=document.getElementById('tkb-thu7'); if(t7) t7.checked=_showThu7;
       renderGrid(); renderStatus();
     });
+  };
+  /* (10/8/2026) Điền nhanh LỊCH MẪU khối đang chọn cho thầy cô THAM KHẢO — không tự áp,
+     chỉ khi thầy cô chủ động bấm. Dùng BX_tkbMauKhoi (đã bỏ môn chuyên). Có nội dung rồi thì hỏi. */
+  window.bxTKBdienMau=function(){
+    var lop=_defLop()||state.klass||'', khoi=String(lop).replace(/\D/g,'').slice(0,1)||'5';
+    if(typeof window.BX_tkbMauKhoi!=='function'){ bxAlert('Chưa nạp được lịch mẫu, thầy/cô thử lại sau giây lát.'); return; }
+    var lam=function(){
+      _work=window.BX_tkbMauKhoi(khoi, lop||(khoi+'A')).map(_clone);
+      _extra={'Sáng':0,'Chiều':0};
+      _showThu7=_work.some(function(s){return s.day==='Thứ 7';});
+      var t7=document.getElementById('tkb-thu7'); if(t7) t7.checked=_showThu7;
+      renderGrid();
+      if(window.bxAlert) bxAlert('✨ Đã điền lịch mẫu khối '+khoi+' (các môn văn hoá của giáo viên chủ nhiệm).\nThầy/cô sửa lại cho ĐÚNG lớp mình rồi bấm 💾 Lưu thời khóa biểu nhé.');
+    };
+    if((_work||[]).some(function(s){return s.mon;}))
+      bxConfirm('Điền đè lịch mẫu khối '+khoi+' lên lưới hiện tại?\nPhần đang nhập trên lưới sẽ bị thay.').then(function(ok){ if(ok) lam(); });
+    else lam();
   };
   function _validSlots(){ return (_work||[]).filter(function(s){ return s.mon; }).map(_clone); }
   window.bxTKBsave=function(){ var sl=_validSlots(); saveTKB(sl); renderStatus(); bxAlert('✓ Đã lưu Thời khóa biểu ('+sl.length+' tiết/tuần).\nTừ giờ Bút Xanh tự tạo Lịch báo giảng theo TKB này khi thầy cô chuyển tuần.'); };
@@ -8466,6 +8514,8 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     });
     return slots;
   }
+  /* Phơi ra để nút "✨ Điền nhanh lịch mẫu" ở màn Thời khoá biểu gọi được (khác khối script) */
+  window.BX_tkbMauKhoi=dungTKB;
 
   function dong(){ var o=document.getElementById('bxwc'); if(o){ o.classList.remove('on','busy'); } }
 
@@ -8499,16 +8549,15 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
         try{ state.klass=lop; state.khoi=khoi; }catch(e){}
         try{ if(typeof applyProfile==='function') applyProfile(p); }catch(e){}
 
-        /* 2) Lưu thời khoá biểu mẫu của khối đó */
-        var slots=dungTKB(khoi,lop);
-        localStorage.setItem('butxanh_tkb',JSON.stringify({slots:slots,updated:new Date().toISOString(),mau:true}));
+        /* 2) (10/8/2026 — thầy Chung) KHÔNG dựng lịch mẫu nữa. Để thầy cô tự nhập Thời khoá
+              biểu THẬT của lớp mình → Lịch báo giảng & giáo án nở ra khớp đúng lịch đó. Chỉ
+              ghi hồ sơ lớp (bước 1) rồi mở thẳng màn Thời khoá biểu (lưới trống, có khung sẵn). */
 
-        /* 3) Nạp kho giáo án của khối rồi mới sinh lịch báo giảng (cần có kho mới ra tên bài) */
+        /* 3) Nạp kho giáo án của khối trước (để khi thầy cô nhập TKB xong, sinh LBG có tên bài ngay) */
         var xong=function(){
           try{ if(typeof syncStaticLabels==='function') syncStaticLabels(); }catch(e){}
           try{ if(typeof window.bxRenderTKBView==='function') window.bxRenderTKBView(); }catch(e){}
-          try{ if(typeof window.bxRegenCurrentWeek==='function') window.bxRegenCurrentWeek(); }catch(e){}
-          try{ if(typeof showView==='function') showView('lich'); }catch(e){}
+          try{ if(typeof showView==='function') showView('tkb'); }catch(e){}   // mở màn TKB để nhập, KHÔNG sinh LBG (chưa có TKB)
           dong();
           try{ hoiTen(khoi); }catch(e){}
         };
@@ -8524,13 +8573,13 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     var p={}; try{ p=JSON.parse(localStorage.getItem('butxanh_profile')||'{}'); }catch(e){}
     var daCoTen=p.name&&p.name.trim()&&p.name.trim()!=='Bút Xanh';
     if(daCoTen||typeof window.BX_confirm!=='function'){
-      if(window.bxAlert) bxAlert('✓ Đã dựng sẵn lịch dạy Lớp '+khoi+' cho thầy/cô.\n\nĐây là LỊCH MẪU theo chương trình — thầy cô bấm "Sửa LBG" hoặc vào Thời khoá biểu để chỉnh cho đúng lớp mình.',{autoClose:8000});
+      if(window.bxAlert) bxAlert('✓ Đã chọn Lớp '+khoi+'.\n\nMời thầy/cô lập Thời khoá biểu đúng lớp mình: bấm vào từng ô để chọn môn — vài phút là xong — rồi bấm 💾 Lưu. Bút Xanh sẽ tạo Lịch báo giảng và giáo án khớp đúng lịch đó.\n\nMuốn nhanh? Bấm "✨ Điền nhanh lịch mẫu" rồi sửa lại cho đúng.',{autoClose:9000});
       return;
     }
     var xung='Cô', ten='';
     BX_confirm({
-      title:'✓ Đã dựng xong lịch dạy Lớp '+khoi,
-      html:'Đây là <b>lịch mẫu theo chương trình</b> — thầy cô chỉnh lại trong Thời khoá biểu lúc nào cũng được.'+
+      title:'✓ Đã chọn Lớp '+khoi,
+      html:'Bước tiếp theo: thầy/cô lập <b>Thời khoá biểu</b> đúng lớp mình (bấm từng ô chọn môn) — Bút Xanh sẽ tạo Lịch báo giảng &amp; giáo án khớp đúng lịch đó.'+
         '<br><br><b>Thầy/cô tên là gì</b> để Bút Xanh xưng hô đúng và ghi tên thật vào lịch báo giảng, hồ sơ in ra?'+
         '<div style="display:flex;gap:8px;margin-top:10px">'+
           '<select id="bxwc-xung" style="border:1px solid #d7ebdf;border-radius:10px;padding:9px 8px;font:inherit;background:#f6fbf8"><option>Cô</option><option>Thầy</option></select>'+
