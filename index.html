@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-10 · 25';
+  var PB='2026-08-10 · 26';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1470,6 +1470,29 @@ window.bxMergeKho = function(){
     </div>
   </div>
 </div>
+<script>/* (10/8/2026) CHỐNG "NÚT MÀN CHÀO ĐƠ" — lưới thứ hai bên cạnh defer Firebase.
+   Các hàm xử lý nút màn chào (BX_chaoChonLop/BX_dongManChao/BX_chaoDangNhap) định nghĩa ở
+   CUỐI trang. Trên máy/mạng chậm, thầy cô có thể bấm TRƯỚC khi phần đó nạp → onclick gọi
+   hàm chưa tồn tại → "đơ" im lặng. Đặt HÀM CẦU ngay đây (đầu trang, sát màn chào): nếu bản
+   thật chưa nạp thì hiện "đang chuẩn bị" và GIỮ Ý ĐỊNH, tự chạy khi sẵn sàng. Bản thật ở
+   cuối trang ghi đè các cầu này (kiểm fn!==cau để biết đã có bản thật). */
+(function(){
+  ['BX_chaoChonLop','BX_dongManChao','BX_chaoDangNhap'].forEach(function(ten){
+    var cau=function(){
+      var fn=window[ten];
+      if(typeof fn==='function' && fn!==cau) return fn.apply(null,arguments);  // bản thật đã có → gọi ngay
+      var args=arguments, n=0, sp=document.getElementById('splash');
+      if(sp) sp.classList.add('dangdung');            // báo đã nhận lệnh, tránh thầy cô bấm lại
+      (function doi(){
+        var f=window[ten];
+        if(typeof f==='function' && f!==cau){ try{ f.apply(null,args); }catch(e){ console.warn('[Màn chào]',e); } return; }
+        if(++n<80) setTimeout(doi,100);               // đợi tối đa ~8s cho phần cuối trang nạp
+      })();
+    };
+    window[ten]=cau;
+  });
+})();
+</script>
 <script>/* Chọn chế độ màn chào NGAY trước khi trang vẽ.
    - Mỗi ngày chỉ giới thiệu đầy đủ 1 lần; các lần mở sau chỉ loé logo rồi vào việc.
    - Thầy cô đã khai thời khoá biểu → hiện nút "Vào Bút Xanh"; chưa khai → hiện hàng chọn lớp.
@@ -6852,10 +6875,14 @@ window.bxConfirm=function(text,opts){ opts=opts||{}; return new Promise(function
 /* Hộp THÔNG BÁO 1 nút (thay alert) — trả về Promise */
 window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm(Object.assign({html:bxEsc(text),single:true,okText:'Đã hiểu'},opts||{}), function(){res(true);}, function(){res(true);}); }); };
 </script>
-<!-- ============ ĐĂNG NHẬP GOOGLE + ĐỒNG BỘ ĐÁM MÂY (Firebase) ============ -->
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<!-- ============ ĐĂNG NHẬP GOOGLE + ĐỒNG BỘ ĐÁM MÂY (Firebase) ============
+     (10/8/2026) defer: 3 tệp gstatic KHÔNG được chặn parser nữa. Trước đây parser dừng ở đây
+     tải xong 3 tệp mới đi tiếp, nên các hàm xử lý NÚT MÀN CHÀO (định nghĩa ở cuối trang) về
+     muộn → thầy cô bấm sớm thì "đơ". defer an toàn vì mọi chỗ dùng `firebase` đều nằm trong
+     init()/FBX/license chạy ở DOMContentLoaded (SAU khi defer đã nạp), không có top-level. -->
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script>
 (function(){
   var CFG={
@@ -8699,10 +8726,20 @@ window.BX_chaoChonLopThat=function(n){
 /* "Tôi đã dùng Bút Xanh rồi" — đóng màn chào rồi mở đăng nhập Google */
 window.BX_chaoDangNhap=function(){
   BX_dongManChao();
-  setTimeout(function(){
-    try{ BX_wcDangNhap(); }
-    catch(e){ try{ if(window.FBX && FBX.login) FBX.login(); }catch(_){} }
-  }, 200);
+  /* (10/8/2026) ĐỢI Firebase sẵn sàng rồi mới đăng nhập. Từ khi 3 tệp Firebase chuyển sang
+     nạp defer, chúng về SAU DOM một nhịp; nếu thầy cô bấm "Tôi đã dùng Bút Xanh" thật sớm thì
+     auth chưa init → đăng nhập rơi im lặng. Đợi tới khi firebase.apps có (init đã chạy), tối
+     đa ~8s thì thử luôn. */
+  var n=0;
+  (function login(){
+    var fbOK=false; try{ fbOK=!!(window.firebase && firebase.apps && firebase.apps.length); }catch(e){}
+    if(fbOK || n>=40){
+      try{ BX_wcDangNhap(); }
+      catch(e){ try{ if(window.FBX && FBX.login) FBX.login(); }catch(_){} }
+      return;
+    }
+    n++; setTimeout(login,200);
+  })();
 };
 </script>
 </body>
