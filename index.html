@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-10 · 24';
+  var PB='2026-08-10 · 25';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -6661,7 +6661,11 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
     var ctx={map:{},list:[],seq:1,did:1};
     for(var k=0;k<srcs.length;k++){var src=srcs[k]; if(ctx.map[src])continue;
       try{ var res=await fetch(src); var ab=await res.arrayBuffer(); var u8=new Uint8Array(ab);
-        var ext=(src.split('?')[0].split('.').pop()||'png').toLowerCase(); if(ext==='jpg')ext='jpeg';
+        /* (10/8/2026) Bóc ĐUÔI ẢNH: ảnh GV DÁN vào bản sửa là data-URI ("data:image/png;base64,…")
+           không có dấu chấm → cách cũ split('.').pop() trả cả chuỗi base64 làm TÊN tệp ảnh trong
+           docx sai → Word báo hỏng. Nay lấy đuôi từ phần mô tả MIME của data-URI. */
+        var _dat=src.match(/^data:image\/([a-z0-9]+)/i);
+        var ext=(_dat?_dat[1]:(src.split('?')[0].split('.').pop()||'png')).toLowerCase(); if(ext==='jpg')ext='jpeg';
         var d=imgDims(u8);
         var o={rId:'rIdImg'+ctx.seq, media:'media/img'+ctx.seq+'.'+ext, ext:ext, data:u8, w:d.w, h:d.h, seq:ctx.seq};
         ctx.map[src]=o; ctx.list.push(o); ctx.seq++;
@@ -6708,7 +6712,10 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
     var relImgs=imgs.map(function(im){return '<Relationship Id="'+im.rId+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="'+im.media+'"/>';}).join('');
     var docRels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'+relImgs+'</Relationships>';
     var exts={};imgs.forEach(function(im){exts[im.ext]=1;});
-    var ctDef=Object.keys(exts).map(function(e){return '<Default Extension="'+e+'" ContentType="'+(e==='png'?'image/png':'image/jpeg')+'"/>';}).join('');
+    /* (10/8/2026) Khai đúng ContentType theo đuôi thật — trước đây mọi đuôi khác png đều bị
+       khai image/jpeg, nên ảnh dán png (data-URI) từng bị gán nhầm định dạng. */
+    var _CT={png:'image/png',jpeg:'image/jpeg',jpg:'image/jpeg',gif:'image/gif',webp:'image/webp',bmp:'image/bmp',tif:'image/tiff',tiff:'image/tiff'};
+    var ctDef=Object.keys(exts).map(function(e){return '<Default Extension="'+e+'" ContentType="'+(_CT[e]||'image/png')+'"/>';}).join('');
     var ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>'+ctDef+'<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>';
     var styles='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/><w:sz w:val="26"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="120" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults></w:styles>';
     var rels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>';
@@ -6723,7 +6730,18 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
     var body=els.map(function(el,i){return (i?pb:'')+a4Body(el,ctx);}).join('');
     return wrapMedia(body,ctx.list);
   }
-  function lessonEl(L,row){var d=document.createElement('div');d.className='a4page';d.style.cssText='position:absolute;left:-99999px;top:0;width:794px';d.innerHTML=window.khoLessonToHtml(L,row||{});document.body.appendChild(d);return d;}
+  /* (10/8/2026) ÁP BẢN SỬA CÁ NHÂN khi dựng trang để tải Word — GIỐNG hệt cửa sổ Xem
+     (KHBD_preview dùng edits[key]). Trước đây lessonEl luôn dựng từ bản GỐC khoLessonToHtml,
+     nên tải "cả tuần" / "tiết này" ra bản gốc dù thầy cô đã Sửa+Lưu — trái lời hứa lúc lưu
+     ("hiển thị & tải Word đều theo bản đã sửa"). editKey/loadEdits nằm cùng khối script này. */
+  function lessonEl(L,row){
+    var d=document.createElement('div');d.className='a4page';
+    d.style.cssText='position:absolute;left:-99999px;top:0;width:794px';
+    var r=row||{}, sua=null;
+    try{ sua=loadEdits()[editKey(L,r)]; }catch(e){}
+    d.innerHTML=(sua!=null)?sua:window.khoLessonToHtml(L,r);
+    document.body.appendChild(d);return d;
+  }
 
   /* ====== API tải Word có ảnh ====== */
   /* Hỏi bản quyền NGAY ĐẦU — đây mới là chỗ việc nặng bắt đầu (dựng DOM từng giáo án,
