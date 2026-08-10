@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-10 · 21';
+  var PB='2026-08-10 · 22';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -7871,6 +7871,23 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
       }
       return 1;                                                      // "(Tiết 3)" → đúng 1 tiết
     }
+    /* (10/8/2026) Nhiều tiết liệt kê bằng ";" (vd "TIẾT 3: VIẾT; TIẾT 4: NÓI; TIẾT 5-6: …")
+       PHẢI xét TRƯỚC các nhánh đơn lẻ bên dưới: trước đây nhánh mRange đứng trên bắt trúng
+       cụm "tiết 5 – 6" giữa chừng → trả 2 thay vì 4 (bẫy ghi trong biên bản rà soát 8/8;
+       kho hiện tại thoát nạn nhờ cụm "(Tiết …)" cuối tên, nhưng nạp giáo án MỚI sẽ dính).
+       Cần ÍT NHẤT 2 cụm "tiết …" thì mới coi là kiểu liệt kê; mỗi cụm cộng đủ số tiết của nó
+       (cả dạng khoảng "5-6" lẫn dạng cộng "1+2"). */
+    if(sx.indexOf(';')>=0){
+      var occ=sx.match(/tiet\s*\d+(?:\s*[+,]\s*\d+)*(?:\s*[-–—]\s*\d+)?/g);
+      if(occ&&occ.length>=2){
+        var tot=0; occ.forEach(function(o){
+          var mm=o.match(/(\d+)\s*[-–—]\s*(\d+)/);
+          if(mm&&+mm[2]>+mm[1]&&+mm[2]-+mm[1]<=6){ tot+=(+mm[2]-+mm[1]+1); return; }
+          tot+=(o.match(/\d+/g)||['1']).length;                      // "tiết 1+2" trong chuỗi ";" = 2 tiết
+        });
+        if(tot>=2&&tot<=12) return tot;
+      }
+    }
     // "tiết 1+2(+3)" → đếm số
     var mPlus=sx.match(/tiet\s*(\d+(?:\s*\+\s*\d+)+)/);
     if(mPlus) return Math.max(1,(mPlus[1].match(/\d+/g)||['1']).length);
@@ -7886,14 +7903,6 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     // "(4 tiết)" / "(02 tiết)" → N tiết
     var mN=sx.match(/\(\s*(\d+)\s*tiet\s*\)/);
     if(mN){ var n=+mN[1]; if(n>=1&&n<=8) return n; }
-    // nhiều tiết liệt kê bằng ";" (vd "TIẾT 3: VIẾT; TIẾT 4: NÓI; TIẾT 5-6: ...")
-    if(sx.indexOf(';')>=0){
-      var occ=sx.match(/tiet\s*\d+(?:\s*[-–—]\s*\d+)?/g);
-      if(occ&&occ.length>=2){
-        var tot=0; occ.forEach(function(o){ var mm=o.match(/(\d+)\s*[-–—]\s*(\d+)/); tot+=(mm&&+mm[2]>+mm[1]&&+mm[2]-+mm[1]<=6)?(+mm[2]-+mm[1]+1):1; });
-        if(tot>=2&&tot<=12) return tot;
-      }
-    }
     return 1;
   }
   /* Màn "Kho giáo án" nằm ở khối script khác nên không thấy hàm này — đưa ra window để
