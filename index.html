@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-10 · 31';
+  var PB='2026-08-14 · 32';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1738,13 +1738,28 @@ window.bxMergeKho = function(){
     .tkb-card.empty{background:#fcfdfc;border:1px dashed #d3ddd6}
     .tkb-card.empty:hover{border-color:#9fc7af;background:#f7fbf8;box-shadow:none;filter:none}
     .tkb-msel{appearance:none;-webkit-appearance:none;border:none;background:transparent;width:100%;text-align:center;text-align-last:center;font-weight:700;font-size:12.5px;color:inherit;cursor:pointer;padding:0;outline:none}
-    .tkb-card.empty .tkb-msel{color:#b7c3bb;font-weight:500}
+    /* (14/8/2026) DANH SÁCH MÔN BỊ MỜ — thầy cô mở ra thấy tên môn xám nhoè, ngỡ bị khoá nên
+       không dám chọn. Thủ phạm: ô trống đặt màu chữ rất nhạt (#b7c3bb) cho <select>, mà trình
+       duyệt lấy LUÔN màu ấy để vẽ danh sách <option> bên trong. Nay ép mọi <option> chữ ĐẬM
+       trên nền trắng; riêng dòng đầu (bỏ trống / chọn môn) mới để nhạt cho đúng nghĩa.
+       Kèm mũi tên ▾ ở ô trống để lộ rõ "đây là chỗ bấm chọn", khỏi phải đoán. */
+    .tkb-msel option{color:#14351f;background:#fff;font-weight:600;font-size:13.5px}
+    .tkb-msel option[value=""]{color:#7d8d83;font-weight:500}
+    /* Vùng bấm phủ TRỌN ô trống: trước đây <select> chỉ cao bằng dòng chữ, quanh nó là 7px viền
+       lót "chết" — bấm trúng mép là không ra gì, thầy cô tưởng phải nháy đúp mới mở được danh
+       sách. Nay ô trống bỏ lót, <select> căng kín cả ô; ô đã có môn thì select cũng giãn cao
+       hết phần còn lại (chừa ô nhập Lớp ở đáy). */
+    .tkb-msel{flex:1 1 auto;min-height:22px}
+    .tkb-card.empty{padding:0}
+    .tkb-card.empty .tkb-msel{color:#6f8378;font-weight:600;min-height:46px;padding:0 11px}
+    .tkb-card.empty .tkb-msel,.tkb-card:hover .tkb-msel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23789085' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1px center;background-size:9px 6px;padding-right:11px}
+    .tkb-card.empty:hover .tkb-msel{color:#3f7d5a}
     .tkb-lop{width:auto;min-width:30px;max-width:64px;border:1px solid rgba(0,0,0,.07);border-radius:999px;padding:1px 9px;font-size:10.5px;text-align:center;color:#54655c;background:rgba(255,255,255,.72);font-weight:600}
     .tkb-lop::placeholder{color:#aeb9b1}
     .tkb-addtiet td{background:#fafdfb;border-bottom:none}
     /* Điện thoại: cho lưới rộng đủ để đọc trọn tên môn rồi vuốt ngang — trước đây ép vừa
        màn hình nên chữ bị cắt, dễ nhầm "Tiếng Việt" với "Tiếng Anh" (31/7/2026) */
-    @media (max-width:760px){ .tkb-grid{font-size:11px;table-layout:auto;min-width:560px} .tkb-grid td.tkb-cell{min-width:88px;padding:3px} .tkb-card{min-height:40px;padding:5px 3px} .tkb-msel{font-size:10.5px} .tkb-grid .tkb-buoi{width:58px;padding:6px 2px} .tkb-bz .nm{font-size:12.5px} .tkb-bz svg{width:24px;height:24px} .tkb-grid .tkb-tiet{width:32px} .tkb-grid .tkb-tiet .tn{width:24px;height:24px;font-size:11px} }
+    @media (max-width:760px){ .tkb-grid{font-size:11px;table-layout:auto;min-width:560px} .tkb-grid td.tkb-cell{min-width:88px;padding:3px} .tkb-card{min-height:40px;padding:5px 3px} .tkb-msel{font-size:10.5px} .tkb-card.empty .tkb-msel{min-height:40px;padding:0 9px} .tkb-grid .tkb-buoi{width:58px;padding:6px 2px} .tkb-bz .nm{font-size:12.5px} .tkb-bz svg{width:24px;height:24px} .tkb-grid .tkb-tiet{width:32px} .tkb-grid .tkb-tiet .tn{width:24px;height:24px;font-size:11px} }
     /* (10/8/2026) Thanh nút LƯU luôn DÍNH ĐÁY màn — nhiều máy độ phân giải thấp trước đây
        không thấy nút vì nó nằm dưới lưới, khuất khỏi màn. Sticky bottom giữ nút hiện sẵn dù
        chưa cuộn; nút không co chữ. Trên điện thoại né thanh điều hướng đáy. */
@@ -3114,8 +3129,115 @@ function showView(v){
   window.scrollTo({top:0});
   const r={dashboard:renderDashboard,tkb:window.bxRenderTKBView,lich:renderFullSchedule,khbd:renderKHBDView,kho:renderKho,nhac:renderNhac,hocsinh:renderHocSinh,hoclieu:renderHocLieu,ppt:renderSlides,thongke:renderThongKe,caidat:loadSettings}[v];
   if(r) r();
+  try{ if(window.BX_gateTKB) BX_gateTKB(v); }catch(e){}
   updateBellCount();
 }
+
+/* ============ CỔNG NHẮC LẬP THỜI KHOÁ BIỂU (14/8/2026 — thầy Chung) ============
+   Thầy cô CHƯA nhập Thời khoá biểu mà vào thẳng "Lịch báo giảng" / "Kế hoạch bài dạy"
+   thì app rơi về lịch MẪU dựng sẵn (BX_weekSchedule gốc, lớp 5A). Lịch mẫu này không
+   khớp Kho nên giáo án hiện ra toàn "Khung mẫu trống / (theo PPCT)" — nhìn như app hỏng,
+   mất thiện cảm ngay lần đầu.
+   Đã cân nhắc 2 hướng thầy nêu:
+     (a) hiện dòng nhắc rồi tự tắt sau 3-5 giây → thầy cô mải nhìn bảng, chớp mắt là mất,
+         nhắc xong VẪN thấy giáo án trống → không giải quyết được cái gốc;
+     (b) chưa nhập TKB thì để trống trơn cả hai màn → hết cảnh giáo án xấu, nhưng màn
+         trắng dễ bị hiểu là "app chưa có gì / lỗi", và mất luôn cơ hội cho thầy cô xem thử.
+   Chốt hướng thứ ba, gộp cái hay của cả hai: THAY nội dung mẫu bằng một tấm thẻ mời lập
+   TKB — đứng yên chứ không tự tắt, nói rõ vì sao chưa có dữ liệu, kèm 2 nút đi thẳng vào
+   việc; ai muốn ngó trước vẫn bấm "xem thử" được, lúc đó có băng nhắc rõ "đây là bản
+   minh hoạ". Không đụng vào dữ liệu, không đụng hàm vẽ — chỉ ẩn/hiện phần thân màn. */
+(function(){
+  var TEN={lich:'Lịch báo giảng', khbd:'Kế hoạch bài dạy'};
+  var _xemThu=false;   // chỉ trong phiên này; tải lại trang là quay về cổng nhắc
+  function coTKB(){
+    /* Không dò được thì CHO QUA — thà hiện bản mẫu còn hơn chặn nhầm thầy cô đã có dữ liệu */
+    try{ if(typeof window.bxHasUserTKB!=='function') return true; if(bxHasUserTKB()) return true; }catch(e){ return true; }
+    /* Có thầy cô KHÔNG lập TKB mà soạn thẳng Lịch báo giảng bằng tay ("✏️ Sửa LBG").
+       Đã có tuần nào lưu là coi như có dữ liệu thật — KHÔNG được che lịch của họ sau cổng nhắc. */
+    try{
+      var m=JSON.parse(localStorage.getItem('butxanh_lbg_weeks')||'null');
+      if(m&&typeof m==='object'&&Object.keys(m).some(function(k){ return Array.isArray(m[k])&&m[k].length; })) return true;
+    }catch(e){}
+    return false;
+  }
+  function theHTML(v){
+    return '<div class="card bx-gate" style="text-align:center;padding:26px 18px;border:1px dashed #cfe2d5;background:linear-gradient(180deg,#f7fbf8,#fff)">'+
+      '<div style="font-size:34px;line-height:1">📅</div>'+
+      '<h3 style="margin:8px 0 6px;color:#15834a">Thầy cô chưa lập Thời khoá biểu</h3>'+
+      '<div style="max-width:640px;margin:0 auto;color:#4a5b51;font-size:14px;line-height:1.65">'+
+        'Bút Xanh chưa biết lớp mình dạy <b>môn nào, tiết nào</b> nên chưa thể dựng <b>'+(TEN[v]||'màn này')+'</b> đúng lớp của thầy cô.<br>'+
+        'Lập Thời khoá biểu <b>một lần</b> là dùng cho <b>cả năm học</b> — bấm từng ô chọn môn, chừng 2–3 phút. '+
+        'Xong là Lịch báo giảng và giáo án từng tuần tự khớp theo.'+
+      '</div>'+
+      '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px">'+
+        '<button class="btn solid" onclick="BX_gateLapTKB()">📅 Lập Thời khoá biểu ngay</button>'+
+        '<button class="btn" onclick="BX_gateDienMau()">✨ Điền nhanh lịch mẫu rồi sửa</button>'+
+      '</div>'+
+      '<div style="margin-top:13px"><span class="link" style="cursor:pointer;font-size:13px" onclick="BX_gateXemThu()">Chỉ muốn xem thử trước → mở bản minh hoạ</span></div>'+
+    '</div>';
+  }
+  function bangHTML(){
+    return '<div class="notice bx-gate-bang" style="margin:0 0 14px;background:#fff7e6;border-color:#f0d9a8;color:#8a5a00">'+
+      '🔎 Đây là <b>bản minh hoạ</b> của lớp mẫu, chưa phải lịch của thầy cô — nên nhiều tiết còn để trống tên bài. '+
+      '<span class="link" style="cursor:pointer" onclick="BX_gateLapTKB()">Lập Thời khoá biểu của tôi →</span></div>';
+  }
+  /* Bảng điều khiển: CHỈ NHẮC, KHÔNG CHE — đây là màn mở đầu, che đi thì app trông như rỗng.
+     Bảng "Lịch dạy tuần" ở đây cũng là lịch lớp mẫu khi chưa có TKB nên phải nói rõ kẻo hiểu nhầm. */
+  function nhacBang(){
+    var box=document.getElementById('v-dashboard'); if(!box) return;
+    var cu=box.querySelector('.bx-gate-bang');
+    if(coTKB()){ if(cu) cu.remove(); return; }
+    if(cu) return;
+    var b=_el('<div class="notice bx-gate-bang" style="margin:0 0 14px;background:#fff7e6;border-color:#f0d9a8;color:#8a5a00">'+
+      '📅 Lịch dạy dưới đây là <b>lớp mẫu</b> — thầy cô chưa lập Thời khoá biểu nên Bút Xanh chưa biết lớp mình dạy môn nào, tiết nào. '+
+      '<span class="link" style="cursor:pointer" onclick="BX_gateLapTKB()">Lập Thời khoá biểu của tôi →</span></div>');
+    box.insertBefore(b, box.firstChild);
+  }
+  function apDung(v){
+    if(v==='dashboard'){ nhacBang(); return; }
+    if(!TEN[v]) return;
+    var box=document.getElementById('v-'+v); if(!box) return;
+    var chan=!coTKB() && !_xemThu;
+    var the=box.querySelector('.bx-gate'), bang=box.querySelector('.bx-gate-bang');
+    var head=box.querySelector('.page-head');
+    var pa=box.querySelector('.page-head .ph-actions');
+    if(!chan){
+      if(the) the.remove();
+      // Đã có TKB thì gỡ luôn băng minh hoạ; còn đang "xem thử" thì giữ băng nhắc
+      if(!coTKB()&&_xemThu){ if(!bang&&head&&head.nextSibling) box.insertBefore(_el(bangHTML()),head.nextSibling); }
+      else if(bang) bang.remove();
+      _hien(box); if(pa) _hien1(pa);
+      return;
+    }
+    if(bang) bang.remove();
+    if(!the){ the=_el(theHTML(v)); if(head&&head.nextSibling) box.insertBefore(the,head.nextSibling); else box.appendChild(the); }
+    /* Ẩn phần thân (chỉ con TRỰC TIẾP của màn — không đụng các khối con đang display:none sẵn
+       như thanh lọc KHBD, để lúc hiện lại không bật nhầm chúng lên) */
+    [].slice.call(box.children).forEach(function(e){
+      if(e===the||e===head) return;
+      if(e.getAttribute('data-gate-an')) return;
+      e.setAttribute('data-gate-an','1'); e.setAttribute('data-gate-cu',e.style.display||''); e.style.display='none';
+    });
+    if(pa&&!pa.getAttribute('data-gate-an')){ pa.setAttribute('data-gate-an','1'); pa.setAttribute('data-gate-cu',pa.style.display||''); pa.style.display='none'; }
+  }
+  function _el(html){ var d=document.createElement('div'); d.innerHTML=html; return d.firstChild; }
+  function _hien1(e){ if(!e.getAttribute('data-gate-an')) return; e.style.display=e.getAttribute('data-gate-cu')||''; e.removeAttribute('data-gate-an'); e.removeAttribute('data-gate-cu'); }
+  function _hien(box){ [].slice.call(box.querySelectorAll('[data-gate-an]')).forEach(_hien1); }
+  window.BX_gateTKB=apDung;
+  window.BX_gateLai=function(){ ['lich','khbd','dashboard'].forEach(apDung); };   // gọi lại sau khi lưu TKB
+  window.BX_gateLapTKB=function(){ _xemThu=false; if(typeof showView==='function') showView('tkb'); };
+  window.BX_gateDienMau=function(){
+    _xemThu=false;
+    if(typeof showView==='function') showView('tkb');
+    setTimeout(function(){ try{ if(typeof bxTKBdienMau==='function') bxTKBdienMau(); }catch(e){} },80);
+  };
+  window.BX_gateXemThu=function(){
+    _xemThu=true;
+    var v=(location.hash||'#dashboard').slice(1); if(!TEN[v]) v='lich';
+    apDung(v);
+  };
+})();
 /* Chuông thông báo = số "Bút Xanh nhắc thầy cô" hiện có (bám lịch/HS) */
 function updateBellCount(){
   try{
@@ -7858,6 +7980,29 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     /* Thời khoá biểu có thể vừa thêm lớp mới → nạp kho lớp đó nếu chưa có */
     try{ if(window.BX_ensureKhoTheoLich) window.BX_ensureKhoTheoLich(); }catch(e){}
     try{ if(window.FBX&&window.FBX.flush) window.FBX.flush(); }catch(e){}   // đẩy ngay lên đám mây
+    try{ if(window.BX_gateLai) BX_gateLai(); }catch(e){}   // đã có TKB → gỡ cổng nhắc ở LBG/KHBD
+    /* (14/8/2026) DỰNG LẠI LỊCH TUẦN ĐANG XEM ngay khi vừa có Thời khoá biểu.
+       Lỗi đo được: state.schedule được tính LÚC MỞ APP, khi ấy chưa có TKB nên rơi vào lịch
+       lớp MẪU (BX_weekSchedule gốc) — tên bài toàn "(theo PPCT)". Lưu TKB xong, con số này
+       không ai tính lại, nên thầy cô vào Lịch báo giảng / Kế hoạch bài dạy vẫn thấy y nguyên
+       lịch lớp mẫu, tưởng nhập TKB chẳng ăn thua (tải lại trang cũng vậy, vì bản ghi đè
+       BX_weekSchedule nạp SAU lúc app tính lịch lần đầu).
+       AN TOÀN: chỉ dựng lại khi tuần đó CHƯA có bản lưu (getLBGForWeek rỗng) — tuyệt đối
+       không đè lên Lịch báo giảng thầy cô đã chỉnh tay; tuần đã chỉnh thì vẫn phải bấm
+       "✨ Tạo LBG tuần này" và được hỏi ghi đè như cũ. */
+    try{
+      var _gen=(typeof genForWeek==='function')?genForWeek:window.bxGenLBGForWeek;
+      var _w=parseInt(state.week,10)||1;
+      var _daLuu=(typeof getLBGForWeek==='function')?getLBGForWeek(_w):null;
+      if(_gen && !(_daLuu&&_daLuu.length)){
+        state.schedule=_gen(_w);
+        try{ if(typeof fillScheduleDates==='function') fillScheduleDates(); }catch(e){}
+        try{ if(typeof persistSchedule==='function') persistSchedule(); }catch(e){}
+        try{ if(typeof renderSchedule==='function') renderSchedule(); }catch(e){}
+        try{ if(typeof renderFullSchedule==='function') renderFullSchedule(); }catch(e){}
+        try{ if(typeof renderKHBDView==='function') renderKHBDView(); }catch(e){}
+      }
+    }catch(e){ console.warn('[TKB] dựng lại lịch tuần sau khi lưu lỗi', e&&e.message); }
   }
   window.bxLoadTKB=loadTKB; window.bxHasUserTKB=hasUserTKB;
 
@@ -8196,7 +8341,10 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
   var _BUOI_ICO={'Sáng':'<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#e3a317" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.2v2.6M12 19.2v2.6M2.2 12h2.6M19.2 12h2.6M5.1 5.1l1.8 1.8M17.1 17.1l1.8 1.8M18.9 5.1 17.1 6.9M6.9 17.1 5.1 18.9"/></svg>',
     'Chiều':'<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#3b7ec4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="M20 12h2"/><path d="m19.07 4.93-1.41 1.41"/><path d="M15.947 12.65a4 4 0 0 0-5.925-4.128"/><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"/></svg>'};
   function _buoiCellHTML(buoi){ var ico=_BUOI_ICO[buoi]||''; return '<div class="tkb-bz">'+ico+'<div class="nm">'+buoi.toUpperCase()+'</div></div>'; }
-  function monOpts(val){ var h='<option value="">—</option>'; SUBJECTS.forEach(function(o){ h+='<option'+(o===val?' selected':'')+'>'+String(o).replace(/</g,'&lt;')+'</option>'; }); return h; }
+  /* (14/8/2026) Ô trống trước đây chỉ hiện dấu "—": thầy cô không biết đó là chỗ bấm chọn môn.
+     Nay ô trống mời gọi bằng chữ "Chọn môn"; ô đã có môn thì dòng đầu là "— Bỏ trống —" (đúng
+     nghĩa xoá tiết). Cùng một dòng <option> nhưng đổi nhãn theo trạng thái, giá trị vẫn là "". */
+  function monOpts(val){ var h='<option value="">'+(val?'— Bỏ trống —':'Chọn môn')+'</option>'; SUBJECTS.forEach(function(o){ h+='<option'+(o===val?' selected':'')+'>'+String(o).replace(/</g,'&lt;')+'</option>'; }); return h; }
   function renderGrid(){
     var box=document.getElementById('tkb-view-grid'); if(!box) return;
     var days=_days();
@@ -8235,6 +8383,8 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
        thêm/bớt ô nhập Lớp. Không tìm thấy thẻ thì mới vẽ lại (dự phòng). */
     var card=(sel.closest)?sel.closest('.tkb-card'):null;
     if(!card){ renderGrid(); return; }
+    // Đổi nhãn dòng đầu theo trạng thái mới: trống → "Chọn môn", đã có môn → "— Bỏ trống —"
+    if(sel.options&&sel.options[0]&&sel.options[0].value==='') sel.options[0].text=(mon?'— Bỏ trống —':'Chọn môn');
     if(mon){
       card.classList.remove('empty'); card.style.cssText=monStyle(mon);
       var inp=card.querySelector('.tkb-lop');
