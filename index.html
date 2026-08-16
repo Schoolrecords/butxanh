@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-16 · 36';
+  var PB='2026-08-16 · 37';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -7661,8 +7661,10 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     var iOS=/iPhone|iPad|iPod/i.test(navigator.userAgent||'');
     var d=document.createElement('div');
     d.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:99997;background:#fff8e6;border:1px solid #ffd782;border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.5;color:#6b4e00;box-shadow:0 8px 24px rgba(0,0,0,.18)';
-    d.innerHTML='<b>⚠️ Hãy mở Bút Xanh bằng '+(iOS?'Safari/Chrome':'Chrome')+'</b><br>Đang mở trong Zalo/Facebook nên <b>Google không cho đăng nhập</b> và dữ liệu hay bị mất. Bấm nút xanh bên dưới là sang trình duyệt ngay ạ.'+
-      '<div style="margin-top:9px;display:flex;gap:8px"><button id="bxtd-mo" style="flex:1;padding:9px;border:0;border-radius:9px;background:#0f9d58;color:#fff;font-size:13.5px;font-weight:700;cursor:pointer">🌐 Mở bằng '+(iOS?'Chrome':'Chrome')+'</button>'+
+    /* Chữ càng ngắn càng tốt — thầy Chung 16/8/2026: thầy cô không thạo máy, đọc dài là rối.
+       Một nút to, bấm là xong; phần chỉ dẫn tay chỉ bung ra khi máy không tự mở được. */
+    d.innerHTML='<b>⚠️ Zalo không đăng nhập được</b><br>Thầy/cô bấm nút xanh để mở bằng '+(iOS?'Safari/Chrome':'Chrome')+' ạ.'+
+      '<div style="margin-top:9px;display:flex;gap:8px"><button id="bxtd-mo" style="flex:1;padding:9px;border:0;border-radius:9px;background:#0f9d58;color:#fff;font-size:13.5px;font-weight:700;cursor:pointer">🌐 Mở bằng Chrome</button>'+
       '<button id="bxtd-dong" style="padding:9px 14px;border:0;border-radius:9px;background:#efe6cc;color:#6b4e00;font-size:13px;cursor:pointer">Đóng</button></div>'+
       '<div id="bxtd-tay" style="display:none;margin-top:9px;padding-top:9px;border-top:1px dashed #e6cf9a">Máy chưa tự mở được. Thầy/cô bấm dấu <b>⋮</b> (hoặc <b>…</b>) ở góc màn hình → chọn <b>«Mở bằng trình duyệt'+(iOS?'/Safari':'')+'»</b>.'+
       '<button id="bxtd-chep" style="margin-top:8px;width:100%;padding:8px;border:1px solid #d8c48c;border-radius:9px;background:#fff;color:#6b4e00;font-size:13px;cursor:pointer">📋 Chép địa chỉ butxanh.net</button></div>';
@@ -9218,44 +9220,37 @@ function daDungThat(){
 function dangHoan(){ try{ return Date.now()-(+localStorage.getItem(KEY_HOAN)||0) < HOAN; }catch(e){ return false; } }
 function hoanLai(){ try{ localStorage.setItem(KEY_HOAN,String(Date.now())); }catch(e){} }
 
-var loiMoi=null;                            // Chrome đưa sẵn lệnh cài qua sự kiện này
-window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); loiMoi=e; });
-
-function cachCai(){
-  var ua=navigator.userAgent||'';
-  if(/iPhone|iPad|iPod/i.test(ua))
-    return 'Bấm nút <b>Chia sẻ</b> ⬆️ ở thanh dưới màn hình → kéo xuống chọn <b>«Thêm vào MH chính»</b> → <b>Thêm</b>.';
-  if(/Android/i.test(ua))
-    return 'Bấm dấu <b>⋮</b> ở góc trên bên phải Chrome → chọn <b>«Thêm vào Màn hình chính»</b> (hoặc «Cài đặt ứng dụng») → <b>Cài đặt</b>.';
-  return 'Trong Chrome/Edge, bấm biểu tượng <b>cài đặt</b> (màn hình có mũi tên xuống) ở cuối thanh địa chỉ → <b>Cài đặt</b>. Sau đó Bút Xanh nằm ngay trên màn hình nền như một phần mềm.';
-}
-
-function nhac(){
+/* 🔴 THẦY CHUNG CHỐT (16/8/2026, sau khi xem bản 36): thầy cô KHÔNG thạo máy tính, mấy
+   dòng hướng dẫn nhiều bước ("bấm ⋮ rồi chọn…") chỉ làm rối chứ không giúp được ai.
+   Nguyên tắc từ đây: CHỈ mời cài khi máy cài được bằng MỘT chạm — tức khi trình duyệt
+   đã đưa sẵn lệnh cài qua beforeinstallprompt (Chrome/Edge). Máy nào phải làm thủ công
+   (iPhone/Safari, trình duyệt lạ) thì IM LẶNG TUYỆT ĐỐI, không hiện gì cả.
+   Đừng thêm lại phần hướng dẫn từng bước vào đây. */
+function moiCai(loiMoi){
   if(daCai()||trongUngDung()||dangHoan()||!daDungThat()) return;
   var d=document.createElement('div');
   d.id='bxci-thanh';
-  d.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:99996;background:#eafaf1;border:1px solid #a9e2c1;border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.55;color:#0b5133;box-shadow:0 8px 24px rgba(0,0,0,.16)';
-  d.innerHTML='<b>📲 Thêm Bút Xanh vào màn hình chính</b><br>Mở bằng icon như một ứng dụng — <b>không phải đăng nhập lại</b> mỗi lần và không cần đi qua Zalo nữa ạ.'+
+  d.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:99996;background:#eafaf1;border:1px solid #a9e2c1;border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.5;color:#0b5133;box-shadow:0 8px 24px rgba(0,0,0,.16)';
+  d.innerHTML='<b>📲 Đưa Bút Xanh ra màn hình chính</b><br>Chạm icon là mở được ngay, khỏi đăng nhập lại ạ.'+
     '<div style="margin-top:9px;display:flex;gap:8px">'+
-    '<button id="bxci-cai" style="flex:1;padding:9px;border:0;border-radius:9px;background:#0f9d58;color:#fff;font-size:13.5px;font-weight:700;cursor:pointer">Cài đặt</button>'+
-    '<button id="bxci-sau" style="padding:9px 14px;border:0;border-radius:9px;background:#d9efe2;color:#0b5133;font-size:13px;cursor:pointer">Để sau</button></div>'+
-    '<div id="bxci-tay" style="display:none;margin-top:9px;padding-top:9px;border-top:1px dashed #a9e2c1">'+cachCai()+'</div>';
+    '<button id="bxci-cai" style="flex:1;padding:9px;border:0;border-radius:9px;background:#0f9d58;color:#fff;font-size:13.5px;font-weight:700;cursor:pointer">Đồng ý</button>'+
+    '<button id="bxci-sau" style="padding:9px 14px;border:0;border-radius:9px;background:#d9efe2;color:#0b5133;font-size:13px;cursor:pointer">Bỏ qua</button></div>';
   document.body.appendChild(d);
-  var bCai=d.querySelector('#bxci-cai'), bSau=d.querySelector('#bxci-sau'), tay=d.querySelector('#bxci-tay');
-  bCai.onclick=function(){
-    if(loiMoi){                              // Chrome: cài thẳng, một chạm
+  d.querySelector('#bxci-cai').onclick=function(){
+    d.remove();
+    try{
       loiMoi.prompt();
-      loiMoi.userChoice.then(function(kq){ if(kq&&kq.outcome==='accepted'){ d.remove(); } else { hoanLai(); d.remove(); } }).catch(function(){});
-      loiMoi=null; return;
-    }
-    tay.style.display='block';               // iPhone và các máy không có lệnh cài sẵn
-    bCai.textContent='Làm theo hướng dẫn ↓';
+      loiMoi.userChoice.then(function(kq){ if(!kq||kq.outcome!=='accepted') hoanLai(); }).catch(function(){});
+    }catch(e){}
   };
-  bSau.onclick=function(){ hoanLai(); d.remove(); };
+  d.querySelector('#bxci-sau').onclick=function(){ hoanLai(); d.remove(); };
 }
 
-/* Đợi app dựng xong hẳn rồi mới mời — và chỉ mời một lần mỗi phiên */
-window.addEventListener('load',function(){ setTimeout(nhac,6000); });
+/* Trình duyệt báo "máy này cài được" → đợi app dựng xong hẳn rồi mới mời một lần */
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();
+  setTimeout(function(){ moiCai(e); },6000);
+});
 window.addEventListener('appinstalled',function(){ var d=document.getElementById('bxci-thanh'); if(d) d.remove(); });
 })();
 </script>
