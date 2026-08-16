@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-16 · 45';
+  var PB='2026-08-16 · 46';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -5647,9 +5647,15 @@ function BX_injectNav(){
 }
 function BX_injectViews(){
   var main=document.querySelector('main.main'); if(!main) return;
+  /* Tiêu đề nối chuỗi MỘT LẦN lúc dựng view nên trước đây đổi lớp cũng không đổi chữ —
+     nay có id để renderProgramMap() ghi lại mỗi lần vẽ (vá B1). */
   var mapHtml='<section class="view" id="v-map">'+
-    '<div class="card"><h3 style="margin-top:0">🗺️ Bản đồ chương trình năm học — Lớp '+_xe(String(state.khoi))+'</h3>'+
-      '<div style="font-size:13px;color:#5b6b61;margin:-4px 0 10px">Bức tranh tổng thể chương trình '+_xe(state.year||'2026 - 2027')+': toàn bộ môn học, chủ đề và dòng chảy 35 tuần.</div>'+
+    '<div class="card">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">'+
+        '<h3 id="bx-map-title" style="margin:0">🗺️ Bản đồ chương trình năm học</h3>'+
+        '<label class="select"><span>Lớp</span><select id="bx-map-lop" onchange="BX_mapSetLop(this.value)"></select></label>'+
+      '</div>'+
+      '<div style="font-size:13px;color:#5b6b61;margin:6px 0 10px">Bức tranh tổng thể chương trình '+_xe(state.year||'2026 - 2027')+': toàn bộ môn học, chủ đề và dòng chảy 35 tuần.</div>'+
       '<div id="bx-map-overview"></div></div>'+
     '<div class="card"><h4 style="margin-top:0">📊 Tổng hợp theo môn <span style="font-weight:400;color:#8a978f;font-size:12px">· bấm vào môn để xem chủ đề</span></h4>'+
       '<div id="bx-map-subjects" style="overflow:auto"></div></div>'+
@@ -5698,7 +5704,19 @@ function BX_injectIntgFilter(){
 /* ----- Render: Bản đồ chương trình (bức tranh tổng thể cho GV) ----- */
 var BX_MAP_PAL=['#cfe8d4','#cfe0f5','#f7e3c4','#e6d6f2','#cdeaf0','#f7d6dc','#dde7c4','#f0dfb6','#d4e9e2','#e9d8c3','#d8e4f7','#ede0cf'];
 function BX_mapNorm(s){ return String(s==null?'':s).replace(/\s+/g,' ').trim(); }
-function BX_mapSubjects(){ return (window.BX_SUBJECTS&&window.BX_SUBJECTS.length)?window.BX_SUBJECTS:Object.keys(window.BX_KHGD||{}); }
+/* ===== LỚP CỦA BẢN ĐỒ CHƯƠNG TRÌNH — vá B1 (16/8/2026) =====
+   Trước đây màn này GHIM CỨNG lớp 5: BX_mapSubjects đọc window.BX_SUBJECTS (= môn lớp 5)
+   và BX_mapModel đọc window.BX_KHGD (gán một lần, luôn là lớp 5) → 4/5 khối xem đều ra
+   chương trình lớp 5. Nay đọc theo LỚP ĐANG XEM, lấy từ BX_KHGD_G[lớp].
+   🛑 KHÔNG gán đè window.BX_KHGD — ba nơi khác đang giả định nó là lớp 5. */
+function BX_mapLop(){ return String(window.BX_curLop||state.khoi||'5'); }
+function BX_mapKho(){ return (window.BX_KHGD_G&&window.BX_KHGD_G[BX_mapLop()])||{}; }
+function BX_mapSubjects(){
+  var KH=BX_mapKho(), co=function(s){ return KH[s]&&KH[s].length; };
+  /* Giữ đúng thứ tự môn chuẩn của app nếu module KHDH đã nạp */
+  try{ if(window.BX_subjectsOf){ var ds=window.BX_subjectsOf(BX_mapLop()); if(ds&&ds.length) return ds; } }catch(e){}
+  return Object.keys(KH).filter(co);
+}
 function BX_mapLastPeriod(rows){ var mx=0; rows.forEach(function(r){ String(r[6]||'').split(/[^0-9]+/).forEach(function(x){ var n=parseInt(x,10); if(n>mx)mx=n; }); }); return mx; }
 /* Số tiết của MỘT DÒNG KHDH, đọc từ cột "Tiết KH".
    Ô ghi khoảng "179-182" là 4 tiết chứ không phải 2 con số — đếm theo khoảng,
@@ -5726,7 +5744,7 @@ function BX_mapTopics(rows){
 }
 function BX_weekTopic(rows,w){ for(var i=0;i<rows.length;i++){ if(parseInt(rows[i][0],10)===w) return BX_mapNorm(rows[i][1]); } return ''; }
 function BX_mapModel(){
-  var KH=window.BX_KHGD||{};
+  var KH=BX_mapKho();
   return BX_mapSubjects().filter(function(s){return KH[s]&&KH[s].length;}).map(function(s){
     var rows=KH[s], topics=BX_mapTopics(rows), periods=BX_mapLastPeriod(rows);
     var hk1=0; rows.forEach(function(r){ if(parseInt(r[0],10)<=18) hk1+=BX_rowPeriods(r); });
@@ -5759,10 +5777,39 @@ function BX_mapStyleOnce(){
   document.head.appendChild(s);
 }
 window.BX_mapToggleSubject=function(i){ var acc=el('bx-macc-'+i), c=el('bx-mcaret-'+i); if(!acc)return; var open=acc.style.display!=='none'; acc.style.display=open?'none':''; if(c)c.textContent=open?'▸':'▾'; };
+/* Đổi lớp trên màn Bản đồ — đi qua BX_khgdSetLop để dùng chung bộ lọc phân công
+   và cơ chế nạp lười của màn KHDH (không mở được lớp ngoài phân công). */
+window.BX_mapSetLop=function(l){
+  try{ if(window.BX_khgdSetLop) window.BX_khgdSetLop(l); else window.BX_curLop=String(l); }catch(e){ window.BX_curLop=String(l); }
+  try{ if(window.BX_ensureKHGD) window.BX_ensureKHGD(BX_mapLop()).then(function(){ try{ window.renderProgramMap(); }catch(e){} }); }catch(e){}
+  window.renderProgramMap();
+};
+function BX_mapFillLop(){
+  var s=el('bx-map-lop'); if(!s) return;
+  var ds=[];
+  try{ if(window.BX_lopXemDuoc) ds=window.BX_lopXemDuoc()||[]; }catch(e){}
+  if(!ds.length) ds=(window.BX_LOPS||['1','2','3','4','5']).slice();
+  var cur=BX_mapLop();
+  if(ds.indexOf(cur)<0) ds=[cur].concat(ds);
+  s.innerHTML=ds.map(function(l){ return '<option value="'+_xe(l)+'"'+(String(l)===cur?' selected':'')+'>Lớp '+_xe(l)+'</option>'; }).join('');
+}
 window.renderProgramMap=function(){
   if(!el('bx-map-overview')) return;
   BX_mapStyleOnce();
+  BX_mapFillLop();
+  var lop=BX_mapLop();
+  var t=el('bx-map-title'); if(t) t.textContent='🗺️ Bản đồ chương trình năm học — Lớp '+lop;
   var model=BX_mapModel();
+  /* Dữ liệu lớp này chưa về (nạp lười) hoặc thật sự trống — nói rõ, đừng để 3 thẻ trắng
+     trông như app hỏng. BX_mapSetLop/__bxKHGDDaVe sẽ vẽ lại khi dữ liệu tới. */
+  if(!model.length){
+    el('bx-map-overview').innerHTML='<div class="empty-pad" style="padding:14px 2px;color:#5b6b61">'+
+      'Đang lấy chương trình lớp '+_xe(lop)+'… Nếu chờ lâu mà vẫn trống thì lớp này chưa có dữ liệu kế hoạch giáo dục trong app.</div>';
+    if(el('bx-map-subjects')) el('bx-map-subjects').innerHTML='';
+    if(el('bx-map-legend')) el('bx-map-legend').innerHTML='';
+    if(el('bx-map-timeline')) el('bx-map-timeline').innerHTML='';
+    return;
+  }
   var totalP=model.reduce(function(a,m){return a+m.periods;},0);
   var totalT=model.reduce(function(a,m){return a+m.topics.filter(function(t){return !t.review;}).length;},0);
   var rwSet={}; model.forEach(function(m){ for(var w=1;w<=35;w++){ if(BX_isReview(BX_weekTopic(m.rows,w))) rwSet[w]=1; } });
@@ -5787,6 +5834,8 @@ window.renderProgramMap=function(){
       var wk=t.from?('T'+t.from+(t.to>t.from?('–'+t.to):'')):'';
       return '<span class="bx-mtopic" style="background:'+col+'">'+(t.review?'📝 ':'')+_xe(t.name)+' <small>· '+wk+' · '+t.periods+' tiết</small></span>';
     }).join('');
+    /* Môn chưa khai cột Chủ đề/Mạch nội dung thì nói thẳng, đừng để ô trắng (vá G1) */
+    if(!chips) chips='<span style="font-size:12.5px;color:#8a978f">— môn này chưa khai cột Chủ đề / Mạch nội dung —</span>';
     return tr+'<tr class="bx-macc" id="bx-macc-'+idx+'" style="display:none"><td colspan="5"><div class="bx-mtopics">'+chips+'</div></td></tr>';
   }).join('');
   el('bx-map-subjects').innerHTML='<table class="bx-mtable"><thead><tr>'+
@@ -6231,7 +6280,12 @@ function bxGomKHGD(){
   if(window.BX_KHGD_L1) window.BX_KHGD_G['1'] = window.BX_KHGD_L1;   // lớp 1 (khgd-lop1.js)
   /* Danh sách chip Lớp/Môn phải tính LẠI mỗi lần có dữ liệu mới (trước tính 1 lần lúc parse) */
   window.BX_LOPS = ['1','2','3','4','5'];                            // đủ 5 lớp — dữ liệu lớp nào chưa về sẽ nạp khi bấm chip
-  if(!window.BX_curLop) window.BX_curLop = '5';
+  /* Mặc định mở ở KHỐI THẦY CÔ DẠY (đọc hồ sơ), không còn cứng lớp 5 — nếu không đoán
+     được thì mới lui về 5. rebuild() vẫn kẹp lại theo phân công. (vá B1) */
+  if(!window.BX_curLop){
+    var _k=''; try{ _k=window.BX_khoiCuaLop((JSON.parse(localStorage.getItem('butxanh_profile')||'{}')).klass||''); }catch(e){}
+    window.BX_curLop = /^[1-5]$/.test(_k)?_k:'5';
+  }
   window.BX_SUBJECTS = subjectsOf('5');                              // CỐ ĐỊNH = môn lớp 5 (module Bản đồ chương trình/dashboard dựa vào)
   if(!window.BX_curSubject || subjectsOf(curLop()).indexOf(window.BX_curSubject)<0) window.BX_curSubject = subjectsOf(curLop())[0]||'Tiếng Việt';
 }
@@ -6254,6 +6308,7 @@ window.__bxKHGDDaVe=function(){
 var SUBJ_ORDER=['Tiếng Việt','Toán','Khoa học','Lịch sử & Địa lí','Tự nhiên và Xã hội','Đạo đức','Tin học','Công nghệ','HĐTN','Âm nhạc','Mĩ thuật','GDTC','Tiếng Anh'];
 function subjectsOf(lop){ var KH=window.BX_KHGD_G[lop]||{}; var has=function(s){return KH[s]&&KH[s].length;};
   return SUBJ_ORDER.filter(has).concat(Object.keys(KH).filter(function(s){return SUBJ_ORDER.indexOf(s)<0&&has(s);})); }
+window.BX_subjectsOf=subjectsOf;   // Bản đồ chương trình dùng chung thứ tự môn chuẩn (vá B1)
 var NAVY='#002060';
 function curLop(){ return window.BX_curLop||'5'; }
 
@@ -6285,6 +6340,9 @@ function lopXemDuoc(){
   var ds=window.BX_LOPS.filter(function(l){ return q[window.BX_khoiCuaLop(l)||l]!==undefined; });
   return ds.length?ds:window.BX_LOPS.slice();
 }
+/* Màn Bản đồ chương trình nằm ở khối script khác — phơi ra để nó dựng ô Lớp
+   theo đúng phân công thay vì tự liệt kê cả 5 khối (vá B1). */
+window.BX_lopXemDuoc=lopXemDuoc;
 function monXemDuoc(l){
   var tatCa=subjectsOf(l), q=quyenXem();
   if(!q) return tatCa;
