@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-14 · 32';
+  var PB='2026-08-16 · 34';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -3151,16 +3151,32 @@ function showView(v){
   var TEN={lich:'Lịch báo giảng', khbd:'Kế hoạch bài dạy'};
   var _xemThu=false;   // chỉ trong phiên này; tải lại trang là quay về cổng nhắc
   function coTKB(){
-    /* Không dò được thì CHO QUA — thà hiện bản mẫu còn hơn chặn nhầm thầy cô đã có dữ liệu */
-    try{ if(typeof window.bxHasUserTKB!=='function') return true; if(bxHasUserTKB()) return true; }catch(e){ return true; }
-    /* Có thầy cô KHÔNG lập TKB mà soạn thẳng Lịch báo giảng bằng tay ("✏️ Sửa LBG").
-       Đã có tuần nào lưu là coi như có dữ liệu thật — KHÔNG được che lịch của họ sau cổng nhắc. */
+    /* (14/8/2026 — rà soát) KHÔNG được "không dò được thì cho qua": khối Thời khoá biểu nằm
+       CUỐI trang nên lần vẽ màn ĐẦU TIÊN (showView ở gần cuối khối script đầu) chạy TRƯỚC lúc
+       window.bxHasUserTKB tồn tại → cổng nhắc không áp. Thầy cô mở lại app đang ở địa chỉ
+       #lich là thấy ngay lịch lớp mẫu "(theo PPCT)" — đúng cảnh cổng sinh ra để tránh.
+       Nay đọc thẳng localStorage như BX_manHinhMoDau vẫn làm, khỏi phụ thuộc thứ tự nạp. */
     try{
-      var m=JSON.parse(localStorage.getItem('butxanh_lbg_weeks')||'null');
-      if(m&&typeof m==='object'&&Object.keys(m).some(function(k){ return Array.isArray(m[k])&&m[k].length; })) return true;
-    }catch(e){}
+      if(typeof window.bxHasUserTKB==='function'){ if(bxHasUserTKB()) return true; }
+      else {
+        var v=JSON.parse(localStorage.getItem('butxanh_tkb')||'null');
+        if(v && Array.isArray(v.slots) && v.slots.some(function(s){ return s && String(s.mon||'').trim(); })) return true;
+      }
+    }catch(e){ return true; }
     return false;
   }
+  /* Có thầy cô KHÔNG lập TKB mà soạn thẳng Lịch báo giảng bằng tay ("✏️ Sửa LBG").
+     Đã có tuần nào lưu là coi như có dữ liệu thật — KHÔNG được che lịch của họ sau cổng nhắc.
+     (14/8/2026 — rà soát) NHƯNG cũng không được im lặng: các tuần họ CHƯA tự soạn vẫn rơi về
+     lịch lớp mẫu 5A với tên bài "(theo PPCT)". Nên trường hợp này hạ xuống mức BĂNG NHẮC:
+     không che gì cả, chỉ nói rõ vì sao có tuần hiện lịch lạ. */
+  function coLBGdaLuu(){
+    try{
+      var m=JSON.parse(localStorage.getItem('butxanh_lbg_weeks')||'null');
+      return !!(m&&typeof m==='object'&&Object.keys(m).some(function(k){ return Array.isArray(m[k])&&m[k].length; }));
+    }catch(e){ return false; }
+  }
+  function coDuLieu(){ return coTKB()||coLBGdaLuu(); }
   function theHTML(v){
     return '<div class="card bx-gate" style="text-align:center;padding:26px 18px;border:1px dashed #cfe2d5;background:linear-gradient(180deg,#f7fbf8,#fff)">'+
       '<div style="font-size:34px;line-height:1">📅</div>'+
@@ -3179,7 +3195,7 @@ function showView(v){
   }
   function bangHTML(){
     return '<div class="notice bx-gate-bang" style="margin:0 0 14px;background:#fff7e6;border-color:#f0d9a8;color:#8a5a00">'+
-      '🔎 Đây là <b>bản minh hoạ</b> của lớp mẫu, chưa phải lịch của thầy cô — nên nhiều tiết còn để trống tên bài. '+
+      '🔎 Thầy cô <b>chưa lập Thời khoá biểu</b> — những tuần chưa tự soạn sẽ hiện <b>lịch lớp mẫu</b>, tên bài để "(theo PPCT)". '+
       '<span class="link" style="cursor:pointer" onclick="BX_gateLapTKB()">Lập Thời khoá biểu của tôi →</span></div>';
   }
   /* Bảng điều khiển: CHỈ NHẮC, KHÔNG CHE — đây là màn mở đầu, che đi thì app trông như rỗng.
@@ -3198,14 +3214,15 @@ function showView(v){
     if(v==='dashboard'){ nhacBang(); return; }
     if(!TEN[v]) return;
     var box=document.getElementById('v-'+v); if(!box) return;
-    var chan=!coTKB() && !_xemThu;
+    var chan=!coDuLieu() && !_xemThu;   // chỉ CHE khi thầy cô chưa có gì cả
     var the=box.querySelector('.bx-gate'), bang=box.querySelector('.bx-gate-bang');
     var head=box.querySelector('.page-head');
     var pa=box.querySelector('.page-head .ph-actions');
     if(!chan){
       if(the) the.remove();
-      // Đã có TKB thì gỡ luôn băng minh hoạ; còn đang "xem thử" thì giữ băng nhắc
-      if(!coTKB()&&_xemThu){ if(!bang&&head&&head.nextSibling) box.insertBefore(_el(bangHTML()),head.nextSibling); }
+      /* Chưa có Thời khoá biểu THẬT thì luôn giữ băng nhắc — cả khi đang "xem thử", cả khi
+         thầy cô đã tự soạn tay vài tuần (tuần chưa soạn vẫn là lịch lớp mẫu). Có TKB rồi mới gỡ. */
+      if(!coTKB()){ if(!bang&&head&&head.nextSibling) box.insertBefore(_el(bangHTML()),head.nextSibling); }
       else if(bang) bang.remove();
       _hien(box); if(pa) _hien1(pa);
       return;
@@ -4976,7 +4993,19 @@ function persistSchedule(){ try{
 const DOW={'Thứ 2':2,'Thứ 3':3,'Thứ 4':4,'Thứ 5':5,'Thứ 6':6,'Thứ 7':7,'Chủ nhật':8,'CN':8};
 const BUOI_ORD={'Sáng':0,'Chiều':1,'Tối':2};
 function sortSchedule(){ state.schedule.sort((a,b)=>(DOW[a.day]||9)-(DOW[b.day]||9) || (BUOI_ORD[a.buoi]||0)-(BUOI_ORD[b.buoi]||0) || (a.tiet||0)-(b.tiet||0)); }
+/* (14/8/2026) DẤU "TUẦN NÀY DO MÁY TỰ SINH" ————————————————————————
+   Bản vá sáng nay (dựng lại lịch tuần khi lưu TKB) chỉ chạy khi tuần đó CHƯA có bản lưu.
+   Nhưng chính nó lại persistSchedule() → tuần đó lập tức CÓ bản lưu → từ lần bấm 💾 Lưu
+   THỨ HAI trở đi, nó tự chặn mình: thầy cô sửa nhầm một ô trong Thời khoá biểu, lưu lại,
+   Lịch báo giảng vẫn y nguyên môn cũ mà không báo gì. Nay đánh dấu tuần nào do máy tự
+   sinh (chưa ai chạm tay) thì được phép dựng lại; thầy cô vừa chỉnh tay Lịch báo giảng
+   (refreshSchedule) là GỠ DẤU ngay → từ đó tuần ấy không bao giờ bị dựng đè. */
+function BX_dauTuGen(){ try{ var m=JSON.parse(localStorage.getItem('butxanh_lbg_tugen')||'{}'); return (m&&typeof m==='object'&&!Array.isArray(m))?m:{}; }catch(e){ return {}; } }
+function BX_ghiDauTuGen(w){ try{ var m=BX_dauTuGen(); m[String(w)]=1; localStorage.setItem('butxanh_lbg_tugen',JSON.stringify(m)); }catch(e){} }
+function BX_laTuanTuGen(w){ return !!BX_dauTuGen()[String(w)]; }
+function BX_boDauTuGen(w){ try{ var m=BX_dauTuGen(); if(m[String(w)]!=null){ delete m[String(w)]; localStorage.setItem('butxanh_lbg_tugen',JSON.stringify(m)); } }catch(e){} }
 function refreshSchedule(){
+  try{ BX_boDauTuGen(state.week); }catch(e){}   // thầy cô đã chạm tay vào tuần này → cấm dựng đè
   sortSchedule(); persistSchedule();
   renderSchedule(); renderSchedRows();
   if(el('v-lich').classList.contains('active')) renderFullSchedule();
@@ -7519,23 +7548,131 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     curRef=null; pushLog=[]; syncPaused=0; busy=false;
   }
   function onAuth(u){
-    user=u; renderUI();
+    user=u;
+    /* Vào được rồi thì dọn sạch trạng thái "đang đăng nhập" — kể cả khi cửa sổ Google
+       chưa kịp hồi âm — kẻo lần đăng nhập sau bị khoá oan (16/8/2026) */
+    if(u && dangDangNhap){ luotDN++; ketThucDangNhap(); }
+    renderUI();
     try{ bxCapNhatCheDoXem(); }catch(e){}
 
-    if(u){ hadUser=true; startSync(); startLoop(); }
+    if(u){ hadUser=true; ghiMocDangNhap(); xinLuuBenVung(); startSync(); startLoop(); }
     else {
       stopSync(); stopLoop(); seeded=false; dirtyKeys={}; dirty=false; setStatus('off');
       if(hadUser && !intentionalLogout){   // phiên bị rớt ngoài ý muốn
-        try{ bxAlert('⚠️ Thầy/cô vừa bị đăng xuất khỏi tài khoản Google (thường do trình duyệt chặn cookie hoặc mạng làm rớt phiên).\n\n✅ Dữ liệu VẪN AN TOÀN trên máy này — không mất gì. Hãy bấm “Đăng nhập” lại để tiếp tục đồng bộ lên đám mây.'); }catch(e){}
+        try{ bxAlert('⚠️ Thầy/cô vừa bị đăng xuất khỏi tài khoản Google'+moTaTuoiPhien()+'.\n\n✅ Dữ liệu VẪN AN TOÀN trên máy này — không mất gì. Hãy bấm “Đăng nhập” lại để tiếp tục đồng bộ lên đám mây.\n\n💡 Hay bị đăng xuất? Thường do trình duyệt tự dọn dữ liệu trang: hãy mở Bút Xanh bằng Chrome/Safari (đừng mở trong Zalo/Facebook), tắt chế độ ẩn danh, và thêm butxanh.net vào màn hình chính để giữ phiên lâu hơn.'); }catch(e){}
       }
       hadUser=false; intentionalLogout=false;
     }
+  }
+
+  /* ===== GIỮ PHIÊN LÂU HƠN (16/8/2026) =====
+     Thầy cô phản ánh "một thời gian lại phải đăng nhập lại". Phiên Google nằm trong kho
+     dữ liệu của trang; trình duyệt di động (nhất là Safari/iOS) tự DỌN kho đó sau ít ngày
+     ít dùng → mất phiên. Xin quyền "lưu bền vững" giúp trình duyệt miễn dọn cho trang này.
+     Chỉ xin MỘT lần sau khi đăng nhập (lúc này trang đã đủ "thân") và im lặng nếu bị từ chối. */
+  var daXinLuu=false;
+  function xinLuuBenVung(){
+    if(daXinLuu) return; daXinLuu=true;
+    try{
+      if(!navigator.storage||!navigator.storage.persist) return;
+      navigator.storage.persisted().then(function(co){
+        if(co) return;
+        return navigator.storage.persist().then(function(ok){ if(DEV) console.log('[ĐB] lưu bền vững:',ok); });
+      }).catch(function(){});
+    }catch(e){}
+    kiemTraChoTrong();
+  }
+  /* Kho localStorage của trình duyệt chỉ khoảng 5 MB. Phiên đăng nhập Google cũng nằm
+     trong kho đó và được ghi đè mỗi giờ; kho đầy thì lượt ghi ấy HỎNG LẶNG LẼ → mở lại
+     app là mất phiên, đúng kiểu "tự đăng xuất". Nhắc sớm, mỗi tuần nhiều nhất một lần. */
+  function kiemTraChoTrong(){
+    try{
+      var dung=PERF.coMay();
+      if(dung<4000000){ localStorage.removeItem('butxanh_nhac_day'); return; }
+      console.warn('[ĐB] localStorage đang dùng '+(dung/1048576).toFixed(2)+' MB / ~5 MB');
+      var lan=+(localStorage.getItem('butxanh_nhac_day')||0);
+      if(Date.now()-lan < 7*86400000) return;
+      localStorage.setItem('butxanh_nhac_day',String(Date.now()));
+      bxAlert('⚠️ Bộ nhớ trình duyệt của Bút Xanh đã dùng '+(dung/1048576).toFixed(1)+' MB trên khoảng 5 MB.\n\nGần đầy thì máy có thể ghi hụt dữ liệu và làm rớt cả phiên đăng nhập (phải đăng nhập lại nhiều lần).\n\n👉 Thầy/cô nhắn nhóm Bút Xanh để được dọn bớt phần nặng (thường là học liệu và giáo án đã tải) giúp ạ.');
+    }catch(e){}
+  }
+  /* Ghi lại mốc đăng nhập để nói đúng "phiên đã dùng được bao lâu" khi bị rớt —
+     có con số thật thì mới lần ra nguyên nhân, thay vì đoán mò. */
+  function ghiMocDangNhap(){ try{ if(!localStorage.getItem('butxanh_dn_luc')) localStorage.setItem('butxanh_dn_luc',String(Date.now())); }catch(e){} }
+  function moTaTuoiPhien(){
+    try{
+      var t=+(localStorage.getItem('butxanh_dn_luc')||0); localStorage.removeItem('butxanh_dn_luc');
+      if(!t) return '';
+      var ngay=Math.floor((Date.now()-t)/86400000), gio=Math.floor((Date.now()-t)/3600000);
+      if(ngay>=1) return ' (phiên đã dùng được '+ngay+' ngày)';
+      if(gio>=1) return ' (phiên mới dùng được '+gio+' giờ)';
+      return ' (phiên vừa mở chưa lâu)';
+    }catch(e){ return ''; }
+  }
+
+  /* Quay lại app sau khi cửa sổ Google đóng: trên điện thoại, tab gốc thường KHÔNG nhận
+     được kết quả nên nút cứ đứng "Đang đăng nhập…". Chờ thêm 2,5 giây cho Firebase kịp
+     báo; vẫn chưa vào thì mở khoá nút để thầy cô bấm lại được ngay. */
+  document.addEventListener('visibilitychange',function(){
+    if(document.hidden||!dangDangNhap) return;
+    setTimeout(function(){
+      if(!dangDangNhap||document.hidden) return;
+      if(auth&&auth.currentUser){ luotDN++; ketThucDangNhap(); return; }
+      if(Date.now()-tBatDau<4000) return;
+      luotDN++; ketThucDangNhap();
+    },2500);
+  });
+
+  /* ===== NHẮC MỞ BẰNG TRÌNH DUYỆT THẬT (16/8/2026) =====
+     Thầy cô hay bấm link Bút Xanh ngay trong Zalo/Facebook. Trình duyệt của mấy ứng dụng
+     đó dùng KHO DỮ LIỆU RIÊNG và bị dọn thường xuyên → lần nào mở cũng như máy mới, phải
+     đăng nhập lại; Google lại còn từ chối đăng nhập trong webview. Đây gần như chắc chắn
+     là lý do "một thời gian trang tự đăng xuất".
+     Nhắc bằng THANH nhỏ phía trên, không phải hộp chặn màn hình — màn chào từng làm "đơ
+     nút" (3/8/2026), nên tuyệt đối không dựng gì chắn lối lúc mở app. */
+  function nhacTrinhDuyet(){
+    if(!trongUngDung()) return;
+    try{ if(sessionStorage.getItem('butxanh_nhac_td')) return; sessionStorage.setItem('butxanh_nhac_td','1'); }catch(e){}
+    var d=document.createElement('div');
+    d.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:99997;background:#fff8e6;border:1px solid #ffd782;border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.5;color:#6b4e00;box-shadow:0 8px 24px rgba(0,0,0,.18)';
+    d.innerHTML='<b>⚠️ Nên mở bằng Chrome/Safari</b><br>Thầy/cô đang mở Bút Xanh trong Zalo/Facebook nên hay bị <b>đăng xuất</b> và không đăng nhập Google được. Bấm dấu <b>⋮</b> (hoặc <b>…</b>) góc màn hình → <b>«Mở bằng trình duyệt»</b>.'+
+      '<div style="margin-top:9px;display:flex;gap:8px"><button id="bxtd-chep" style="flex:1;padding:8px;border:0;border-radius:9px;background:#0f9d58;color:#fff;font-size:13px;font-weight:600;cursor:pointer">📋 Chép địa chỉ</button>'+
+      '<button id="bxtd-dong" style="padding:8px 14px;border:0;border-radius:9px;background:#efe6cc;color:#6b4e00;font-size:13px;cursor:pointer">Đóng</button></div>';
+    document.body.appendChild(d);
+    var b1=d.querySelector('#bxtd-chep'), b2=d.querySelector('#bxtd-dong');
+    if(b1) b1.onclick=function(){
+      var t=location.href;
+      try{ navigator.clipboard.writeText(t).then(function(){ b1.textContent='✓ Đã chép — dán vào Chrome'; },function(){ b1.textContent=t; }); }
+      catch(e){ b1.textContent=t; }
+    };
+    if(b2) b2.onclick=function(){ d.remove(); };
   }
 
   /* Đăng nhập: popup là luồng chính (không phụ thuộc cookie bên thứ ba).
      Chuyển trang (redirect) qua but-xanh.firebaseapp.com dễ mất phiên khi trình duyệt
      chặn cookie → chỉ là đường cùng, và phải được thầy cô đồng ý trước. */
   var popupBlocked=0, dangDangNhap=false;
+  /* 🔴 LỖI ĐÃ VÁ (16/8/2026, thầy Chung gửi ảnh nút kẹt): cửa sổ đăng nhập Google có thể
+     KHÔNG BAO GIỜ trả lời — thầy cô đóng nhầm tab, mạng 4G rớt giữa chừng, hoặc trình
+     duyệt điện thoại nuốt mất cửa sổ. Khi đó signInWithPopup treo vĩnh viễn: nút đứng ở
+     "⏳ Đang đăng nhập…", disabled, bấm bao nhiêu lần cũng bị chặn ở dòng dangDangNhap
+     bên dưới → chỉ tải lại trang mới thoát, mà thầy cô không biết mẹo đó.
+     Nay: đếm lượt (bỏ hồi âm của lượt cũ) + tự gỡ kẹt sau HET_GIO + cho bấm lại sau
+     CHO_BAM_LAI + quay lại app là mở khoá nút ngay. */
+  var luotDN=0, tBatDau=0, hetGioT=null;
+  var HET_GIO=45000, CHO_BAM_LAI=8000;
+  function ketThucDangNhap(){                 // gỡ trạng thái "đang đăng nhập" ở mọi ngả
+    dangDangNhap=false; tBatDau=0;
+    if(hetGioT){ clearTimeout(hetGioT); hetGioT=null; }
+    loginBusy(false);
+  }
+  /* Trình duyệt trong ứng dụng (Zalo, Facebook, Messenger…): Google TỪ CHỐI đăng nhập
+     ở đây (disallowed_useragent), và mỗi lần mở lại là một kho dữ liệu khác → thầy cô
+     tưởng app "tự đăng xuất". Phải mời ra trình duyệt thật trước khi thử. */
+  function trongUngDung(){
+    var ua=navigator.userAgent||'';
+    return /(FBAN|FBAV|FB_IAB|Instagram|Zalo|Line\/|MicroMessenger|VNPT|OPR\/.*Mini)/i.test(ua);
+  }
   function loginBusy(on){
     var b=box&&box.querySelector('.fb-btn'); if(!b) return;
     if(on){ b.disabled=true; b.style.opacity='.7'; b.innerHTML='⏳ Đang đăng nhập…'; }
@@ -7546,14 +7683,42 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
       if(!auth) return;
       /* Chỉ cho MỘT cửa sổ đăng nhập tại một thời điểm. Mở cái thứ hai là Google huỷ
          cả hai (auth/cancelled-popup-request) — thầy cô ngồi nhìn màn hình không nhúc
-         nhích mà chẳng biết vì sao. Đã bắt gặp thật trong Console ngày 4/8/2026. */
-      if(dangDangNhap){ try{ if(auth.currentUser===null) console.warn('[ĐB] đang có cửa sổ đăng nhập — bỏ qua lượt bấm này'); }catch(e){} return; }
-      dangDangNhap=true;
+         nhích mà chẳng biết vì sao. Đã bắt gặp thật trong Console ngày 4/8/2026.
+         Nhưng "một lúc" nay chỉ tính trong CHO_BAM_LAI giây đầu; sau đó coi như lượt cũ
+         đã hỏng, cho mở lượt mới thay vì khoá nút vĩnh viễn. */
+      if(dangDangNhap){
+        if(Date.now()-tBatDau < CHO_BAM_LAI){
+          try{ console.warn('[ĐB] đang có cửa sổ đăng nhập — bỏ qua lượt bấm này'); }catch(e){}
+          return;
+        }
+        luotDN++; ketThucDangNhap();          // bỏ lượt cũ, làm lại từ đầu
+      }
+      if(trongUngDung()){
+        BX_confirm({title:'Hãy mở bằng trình duyệt',
+          html:'Thầy/cô đang mở Bút Xanh trong <b>ứng dụng Zalo/Facebook</b>. Google <b>không cho đăng nhập</b> ở đây, và dữ liệu cũng hay bị mất phiên.<br><br>👉 Bấm dấu <b>⋮</b> (hoặc <b>…</b>) ở góc màn hình → chọn <b>«Mở bằng trình duyệt»</b> (Chrome/Safari), rồi đăng nhập ở đó ạ.',
+          okText:'Tôi đã hiểu',cancelText:'Vẫn thử'}, null, function(){ FBX.login2(); });
+        return;
+      }
+      FBX.login2();
+    },
+    login2:function(){
+      var luot=++luotDN;
+      dangDangNhap=true; tBatDau=Date.now();
       var p=new firebase.auth.GoogleAuthProvider();
       loginBusy(true);
-      auth.signInWithPopup(p).then(function(){ dangDangNhap=false; }).catch(function(e){
-        dangDangNhap=false;
-        loginBusy(false);
+      /* Chốt chặn cuối: cửa sổ Google im lặng quá lâu thì trả nút về trạng thái bấm được */
+      hetGioT=setTimeout(function(){
+        hetGioT=null;
+        if(luot!==luotDN || !dangDangNhap) return;
+        if(auth.currentUser){ ketThucDangNhap(); return; }     // đã vào rồi, chỉ là hồi âm chậm
+        luotDN++; ketThucDangNhap();
+        BX_confirm({title:'Đăng nhập chưa xong',
+          html:'Cửa sổ đăng nhập Google chưa phản hồi (có thể đã bị đóng hoặc mạng chập chờn).<br><br>Dữ liệu trên máy <b>vẫn nguyên vẹn</b> ạ. Thầy/cô bấm <b>Thử lại</b> nhé.',
+          okText:'Thử lại',cancelText:'Để sau'}, function(){ FBX.login(); });
+      }, HET_GIO);
+      auth.signInWithPopup(p).then(function(){ if(luot!==luotDN) return; ketThucDangNhap(); }).catch(function(e){
+        if(luot!==luotDN) return;             // hồi âm của lượt đã bỏ — kệ nó
+        ketThucDangNhap();
         console.warn('[ĐB] đăng nhập lỗi',e);
         var code=(e&&e.code)||'';
         /* Thầy cô tự đóng cửa sổ / bấm nút hai lần — không phải lỗi, không làm phiền */
@@ -7628,6 +7793,7 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
         if(msg) bxAlert('Đăng nhập bằng cách chuyển trang chưa thành công — '+msg+'\n\nThầy cô bấm "Đăng nhập" thử lại; nếu vẫn không được, gỡ chặn cửa sổ bật lên hoặc dùng Gmail cá nhân.');
       }); }catch(e){}
       auth.onAuthStateChanged(onAuth);
+      setTimeout(nhacTrinhDuyet, 3500);   // để app dựng xong hẳn rồi mới nhắc
       // Cảnh báo nếu đóng/chuyển trang khi còn thay đổi chưa kịp đẩy lên đám mây
       window.addEventListener('beforeunload', function(e){ if(user && (busy||dirty)){ e.preventDefault(); e.returnValue=''; return ''; } });
       renderUI();
@@ -7978,7 +8144,8 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     if(window.BX_luu) BX_luu(TKB_KEY, JSON.stringify({slots:slots,updated:new Date().toISOString()}), 'thời khoá biểu');
     else { try{ localStorage.setItem(TKB_KEY,JSON.stringify({slots:slots,updated:new Date().toISOString()})); }catch(e){} }
     /* Thời khoá biểu có thể vừa thêm lớp mới → nạp kho lớp đó nếu chưa có */
-    try{ if(window.BX_ensureKhoTheoLich) window.BX_ensureKhoTheoLich(); }catch(e){}
+    var _khoiCanKho=[];
+    try{ if(window.BX_ensureKhoTheoLich) _khoiCanKho=window.BX_ensureKhoTheoLich()||[]; }catch(e){}
     try{ if(window.FBX&&window.FBX.flush) window.FBX.flush(); }catch(e){}   // đẩy ngay lên đám mây
     try{ if(window.BX_gateLai) BX_gateLai(); }catch(e){}   // đã có TKB → gỡ cổng nhắc ở LBG/KHBD
     /* (14/8/2026) DỰNG LẠI LỊCH TUẦN ĐANG XEM ngay khi vừa có Thời khoá biểu.
@@ -7990,14 +8157,31 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
        AN TOÀN: chỉ dựng lại khi tuần đó CHƯA có bản lưu (getLBGForWeek rỗng) — tuyệt đối
        không đè lên Lịch báo giảng thầy cô đã chỉnh tay; tuần đã chỉnh thì vẫn phải bấm
        "✨ Tạo LBG tuần này" và được hỏi ghi đè như cũ. */
+    /* (14/8/2026 — rà soát) PHẢI CHỜ KHO VỀ RỒI MỚI DỰNG. Kho giáo án nạp lười (Worker, vài
+       MB); thầy cô bộ môn vừa khai thêm lớp mới thì lệnh nạp kho lớp đó mới CHỚM chạy. Dựng
+       ngay lúc ấy ra lịch TRỐNG TÊN BÀI rồi persist luôn → sai vĩnh viễn, phải tự bấm "Tạo LBG
+       tuần này" mới chữa được. Chờ Promise của BX_ensureKho từng khối; lỗi/không có thì vẫn
+       chạy tiếp (thà dựng muộn còn hơn không dựng). */
+    var _choKho;
+    try{
+      _choKho=(window.BX_ensureKho && _khoiCanKho.length)
+        ? Promise.all(_khoiCanKho.map(function(k){ try{ return window.BX_ensureKho(k); }catch(e){ return null; } }))
+        : Promise.resolve();
+    }catch(e){ _choKho=Promise.resolve(); }
+    _choKho.catch(function(){}).then(function(){ _dungLaiLichTuan(); });
+  }
+  function _dungLaiLichTuan(){
     try{
       var _gen=(typeof genForWeek==='function')?genForWeek:window.bxGenLBGForWeek;
       var _w=parseInt(state.week,10)||1;
       var _daLuu=(typeof getLBGForWeek==='function')?getLBGForWeek(_w):null;
-      if(_gen && !(_daLuu&&_daLuu.length)){
+      /* Được dựng lại khi: tuần chưa có bản lưu, HOẶC bản đang có là do chính máy tự sinh
+         (chưa ai chỉnh tay) — xem BX_laTuanTuGen. Thầy cô đã sửa tay thì không đụng tới. */
+      if(_gen && (!(_daLuu&&_daLuu.length) || (typeof BX_laTuanTuGen==='function' && BX_laTuanTuGen(_w)))){
         state.schedule=_gen(_w);
         try{ if(typeof fillScheduleDates==='function') fillScheduleDates(); }catch(e){}
         try{ if(typeof persistSchedule==='function') persistSchedule(); }catch(e){}
+        try{ if(typeof BX_ghiDauTuGen==='function') BX_ghiDauTuGen(_w); }catch(e){}
         try{ if(typeof renderSchedule==='function') renderSchedule(); }catch(e){}
         try{ if(typeof renderFullSchedule==='function') renderFullSchedule(); }catch(e){}
         try{ if(typeof renderKHBDView==='function') renderKHBDView(); }catch(e){}
@@ -8005,6 +8189,8 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     }catch(e){ console.warn('[TKB] dựng lại lịch tuần sau khi lưu lỗi', e&&e.message); }
   }
   window.bxLoadTKB=loadTKB; window.bxHasUserTKB=hasUserTKB;
+  /* Khối này nạp SAU lần vẽ màn đầu tiên → áp lại cổng nhắc một lượt cho đúng trạng thái thật */
+  try{ if(window.BX_gateLai) BX_gateLai(); }catch(e){}
 
   /* ---------- sinh LBG từ TKB + Kho ---------- */
   function lessonsForWeek(lop, mon, w){
@@ -8288,6 +8474,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
       state.schedule=sch;
       try{ if(typeof fillScheduleDates==='function') fillScheduleDates(); }catch(e){}
       try{ if(typeof persistSchedule==='function') persistSchedule(); }catch(e){}
+      try{ if(typeof BX_ghiDauTuGen==='function') BX_ghiDauTuGen(w); }catch(e){}   // máy tự sinh → lần sửa TKB sau còn dựng lại được
       try{ if(typeof renderFullSchedule==='function') renderFullSchedule(); }catch(e){}
       var noko=sch.filter(function(r){return r._nokho;}).length;
       var ovf=sch.filter(function(r){return r._overflow;}).length;
@@ -8429,7 +8616,20 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     else lam();
   };
   function _validSlots(){ return (_work||[]).filter(function(s){ return s.mon; }).map(_clone); }
-  window.bxTKBsave=function(){ var sl=_validSlots(); saveTKB(sl); renderStatus(); bxAlert('✓ Đã lưu Thời khóa biểu ('+sl.length+' tiết/tuần).\nTừ giờ Bút Xanh tự tạo Lịch báo giảng theo TKB này khi thầy cô chuyển tuần.'); };
+  function _tkbLuuThat(sl){ saveTKB(sl); renderStatus(); bxAlert('✓ Đã lưu Thời khóa biểu ('+sl.length+' tiết/tuần).\nTừ giờ Bút Xanh tự tạo Lịch báo giảng theo TKB này khi thầy cô chuyển tuần.'); }
+  window.bxTKBsave=function(){
+    var sl=_validSlots();
+    /* (14/8/2026 — rà soát) LƯỚI TRỐNG mà bấm Lưu: trước đây vẫn báo "✓ Đã lưu (0 tiết/tuần)"
+       rồi ghi đè lịch tuần đang xem thành rỗng — thầy cô mới vào, tò mò bấm thử là gặp ngay,
+       thấy Bảng điều khiển trắng trơn mà tưởng app hỏng. Nay: chưa có gì thì chỉ dẫn cách làm;
+       đã có thời khoá biểu thật thì phải hỏi lại vì đó là lệnh XOÁ. */
+    if(!sl.length){
+      if(!hasUserTKB()){ bxAlert('Thầy/cô chưa chọn môn cho ô nào nên chưa có gì để lưu.\n\nBấm vào từng ô để chọn môn — hoặc bấm "✨ Điền nhanh lịch mẫu" rồi sửa lại cho đúng lớp mình.'); return; }
+      bxConfirm('Lưới đang TRỐNG. Lưu như thế này sẽ XOÁ thời khoá biểu đã lưu của thầy/cô.\n\nThầy/cô có chắc không?',{okText:'Xoá thời khoá biểu',cancelText:'Giữ lại'}).then(function(ok){ if(ok) _tkbLuuThat(sl); });
+      return;
+    }
+    _tkbLuuThat(sl);
+  };
   window.bxTKBsaveAndGen=function(){ var sl=_validSlots(); saveTKB(sl); bxRegenCurrentWeek(); if(typeof showView==='function') showView('lich'); };
 
   /* ---------- 📥 Tải mẫu TKB (.xlsx lưới) ---------- */
@@ -8919,7 +9119,11 @@ window.BX_chaoChonLopThat=function(n){
   if(typeof goc==='function'){
     window.showView=function(v){
       var kq=goc.apply(this,arguments);
-      if(v==='lich') setTimeout(xong,250);
+      /* (14/8/2026 — rà soát) THÊM 'tkb': từ 10/8 bước chọn lớp mở thẳng màn Thời khoá biểu,
+         không đi qua Lịch báo giảng nữa, nên điều kiện cũ không bao giờ đúng — màn chào đứng
+         ì với dòng "⏳ Đang chuẩn bị lịch dạy…" đủ 9 giây (hẹn giờ dự phòng) và ăn hết cú
+         chạm của thầy cô. Đúng cảnh "bấm không ăn" ngay lần dùng đầu tiên. */
+      if(v==='lich'||v==='tkb') setTimeout(xong,250);
       return kq;
     };
   }
