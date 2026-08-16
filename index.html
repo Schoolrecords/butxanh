@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-16 · 39';
+  var PB='2026-08-16 · 40';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -5967,9 +5967,13 @@ function bxPara(text,o){o=o||{};var jc=o.jc?'<w:jc w:val="'+o.jc+'"/>':'';var sp
   return '<w:p><w:pPr><w:spacing w:after="'+sp+'" w:line="240" w:lineRule="auto"/>'+jc+'</w:pPr>'+bxRuns(text,o)+'</w:p>';}
 function bxTc(text,w,o){o=o||{};
   var span=o.span?'<w:gridSpan w:val="'+o.span+'"/>':'';
+  /* (16/8/2026) o.vm: gộp ô theo CHIỀU DỌC cho bảng 2 tầng tiêu đề của Phụ lục 2 CV 2345.
+     'restart' = ô mở đầu (mang chữ) · 'cont' = ô nối tiếp bên dưới (để rỗng).
+     Không truyền o.vm thì hàm chạy y như trước — mọi nơi khác đang dùng bxTc không đổi. */
+  var vm=o.vm?('<w:vMerge'+(o.vm==='restart'?' w:val="restart"':'')+'/>'):'';
   var bb=o.bb?('<w:tcBorders><w:bottom w:val="'+(o.bb==='dashed'?'dashed':'single')+'" w:sz="'+(o.bb==='dashed'?4:8)+'" w:space="0" w:color="'+(o.bb==='dashed'?'A6A6A6':'000000')+'"/></w:tcBorders>'):'';
   var jc=o.jc||'left';
-  return '<w:tc><w:tcPr><w:tcW w:w="'+w+'" w:type="dxa"/>'+span+bb+'<w:vAlign w:val="center"/></w:tcPr>'+
+  return '<w:tc><w:tcPr><w:tcW w:w="'+w+'" w:type="dxa"/>'+span+vm+bb+'<w:vAlign w:val="center"/></w:tcPr>'+
     '<w:p><w:pPr><w:spacing w:after="0" w:line="240" w:lineRule="auto"/><w:jc w:val="'+jc+'"/></w:pPr>'+bxRuns(text,{sz:o.sz||18,b:o.b,i:o.i,color:o.color})+'</w:p></w:tc>';}
 function bxBorders(dashedH){
   var solid=function(s){return '<w:'+s+' w:val="single" w:sz="4" w:space="0" w:color="000000"/>';};
@@ -5995,15 +5999,36 @@ function buildKHGDMonDocx(){
   var LOP=window.BX_curLop||'5';
   var GROOT=window.BX_KHGD_G||{'5':window.BX_KHGD};
   var DATA=((GROOT[LOP]||{})[SUBJ])||(window.BX_KHGD&&window.BX_KHGD[SUBJ])||TV5;
-  var ALLCOLS=[700,1800,1300,1450,3300,750,950,4150], totalW=14400;
-  var ALLHEAD=['Tuần','Chủ đề/ Mạch nội dung','Tên bài','Tên hoạt động','Nội dung hoạt động','Thời lượng (tiết)','Tiết theo KH môn học','Nội dung điều chỉnh, bổ sung / tích hợp dự kiến'];
-  var VIS=window.BX_visibleCols(DATA), NC=VIS.length;
+  /* (16/8/2026) Bám mẫu Phụ lục 2 CV 2345: thêm cột "Ghi chú" (số 8) để trống cho
+     tổ chuyên môn ghi tay. Cột 8 CHỈ tồn tại trong bản Word này — không đụng dữ liệu
+     và không đụng BX_visibleCols (hàm đó dùng chung với bảng trên màn hình). */
+  var ALLCOLS=[700,1800,1300,1450,3300,750,950,3150,1000], totalW=14400;
+  var ALLHEAD=['Tuần, tháng','Chủ đề/ Mạch nội dung','Tên bài','Tên hoạt động','Nội dung hoạt động','Thời lượng (tiết)','Tiết theo KH môn học','Nội dung điều chỉnh, bổ sung (nếu có)','Ghi chú'];
+  var VIS=window.BX_visibleCols(DATA).slice(); VIS.push(8); var NC=VIS.length;
   /* phân bổ lại bề rộng để bảng vẫn đầy 14400 sau khi bỏ cột rỗng */
   var rawSum=VIS.reduce(function(a,c){return a+ALLCOLS[c];},0);
   var COLS=VIS.map(function(c){return Math.round(ALLCOLS[c]*totalW/rawSum);});
   var HEAD=VIS.map(function(c){return ALLHEAD[c];});
   var rows=[];
-  rows.push('<w:tr><w:trPr><w:tblHeader/></w:trPr>'+HEAD.map(function(h,i){return bxTc(h,COLS[i],{color:NAVY,b:true,jc:'center',sz:18,bb:'solid'});}).join('')+'</w:tr>');
+  /* Tiêu đề 2 tầng đúng mẫu: các cột 1–6 nằm dưới nhóm "Chương trình và sách giáo khoa";
+     cột Tuần/Điều chỉnh/Ghi chú gộp dọc qua 2 hàng. */
+  var iNhom=[], iRieng=[];
+  VIS.forEach(function(c,k){ (c>=1&&c<=6?iNhom:iRieng).push(k); });
+  var h1=[], h2=[];
+  VIS.forEach(function(c,k){
+    if(c>=1&&c<=6){
+      if(k===iNhom[0]){
+        var wNhom=iNhom.reduce(function(a,j){return a+COLS[j];},0);
+        h1.push(bxTc('Chương trình và sách giáo khoa',wNhom,{span:iNhom.length,color:NAVY,b:true,jc:'center',sz:18,bb:'solid'}));
+      }
+      h2.push(bxTc(ALLHEAD[c],COLS[k],{color:NAVY,b:true,jc:'center',sz:18,bb:'solid'}));
+    }else{
+      h1.push(bxTc(ALLHEAD[c],COLS[k],{color:NAVY,b:true,jc:'center',sz:18,vm:'restart'}));
+      h2.push(bxTc('',COLS[k],{vm:'cont',bb:'solid'}));
+    }
+  });
+  rows.push('<w:tr><w:trPr><w:tblHeader/></w:trPr>'+h1.join('')+'</w:tr>');
+  rows.push('<w:tr><w:trPr><w:tblHeader/></w:trPr>'+h2.join('')+'</w:tr>');
   var W={}; VIS.forEach(function(c,k){W[c]=COLS[k];}); /* bề rộng theo cột gốc */
   var prevHK='',prevChu='',prevTuan='',prevBai='';
   for(var i=0;i<DATA.length;i++){
@@ -6026,7 +6051,8 @@ function buildKHGDMonDocx(){
       4:bxTc(nd,W[4],{bb}),
       5:bxTc(tl,W[5],{jc:'center',bb}),
       6:bxTc(tiet,W[6],{jc:'center',bb}),
-      7:bxTc(tich,W[7],{sz:17,bb})
+      7:bxTc(tich,W[7],{sz:17,bb}),
+      8:bxTc('',W[8],{bb})            /* Ghi chú — để trống cho tổ chuyên môn ghi tay */
     };
     rows.push('<w:tr>'+VIS.map(function(c){return cells[c];}).join('')+'</w:tr>');
   }
@@ -6048,28 +6074,60 @@ function buildKHGDMonDocx(){
   var qwTbl='<w:tbl><w:tblPr><w:tblW w:w="14400" w:type="dxa"/><w:jc w:val="center"/>'+bxBorders(false)+'<w:tblLayout w:type="fixed"/></w:tblPr>'+
     '<w:tblGrid>'+QWW.map(function(w){return '<w:gridCol w:w="'+w+'"/>';}).join('')+'</w:tblGrid>'+qrows.join('')+'</w:tbl>';
 
-  // Ký duyệt
+  /* Ký duyệt — đúng mẫu Phụ lục 2 CV 2345: Tổ trưởng (trái) · Hiệu trưởng (phải).
+     (16/8/2026: trước đây là 3 ô "Phê duyệt BGH / Tổ trưởng CM / Người lập" — không có trong mẫu.) */
+  var ngayThang='…, ngày … tháng … năm '+((state.year||'2026').match(/(20\d{2})/)||['','2026'])[1];
   var signTbl='<w:tbl><w:tblPr><w:tblW w:w="14400" w:type="dxa"/><w:jc w:val="center"/><w:tblLayout w:type="fixed"/></w:tblPr>'+
-    '<w:tblGrid><w:gridCol w:w="4800"/><w:gridCol w:w="4800"/><w:gridCol w:w="4800"/></w:tblGrid>'+
+    '<w:tblGrid><w:gridCol w:w="7200"/><w:gridCol w:w="7200"/></w:tblGrid>'+
     '<w:tr>'+
-     '<w:tc><w:tcPr><w:tcW w:w="4800" w:type="dxa"/></w:tcPr>'+bxPara('PHÊ DUYỆT CỦA BAN GIÁM HIỆU',{b:true,jc:'center'})+bxPara('(Kí, ghi rõ họ tên)',{i:true,jc:'center'})+'</w:tc>'+
-     '<w:tc><w:tcPr><w:tcW w:w="4800" w:type="dxa"/></w:tcPr>'+bxPara('TỔ TRƯỞNG CHUYÊN MÔN',{b:true,jc:'center'})+bxPara('(Kí, ghi rõ họ tên)',{i:true,jc:'center'})+'</w:tc>'+
-     '<w:tc><w:tcPr><w:tcW w:w="4800" w:type="dxa"/></w:tcPr>'+bxPara('…, ngày … tháng … năm '+( (state.year||'2026').match(/(20\d{2})/)||['','2026'])[1],{i:true,jc:'center'})+bxPara('NGƯỜI LẬP KẾ HOẠCH',{b:true,jc:'center'})+bxPara('(Kí, ghi rõ họ tên)',{i:true,jc:'center'})+'</w:tc>'+
+     '<w:tc><w:tcPr><w:tcW w:w="7200" w:type="dxa"/></w:tcPr>'+bxPara('',{})+bxPara('TỔ TRƯỞNG',{b:true,jc:'center'})+bxPara('(Kí, ghi rõ họ tên)',{i:true,jc:'center'})+'</w:tc>'+
+     '<w:tc><w:tcPr><w:tcW w:w="7200" w:type="dxa"/></w:tcPr>'+bxPara(ngayThang,{i:true,jc:'center'})+bxPara('HIỆU TRƯỞNG',{b:true,jc:'center'})+bxPara('(Kí, ghi rõ họ tên)',{i:true,jc:'center'})+'</w:tc>'+
     '</w:tr></w:tbl>';
 
   var xa=(state.xa||'……………'), truong=(state.truong||'……………'), nam=(state.year||'2026 – 2027');
+
+  /* Ba phần bắt buộc của Phụ lục 2 mà bản cũ thiếu: I. Căn cứ · II. Điều kiện · IV. Tổ chức thực hiện.
+     Để dạng có chỗ trống (…) cho nhà trường tự điền, không ghi cứng cơ quan quản lí. */
+  var mucI=
+    bxPara('I. CĂN CỨ XÂY DỰNG KẾ HOẠCH',{b:true,jc:'left',sz:22,sp:100,color:NAVY})+
+    bxPara('- Chương trình giáo dục phổ thông 2018 ban hành kèm theo Thông tư số 32/2018/TT-BGDĐT ngày 26/12/2018 của Bộ trưởng Bộ Giáo dục và Đào tạo; chương trình môn '+SUBJ+' lớp '+LOP+'.',{jc:'both',sz:20})+
+    bxPara('- Sách giáo khoa môn '+SUBJ+' lớp '+LOP+' đang sử dụng tại nhà trường và các sách giáo khoa khác có trong danh mục được Bộ Giáo dục và Đào tạo phê duyệt.',{jc:'both',sz:20})+
+    bxPara('- Công văn số 2345/BGDĐT-GDTH ngày 07/6/2021 của Bộ Giáo dục và Đào tạo về việc hướng dẫn xây dựng kế hoạch giáo dục của nhà trường cấp tiểu học.',{jc:'both',sz:20})+
+    bxPara('- Thông tư số 02/2025/TT-BGDĐT ngày 24/01/2025 quy định Khung năng lực số cho người học và Công văn số 3456/BGDĐT-GDPT ngày 27/6/2025 về hướng dẫn triển khai Khung năng lực số cho học sinh phổ thông.',{jc:'both',sz:20})+
+    bxPara('- Kế hoạch thời gian năm học '+nam+' và hướng dẫn thực hiện nhiệm vụ năm học của các cấp có thẩm quyền.',{jc:'both',sz:20})+
+    bxPara('- Kế hoạch giáo dục của Trường Tiểu học '+truong+' năm học '+nam+'.',{jc:'both',sz:20,sp:120});
+  var mucII=
+    bxPara('II. ĐIỀU KIỆN THỰC HIỆN MÔN HỌC',{b:true,jc:'left',sz:22,sp:100,color:NAVY})+
+    bxPara('1. Đội ngũ giáo viên: …………………………………………………………………………………',{jc:'left',sz:20})+
+    bxPara('2. Đặc điểm đối tượng học sinh: ………………………………………………………………………',{jc:'left',sz:20})+
+    bxPara('3. Nguồn học liệu, thiết bị dạy học, phòng học bộ môn (nếu có): ……………………………………',{jc:'left',sz:20})+
+    bxPara('4. Nội dung giáo dục địa phương, an toàn giao thông, hoạt động giáo dục tập thể, tích hợp liên môn: ………………………………………………………………………………………………',{jc:'left',sz:20,sp:120});
+  var mucIV=
+    bxPara('IV. TỔ CHỨC THỰC HIỆN',{b:true,jc:'left',sz:22,sp:140,color:NAVY})+
+    bxPara('1. Giáo viên (giáo viên phụ trách môn học, giáo viên chủ nhiệm): thực hiện dạy học theo kế hoạch; chủ động điều chỉnh nội dung, hình thức tổ chức cho phù hợp đối tượng học sinh và điều kiện thực tế; ghi nội dung điều chỉnh, bổ sung vào cột tương ứng và báo cáo tổ chuyên môn.',{jc:'both',sz:20})+
+    bxPara('2. Tổ trưởng (khối trưởng): theo dõi, hướng dẫn, kiểm tra việc thực hiện kế hoạch; tổng hợp đề xuất điều chỉnh của giáo viên, trình Hiệu trưởng phê duyệt.',{jc:'both',sz:20})+
+    bxPara('3. Tổng phụ trách Đội: phối hợp tổ chức các hoạt động giáo dục có liên quan theo kế hoạch chung của nhà trường.',{jc:'both',sz:20,sp:160});
+
   var header=
     bxPara('UBND XÃ '+xa,{jc:'left',sz:20})+
     bxPara('TRƯỜNG TIỂU HỌC '+truong,{b:true,jc:'left',sz:20,sp:120})+
-    bxPara('KẾ HOẠCH GIÁO DỤC MÔN HỌC',{b:true,jc:'center',sz:28,color:NAVY})+
+    bxPara('KẾ HOẠCH DẠY HỌC MÔN HỌC',{b:true,jc:'center',sz:28,color:NAVY})+
     bxPara('MÔN '+SUBJ.toUpperCase()+' – LỚP '+LOP,{b:true,jc:'center',sz:26,color:NAVY})+
     bxPara('NĂM HỌC '+nam,{b:true,jc:'center',sz:24,sp:60,color:NAVY})+
-    bxPara('(Lập theo định hướng Phụ lục II Công văn 2345/BGDĐT-GDTH; tích hợp Năng lực số/AI theo Thông tư 02/2025/TT-BGDĐT và Công văn 3456/BGDĐT-GDPT)',{i:true,jc:'center',sz:18,sp:160});
+    bxPara('(Lập theo Phụ lục 2 Công văn 2345/BGDĐT-GDTH; tích hợp Năng lực số/AI theo Thông tư 02/2025/TT-BGDĐT và Công văn 3456/BGDĐT-GDPT)',{i:true,jc:'center',sz:18,sp:160})+
+    mucI+mucII+
+    bxPara('III. KẾ HOẠCH DẠY HỌC MÔN '+SUBJ.toUpperCase(),{b:true,jc:'left',sz:22,sp:120,color:NAVY});
+  /* Mức năng lực số theo Khung NLS: lớp 1–3 là Cơ bản 1, lớp 4–5 là Cơ bản 2.
+     (16/8/2026: trước đây ghi cứng "Cơ bản 2" cho mọi lớp — sai với lớp 1,2,3.) */
+  var mucCB=(['1','2','3'].indexOf(String(LOP))>=0)
+    ? '“Cơ bản 1” (lớp 1–3: nhiệm vụ đơn giản, thực hiện dưới sự hướng dẫn của giáo viên)'
+    : '“Cơ bản 2” (lớp 4–5: nhiệm vụ quen thuộc, tự chủ một phần và có hướng dẫn khi cần thiết)';
   var after=
     bxPara('',{})+
     bxPara('QUY ƯỚC MÃ TÍCH HỢP NĂNG LỰC SỐ / AI',{b:true,jc:'left',sz:20,sp:80,color:NAVY})+qwTbl+
     bxPara('',{})+
-    bxPara('Ghi chú: Nội dung tích hợp Năng lực số/AI là gợi ý ở mức “Cơ bản 2” (lớp 4–5: nhiệm vụ đơn giản, tự chủ và có hướng dẫn khi cần thiết); giáo viên chọn lọc, lồng ghép tự nhiên theo yêu cầu cần đạt của bài, bảo đảm không gây quá tải. AI chỉ ở mức nhận biết/trải nghiệm do giáo viên kiểm soát.',{i:true,jc:'both',sz:18,sp:200})+
+    bxPara('Ghi chú: Nội dung tích hợp Năng lực số/AI là gợi ý ở mức '+mucCB+'; giáo viên chọn lọc, lồng ghép tự nhiên theo yêu cầu cần đạt của bài, bảo đảm không làm thay đổi hay gây quá tải Chương trình giáo dục phổ thông 2018. AI chỉ ở mức nhận biết/trải nghiệm do giáo viên kiểm soát.',{i:true,jc:'both',sz:18,sp:200})+
+    mucIV+
     signTbl;
 
   var sect='<w:sectPr><w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/><w:pgMar w:top="850" w:right="900" w:bottom="850" w:left="900" w:header="426" w:footer="426" w:gutter="0"/></w:sectPr>';
