@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-16 · 38';
+  var PB='2026-08-16 · 39';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -7629,33 +7629,15 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     },2500);
   });
 
-  /* ===== MỞ BẰNG TRÌNH DUYỆT THẬT (16/8/2026) =====
-     Thầy cô hay bấm link Bút Xanh ngay trong Zalo/Facebook. Ở đó Google từ chối đăng nhập
-     và kho dữ liệu bị dọn liên tục → chính là lý do "một thời gian trang tự đăng xuất".
+  /* ===== MỞ TRONG ZALO/FACEBOOK — KHÔNG NHẮC GÌ NỮA (16/8/2026) =====
+     Ở webview của Zalo/Facebook, Google từ chối đăng nhập (disallowed_useragent) và kho
+     dữ liệu bị dọn liên tục — đó là lý do thật của chuyện "một thời gian trang tự đăng xuất".
+     ⚠️ THẦY CHUNG CHỐT: app KHÔNG được nhắc gì về việc này nữa — không thanh tự hiện, cũng
+     không hộp thoại lúc bấm "Đăng nhập". Thầy cô không thạo máy, mọi bảng lạ đều làm rối.
+     Đăng nhập trong Zalo cứ chạy như mọi nơi khác; hỏng thì rơi vào phần báo lỗi chung bên
+     dưới, và nút không bao giờ kẹt nữa nhờ HET_GIO. Việc hướng dẫn mở bằng Chrome nay do
+     thầy Chung nói trực tiếp với giáo viên, không phải việc của app. ĐỪNG thêm lại. */
 
-     ⚠️ THẦY CHUNG CHỐT (16/8/2026): BỎ hẳn thanh nhắc tự hiện lúc mở app — thầy cô không
-     thạo máy, thấy bảng lạ nhảy ra là rối. Đừng thêm lại. Lối thoát chỉ còn xuất hiện
-     ĐÚNG LÚC thầy cô bấm "Đăng nhập" (xem FBX.login) — lúc đó buộc phải nói gì đó, vì
-     không nói thì Google trả về màn báo lỗi tiếng Anh còn khó hiểu hơn nhiều.
-
-     Thoát khỏi webview bằng MỘT chạm: Android hiểu địa chỉ dạng intent:// nên mở thẳng
-     được Chrome; iPhone thì thử gọi Chrome. Ứng dụng nào chặn hết thì sau 1,6 giây vẫn
-     còn ở đây → gọi khiHong() để báo lại, không để thầy cô bấm rồi không thấy gì xảy ra. */
-  function moTrinhDuyetNgoai(khiHong){
-    var ua=navigator.userAgent||'', tran=location.href.replace(/^https?:\/\//,'');
-    var t0=Date.now();
-    try{
-      if(/Android/i.test(ua)){
-        location.href='intent://'+tran+'#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url='+encodeURIComponent(location.href)+';end';
-      } else if(/iPhone|iPad|iPod/i.test(ua)){
-        location.href='googlechrome://'+tran;
-      } else { khiHong(); return; }
-    }catch(e){ khiHong(); return; }
-    setTimeout(function(){
-      if(document.hidden||Date.now()-t0>4000) return;   // đã nhảy được sang app khác
-      khiHong();
-    },1600);
-  }
   /* Đăng nhập: popup là luồng chính (không phụ thuộc cookie bên thứ ba).
      Chuyển trang (redirect) qua but-xanh.firebaseapp.com dễ mất phiên khi trình duyệt
      chặn cookie → chỉ là đường cùng, và phải được thầy cô đồng ý trước. */
@@ -7673,13 +7655,6 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     dangDangNhap=false; tBatDau=0;
     if(hetGioT){ clearTimeout(hetGioT); hetGioT=null; }
     loginBusy(false);
-  }
-  /* Trình duyệt trong ứng dụng (Zalo, Facebook, Messenger…): Google TỪ CHỐI đăng nhập
-     ở đây (disallowed_useragent), và mỗi lần mở lại là một kho dữ liệu khác → thầy cô
-     tưởng app "tự đăng xuất". Phải mời ra trình duyệt thật trước khi thử. */
-  function trongUngDung(){
-    var ua=navigator.userAgent||'';
-    return /(FBAN|FBAV|FB_IAB|Instagram|Zalo|Line\/|MicroMessenger|VNPT|OPR\/.*Mini)/i.test(ua);
   }
   function loginBusy(on){
     var b=box&&box.querySelector('.fb-btn'); if(!b) return;
@@ -7700,16 +7675,6 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
           return;
         }
         luotDN++; ketThucDangNhap();          // bỏ lượt cũ, làm lại từ đầu
-      }
-      if(trongUngDung()){
-        /* Bấm "Đăng nhập" trong Zalo/Facebook là chắc chắn hỏng (Google chặn webview),
-           nên đưa thẳng lối thoát thay vì để thầy cô thử rồi thất vọng. */
-        BX_confirm({title:'Hãy mở bằng trình duyệt',
-          html:'Thầy/cô đang mở Bút Xanh trong <b>ứng dụng Zalo/Facebook</b>. Google <b>không cho đăng nhập</b> ở đây, và dữ liệu cũng hay bị mất.<br><br>Bấm <b>Mở bằng Chrome</b> rồi đăng nhập ở đó ạ. Nếu máy không tự mở, thầy cô bấm dấu <b>⋮</b> (hoặc <b>…</b>) góc màn hình → <b>«Mở bằng trình duyệt»</b>.',
-          okText:'🌐 Mở bằng Chrome',cancelText:'Vẫn thử ở đây'},
-          function(){ moTrinhDuyetNgoai(function(){ bxAlert('Ứng dụng này không cho mở thẳng trình duyệt ạ.\n\nThầy/cô bấm dấu ⋮ (hoặc …) ở góc màn hình → chọn «Mở bằng trình duyệt», hoặc mở Chrome rồi gõ: butxanh.net'); }); },
-          function(){ FBX.login2(); });
-        return;
       }
       FBX.login2();
     },
