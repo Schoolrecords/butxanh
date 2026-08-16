@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-16 · 48';
+  var PB='2026-08-17 · 49';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -779,6 +779,8 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 .kd-tiet-l{font-size:8.5px;font-weight:700;opacity:.75;margin-top:2px;text-transform:uppercase;letter-spacing:.4px}
 .kd-body{min-width:0;flex:1 1 150px}
 .kd-mon{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:var(--c,#566);text-transform:uppercase;letter-spacing:.3px}
+/* Nhãn LỚP trên thẻ LBG điện thoại — chỉ hiện khi tuần đó dạy từ 2 lớp trở lên */
+.kd-lop{flex:0 0 auto;margin-left:auto;font-size:10.5px;font-weight:800;letter-spacing:.2px;color:var(--c,#566);background:var(--cs,#eef2f0);border:1px solid rgba(0,0,0,.06);padding:2px 8px;border-radius:999px;white-space:nowrap}
 .kd-bai{font-weight:700;font-size:14px;color:var(--ink);margin-top:2px;line-height:1.3}
 .kd-sub{font-size:11.5px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .kd-dot{width:3px;height:3px;border-radius:50%;background:#c8d2cc;flex:0 0 auto}
@@ -3724,8 +3726,16 @@ function renderFullSchedule(){
   fillScheduleDates();
   el('lbg-year').textContent=state.year;
   el('lbg-range').textContent=`Từ ngày: ${state.from} đến ${state.to}`;
-  el('lbg-week').textContent=state.week; el('lbg-khoi').textContent=state.khoi;
-  el('lbg-gvcn').textContent=state.gvcn; el('lbg-lop').textContent=state.klass;
+  el('lbg-week').textContent=state.week;
+  /* Đầu bản in phải ghi ĐÚNG các lớp có trong lịch tuần này. Trước đây ghi cứng lớp chủ nhiệm
+     (state.klass) nên giáo viên bộ môn dạy 3A + 2B nộp bản in đề "Lớp: 3A" tuy bên trong có
+     tiết lớp 2B (16/8/2026 — LBG-1). */
+  var _lops=_lbgLopTrongTuan(state.schedule);
+  if(!_lops.length) _lops=[state.klass];
+  var _khois=[], _kseen={};
+  _lops.forEach(function(l){ var k=String(l).replace(/\D/g,'').slice(0,1); if(k&&!_kseen[k]){ _kseen[k]=1; _khois.push(k); } });
+  el('lbg-khoi').textContent=_khois.length?_khois.join(', '):state.khoi;
+  el('lbg-gvcn').textContent=state.gvcn; el('lbg-lop').textContent=_lops.join(', ');
   el('lbg-place').textContent=placeStr(); el('lbg-sign').textContent=state.gvcn;
   const tb=el('sched-body-full'); if(!tb) return; tb.innerHTML='';
   scheduleRows().forEach(d=>{
@@ -3740,7 +3750,10 @@ function renderFullSchedule(){
   if(window.BX_renderWeekPicker){ try{ window.BX_renderWeekPicker(); }catch(e){} }
 }
 /* Thẻ LBG cho điện thoại — gom theo Thứ (chỉ hiện ở mobile qua CSS) */
-function _lbgCard(r){
+/* `nhieuLop` = tuần này dạy từ 2 lớp trở lên → mỗi thẻ phải ghi rõ LỚP, kẻo giáo viên bộ môn
+   nhìn điện thoại không biết tiết nào của lớp nào (16/8/2026 — LBG-1). Dạy đúng một lớp thì
+   không ghi, tránh nhắc thừa. */
+function _lbgCard(r,nhieuLop){
   var m=(typeof monMeta==='function')?monMeta(r.mon):{icon:'📘',c:'#15834A',cs:'#E7F5ED'};
   var sub=[];
   if(r.buoi) sub.push(_xe(r.buoi));
@@ -3758,15 +3771,28 @@ function _lbgCard(r){
   }
   return '<div class="kd-card" style="--c:'+m.c+';--cs:'+m.cs+'">'+
     '<div class="kd-tiet"><span class="kd-tiet-n">'+_xe(String(r.tiet||'–'))+'</span><span class="kd-tiet-l">Tiết</span></div>'+
-    '<div class="kd-body"><div class="kd-mon">'+m.icon+' '+_xe(r.mon||'')+'</div>'+
+    '<div class="kd-body"><div class="kd-mon">'+m.icon+' '+_xe(r.mon||'')+
+      (nhieuLop&&(r.lop||'')?'<span class="kd-lop">'+_xe(String(r.lop))+'</span>':'')+'</div>'+
       '<div class="kd-bai">'+_xe(r.bai||'')+'</div>'+
       (sub.length?'<div class="kd-sub">'+sub.join('<span class="kd-dot"></span>')+'</div>':'')+
     '</div></div>';
+}
+/* Danh sách LỚP thật sự có tiết trong lịch tuần đang xem, giữ thứ tự xuất hiện.
+   Dùng cho cả nhãn lớp trên thẻ điện thoại lẫn dòng "Lớp:" ở đầu bản in. */
+function _lbgLopTrongTuan(rows){
+  var out=[], seen={};
+  (rows||state.schedule||[]).forEach(function(r){
+    var l=String((r&&r.lop)||'').trim(); if(!l) return;
+    var k=l.toUpperCase().replace(/\s+/g,'');
+    if(!seen[k]){ seen[k]=1; out.push(l); }
+  });
+  return out;
 }
 function renderLbgCards(){
   var box=el('lbg-cards'); if(!box) return;
   var rows=state.schedule||[];
   if(!rows.length){ box.innerHTML='<div class="empty-pad">Chưa có lịch báo giảng tuần này.</div>'; return; }
+  var nhieuLop=_lbgLopTrongTuan(rows).length>1;
   var groups=[], map={};
   rows.forEach(function(r){ var key=(r.day||'?')+'§'+(r.date||''); if(map[key]==null){ map[key]=groups.length; groups.push({day:r.day||'',date:r.date||'',items:[]}); } groups[map[key]].items.push(r); });
   box.innerHTML='<div class="kd-week">'+groups.map(function(g){
@@ -3774,7 +3800,7 @@ function renderLbgCards(){
       '<span class="kd-daypill">📅 '+_xe(g.day||'—')+'</span>'+
       (g.date?'<span class="kd-daydate">'+_xe(g.date)+'</span>':'')+
       '<span class="kd-daycount">'+g.items.length+' tiết</span></div>'+
-      '<div class="kd-cards">'+g.items.map(_lbgCard).join('')+'</div></div>';
+      '<div class="kd-cards">'+g.items.map(function(it){ return _lbgCard(it,nhieuLop); }).join('')+'</div></div>';
   }).join('')+'</div>';
 }
 
@@ -3909,7 +3935,11 @@ function _scheduleSheetXml(filled){
   // r2 (Từ ngày: …)
   rows.push(ROW(2,24.75,[C(0,2,2,'(Từ ngày: '+range+')'),C(1,2,2,''),C(2,2,2,''),C(3,2,2,''),C(4,2,2,''),C(5,2,2,''),C(6,2,2,'')])); merges.push('A2:G2');
   // r3 TUẦN … | GV: … (viền dưới)
-  rows.push(ROW(3,18,[C(0,3,3,'TUẦN '+wk),C(1,3,3,''),C(2,3,3,''),C(3,3,3,'GV: '+gvcn),C(4,3,3,''),C(5,3,3,''),C(6,3,2,'')])); merges.push('A3:C3','D3:F3');
+  /* Dạy từ 2 lớp trở lên thì ghi kèm danh sách lớp cạnh tên giáo viên — ô D3:F3 rất rộng nên
+     không vỡ bố cục; dạy một lớp thì giữ nguyên như cũ (16/8/2026 — LBG-1). */
+  let gvLine='GV: '+gvcn;
+  if(filled){ try{ const _l=_lbgLopTrongTuan(state.schedule); if(_l.length>1) gvLine+='  —  Lớp: '+_l.join(', '); }catch(e){} }
+  rows.push(ROW(3,18,[C(0,3,3,'TUẦN '+wk),C(1,3,3,''),C(2,3,3,''),C(3,3,3,gvLine),C(4,3,3,''),C(5,3,3,''),C(6,3,2,'')])); merges.push('A3:C3','D3:F3');
   // r4 tiêu đề cột (xanh)
   const Hh=['Thứ','Buổi','Tiết','Môn','Lớp','Tên bài','Đồ dùng TBDH'];
   rows.push(ROW(4,26.1,Hh.map((t,i)=>C(i,4,i===1?5:4,t))));
