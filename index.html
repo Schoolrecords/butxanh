@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-17 · 49';
+  var PB='2026-08-17 · 50';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -2554,8 +2554,27 @@ const state = {
 
 /* ---------- 2) AI GATEWAY ----------
    Mọi lệnh gọi AI đi qua đây → sau đổi sang Gemini/model nội bộ chỉ sửa 1 chỗ. */
+/* ===== TRẠNG THÁI TRỢ LÝ AI (17/8/2026) =====
+   callAI gọi thẳng api.anthropic.com TỪ TRÌNH DUYỆT nên bị chặn (CORS) 100%: trước đây bấm
+   nút AI là chờ vài giây rồi KHÔNG hiện gì, chỉ có 2 dòng lỗi đỏ trong Console mà thầy cô
+   không bao giờ nhìn thấy — y như app bị đơ.
+   Chừng nào CHƯA dựng máy chủ trung gian giữ khoá API thì để `san:false`: nút vẫn còn, bấm
+   là được trả lời NGAY (không chờ, không lỗi đỏ), và chỗ nào Bút Xanh làm hộ được thì làm luôn.
+   Khi đã có máy chủ: đặt `BX_AI.san=true` và `BX_AI.url='<địa chỉ máy chủ>'` — KHÔNG phải sửa
+   nút nào, mọi nơi gọi đều đi qua đây. */
+window.BX_AI={ san:false, url:'https://api.anthropic.com/v1/messages' };
+function BX_aiSan(){ return !!(window.BX_AI&&BX_AI.san); }
+function BX_loiAI(){ var e=new Error('Trợ lý AI đang tạm khoá'); e.bxAI=true; return e; }
+/* Lời nhắc CHUẨN khi thầy cô bấm nút AI: một câu nói rõ đang tạm khoá, một câu nói việc
+   Bút Xanh vừa làm thay. Ngắn, một nút, không dạy thao tác — theo nguyên tắc lời nhắc của dự án. */
+function BX_nhacAI(lamThay){
+  var t='✨ Trợ lý AI đang tạm khoá.';
+  if(lamThay) t+='\n\n'+lamThay;
+  try{ if(window.bxAlert) bxAlert(t,{autoClose:9000}); else alert(t); }catch(e){ try{ alert(t); }catch(e2){} }
+}
 async function callAI(system, prompt){
-  const res = await fetch("https://api.anthropic.com/v1/messages",{
+  if(!BX_aiSan()) throw BX_loiAI();          // chặn ngay ở cổng: không gọi mạng, không chờ, không lỗi đỏ
+  const res = await fetch(BX_AI.url,{
     method:"POST", headers:{"Content-Type":"application/json"},
     body:JSON.stringify({model:"claude-sonnet-4-20250514", max_tokens:1000, system, messages:[{role:"user",content:prompt}]})
   });
@@ -2655,8 +2674,17 @@ Cấu trúc: I. YÊU CẦU CẦN ĐẠT (năng lực, phẩm chất) · II. Đ�
     document.getElementById("btn-gen").textContent="↻ Soạn lại";
   }catch(e){
     document.getElementById("khbd-loading").classList.add("hidden");
-    document.getElementById("khbd-empty").classList.remove("hidden");
-    document.getElementById("khbd-empty").innerHTML='Bút Xanh chưa kết nối được máy chủ AI. Thầy cô thử lại sau giây lát nhé.';
+    if(e&&e.bxAI){
+      /* AI tạm khoá → mở sẵn MẪU KHBD trống để thầy cô soạn ngay, đừng bỏ màn hình trống trơn */
+      const ta=document.getElementById("khbd-text");
+      if(ta && !ta.value.trim()) ta.value=khbdTemplateText(l);
+      if(ta) ta.classList.remove("hidden");
+      ['btn-copy','btn-word','btn-save'].forEach(function(id){ const b=document.getElementById(id); if(b) b.disabled=false; });
+      BX_nhacAI('Bút Xanh đã mở sẵn mẫu Kế hoạch bài dạy để thầy cô soạn.');
+    }else{
+      document.getElementById("khbd-empty").classList.remove("hidden");
+      document.getElementById("khbd-empty").innerHTML='Bút Xanh chưa kết nối được máy chủ AI. Thầy cô thử lại sau giây lát nhé.';
+    }
   }finally{ document.getElementById("btn-gen").disabled=false; }
 }
 function khbdTemplateText(l){
@@ -2901,7 +2929,9 @@ async function parseSchedule(){
       status.innerHTML=`<div class="notice" style="margin:0;background:var(--green-soft);border-color:#cdeed9;color:var(--green-dark)">✓ Đã đọc ${arr.length} tiết và cập nhật bảng lịch. Thầy cô đóng cửa sổ này để xem nhé.</div>`;
     }else throw 0;
   }catch(e){
-    status.innerHTML='<div class="notice" style="margin:0">Bút Xanh chưa đọc được. Thầy cô thử mỗi tiết một dòng rồi thử lại nhé.</div>';
+    status.innerHTML=(e&&e.bxAI)
+      ? '<div class="notice" style="margin:0">✨ Trợ lý AI đang tạm khoá nên chưa bóc tách được đoạn dán này.<br>Thầy cô bấm <b>“📂 Chọn file”</b> để đưa file Excel lịch báo giảng lên — Bút Xanh đọc thẳng, không cần AI.</div>'
+      : '<div class="notice" style="margin:0">Bút Xanh chưa đọc được. Thầy cô thử mỗi tiết một dòng rồi thử lại nhé.</div>';
   }
 }
 
@@ -3135,7 +3165,10 @@ document.getElementById("remind-refresh").onclick=async function(){
   try{
     const items=parseJSON(await callAI(system,prompt));
     box.innerHTML=items.map(it=>`<div class="remind r-${it.group||'org'}"><span class="ico"><svg class="icn" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/></svg></span><div class="body"><div class="rtitle"><span>${it.title}</span><span class="when">${it.when||''}</span></div><div class="rtext">${it.body}</div></div></div>`).join("");
-  }catch(e){ renderDashReminders(); }
+  }catch(e){
+    renderDashReminders();                       // vẽ lại nhắc theo lịch — không để hộp trống
+    if(e&&e.bxAI) BX_nhacAI('Bút Xanh vẫn nhắc theo lịch tuần này như thường.');
+  }
   finally{ renderDashStats(); }
 };
 
@@ -4467,7 +4500,10 @@ async function aiAssist(mode){
     if(mode==='review'){ bxAlert('Bút Xanh rà soát (gợi ý):\n\n'+out); if(tag){tag.className='bank-tag ok'; tag.textContent='✅ Đã rà soát — xem hộp thoại gợi ý.';} }
     else { ta.value=out; onKhbdEdit(); if(tag){tag.className='bank-tag ok'; tag.textContent='✅ AI đã '+lbl+' xong. Thầy cô kiểm tra và lưu bản của mình nhé.';} }
   }catch(e){
-    if(tag){ tag.className='bank-tag warn'; tag.innerHTML='⚠️ AI hỗ trợ (chức năng phụ) cần kết nối máy chủ — hiện chưa bật. <b>Kho giáo án vẫn dùng offline bình thường.</b>'; }
+    if(tag){ tag.className='bank-tag warn'; tag.innerHTML=(e&&e.bxAI)
+      ? '✨ Trợ lý AI đang tạm khoá — thầy cô sửa trực tiếp trong ô soạn bên dưới nhé. <b>Kho giáo án vẫn dùng bình thường.</b>'
+      : '⚠️ AI hỗ trợ (chức năng phụ) cần kết nối máy chủ — hiện chưa bật. <b>Kho giáo án vẫn dùng offline bình thường.</b>'; }
+    if(e&&e.bxAI) BX_nhacAI('Thầy cô sửa trực tiếp trong ô soạn Kế hoạch bài dạy nhé.');
   }
 }
 /* ===== Quản lý Kho giáo án số: nạp/xuất JSON, mẫu nhập ===== */
@@ -4734,7 +4770,10 @@ el('nhac-refresh').onclick=async function(){
   const system=`Bạn là "Bút Xanh" - trợ lý thân thiện cho GV tiểu học (CT GDPT 2018, TT27/2020). Ngôn ngữ nhẹ nhàng, không phán xét. Chỉ trả JSON THUẦN.`;
   const prompt=`Lịch tuần ${state.week} Lớp ${state.klass}:\n${lich}\nTạo 4 nhắc "hôm nay" quan trọng. JSON:[{"group":"red|org|pur|blu","title":"...","when":"...","body":"..."}].`;
   try{ const items=parseJSON(await callAI(system,prompt)); box.innerHTML=items.map(it=>rmk(it.group||'org',it.title,it.when||'',it.body)).join(''); }
-  catch(e){ renderNhacToday(); }
+  catch(e){
+    renderNhacToday();                           // vẽ lại nhắc theo lịch — không để hộp trống
+    if(e&&e.bxAI) BX_nhacAI('Bút Xanh vẫn nhắc theo lịch tuần này như thường.');
+  }
   finally{ b.disabled=false; }
   renderNhacPick();
 };
@@ -5041,7 +5080,10 @@ function downloadPptx(){
     const slides=parseJSON(await callAI(system,`Phác dàn ý slide cho tiết: Môn ${l.mon}, Bài "${l.bai}", Lớp ${state.klass}.`));
     el('ppt-text').value=`# ${l.bai}\nMôn ${l.mon} · Lớp ${state.klass} · Tuần ${state.week}\n`+slides.map(sl=>`\n# ${sl.title}\n`+(sl.points||[]).map(p=>'- '+p).join('\n')).join('\n');
     renderPptPreview();
-  }catch(e){ pptFillTemplate(); }
+  }catch(e){
+    pptFillTemplate();                           // dựng dàn ý mẫu để thầy cô sửa
+    if(e&&e.bxAI) BX_nhacAI('Bút Xanh đã dựng dàn ý mẫu để thầy cô sửa lại.');
+  }
 }; })();
 /* ===== XUẤT POWERPOINT .PPTX THẬT (OOXML/zip) ===== */
 const PPTX_NS_A='xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"';
