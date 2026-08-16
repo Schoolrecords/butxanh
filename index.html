@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-16 · 44';
+  var PB='2026-08-16 · 45';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1609,7 +1609,9 @@ window.bxMergeKho = function(){
       <label class="select"><svg class="icn cal" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>
         <select id="sel-week" onchange="BX_dashSel.call(this)"></select>
         <svg class="icn cv" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></label>
-      <label class="select"><select id="sel-lop" onchange="BX_dashSel.call(this)"><option>Lớp 5A</option><option>Lớp 5B</option></select>
+      <!-- Danh sách lớp do fillLopSelect() dựng theo lớp GV thật sự dạy; KHÔNG ghi cứng 5A/5B
+           (trước đây giáo viên khối 1-4 mở app vẫn thấy "Lớp 5A" trong bộ lọc). -->
+      <label class="select"><select id="sel-lop" onchange="BX_dashSel.call(this)"></select>
         <svg class="icn cv" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></label>
     </div>
 
@@ -1986,7 +1988,7 @@ window.bxMergeKho = function(){
         <div class="form-grid">
           <label class="fld"><span>Xưng hô</span><select id="set-xung"><option value="Cô">Cô</option><option value="Thầy">Thầy</option></select></label>
           <label class="fld"><span>Họ và tên</span><input id="set-name" value="Bút Xanh"></label>
-          <label class="fld"><span>Cấp / Khối</span><input id="set-grade" value="Giáo viên Tiểu học — Lớp 5A"></label>
+          <label class="fld"><span>Cấp / Khối</span><input id="set-grade" value="" placeholder="Giáo viên Tiểu học — Lớp …"></label>
           <label class="fld"><span>Trường</span><input id="set-school" value="Tiểu học Diễn Liên" placeholder="Tên trường…"></label>
           <label class="fld"><span>Năm học</span><input id="set-year" value="2026 - 2027"></label>
           <label class="fld"><span>Tổ chuyên môn</span><input id="set-team" placeholder="Tổ…"></label>
@@ -2588,7 +2590,7 @@ function renderSchedule(){
 function openKHBD(idx){
   const l=state.schedule[idx]; state.current=Object.assign({},l);
   document.getElementById("khbd-title").textContent=`KHBD: ${l.mon} — ${l.bai}`;
-  document.getElementById("khbd-sub").textContent=`Lớp ${state.klass} · ${l.day} ${l.date} · Tiết ${l.tiet} · Tuần ${state.week}`;
+  document.getElementById("khbd-sub").textContent=`Lớp ${l.lop||state.klass} · ${l.day} ${l.date} · Tiết ${l.tiet} · Tuần ${state.week}`;
   document.getElementById("khbd-text").classList.add("hidden");
   document.getElementById("khbd-text").value="";
   document.getElementById("khbd-empty").classList.remove("hidden");
@@ -2627,7 +2629,7 @@ async function generateKHBD(){
   const system=`Bạn là trợ lý soạn Kế hoạch bài dạy (KHBD) cho giáo viên tiểu học Việt Nam.
 BÁM CHUẨN: Chương trình GDPT 2018; cấu trúc KHBD theo CV 2345/BGDĐT-GDTH; đánh giá theo Thông tư 27/2020/TT-BGDĐT.
 QUAN TRỌNG: Đây là BẢN NHÁP. Nếu không chắc Yêu cầu cần đạt của bài, ghi "(Thầy cô đối chiếu SGK/SGV)" thay vì bịa. Trình bày tiếng Việt rõ ràng, súc tích.`;
-  const prompt=`Soạn bản nháp KHBD: Lớp ${state.klass}, Môn ${l.mon}, Bài "${l.bai}", Tuần ${state.week}.
+  const prompt=`Soạn bản nháp KHBD: Lớp ${l.lop||state.klass}, Môn ${l.mon}, Bài "${l.bai}", Tuần ${l.tuan||state.week}.
 Cấu trúc: I. YÊU CẦU CẦN ĐẠT (năng lực, phẩm chất) · II. ĐỒ DÙNG DẠY HỌC · III. CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU (Khởi động / Khám phá / Luyện tập / Vận dụng; mỗi hoạt động nêu mục tiêu, cách tổ chức, đánh giá thường xuyên) · IV. ĐIỀU CHỈNH SAU BÀI DẠY (để trống). Vừa một tiết dạy.`;
   try{
     const out=await callAI(system,prompt);
@@ -3803,7 +3805,11 @@ function saveCurrentKHBD(){
     const k=state.khbd.find(x=>x.id===l.id);
     if(k){ k.content=content; k.bai=l.bai||k.bai; k.updated=new Date().toLocaleDateString('vi-VN'); }
   }else{
-    const item={id:'k'+Date.now(),mon:l.mon,bai:l.bai,lop:state.klass,tuan:state.week,day:l.day,date:l.date,content,fromBank:l.bankId||null,created:new Date().toLocaleDateString('vi-VN')};
+    /* Đóng dấu LỚP CỦA CHÍNH TIẾT ĐÓ (l.lop), không phải lớp đang chọn trên bộ lọc.
+       Giáo viên bộ môn dạy nhiều lớp mà lưu theo state.klass thì giáo án tiết 3A vào kho
+       lại mang nhãn 5A — và BX_phanCongGVDay đọc butxanh_khbd để suy quyền nên còn nới
+       nhầm quyền sang khối 5. */
+    const item={id:'k'+Date.now(),mon:l.mon,bai:l.bai,lop:l.lop||state.klass,tuan:l.tuan||state.week,day:l.day,date:l.date,content,fromBank:l.bankId||null,created:new Date().toLocaleDateString('vi-VN')};
     state.khbd.unshift(item); state.current=item;
   }
   persistKHBD();
@@ -4353,7 +4359,7 @@ function renderDashRecent(){
 function renderDashMats(){
   const box=el('dash-mats'); if(!box) return;
   const esc=s=>(s||'').replace(/'/g,"\\'");
-  box.innerHTML=allHocLieu().slice(0,4).map(m=>`<div class="fileitem matitem" style="cursor:pointer" onclick="openHl('${esc(m.title)}','${esc(m.link)}','${esc(m.subject)}')"><div class="thumb" style="background:${m.bg}">${m.emoji}</div><div><div class="ftitle">${m.type?m.type+': ':''}${m.title}</div><div class="fmeta">${m.subject?m.subject+' ':''}lớp 5${m.link?' · 🔗':''}</div></div></div>`).join('');
+  box.innerHTML=allHocLieu().slice(0,4).map(m=>`<div class="fileitem matitem" style="cursor:pointer" onclick="openHl('${esc(m.title)}','${esc(m.link)}','${esc(m.subject)}','${esc(m.lop)}')"><div class="thumb" style="background:${m.bg}">${m.emoji}</div><div><div class="ftitle">${m.type?m.type+': ':''}${m.title}</div><div class="fmeta">${m.subject?m.subject+' ':''}${hlKhoiLabel(m)}${m.link?' · 🔗':''}</div></div></div>`).join('');
 }
 
 /* ---------- 11) BÚT XANH NHẮC THẦY CÔ (đầy đủ) ---------- */
@@ -4640,22 +4646,30 @@ function hlStyleFor(mon){
 function suggestedHocLieu(){
   const seen=new Set(), out=[];
   (state.schedule||[]).forEach(r=>{ const key=r.mon+'|'+r.bai; if(!r.bai||seen.has(key)) return; seen.add(key);
-    const st=hlStyleFor(r.mon); out.push({emoji:st.emoji,type:st.type,color:st.color,bg:st.bg,title:r.bai,subject:r.mon,link:''}); });
+    const st=hlStyleFor(r.mon); out.push({emoji:st.emoji,type:st.type,color:st.color,bg:st.bg,title:r.bai,subject:r.mon,link:'',lop:r.lop||state.klass}); });
   return out;
 }
+/* Nhãn khối của một học liệu — trước đây mọi thẻ đều ghi cứng "lớp 5",
+   giáo viên khối khác nhìn thẻ nào cũng thấy lớp 5 và bấm ra Google cũng tìm lớp 5. */
+function hlKhoi(m){
+  var l=(m&&m.lop)||state.klass||'';
+  try{ return (window.BX_khoiCuaLop&&window.BX_khoiCuaLop(l))||String(l).replace(/\D/g,'').slice(0,1)||''; }
+  catch(e){ return String(l).replace(/\D/g,'').slice(0,1)||''; }
+}
+function hlKhoiLabel(m){ var k=hlKhoi(m); return k?('lớp '+k):''; }
 let hlMon='Tất cả', hlType='Tất cả';
 function setHlMon(m){ hlMon=m; renderHocLieu(); }
 function setHlType(t){ hlType=t; renderHocLieu(); }
 function loadHocLieu(){ try{const v=JSON.parse(localStorage.getItem('butxanh_hoclieu')); return Array.isArray(v)?v:[];}catch(e){return [];} }
 function persistHocLieu(){ return BX_luu('butxanh_hoclieu', JSON.stringify(state.hoclieu), 'học liệu'); }
 function allHocLieu(){
-  const cus=state.hoclieu.map(h=>{ const st=hlStyleFor(h.subject||''); return {emoji:h.emoji||st.emoji,type:h.type||'Tài liệu',color:st.color,bg:st.bg,title:h.title,subject:h.subject||'',link:h.link||'',id:h.id}; });
+  const cus=state.hoclieu.map(h=>{ const st=hlStyleFor(h.subject||''); return {emoji:h.emoji||st.emoji,type:h.type||'Tài liệu',color:st.color,bg:st.bg,title:h.title,subject:h.subject||'',link:h.link||'',id:h.id,lop:h.lop||state.klass}; });
   return cus.concat(suggestedHocLieu());
 }
-function openHl(title,link,subject){
+function openHl(title,link,subject,lop){
   let url=(link||'').trim();
   if(url){ if(!/^https?:\/\//i.test(url)) url='https://'+url; }
-  else { url='https://www.google.com/search?q='+encodeURIComponent(((title||'')+' '+(subject||'')+' lớp 5').trim()); }
+  else { const k=hlKhoi({lop:lop}); url='https://www.google.com/search?q='+encodeURIComponent(((title||'')+' '+(subject||'')+(k?(' lớp '+k):'')).trim()); }
   /* 4/8/2026: trước đây gọi thẳng window.open rồi bỏ mặc — máy nào chặn cửa sổ bật lên
      là bấm thẻ học liệu KHÔNG THẤY GÌ, thầy cô tưởng app đơ. Nút Tuần ở màn Bài giảng
      đã có lưới an toàn từ 3/8, chỗ này thì chưa. Nay dùng chung BX_moLink. */
@@ -4673,7 +4687,7 @@ function renderHocLieu(){
   const q=((el('hl-search')&&el('hl-search').value)||'').toLowerCase().trim();
   const list=all.filter(m=> (hlMon==='Tất cả'||m.subject===hlMon) && (hlType==='Tất cả'||m.type===hlType) && (!q || ((m.title||'')+' '+(m.subject||'')+' '+(m.type||'')).toLowerCase().includes(q)));
   const esc=s=>(s||'').replace(/'/g,"\\'");
-  el('hl-grid').innerHTML=list.length?list.map(m=>`<div class="mat-card" style="cursor:pointer" onclick="openHl('${esc(m.title)}','${esc(m.link)}','${esc(m.subject)}')"><div class="mat-thumb" style="background:${m.bg}">${m.emoji}</div><span class="mtype" style="color:${m.color};background:${m.bg}">${m.type}</span><div class="mt">${m.title}</div><div class="mm">${m.subject?m.subject+' · ':''}lớp 5${m.id?' · của tôi':' · gợi ý'}${m.link?' · 🔗':''}</div>${m.id?`<div class="kact" style="margin-top:8px"><button class="btn-xs" onclick="event.stopPropagation();openHlEditor('${m.id}')">Sửa</button><button class="btn-xs danger" onclick="event.stopPropagation();delHl('${m.id}')">Xoá</button></div>`:''}</div>`).join(''):'<div class="empty-pad">Không tìm thấy học liệu phù hợp.</div>';
+  el('hl-grid').innerHTML=list.length?list.map(m=>`<div class="mat-card" style="cursor:pointer" onclick="openHl('${esc(m.title)}','${esc(m.link)}','${esc(m.subject)}','${esc(m.lop)}')"><div class="mat-thumb" style="background:${m.bg}">${m.emoji}</div><span class="mtype" style="color:${m.color};background:${m.bg}">${m.type}</span><div class="mt">${m.title}</div><div class="mm">${m.subject?m.subject+' · ':''}${hlKhoiLabel(m)}${m.id?' · của tôi':' · gợi ý'}${m.link?' · 🔗':''}</div>${m.id?`<div class="kact" style="margin-top:8px"><button class="btn-xs" onclick="event.stopPropagation();openHlEditor('${m.id}')">Sửa</button><button class="btn-xs danger" onclick="event.stopPropagation();delHl('${m.id}')">Xoá</button></div>`:''}</div>`).join(''):'<div class="empty-pad">Không tìm thấy học liệu phù hợp.</div>';
 }
 let hlEditId=null;
 function openHlEditor(id){
@@ -4856,7 +4870,9 @@ function exportThongKeDocx(){
 function loadSettings(){
   let p={}; try{p=JSON.parse(localStorage.getItem('butxanh_profile')||'{}');}catch(e){}
   el('set-xung').value=p.xung||state.xung||'Cô';
-  if(p.name)el('set-name').value=p.name; if(p.grade)el('set-grade').value=p.grade;
+  if(p.name)el('set-name').value=p.name;
+  /* Chưa khai "Cấp / Khối" thì gợi ý theo lớp đang dạy, không ghi cứng Lớp 5A nữa */
+  el('set-grade').value=p.grade||('Giáo viên Tiểu học — Lớp '+(p.klass||state.klass||''));
   if(p.school)el('set-school').value=p.school; if(p.year)el('set-year').value=p.year;
   if(p.team)el('set-team').value=p.team;
   el('set-class').value=p.klass||state.klass; el('set-week').value=p.week||state.week; el('set-place').value=p.place||state.place;
@@ -4884,6 +4900,8 @@ function applyProfile(p){
   const m=String(state.klass).match(/\d+/); if(m) state.khoi=m[0];
   /* Đổi lớp giảng dạy → bảo đảm kho của lớp đó đã nạp (app chỉ nạp lớp đang dạy) */
   try{ if(window.BX_ensureKho) window.BX_ensureKho(state.klass); }catch(e){}
+  /* Đổi lớp ở Cài đặt → dựng lại ô Lớp trên bảng điều khiển cho khớp */
+  try{ if(window.BX_fillLopSelect) window.BX_fillLopSelect(); }catch(e){}
   syncStaticLabels();
   renderSchedule();
   if(el('v-lich').classList.contains('active')) renderFullSchedule();
@@ -6591,11 +6609,48 @@ window.BX_dashSel=function(){
   var sw=document.getElementById('sel-week'), sy=document.getElementById('sel-year'),
       sl=document.getElementById('sel-lop'), sh=document.getElementById('sel-hk');
   if(sy) state.year=sy.value.replace(/^Năm học\s*/,'').trim();
-  if(sl) state.klass=sl.value.replace(/^Lớp\s*/,'').trim();
+  /* CHỈ đổi lớp khi chính ô Lớp phát sự kiện. Trước đây đổi tuần/năm/học kỳ cũng ghi đè
+     state.klass bằng giá trị đang hiện của ô Lớp — mà ô đó ghi cứng "Lớp 5A" nên giáo viên
+     khối khác chỉ cần đổi tuần là lớp bị nhảy về 5A, rồi chui vào KHBD lưu mới và lây sang
+     phần suy quyền (BX_phanCongGVDay đọc butxanh_khbd). */
+  if(sl && this && this.id==='sel-lop') state.klass=sl.value.replace(/^Lớp\s*/,'').trim();
   // Đổi học kỳ → nhảy về tuần đầu kỳ
   if(sh && this && this.id==='sel-hk'){ BX_setWeek(sh.value==='Học kỳ 2'?19:1); return; }
   if(sw){ BX_setWeek(sw.value); } else reRender();
 };
+/* Dựng ô "Lớp" từ lớp GIÁO VIÊN THẬT SỰ DẠY thay vì ghi cứng 5A/5B.
+   Nguồn: lớp khai ở Cài đặt (state.klass) + mọi lớp xuất hiện trong thời khoá biểu,
+   lịch dạy, lịch báo giảng đã lưu và kho giáo án. Chỉ ĐỌC, không ghi gì vào localStorage. */
+function BX_dsLopCuaToi(){
+  var ds=[], me=String(state.klass||'').trim();
+  function them(x){
+    var l=String(x||'').trim();
+    if(!/^[1-5][A-Za-zĐđ0-9]{0,3}$/.test(l)) return;   // "3A", "5B", "2"… ; bỏ chuỗi lạ
+    if(ds.indexOf(l)<0) ds.push(l);
+  }
+  function doc(k){ try{ return JSON.parse(localStorage.getItem(k)||'null'); }catch(e){ return null; } }
+  them(me);
+  var tkb=doc('butxanh_tkb');
+  if(tkb&&Array.isArray(tkb.slots)) tkb.slots.forEach(function(s){ if(s) them(s.lop); });
+  var sch=doc('butxanh_schedule');
+  if(Array.isArray(sch)) sch.forEach(function(r){ if(r) them(r.lop); });
+  var lbg=doc('butxanh_lbg_weeks');
+  if(lbg&&typeof lbg==='object'&&!Array.isArray(lbg)) Object.keys(lbg).forEach(function(w){
+    var a=lbg[w]; if(Array.isArray(a)) a.forEach(function(r){ if(r) them(r.lop); });
+  });
+  var kb=doc('butxanh_khbd');
+  if(Array.isArray(kb)) kb.forEach(function(x){ if(x) them(x.lop); });
+  ds.sort(function(a,b){ return a.localeCompare(b,'vi',{numeric:true}); });
+  return ds.length?ds:[me||'5A'];
+}
+function fillLopSelect(){
+  var sl=document.getElementById('sel-lop'); if(!sl) return;
+  var ds=BX_dsLopCuaToi(), cur=String(state.klass||ds[0]||'').trim(), html='';
+  if(ds.indexOf(cur)<0) ds.unshift(cur);            // lớp đang chọn luôn có mặt
+  ds.forEach(function(l){ html+='<option value="Lớp '+l+'"'+(l===cur?' selected':'')+'>Lớp '+l+'</option>'; });
+  sl.innerHTML=html;
+}
+window.BX_fillLopSelect=fillLopSelect;
 function fillWeekSelect(){
   var sw=document.getElementById('sel-week'); if(!sw) return;
   var cur=parseInt(state.week,10)||12, html='';
@@ -6612,7 +6667,7 @@ window.BX_WEEK1=BX_WEEK1; // phơi mốc Thứ Hai tuần 1 để lớp kiểm t
 function init(){
   fillWeekSelect();
   var sy=document.getElementById('sel-year'); if(sy) sy.value='Năm học '+(state.year||'2026 - 2027');
-  var sl=document.getElementById('sel-lop'); if(sl){ var v='Lớp '+(state.klass||'5A'); for(var i=0;i<sl.options.length;i++){ if(sl.options[i].value===v||sl.options[i].text===v) sl.selectedIndex=i; } }
+  fillLopSelect();
   // Mở đúng TUẦN đang xem dở (đã lưu/đồng bộ); chưa có thì lấy tuần thực tế.
   // BX_setWeek tự lấy LBG thật của tuần đó nếu có, không thì hiện bản mẫu.
   var w=BX_realWeek();
@@ -8785,7 +8840,15 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
       sum.innerHTML='🧭 <b>Tuần lịch '+W+'</b> → '+(pw===null?'<span style="color:#b45309;font-weight:700">TUẦN NGHỈ</span>':('dạy nội dung <b>tuần PPCT '+pw+'</b>'))+(lag?(' <span style="color:#8a5a00">(con trỏ lùi '+lag+' tuần do nghỉ)</span>'):' — đúng tiến độ');
     }
     var wo=document.getElementById('exc-weekoff');
-    if(wo) wo.innerHTML=x.weekOff.length?x.weekOff.slice().sort(function(a,b){return a.tuan-b.tuan;}).map(function(e,i){return '<div class="exc-item">🏖️ <b>Tuần '+e.tuan+'</b> — '+_esc(e.note||'Nghỉ')+'<button class="btn-xs" onclick="bxExcDel(&quot;weekOff&quot;,'+i+')">Xoá</button></div>';}).join(''):'<div class="exc-empty">Chưa khai báo.</div>';
+    /* Danh sách hiện ra ĐÃ SẮP THEO TUẦN nhưng bxExcDel lại splice trên MẢNG GỐC.
+       Trước đây truyền chỉ số của bản đã sắp → khai [T30, T5, T12], bấm Xoá ở dòng đầu
+       (T5) thì T30 bay mất còn T5 vẫn nằm đó. Nay kèm theo chỉ số gốc `i0` khi sắp xếp:
+       thứ tự hiển thị giữ nguyên như thầy cô đang quen, nút Xoá trỏ đúng bản ghi. */
+    if(wo) wo.innerHTML=x.weekOff.length
+      ? x.weekOff.map(function(e,i){ return {e:e,i0:i}; })
+                 .sort(function(a,b){ return a.e.tuan-b.e.tuan; })
+                 .map(function(p){ return '<div class="exc-item">🏖️ <b>Tuần '+p.e.tuan+'</b> — '+_esc(p.e.note||'Nghỉ')+'<button class="btn-xs" onclick="bxExcDel(&quot;weekOff&quot;,'+p.i0+')">Xoá</button></div>'; }).join('')
+      : '<div class="exc-empty">Chưa khai báo.</div>';
     var doff=document.getElementById('exc-dayoff');
     if(doff) doff.innerHTML=x.dayOff.length?x.dayOff.map(function(e,i){return '<div class="exc-item">📌 <b>Tuần '+e.tuan+' · '+e.day+'</b> — '+_esc(e.note||'Nghỉ')+'<button class="btn-xs" onclick="bxExcDel(&quot;dayOff&quot;,'+i+')">Xoá</button></div>';}).join(''):'<div class="exc-empty">Chưa khai báo.</div>';
     var mk=document.getElementById('exc-makeup');
