@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-16 · 35';
+  var PB='2026-08-16 · 36';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -90,7 +90,13 @@
 })();
 </script>
 <link rel="icon" type="image/png" sizes="256x256" href="favicon.png?v=3">
-<link rel="apple-touch-icon" href="favicon.png?v=3">
+<link rel="apple-touch-icon" href="icon-192.png?v=1">
+<!-- Cài lên màn hình chính: mở như một app riêng, không phải đi qua Zalo/Facebook nữa
+     (16/8/2026 — giáo viên hay bấm link trong Zalo nên mất phiên đăng nhập liên tục) -->
+<link rel="manifest" href="manifest.json?v=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Bút Xanh">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Bút Xanh">
 <meta property="og:locale" content="vi_VN">
@@ -9177,6 +9183,81 @@ window.BX_chaoDangNhap=function(){
     n++; setTimeout(login,200);
   })();
 };
+</script>
+
+<!-- ============ CÀI BÚT XANH LÊN MÀN HÌNH CHÍNH — 16/8/2026 ============
+     Thầy Chung: giáo viên chủ yếu bấm link Bút Xanh trong Zalo, ít khi mở Chrome. Ở đó
+     Google chặn đăng nhập và kho dữ liệu bị dọn liên tục → mất phiên, mất cả dữ liệu.
+     Cách dứt điểm là cài lên màn hình chính: từ đó mở bằng icon như một app riêng, không
+     đi qua Zalo nữa. Nhắc bằng thanh nhỏ phía trên, có thể tắt, tuyệt đối không chắn lối
+     lúc mở app (màn chào từng làm "đơ nút" — 3/8/2026). -->
+<script>
+(function(){
+"use strict";
+var KEY_LAN='butxanh_solanmo', KEY_HOAN='butxanh_hoan_caidat';
+var HOAN=14*86400000;                      // bấm "Để sau" thì hai tuần nữa mới nhắc lại
+
+/* Service worker rỗng (không cache) — chỉ để Chrome chịu hiện lệnh cài đặt */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){ try{ navigator.serviceWorker.register('sw.js').catch(function(){}); }catch(e){} });
+}
+
+function daCai(){
+  try{ if(window.matchMedia && matchMedia('(display-mode: standalone)').matches) return true; }catch(e){}
+  return !!navigator.standalone;
+}
+function trongUngDung(){ return /(FBAN|FBAV|FB_IAB|Instagram|Zalo|Line\/|MicroMessenger)/i.test(navigator.userAgent||''); }
+function daDungThat(){
+  /* Chỉ mời cài khi thầy cô đã thực sự làm việc với app — mời quá sớm là làm phiền */
+  try{
+    if(localStorage.getItem('butxanh_tkb')||localStorage.getItem('butxanh_lbg_weeks')) return true;
+    var n=(+localStorage.getItem(KEY_LAN)||0)+1; localStorage.setItem(KEY_LAN,String(n));
+    return n>=3;
+  }catch(e){ return false; }
+}
+function dangHoan(){ try{ return Date.now()-(+localStorage.getItem(KEY_HOAN)||0) < HOAN; }catch(e){ return false; } }
+function hoanLai(){ try{ localStorage.setItem(KEY_HOAN,String(Date.now())); }catch(e){} }
+
+var loiMoi=null;                            // Chrome đưa sẵn lệnh cài qua sự kiện này
+window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); loiMoi=e; });
+
+function cachCai(){
+  var ua=navigator.userAgent||'';
+  if(/iPhone|iPad|iPod/i.test(ua))
+    return 'Bấm nút <b>Chia sẻ</b> ⬆️ ở thanh dưới màn hình → kéo xuống chọn <b>«Thêm vào MH chính»</b> → <b>Thêm</b>.';
+  if(/Android/i.test(ua))
+    return 'Bấm dấu <b>⋮</b> ở góc trên bên phải Chrome → chọn <b>«Thêm vào Màn hình chính»</b> (hoặc «Cài đặt ứng dụng») → <b>Cài đặt</b>.';
+  return 'Trong Chrome/Edge, bấm biểu tượng <b>cài đặt</b> (màn hình có mũi tên xuống) ở cuối thanh địa chỉ → <b>Cài đặt</b>. Sau đó Bút Xanh nằm ngay trên màn hình nền như một phần mềm.';
+}
+
+function nhac(){
+  if(daCai()||trongUngDung()||dangHoan()||!daDungThat()) return;
+  var d=document.createElement('div');
+  d.id='bxci-thanh';
+  d.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:99996;background:#eafaf1;border:1px solid #a9e2c1;border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.55;color:#0b5133;box-shadow:0 8px 24px rgba(0,0,0,.16)';
+  d.innerHTML='<b>📲 Thêm Bút Xanh vào màn hình chính</b><br>Mở bằng icon như một ứng dụng — <b>không phải đăng nhập lại</b> mỗi lần và không cần đi qua Zalo nữa ạ.'+
+    '<div style="margin-top:9px;display:flex;gap:8px">'+
+    '<button id="bxci-cai" style="flex:1;padding:9px;border:0;border-radius:9px;background:#0f9d58;color:#fff;font-size:13.5px;font-weight:700;cursor:pointer">Cài đặt</button>'+
+    '<button id="bxci-sau" style="padding:9px 14px;border:0;border-radius:9px;background:#d9efe2;color:#0b5133;font-size:13px;cursor:pointer">Để sau</button></div>'+
+    '<div id="bxci-tay" style="display:none;margin-top:9px;padding-top:9px;border-top:1px dashed #a9e2c1">'+cachCai()+'</div>';
+  document.body.appendChild(d);
+  var bCai=d.querySelector('#bxci-cai'), bSau=d.querySelector('#bxci-sau'), tay=d.querySelector('#bxci-tay');
+  bCai.onclick=function(){
+    if(loiMoi){                              // Chrome: cài thẳng, một chạm
+      loiMoi.prompt();
+      loiMoi.userChoice.then(function(kq){ if(kq&&kq.outcome==='accepted'){ d.remove(); } else { hoanLai(); d.remove(); } }).catch(function(){});
+      loiMoi=null; return;
+    }
+    tay.style.display='block';               // iPhone và các máy không có lệnh cài sẵn
+    bCai.textContent='Làm theo hướng dẫn ↓';
+  };
+  bSau.onclick=function(){ hoanLai(); d.remove(); };
+}
+
+/* Đợi app dựng xong hẳn rồi mới mời — và chỉ mời một lần mỗi phiên */
+window.addEventListener('load',function(){ setTimeout(nhac,6000); });
+window.addEventListener('appinstalled',function(){ var d=document.getElementById('bxci-thanh'); if(d) d.remove(); });
+})();
 </script>
 </body>
 </html>
