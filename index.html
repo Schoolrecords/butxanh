@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-16 · 46';
+  var PB='2026-08-16 · 48';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1552,7 +1552,7 @@ window.bxMergeKho = function(){
       <div><h1>Bút Xanh</h1><small>Trợ lý đắc lực của thầy cô</small></div>
     </div>
 
-    <nav class="nav"><style>.nav-grp{font-size:10.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#9fb0a4;margin:7px 14px 1px;padding-top:4px;border-top:1px solid #eef1ee}.nav .nav-grp:first-child{border-top:none;padding-top:0;margin-top:2px}@media(max-width:1100px){.nav-grp{display:none}}</style>
+    <nav class="nav"><style>.nav-grp{font-size:10.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#9fb0a4;margin:7px 14px 1px;padding-top:4px;border-top:1px solid #eef1ee}.nav a.nav-sep{margin-top:7px;padding-top:9px;border-top:1px solid #eef1ee}.nav .nav-grp:first-child{border-top:none;padding-top:0;margin-top:2px}@media(max-width:1100px){.nav-grp{display:none}}</style>
       <div class="nav-grp">Tổng quan</div>
       <a class="active" data-view="dashboard"><svg class="icn ic" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg> Bảng điều khiển</a>
       <div class="nav-grp">Soạn giảng</div>
@@ -1567,10 +1567,10 @@ window.bxMergeKho = function(){
       <div class="nav-grp">Hỗ trợ dạy học</div>
       <a data-view="nhac"><svg class="icn ic" viewBox="0 0 24 24"><path d="M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M10.5 21a1.8 1.8 0 003 0"/></svg> Bút Xanh nhắc thầy cô</a>
       <a data-view="hocsinh"><svg class="icn ic" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5"/><circle cx="17.5" cy="9" r="2.4"/><path d="M15 20c0-2.4 1.8-4 4-4s3 1.6 3 4"/></svg> Học sinh cần hỗ trợ</a>
-      <a data-view="hoclieu"><svg class="icn ic" viewBox="0 0 24 24"><path d="M6 2.5h8l4 4V21a1 1 0 01-1 1H6a1 1 0 01-1-1V3.5a1 1 0 011-1z"/><path d="M13 2.5V7h5M8 13h8M8 17h5"/></svg> Tài liệu &amp; Học liệu</a>
-      <div class="nav-grp">Hệ thống</div>
-      <a data-view="thongke"><svg class="icn ic" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg> Thống kê &amp; Báo cáo</a>
-      <a data-view="caidat"><svg class="icn ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3.9a7 7 0 00-2-1.2L16.2 2H7.8L7.4 4.4a7 7 0 00-2 1.2L3.1 4.7l-2 3.4 2 1.5A7 7 0 003 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.3-.9c.6.5 1.3.9 2 1.2l.4 2.4h8.4l.4-2.4c.7-.3 1.4-.7 2-1.2l2.3.9 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/></svg> Cài đặt</a>
+      <!-- 16/8/2026 (thầy Chung): "Tài liệu & Học liệu" thay bằng "Phiếu bài tập cuối tuần";
+           bỏ mục "Thống kê & Báo cáo" và bỏ luôn nhóm "Hệ thống" — Cài đặt đứng riêng cuối menu. -->
+      <a data-view="phieu"><svg class="icn ic" viewBox="0 0 24 24"><path d="M6 2.5h8l4 4V21a1 1 0 01-1 1H6a1 1 0 01-1-1V3.5a1 1 0 011-1z"/><path d="M13 2.5V7h5"/><path d="M8 12.5h8M8 16h5"/></svg> Phiếu bài tập cuối tuần</a>
+      <a class="nav-sep" data-view="caidat"><svg class="icn ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3.9a7 7 0 00-2-1.2L16.2 2H7.8L7.4 4.4a7 7 0 00-2 1.2L3.1 4.7l-2 3.4 2 1.5A7 7 0 003 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.3-.9c.6.5 1.3.9 2 1.2l.4 2.4h8.4l.4-2.4c.7-.3 1.4-.7 2-1.2l2.3.9 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/></svg> Cài đặt</a>
     </nav>
 
     <!-- Thanh cố định dưới menu: linh vật + bản quyền, gọn ~1,6cm để menu dài ra -->
@@ -1693,9 +1693,9 @@ window.bxMergeKho = function(){
           <div class="foot-link" id="dash-recent-foot"></div>
         </div>
 
-        <!-- Học liệu gợi ý -->
+        <!-- Phiếu bài tập cuối tuần (16/8/2026: thay chỗ thẻ "Học liệu gợi ý") -->
         <div class="card">
-          <div class="card-head"><h3>Học liệu gợi ý</h3><span class="link" onclick="showView('hoclieu')">Xem tất cả</span></div>
+          <div class="card-head"><h3 id="dash-phieu-title">Phiếu bài tập cuối tuần</h3><span class="link" onclick="showView('phieu')">Xem tất cả</span></div>
           <div class="matlist" id="dash-mats"></div>
         </div>
       </div>
@@ -1950,6 +1950,18 @@ window.bxMergeKho = function(){
       </div>
       <div class="sl-lop-chips" id="sl-lop-chips"></div>
       <div id="sl-body"></div>
+    </section>
+
+    <!-- ============ VIEW: PHIẾU BÀI TẬP CUỐI TUẦN ============ -->
+    <!-- Chỉ 2 môn (Toán, Tiếng Việt) nên KHÔNG đi 2 cấp như Bài giảng trình chiếu:
+         chọn lớp xong là thấy ngay cả hai môn, khỏi phải chạm thêm một nhịp. -->
+    <section class="view" id="v-phieu">
+      <div class="page-head">
+        <div><h2 class="ph-title" id="pw-title">Phiếu bài tập cuối tuần</h2>
+          <div class="ph-sub">Phiếu ôn luyện <b>Toán</b> và <b>Tiếng Việt</b> theo từng tuần — mở hoặc tải trực tiếp từ Google Drive</div></div>
+      </div>
+      <div class="sl-lop-chips" id="pw-lop-chips"></div>
+      <div id="pw-body"></div>
     </section>
 
     <!-- ============ VIEW: THỐNG KÊ & BÁO CÁO ============ -->
@@ -2297,8 +2309,7 @@ window.bxMergeKho = function(){
           <h4><span class="hlp-num">🧩</span> Những mục còn lại</h4>
           <ul class="hlp-list">
             <li><b>🔔 Nhắc việc</b> — chuông ở góc trên phải, nhắc việc cần làm theo lịch tuần.</li>
-            <li><b>📚 Tài liệu &amp; Học liệu</b> — chỗ cất tài liệu tham khảo theo môn.</li>
-            <li><b>📊 Thống kê &amp; Báo cáo</b> — xem đã soạn được bao nhiêu, xuất báo cáo Word.</li>
+            <li><b>📄 Phiếu bài tập cuối tuần</b> — phiếu ôn luyện Toán và Tiếng Việt theo từng tuần, thầy cô tự chọn giao cho học sinh, mở thẳng từ Google Drive.</li>
             <li><b>⚙️ Cài đặt</b> — hồ sơ giáo viên, và <b>Sao lưu / Khôi phục</b> toàn bộ dữ liệu.</li>
           </ul>
         </div>
@@ -3128,14 +3139,17 @@ document.getElementById("remind-refresh").onclick=async function(){
 
 /* ---------- 7) ĐIỀU HƯỚNG SPA ---------- */
 function el(id){return document.getElementById(id);}
-const ALLVIEWS=['dashboard','tkb','lich','khbd','kho','nhac','hocsinh','hoclieu','ppt','thongke','caidat'];
+/* 'hoclieu' và 'thongke' đã gỡ khỏi menu (16/8/2026) nhưng GIỮ trong danh sách này:
+   thầy cô nào đang mở app ở địa chỉ #hoclieu / #thongke thì màn cũ vẫn dựng được,
+   không rơi về Bảng điều khiển giữa chừng. */
+const ALLVIEWS=['dashboard','tkb','lich','khbd','kho','nhac','hocsinh','hoclieu','phieu','ppt','thongke','caidat'];
 function showView(v){
   if(!ALLVIEWS.includes(v)) v='dashboard';
   document.querySelectorAll('.view').forEach(s=>s.classList.toggle('active', s.id==='v-'+v));
   document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('active', a.dataset.view===v));
   if(('#'+v)!==location.hash){ try{history.replaceState(null,'','#'+v);}catch(e){} }
   window.scrollTo({top:0});
-  const r={dashboard:renderDashboard,tkb:window.bxRenderTKBView,lich:renderFullSchedule,khbd:renderKHBDView,kho:renderKho,nhac:renderNhac,hocsinh:renderHocSinh,hoclieu:renderHocLieu,ppt:renderSlides,thongke:renderThongKe,caidat:loadSettings}[v];
+  const r={dashboard:renderDashboard,tkb:window.bxRenderTKBView,lich:renderFullSchedule,khbd:renderKHBDView,kho:renderKho,nhac:renderNhac,hocsinh:renderHocSinh,hoclieu:renderHocLieu,phieu:renderPhieu,ppt:renderSlides,thongke:renderThongKe,caidat:loadSettings}[v];
   if(r) r();
   try{ if(window.BX_gateTKB) BX_gateTKB(v); }catch(e){}
   updateBellCount();
@@ -3469,6 +3483,223 @@ function BX_slideDetail(lop,mon){
   }
   h+='<div class="sl-week-grid">'+g+'</div>';
   return h;
+}
+
+/* ================= PHIẾU BÀI TẬP CUỐI TUẦN — 16/8/2026 (thầy Chung) =================
+   Thay chỗ module "Tài liệu & Học liệu". Cuối mỗi tuần chỉ giao 2 môn Toán và Tiếng Việt,
+   nên màn này KHÔNG đi hai cấp như Bài giảng trình chiếu (13 môn): chọn lớp là thấy ngay
+   cả hai môn cạnh nhau, cộng một thẻ "Tuần này" để mở đúng phiếu tuần hiện tại bằng MỘT
+   lần chạm.
+   Phiếu KHÔNG nhồi vào app mà nhúng link thư mục Google Drive, đúng khuôn BX_SLIDE_SEED —
+   thầy cô thả file mới vào Drive là app có ngay, không phải sửa code rồi phát hành lại.
+   ⚠️ Bảng link dưới đây CỐ Ý ĐỂ TRỐNG: làm giao diện trước, gắn link sau. Tuần chưa có
+   phiếu hiện mờ "chưa có phiếu" chứ không báo lỗi. */
+var BX_PHIEU_TEN='Phiếu bài tập cuối tuần';   /* đổi tên hiển thị ở ĐÚNG chỗ này là đổi cả app */
+var BX_PHIEU_MON=['Toán','Tiếng Việt'];
+var BX_PHIEU_WEEKS=35;
+var BX_PHIEU_META={'Toán':{ic:'🔢',c:'#E5503B'},'Tiếng Việt':{ic:'📖',c:'#2C7BD6'}};
+/* Khoá 'L{lop}|{môn}' → {folder: link thư mục cả môn, weeks: {tuần: link riêng}}.
+   Gắn link bằng tay hoặc bằng script quét Drive (khuôn _quet-has-baigiang.js). */
+var BX_PHIEU_SEED={
+  'L1|Toán':{folder:'',weeks:{}}, 'L1|Tiếng Việt':{folder:'',weeks:{}},
+  'L2|Toán':{folder:'',weeks:{}}, 'L2|Tiếng Việt':{folder:'',weeks:{}},
+  'L3|Toán':{folder:'',weeks:{}}, 'L3|Tiếng Việt':{folder:'',weeks:{}},
+  'L4|Toán':{folder:'',weeks:{}}, 'L4|Tiếng Việt':{folder:'',weeks:{}},
+  'L5|Toán':{folder:'',weeks:{}}, 'L5|Tiếng Việt':{folder:'',weeks:{}}
+};
+var _phieuSel={lop:null, mon:'', tuan:0};   /* mon rỗng = xem cả hai môn; tuan 0 = không soi tuần nào */
+function BX_phieuKey(lop,mon){ return 'L'+lop+'|'+mon; }
+function BX_phieuEntry(lop,mon){
+  var sd=BX_PHIEU_SEED[BX_phieuKey(lop,mon)]||{};
+  return { folder: sd.folder||'', weeks: Object.assign({}, sd.weeks||{}) };
+}
+function BX_phieuCoTuan(lop,mon,w){ var e=BX_phieuEntry(lop,mon); return !!(e.weeks[String(w)]||e.folder); }
+function BX_phieuDemTuan(lop,mon){
+  var n=0; for(var i=1;i<=BX_PHIEU_WEEKS;i++) if(BX_phieuCoTuan(lop,mon,i)) n++;
+  return n;
+}
+/* Tuần học hiện tại — dùng chung mốc với Lịch báo giảng để hai màn không nói khác nhau */
+function BX_phieuTuanNay(){
+  try{ if(window.BX_realWeek) return window.BX_realWeek(); }catch(e){}
+  return 1;
+}
+function BX_phieuNgayTuan(w){
+  try{
+    var a=window.BX_WEEK1; if(!a) return '';
+    var mon=new Date(a.getTime()+(parseInt(w,10)-1)*7*86400000);
+    var cn=new Date(mon.getTime()+5*86400000);
+    function dm(d){ return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2); }
+    return dm(mon)+' – '+dm(cn);
+  }catch(e){ return ''; }
+}
+window.BX_phieuLop=function(l){ _phieuSel.lop=String(l); renderPhieu(); };
+window.BX_phieuSetMon=function(m){ _phieuSel.mon=m||''; renderPhieu(); };
+window.BX_phieuSetTuan=function(t){ _phieuSel.tuan=parseInt(t,10)||0; renderPhieu(); BX_phieuCuonToiTuan(); };
+/* Chọn lớp ngay trong thẻ môn: vừa đổi lớp vừa xem riêng môn đó — đúng một lần chạm */
+window.BX_phieuChonMonLop=function(mon,l){ _phieuSel.mon=mon; _phieuSel.lop=String(l); renderPhieu();
+  try{ var e=document.querySelector('#v-phieu .pw-mon'); if(e&&e.scrollIntoView) e.scrollIntoView({behavior:'smooth',block:'start'}); }catch(err){}
+};
+function BX_phieuCuonToiTuan(){
+  try{ var e=document.querySelector('#v-phieu .pw-w.soi'); if(e&&e.scrollIntoView) e.scrollIntoView({behavior:'smooth',block:'center'}); }catch(err){}
+}
+window.BX_phieuMo=function(lop,mon,w){
+  var e=BX_phieuEntry(lop,mon), url=e.weeks[String(w)]||e.folder||'';
+  if(!url){
+    if(typeof bxAlert==='function') bxAlert('📄 Tuần '+w+' môn '+mon+' lớp '+lop+' chưa có phiếu.\n\nPhiếu sẽ được bổ sung dần — thầy cô quay lại sau nhé.');
+    return;
+  }
+  BX_moLink(url,'thư mục phiếu bài tập trên Google Drive');
+};
+function BX_phieuStyleOnce(){
+  if(el('pw-style')) return;
+  var s=document.createElement('style'); s.id='pw-style';
+  s.textContent=
+   '#v-phieu .pw-now{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:linear-gradient(135deg,#eaf7ef,#f4fbf6);border:1px solid #cfe8d9;border-radius:14px;padding:14px 16px;margin:2px 0 16px}'+
+   '#v-phieu .pw-now-l{flex:1;min-width:190px}'+
+   '#v-phieu .pw-now-tag{font-size:12px;font-weight:700;color:#1FA45C;letter-spacing:.3px;text-transform:uppercase}'+
+   '#v-phieu .pw-now-w{font-size:21px;font-weight:800;color:#0f5a34;line-height:1.25;margin-top:2px}'+
+   '#v-phieu .pw-now-d{font-size:12.5px;color:#5b6b61;margin-top:2px}'+
+   '#v-phieu .pw-now-btns{display:flex;gap:9px;flex-wrap:wrap}'+
+   '#v-phieu .pw-nbtn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--mc);background:#fff;color:var(--mc);'+
+     'font-weight:700;font-size:14px;border-radius:11px;padding:11px 16px;cursor:pointer;transition:.15s}'+
+   '#v-phieu .pw-nbtn:hover{background:var(--mc);color:#fff}'+
+   '#v-phieu .pw-nbtn:active{transform:scale(.96)}'+
+   '#v-phieu .pw-nbtn.off{border-color:#dde5e0;color:#9aa8a0;background:#f7faf8;cursor:default}'+
+   '#v-phieu .pw-nbtn.off:hover{background:#f7faf8;color:#9aa8a0}'+
+   '#v-phieu .pw-mon{border:1px solid #e6ecf1;border-radius:14px;padding:14px 16px 16px;margin-bottom:14px;background:#fff}'+
+   '#v-phieu .pw-mon-head{display:flex;align-items:center;gap:11px;margin-bottom:11px}'+
+   '#v-phieu .pw-mon-ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;font-size:21px;background:color-mix(in srgb,var(--mc) 12%,#fff);border:1px solid color-mix(in srgb,var(--mc) 28%,#fff)}'+
+   '#v-phieu .pw-mon-name{font-size:16.5px;font-weight:800;color:var(--mc)}'+
+   '#v-phieu .pw-mon-sub{font-size:12.5px;color:#5b6b61;margin-top:1px}'+
+   '#v-phieu .pw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:7px}'+
+   '#v-phieu .pw-w{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border-radius:9px;'+
+     'padding:8px 4px;font-size:12.5px;font-weight:600;border:1px solid #e2eae5;background:#f7faf8;color:#9aa8a0;cursor:pointer;text-align:center}'+
+   '#v-phieu .pw-w:not(.has):hover{border-color:#cfd8d2;background:#f1f5f2}'+
+   '#v-phieu .pw-w.has{background:#fff;border-color:var(--mc);color:var(--mc);cursor:pointer}'+
+   '#v-phieu .pw-w.has:hover{background:var(--mc);color:#fff}'+
+   '#v-phieu .pw-w.has:active{transform:scale(.95)}'+
+   '#v-phieu .pw-w.now{box-shadow:0 0 0 2px #1FA45C;font-weight:800}'+
+   '#v-phieu .pw-w small{font-size:10.5px;font-weight:500;opacity:.85}'+
+   '#v-phieu .pw-legend{font-size:12px;color:#5b6b61;margin:2px 0 12px}'+
+   '#v-phieu .pw-note{font-size:12.5px;color:#5b6b61;background:#f6faf7;border:1px solid #e1ece5;border-radius:10px;padding:10px 12px;margin-top:4px}'+
+   /* thanh lọc */
+   '#v-phieu .pw-filter{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#fff;border:1px solid #e6ecf1;border-radius:12px;padding:10px 12px;margin:2px 0 14px}'+
+   '#v-phieu .pw-flabel{font-size:13px;font-weight:700;color:#5b6b61;margin-right:2px}'+
+   '#v-phieu .pw-fchip{display:inline-flex;align-items:center;gap:6px;border:1px solid #dde5e0;background:#fff;color:#42544a;'+
+     'font-size:13px;font-weight:600;border-radius:9px;padding:7px 12px;cursor:pointer;transition:.15s}'+
+   '#v-phieu .pw-fchip:hover{border-color:var(--mc,#1FA45C);color:var(--mc,#1FA45C)}'+
+   '#v-phieu .pw-fchip.on{background:var(--mc,#1FA45C);border-color:var(--mc,#1FA45C);color:#fff}'+
+   '#v-phieu .pw-fsel{margin-left:auto}'+
+   /* mục và thẻ chọn môn + khối lớp */
+   '#v-phieu .pw-sec{font-size:14.5px;font-weight:800;color:#0f5a34;margin:16px 0 9px}'+
+   '#v-phieu .pw-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:16px}'+
+   '#v-phieu .pw-card{border:1px solid color-mix(in srgb,var(--mc) 26%,#fff);border-radius:14px;padding:14px 16px 15px;'+
+     'background:linear-gradient(135deg,color-mix(in srgb,var(--mc) 7%,#fff),#fff)}'+
+   '#v-phieu .pw-card-head{display:flex;align-items:center;gap:11px;margin-bottom:12px}'+
+   '#v-phieu .pw-lrow{display:flex;gap:7px;flex-wrap:wrap}'+
+   '#v-phieu .pw-lbtn{flex:1;min-width:78px;border:1px solid color-mix(in srgb,var(--mc) 30%,#fff);background:#fff;color:var(--mc);'+
+     'font-size:13px;font-weight:700;border-radius:9px;padding:9px 6px;cursor:pointer;transition:.15s}'+
+   '#v-phieu .pw-lbtn:hover{background:var(--mc);color:#fff}'+
+   '#v-phieu .pw-lbtn:active{transform:scale(.95)}'+
+   '#v-phieu .pw-lbtn.on{background:var(--mc);color:#fff;box-shadow:0 2px 8px color-mix(in srgb,var(--mc) 30%,transparent)}'+
+   /* tuần được soi từ ô "Xem nhanh" */
+   '#v-phieu .pw-w.soi{box-shadow:0 0 0 2px #E0A81C;font-weight:800}'+
+   /* dải điểm nhấn cuối trang */
+   '#v-phieu .pw-hls{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px;'+
+     'background:#f6faf7;border:1px solid #e1ece5;border-radius:14px;padding:14px 16px;margin-top:16px}'+
+   '#v-phieu .pw-hl{display:flex;gap:10px;align-items:flex-start}'+
+   '#v-phieu .pw-hl-ic{font-size:20px;line-height:1.1}'+
+   '#v-phieu .pw-hl-t{font-size:13.5px;font-weight:800;color:#0f5a34}'+
+   '#v-phieu .pw-hl-d{font-size:12.5px;color:#5b6b61;margin-top:1px;line-height:1.45}'+
+   '@media(max-width:520px){#v-phieu .pw-grid{grid-template-columns:repeat(auto-fill,minmax(76px,1fr))}'+
+     '#v-phieu .pw-fsel{margin-left:0;width:100%}#v-phieu .pw-cards{grid-template-columns:1fr}}';
+  document.head.appendChild(s);
+}
+function BX_phieuMonBlock(lop,mon,tuanNay){
+  var m=BX_PHIEU_META[mon]||{ic:'📘',c:'#1FA45C'}, co=BX_phieuDemTuan(lop,mon), g='';
+  for(var i=1;i<=BX_PHIEU_WEEKS;i++){
+    var has=BX_phieuCoTuan(lop,mon,i), now=(i===tuanNay), soi=(_phieuSel.tuan===i);
+    /* Thẻ CHƯA CÓ phiếu vẫn bấm được — BX_phieuMo sẽ nói rõ "tuần này chưa có phiếu".
+       Để trơ ra thì thầy cô bấm mà không thấy gì, lại tưởng app đơ. */
+    g+='<div class="pw-w'+(has?' has':'')+(now?' now':'')+(soi?' soi':'')+'"'+
+       ' onclick="BX_phieuMo(\''+lop+'\',\''+BX_escAttr(mon).replace(/'/g,"\\'")+'\','+i+')"'+
+       ' title="'+(has?('Mở phiếu Tuần '+i):('Tuần '+i+' chưa có phiếu'))+'">'+
+       '<span>Tuần '+i+'</span><small>'+(has?(now?'tuần này':'mở →'):'chưa có')+'</small></div>';
+  }
+  return '<div class="pw-mon" style="--mc:'+m.c+'">'+
+    '<div class="pw-mon-head"><div class="pw-mon-ic">'+m.ic+'</div>'+
+      '<div><div class="pw-mon-name">'+mon+'</div>'+
+      '<div class="pw-mon-sub">Lớp '+lop+' · <b>'+co+'/'+BX_PHIEU_WEEKS+'</b> tuần đã có phiếu</div></div></div>'+
+    '<div class="pw-grid">'+g+'</div></div>';
+}
+/* Thẻ chọn môn + khối lớp (theo gợi ý giao diện của thầy Chung 16/8/2026):
+   mỗi môn một thẻ, trong thẻ là hàng nút Lớp 1–5 — chạm một cái ra đúng môn, đúng lớp. */
+function BX_phieuMonCard(mon,lop){
+  var m=BX_PHIEU_META[mon]||{ic:'📘',c:'#1FA45C'};
+  var nut=['1','2','3','4','5'].map(function(l){
+    var on=(String(l)===String(lop)&&(_phieuSel.mon===mon||!_phieuSel.mon));
+    return '<button class="pw-lbtn'+(on?' on':'')+'" onclick="BX_phieuChonMonLop(\''+BX_escAttr(mon).replace(/'/g,"\\'")+'\',\''+l+'\')">Lớp '+l+'</button>';
+  }).join('');
+  return '<div class="pw-card" style="--mc:'+m.c+'">'+
+    '<div class="pw-card-head"><div class="pw-mon-ic">'+m.ic+'</div>'+
+      '<div><div class="pw-mon-name">'+mon+'</div><div class="pw-mon-sub">Phiếu ôn luyện cuối tuần</div></div></div>'+
+    '<div class="pw-lrow">'+nut+'</div></div>';
+}
+function renderPhieu(){
+  BX_phieuStyleOnce();
+  var chips=el('pw-lop-chips'); if(!chips) return;
+  if(!_phieuSel.lop) _phieuSel.lop=String((String(state.klass).match(/[1-5]/)||['5'])[0]);
+  var lop=_phieuSel.lop, tuanNay=BX_phieuTuanNay();
+  chips.innerHTML=['1','2','3','4','5'].map(function(l){
+    return '<button class="sl-chip'+(lop===l?' on':'')+'" onclick="BX_phieuLop(\''+l+'\')">Lớp '+l+'</button>';
+  }).join('');
+  var body=el('pw-body'); if(!body) return;
+  var t=el('pw-title'); if(t) t.textContent=BX_PHIEU_TEN;
+
+  /* --- Thanh lọc: môn + tuần --- */
+  var chipMon='<span class="pw-flabel">Môn học:</span>'+
+    '<button class="pw-fchip'+(_phieuSel.mon?'':' on')+'" onclick="BX_phieuSetMon(\'\')">Tất cả</button>'+
+    BX_PHIEU_MON.map(function(mon){
+      var m=BX_PHIEU_META[mon]||{ic:'📘',c:'#1FA45C'};
+      return '<button class="pw-fchip'+(_phieuSel.mon===mon?' on':'')+'" style="--mc:'+m.c+'" onclick="BX_phieuSetMon(\''+BX_escAttr(mon).replace(/'/g,"\\'")+'\')"><span>'+m.ic+'</span>'+mon+'</button>';
+    }).join('');
+  var opts='<option value="0">Tất cả tuần</option>';
+  for(var i=1;i<=BX_PHIEU_WEEKS;i++) opts+='<option value="'+i+'"'+(_phieuSel.tuan===i?' selected':'')+'>Tuần '+i+(i===tuanNay?' (tuần này)':'')+'</option>';
+  var thanhLoc='<div class="pw-filter">'+chipMon+
+    '<label class="select pw-fsel"><span>Xem nhanh</span><select onchange="BX_phieuSetTuan(this.value)">'+opts+'</select></label></div>';
+
+  /* --- Thẻ "Phiếu tuần này": một lần chạm là mở đúng phiếu đang cần --- */
+  var btns=BX_PHIEU_MON.map(function(mon){
+    var m=BX_PHIEU_META[mon]||{ic:'📘',c:'#1FA45C'}, has=BX_phieuCoTuan(lop,mon,tuanNay);
+    return '<button class="pw-nbtn'+(has?'':' off')+'" style="--mc:'+m.c+'"'+
+      (has?(' onclick="BX_phieuMo(\''+lop+'\',\''+BX_escAttr(mon).replace(/'/g,"\\'")+'\','+tuanNay+')"'):'')+
+      '><span>'+m.ic+'</span>'+mon+(has?' →':' · chưa có')+'</button>';
+  }).join('');
+  var ngay=BX_phieuNgayTuan(tuanNay);
+  var monHien=_phieuSel.mon?[_phieuSel.mon]:BX_PHIEU_MON;
+  var chuaCo=BX_PHIEU_MON.every(function(mon){ return BX_phieuDemTuan(lop,mon)===0; });
+
+  /* --- Dải điểm nhấn: nói ĐÚNG những gì phiếu này là, không hứa quá --- */
+  var diem=[
+    ['🧭','Bám sát chương trình','Nội dung theo Chương trình GDPT 2018, đúng tiến độ từng tuần.'],
+    ['🗂️','Gọn theo tuần','Mỗi tuần một phiếu Toán và một phiếu Tiếng Việt — không phải tìm lâu.'],
+    ['🔄','Bổ sung dần','Phiếu để trên Google Drive, thêm phiếu mới là app có ngay.'],
+    ['🤝','Thầy cô tự chọn','Không chấm điểm, không bắt buộc nộp — dùng hay không là tuỳ lớp.']
+  ].map(function(x){ return '<div class="pw-hl"><span class="pw-hl-ic">'+x[0]+'</span><div><div class="pw-hl-t">'+x[1]+'</div><div class="pw-hl-d">'+x[2]+'</div></div></div>'; }).join('');
+
+  body.innerHTML=
+    thanhLoc+
+    '<div class="pw-now"><div class="pw-now-l">'+
+      '<div class="pw-now-tag">Phiếu tuần này</div>'+
+      '<div class="pw-now-w">Tuần '+tuanNay+' · Lớp '+lop+'</div>'+
+      (ngay?('<div class="pw-now-d">'+ngay+'</div>'):'')+
+    '</div><div class="pw-now-btns">'+btns+'</div></div>'+
+    '<div class="pw-sec">⭐ Chọn môn và khối lớp</div>'+
+    '<div class="pw-cards">'+BX_PHIEU_MON.map(function(mon){ return BX_phieuMonCard(mon,lop); }).join('')+'</div>'+
+    '<div class="pw-legend">Phiếu để thầy cô <b>tự chọn</b> giao cho học sinh ôn luyện cuối tuần — không chấm điểm, không bắt buộc nộp.</div>'+
+    monHien.map(function(mon){ return BX_phieuMonBlock(lop,mon,tuanNay); }).join('')+
+    (chuaCo?'<div class="pw-note">📁 Kho phiếu <b>Lớp '+lop+'</b> đang được chuẩn bị. Giao diện đã sẵn sàng, phiếu sẽ hiện ngay khi Dự án gắn thư mục Google Drive — thầy cô không phải cập nhật gì.</div>':'')+
+    '<div class="pw-hls">'+diem+'</div>';
 }
 
 /* ---------- 8) LỊCH BÁO GIẢNG (đầy đủ) ---------- */
@@ -4356,10 +4587,23 @@ function renderDashRecent(){
   box.innerHTML=saved.slice(0,3).map(f=>`<div class="fileitem" style="cursor:pointer" onclick="openSavedKHBD('${f.id}')"><div class="wic">W</div><div><div class="ftitle">${f.name}</div><div class="fmeta">${f.meta}</div></div></div>`).join('');
   if(foot) foot.innerHTML=saved.length>3?`<span class="link" onclick="showView('kho')">Xem thêm ${saved.length-3} tệp khác →</span>`:`<span class="link" onclick="showView('kho')">Mở Kho giáo án →</span>`;
 }
+/* 16/8/2026: thẻ này trước hiện "Học liệu gợi ý", nay hiện PHIẾU BÀI TẬP CUỐI TUẦN
+   của tuần đang học — bấm là mở thẳng phiếu, không phải đi qua màn trung gian. */
 function renderDashMats(){
   const box=el('dash-mats'); if(!box) return;
-  const esc=s=>(s||'').replace(/'/g,"\\'");
-  box.innerHTML=allHocLieu().slice(0,4).map(m=>`<div class="fileitem matitem" style="cursor:pointer" onclick="openHl('${esc(m.title)}','${esc(m.link)}','${esc(m.subject)}','${esc(m.lop)}')"><div class="thumb" style="background:${m.bg}">${m.emoji}</div><div><div class="ftitle">${m.type?m.type+': ':''}${m.title}</div><div class="fmeta">${m.subject?m.subject+' ':''}${hlKhoiLabel(m)}${m.link?' · 🔗':''}</div></div></div>`).join('');
+  const t=el('dash-phieu-title'); if(t&&typeof BX_PHIEU_TEN==='string') t.textContent=BX_PHIEU_TEN;
+  const lop=String((String(state.klass).match(/[1-5]/)||['5'])[0]);
+  const w=(typeof BX_phieuTuanNay==='function')?BX_phieuTuanNay():1;
+  const ngay=(typeof BX_phieuNgayTuan==='function')?BX_phieuNgayTuan(w):'';
+  const q=s=>_xe(JSON.stringify(String(s==null?'':s)));   // thoát đủ cả nháy đơn lẫn nháy kép
+  box.innerHTML=(BX_PHIEU_MON||[]).map(mon=>{
+    const m=(BX_PHIEU_META||{})[mon]||{ic:'📘',c:'#1FA45C'};
+    const co=BX_phieuCoTuan(lop,mon,w);
+    return `<div class="fileitem matitem" style="cursor:pointer" onclick="BX_phieuMo(${q(lop)},${q(mon)},${w})" title="${co?'Mở phiếu':'Chưa có phiếu'}">`+
+      `<div class="thumb" style="background:${m.c}1a">${m.ic}</div>`+
+      `<div><div class="ftitle">${mon} — Tuần ${w}</div>`+
+      `<div class="fmeta">Lớp ${lop}${ngay?' · '+ngay:''} · ${co?'mở phiếu 🔗':'chưa có phiếu'}</div></div></div>`;
+  }).join('');
 }
 
 /* ---------- 11) BÚT XANH NHẮC THẦY CÔ (đầy đủ) ---------- */
@@ -4686,8 +4930,11 @@ function renderHocLieu(){
   const tpb=el('hl-type-pills'); if(tpb) tpb.innerHTML=types.map(t=>`<span class="pill ${t===hlType?'active':''}" data-t="${t}" onclick="setHlType(this.dataset.t)">${t}</span>`).join('');
   const q=((el('hl-search')&&el('hl-search').value)||'').toLowerCase().trim();
   const list=all.filter(m=> (hlMon==='Tất cả'||m.subject===hlMon) && (hlType==='Tất cả'||m.type===hlType) && (!q || ((m.title||'')+' '+(m.subject||'')+' '+(m.type||'')).toLowerCase().includes(q)));
-  const esc=s=>(s||'').replace(/'/g,"\\'");
-  el('hl-grid').innerHTML=list.length?list.map(m=>`<div class="mat-card" style="cursor:pointer" onclick="openHl('${esc(m.title)}','${esc(m.link)}','${esc(m.subject)}','${esc(m.lop)}')"><div class="mat-thumb" style="background:${m.bg}">${m.emoji}</div><span class="mtype" style="color:${m.color};background:${m.bg}">${m.type}</span><div class="mt">${m.title}</div><div class="mm">${m.subject?m.subject+' · ':''}${hlKhoiLabel(m)}${m.id?' · của tôi':' · gợi ý'}${m.link?' · 🔗':''}</div>${m.id?`<div class="kact" style="margin-top:8px"><button class="btn-xs" onclick="event.stopPropagation();openHlEditor('${m.id}')">Sửa</button><button class="btn-xs danger" onclick="event.stopPropagation();delHl('${m.id}')">Xoá</button></div>`:''}</div>`).join(''):'<div class="empty-pad">Không tìm thấy học liệu phù hợp.</div>';
+  /* Tên bài tiểu học rất hay có dấu nháy KÉP — Ôn tập bài hát "Quốc ca". Chỉ thoát dấu
+     nháy đơn thì chuỗi đó cắt đứt thuộc tính onclick, thẻ vỡ và bấm vào là ném lỗi.
+     JSON.stringify + _xe thoát đủ cả hai loại nháy lẫn dấu ngoặc góc. */
+  const esc=s=>_xe(JSON.stringify(String(s==null?'':s)));
+  el('hl-grid').innerHTML=list.length?list.map(m=>`<div class="mat-card" style="cursor:pointer" onclick="openHl(${esc(m.title)},${esc(m.link)},${esc(m.subject)},${esc(m.lop)})"><div class="mat-thumb" style="background:${m.bg}">${m.emoji}</div><span class="mtype" style="color:${m.color};background:${m.bg}">${m.type}</span><div class="mt">${m.title}</div><div class="mm">${m.subject?m.subject+' · ':''}${hlKhoiLabel(m)}${m.id?' · của tôi':' · gợi ý'}${m.link?' · 🔗':''}</div>${m.id?`<div class="kact" style="margin-top:8px"><button class="btn-xs" onclick="event.stopPropagation();openHlEditor('${m.id}')">Sửa</button><button class="btn-xs danger" onclick="event.stopPropagation();delHl('${m.id}')">Xoá</button></div>`:''}</div>`).join(''):'<div class="empty-pad">Không tìm thấy học liệu phù hợp.</div>';
 }
 let hlEditId=null;
 function openHlEditor(id){
@@ -6613,7 +6860,14 @@ window.BX_setWeek=function(w){
   var d=BX_weekDates(w);
   state.week=String(w); state.from=d.fromY; state.to=d.toY;
   var saved=(typeof getLBGForWeek==='function')?getLBGForWeek(w):null;
-  state.schedule = saved ? saved : BX_weekSchedule(w);   // tuần này đã có LBG thật → dùng; chưa có → bản mẫu
+  /* 🛑 PHẢI gọi qua window (vá 16/8/2026). Khối script này có một hàm BX_weekSchedule
+     CỤC BỘ dựng lịch MẪU lớp 5; bản dựng theo Thời khoá biểu thật của thầy cô lại gán vào
+     window.BX_weekSchedule ở cuối trang. Gọi tên trần thì luôn trúng bản mẫu — giáo viên
+     lớp 3 đã khai TKB vẫn thấy 14 tiết lớp 5 (có cả Khoa học, Lịch sử & Địa lí) mà không
+     một lời cảnh báo. Bản trên window tự lui về bản mẫu khi chưa có TKB nên không ảnh
+     hưởng thầy cô chưa khai; tuần ĐÃ LƯU vẫn được ưu tiên ở biến `saved` phía trên,
+     nên không tạo "vết đứt ranh giới" với lịch đã lưu. */
+  state.schedule = saved ? saved : (window.BX_weekSchedule||BX_weekSchedule)(w);
   // ghi nhớ tuần đang xem (đồng bộ giữa các máy)
   try{ localStorage.setItem('butxanh_lbg_meta',JSON.stringify({week:String(w),from:d.fromY,to:d.toY,gvcn:state.gvcn,klass:state.klass})); }catch(e){}
   var sw=document.getElementById('sel-week'); if(sw) sw.value=String(w);
@@ -6671,7 +6925,14 @@ window.BX_dashSel=function(){
      state.klass bằng giá trị đang hiện của ô Lớp — mà ô đó ghi cứng "Lớp 5A" nên giáo viên
      khối khác chỉ cần đổi tuần là lớp bị nhảy về 5A, rồi chui vào KHBD lưu mới và lây sang
      phần suy quyền (BX_phanCongGVDay đọc butxanh_khbd). */
-  if(sl && this && this.id==='sel-lop') state.klass=sl.value.replace(/^Lớp\s*/,'').trim();
+  if(sl && this && this.id==='sel-lop'){
+    state.klass=sl.value.replace(/^Lớp\s*/,'').trim();
+    /* Đổi lớp thì đổi luôn KHỐI và nạp kho của khối đó — trước đây chỉ đổi mỗi cái nhãn,
+       thầy cô có thể xuất ra bản Lịch báo giảng đề lớp này mà ruột là lớp kia. */
+    var m=String(state.klass).match(/\d/); if(m) state.khoi=m[0];
+    try{ if(window.BX_ensureKho) window.BX_ensureKho(state.klass); }catch(e){}
+    try{ if(window.BX_setWeek) { window.BX_setWeek(state.week); return; } }catch(e){}
+  }
   // Đổi học kỳ → nhảy về tuần đầu kỳ
   if(sh && this && this.id==='sel-hk'){ BX_setWeek(sh.value==='Học kỳ 2'?19:1); return; }
   if(sw){ BX_setWeek(sw.value); } else reRender();
@@ -6680,11 +6941,19 @@ window.BX_dashSel=function(){
    Nguồn: lớp khai ở Cài đặt (state.klass) + mọi lớp xuất hiện trong thời khoá biểu,
    lịch dạy, lịch báo giảng đã lưu và kho giáo án. Chỉ ĐỌC, không ghi gì vào localStorage. */
 function BX_dsLopCuaToi(){
-  var ds=[], me=String(state.klass||'').trim();
+  var ds=[];
+  /* CHỈ lấy lớp thầy cô KHAI THẬT trong hồ sơ. Trước đây lấy state.klass — mà giá trị mặc
+     định của nó là "5A", nên giáo viên bộ môn chưa khai lớp bị mọc thêm "Lớp 5A" không hề
+     dạy, lại còn là mục đang chọn. */
+  var me=''; try{ me=String((JSON.parse(localStorage.getItem('butxanh_profile')||'{}')).klass||'').trim(); }catch(e){}
   function them(x){
-    var l=String(x||'').trim();
-    if(!/^[1-5][A-Za-zĐđ0-9]{0,3}$/.test(l)) return;   // "3A", "5B", "2"… ; bỏ chuỗi lạ
-    if(ds.indexOf(l)<0) ds.push(l);
+    var l=String(x||'').trim().replace(/^Lớp\s*/i,'').replace(/\s+/g,' ').trim();
+    /* Nhận cả cách đặt tên "5/1", "5.2", "5-3", "5 A" — nhiều trường dùng, trước đây bị loại sạch */
+    if(!/^[1-5]\s*[\/\.\-]?\s*[A-Za-zĐđ0-9]{0,3}$/.test(l)) return;
+    l=l.replace(/\s*([\/\.\-])\s*/,'$1').replace(/\s+/g,'');
+    /* "1a" và "1A" là một lớp — so không phân biệt hoa thường */
+    for(var i=0;i<ds.length;i++) if(ds[i].toUpperCase()===l.toUpperCase()) return;
+    ds.push(l);
   }
   function doc(k){ try{ return JSON.parse(localStorage.getItem(k)||'null'); }catch(e){ return null; } }
   them(me);
@@ -6703,9 +6972,14 @@ function BX_dsLopCuaToi(){
 }
 function fillLopSelect(){
   var sl=document.getElementById('sel-lop'); if(!sl) return;
-  var ds=BX_dsLopCuaToi(), cur=String(state.klass||ds[0]||'').trim(), html='';
-  if(ds.indexOf(cur)<0) ds.unshift(cur);            // lớp đang chọn luôn có mặt
-  ds.forEach(function(l){ html+='<option value="Lớp '+l+'"'+(l===cur?' selected':'')+'>Lớp '+l+'</option>'; });
+  var ds=BX_dsLopCuaToi();
+  /* Lớp đang chọn: ưu tiên lớp KHAI THẬT trong hồ sơ; chưa khai thì lấy lớp đầu tiên
+     thầy cô thật sự dạy — đừng để "5A" mặc định của state trở thành mục đang chọn. */
+  var khai=''; try{ khai=String((JSON.parse(localStorage.getItem('butxanh_profile')||'{}')).klass||'').trim(); }catch(e){}
+  var cur=khai||ds[0]||String(state.klass||'').trim();
+  if(cur && ds.indexOf(cur)<0) ds.unshift(cur);     // lớp đang chọn luôn có mặt
+  if(cur && String(state.klass)!==cur) state.klass=cur;   // nhãn và state nói cùng một lớp
+  var html=ds.map(function(l){ return '<option value="Lớp '+l+'"'+(l===cur?' selected':'')+'>Lớp '+l+'</option>'; }).join('');
   sl.innerHTML=html;
 }
 window.BX_fillLopSelect=fillLopSelect;
@@ -8295,6 +8569,8 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     try{ if(window.BX_ensureKhoTheoLich) _khoiCanKho=window.BX_ensureKhoTheoLich()||[]; }catch(e){}
     try{ if(window.FBX&&window.FBX.flush) window.FBX.flush(); }catch(e){}   // đẩy ngay lên đám mây
     try{ if(window.BX_gateLai) BX_gateLai(); }catch(e){}   // đã có TKB → gỡ cổng nhắc ở LBG/KHBD
+    /* Vừa khai thêm lớp trong TKB → dựng lại ô Lớp trên Bảng điều khiển, khỏi phải tải lại trang */
+    try{ if(window.BX_fillLopSelect) window.BX_fillLopSelect(); }catch(e){}
     /* (14/8/2026) DỰNG LẠI LỊCH TUẦN ĐANG XEM ngay khi vừa có Thời khoá biểu.
        Lỗi đo được: state.schedule được tính LÚC MỞ APP, khi ấy chưa có TKB nên rơi vào lịch
        lớp MẪU (BX_weekSchedule gốc) — tên bài toàn "(theo PPCT)". Lưu TKB xong, con số này
