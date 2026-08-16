@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-16 · 34';
+  var PB='2026-08-16 · 35';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -7630,22 +7630,46 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
      là lý do "một thời gian trang tự đăng xuất".
      Nhắc bằng THANH nhỏ phía trên, không phải hộp chặn màn hình — màn chào từng làm "đơ
      nút" (3/8/2026), nên tuyệt đối không dựng gì chắn lối lúc mở app. */
+  /* Thoát khỏi webview bằng MỘT chạm. Android hiểu địa chỉ dạng intent:// nên mở thẳng
+     được Chrome; iPhone thì thử gọi Chrome, không có Chrome thì phải nhờ thầy cô bấm
+     «Mở bằng Safari». Ứng dụng nào chặn hết thì sau 1,6 giây vẫn còn ở đây → tự hiện
+     hướng dẫn tay kèm nút chép địa chỉ, không để thầy cô bấm rồi không thấy gì xảy ra. */
+  function moTrinhDuyetNgoai(khiHong){
+    var ua=navigator.userAgent||'', tran=location.href.replace(/^https?:\/\//,'');
+    var t0=Date.now();
+    try{
+      if(/Android/i.test(ua)){
+        location.href='intent://'+tran+'#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url='+encodeURIComponent(location.href)+';end';
+      } else if(/iPhone|iPad|iPod/i.test(ua)){
+        location.href='googlechrome://'+tran;
+      } else { khiHong(); return; }
+    }catch(e){ khiHong(); return; }
+    setTimeout(function(){
+      if(document.hidden||Date.now()-t0>4000) return;   // đã nhảy được sang app khác
+      khiHong();
+    },1600);
+  }
   function nhacTrinhDuyet(){
     if(!trongUngDung()) return;
     try{ if(sessionStorage.getItem('butxanh_nhac_td')) return; sessionStorage.setItem('butxanh_nhac_td','1'); }catch(e){}
+    var iOS=/iPhone|iPad|iPod/i.test(navigator.userAgent||'');
     var d=document.createElement('div');
     d.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:99997;background:#fff8e6;border:1px solid #ffd782;border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.5;color:#6b4e00;box-shadow:0 8px 24px rgba(0,0,0,.18)';
-    d.innerHTML='<b>⚠️ Nên mở bằng Chrome/Safari</b><br>Thầy/cô đang mở Bút Xanh trong Zalo/Facebook nên hay bị <b>đăng xuất</b> và không đăng nhập Google được. Bấm dấu <b>⋮</b> (hoặc <b>…</b>) góc màn hình → <b>«Mở bằng trình duyệt»</b>.'+
-      '<div style="margin-top:9px;display:flex;gap:8px"><button id="bxtd-chep" style="flex:1;padding:8px;border:0;border-radius:9px;background:#0f9d58;color:#fff;font-size:13px;font-weight:600;cursor:pointer">📋 Chép địa chỉ</button>'+
-      '<button id="bxtd-dong" style="padding:8px 14px;border:0;border-radius:9px;background:#efe6cc;color:#6b4e00;font-size:13px;cursor:pointer">Đóng</button></div>';
+    d.innerHTML='<b>⚠️ Hãy mở Bút Xanh bằng '+(iOS?'Safari/Chrome':'Chrome')+'</b><br>Đang mở trong Zalo/Facebook nên <b>Google không cho đăng nhập</b> và dữ liệu hay bị mất. Bấm nút xanh bên dưới là sang trình duyệt ngay ạ.'+
+      '<div style="margin-top:9px;display:flex;gap:8px"><button id="bxtd-mo" style="flex:1;padding:9px;border:0;border-radius:9px;background:#0f9d58;color:#fff;font-size:13.5px;font-weight:700;cursor:pointer">🌐 Mở bằng '+(iOS?'Chrome':'Chrome')+'</button>'+
+      '<button id="bxtd-dong" style="padding:9px 14px;border:0;border-radius:9px;background:#efe6cc;color:#6b4e00;font-size:13px;cursor:pointer">Đóng</button></div>'+
+      '<div id="bxtd-tay" style="display:none;margin-top:9px;padding-top:9px;border-top:1px dashed #e6cf9a">Máy chưa tự mở được. Thầy/cô bấm dấu <b>⋮</b> (hoặc <b>…</b>) ở góc màn hình → chọn <b>«Mở bằng trình duyệt'+(iOS?'/Safari':'')+'»</b>.'+
+      '<button id="bxtd-chep" style="margin-top:8px;width:100%;padding:8px;border:1px solid #d8c48c;border-radius:9px;background:#fff;color:#6b4e00;font-size:13px;cursor:pointer">📋 Chép địa chỉ butxanh.net</button></div>';
     document.body.appendChild(d);
-    var b1=d.querySelector('#bxtd-chep'), b2=d.querySelector('#bxtd-dong');
-    if(b1) b1.onclick=function(){
+    var bMo=d.querySelector('#bxtd-mo'), bDong=d.querySelector('#bxtd-dong'),
+        bChep=d.querySelector('#bxtd-chep'), tay=d.querySelector('#bxtd-tay');
+    if(bMo) bMo.onclick=function(){ moTrinhDuyetNgoai(function(){ if(tay) tay.style.display='block'; }); };
+    if(bChep) bChep.onclick=function(){
       var t=location.href;
-      try{ navigator.clipboard.writeText(t).then(function(){ b1.textContent='✓ Đã chép — dán vào Chrome'; },function(){ b1.textContent=t; }); }
-      catch(e){ b1.textContent=t; }
+      try{ navigator.clipboard.writeText(t).then(function(){ bChep.textContent='✓ Đã chép — mở Chrome rồi dán vào'; },function(){ bChep.textContent=t; }); }
+      catch(e){ bChep.textContent=t; }
     };
-    if(b2) b2.onclick=function(){ d.remove(); };
+    if(bDong) bDong.onclick=function(){ d.remove(); };
   }
 
   /* Đăng nhập: popup là luồng chính (không phụ thuộc cookie bên thứ ba).
@@ -7694,9 +7718,13 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
         luotDN++; ketThucDangNhap();          // bỏ lượt cũ, làm lại từ đầu
       }
       if(trongUngDung()){
+        /* Bấm "Đăng nhập" trong Zalo/Facebook là chắc chắn hỏng (Google chặn webview),
+           nên đưa thẳng lối thoát thay vì để thầy cô thử rồi thất vọng. */
         BX_confirm({title:'Hãy mở bằng trình duyệt',
-          html:'Thầy/cô đang mở Bút Xanh trong <b>ứng dụng Zalo/Facebook</b>. Google <b>không cho đăng nhập</b> ở đây, và dữ liệu cũng hay bị mất phiên.<br><br>👉 Bấm dấu <b>⋮</b> (hoặc <b>…</b>) ở góc màn hình → chọn <b>«Mở bằng trình duyệt»</b> (Chrome/Safari), rồi đăng nhập ở đó ạ.',
-          okText:'Tôi đã hiểu',cancelText:'Vẫn thử'}, null, function(){ FBX.login2(); });
+          html:'Thầy/cô đang mở Bút Xanh trong <b>ứng dụng Zalo/Facebook</b>. Google <b>không cho đăng nhập</b> ở đây, và dữ liệu cũng hay bị mất.<br><br>Bấm <b>Mở bằng Chrome</b> rồi đăng nhập ở đó ạ. Nếu máy không tự mở, thầy cô bấm dấu <b>⋮</b> (hoặc <b>…</b>) góc màn hình → <b>«Mở bằng trình duyệt»</b>.',
+          okText:'🌐 Mở bằng Chrome',cancelText:'Vẫn thử ở đây'},
+          function(){ moTrinhDuyetNgoai(function(){ bxAlert('Ứng dụng này không cho mở thẳng trình duyệt ạ.\n\nThầy/cô bấm dấu ⋮ (hoặc …) ở góc màn hình → chọn «Mở bằng trình duyệt», hoặc mở Chrome rồi gõ: butxanh.net'); }); },
+          function(){ FBX.login2(); });
         return;
       }
       FBX.login2();
