@@ -3546,7 +3546,9 @@ var BX_PHIEU_TEN='Phiếu bài tập cuối tuần';   /* đổi tên hiển th�
 var BX_PHIEU_TEN_NGAN='Phiếu BT cuối tuần';
 var BX_PHIEU_MON=['Toán','Tiếng Việt'];
 var BX_PHIEU_WEEKS=35;
-var BX_PHIEU_META={'Toán':{ic:'🔢',c:'#E5503B'},'Tiếng Việt':{ic:'📖',c:'#2C7BD6'}};
+/* Màu nhận diện hai môn ở màn Phiếu. Toán dùng CAM (--org) chứ không dùng đỏ:
+   thầy Chung 17/8/2026 — đỏ trên thẻ tuần trông như báo lỗi, cam nhìn dịu hơn. */
+var BX_PHIEU_META={'Toán':{ic:'🔢',c:'#E0871C'},'Tiếng Việt':{ic:'📖',c:'#2C7BD6'}};
 /* ===== KHO PHIẾU = TỆP TĨNH TRONG APP =====
    Tên tệp theo ĐÚNG một khuôn, khỏi phải chép 350 đường dẫn vào đây:
        web/phieu/Phieu_<Toan|TiengViet><lớp>_Tuan<tuần>.html
