@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=794">
+<title>Phiếu bài tập cuối tuần — Tiếng Việt 2 — Tuần 4</title>
+<link rel="stylesheet" href="khuon.css">
+<style>
+.tranh { float: right; width: 44mm; height: auto; margin: 0 0 2mm 5mm; shape-outside: margin-box; }
+.o-viet { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3mm; margin-top: 2mm; }
+.o-viet .o { border: 1.2pt solid #cfd8d2; border-radius: 2mm; height: 24mm; position: relative;
+  display: flex; align-items: center; justify-content: center; }
+.o-viet .o:before { content: ""; position: absolute; left: 2mm; right: 2mm; top: 62%;
+  border-top: .8pt dashed #dfe6e2; }
+.o-viet .o svg { height: 19mm; position: relative; }
+</style>
+</head>
+<!-- Bám kế hoạch giáo dục của app (khgd-lop2.js), tuần 4 — chủ điểm "Em lớn lên từng ngày":
+     Bài 7 "Cây xấu hổ" (đọc · chữ hoa C · kể chuyện) và
+     Bài 8 "Cầu thủ dự bị" (đọc · nghe-viết · QUY TẮC VIẾT HOA TÊN NGƯỜI ·
+     mở rộng vốn từ về hoạt động thể thao, vui chơi · câu nêu hoạt động ·
+     viết đoạn kể về một hoạt động thể thao hoặc trò chơi).
+     Bài đọc do Bút Xanh tự viết theo chủ điểm, KHÔNG chép của sách giáo khoa. -->
+<body class="mon-tv">
+
+<!-- Tranh do Bút Xanh tự vẽ, không lấy từ sách giáo khoa (bản quyền NXB Giáo dục Việt Nam). -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <!-- Bạn nhỏ đá bóng trên sân, có khung thành phía sau -->
+  <g id="h-da-bong">
+    <!-- khung thành -->
+    <path class="hv-n" style="stroke-width:4" d="M130 40h86v62h-86z"/>
+    <path class="hv-n2" style="stroke:#9db0a6" d="M148 40v62M170 40v62M192 40v62M130 58h86M130 78h86"/>
+    <!-- mặt sân -->
+    <path class="hv-n" d="M6 178h218"/>
+    <path class="hv-n2" style="stroke:#8FB5A6" d="M20 190c30-6 60-6 90 0M130 196c26-6 52-6 78 0"/>
+    <!-- bạn nhỏ đang sút: một chân trụ, một chân đá -->
+    <path class="hv-n" style="stroke-width:10" d="M74 178v-24"/>
+    <path style="fill:none;stroke:#3F6B9E;stroke-width:5.6;stroke-linecap:round" d="M74 168v-14"/>
+    <path style="fill:none;stroke:#FFD6B0;stroke-width:5.6;stroke-linecap:round" d="M74 178v-12"/>
+    <path class="hv-n" style="stroke-width:10" d="M76 156l26 16"/>
+    <path style="fill:none;stroke:#3F6B9E;stroke-width:5.6;stroke-linecap:round" d="M76 156l14 9"/>
+    <path style="fill:none;stroke:#FFD6B0;stroke-width:5.6;stroke-linecap:round" d="M88 164l14 8"/>
+    <path class="hv-n" style="stroke-width:8" d="M70 180h12M100 176h12"/>
+    <path class="hv-tr mv-do" d="M56 152v-34c0-11 9-19 20-19s20 8 20 19v34z"/>
+    <path class="hv-n" style="stroke-width:8" d="M58 122l-20 14M94 122l18-10"/>
+    <path style="fill:none;stroke:#FFD6B0;stroke-width:4.4;stroke-linecap:round" d="M58 122l-20 14M94 122l18-10"/>
+    <circle class="hv-tr mv-da" cx="76" cy="84" r="17"/>
+    <path class="hv-tr mv-toc" d="M59 83c0-11 8-19 17-19s17 8 17 19c-4-6-10-9-17-9s-13 3-17 9z"/>
+    <circle class="hv-den" cx="70" cy="84" r="2.4"/>
+    <circle class="hv-den" cx="82" cy="84" r="2.4"/>
+    <path class="hv-n2" d="M71 92c3 3 8 3 11 0"/>
+    <!-- quả bóng -->
+    <circle class="hv-tr" cx="126" cy="170" r="16"/>
+    <path class="hv-tr mv-den" d="M126 161l7 5-2.6 8h-8.8l-2.6-8z"/>
+    <path class="hv-n2" d="M126 161v-7M133 166l7-3M130 174l5 6M122 174l-5 6M119 166l-7-3"/>
+  </g>
+</defs></svg>
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU BÀI TẬP CUỐI TUẦN</h1>
+      <div class="mon">MÔN TIẾNG VIỆT — LỚP 2</div><div class="tuan">TUẦN 4</div></div>
+    <div class="ngay">Ngày …… / …… / 20……<br>Em lớn lên từng ngày<br>Trang 1/2</div>
+  </div>
+
+  <div class="hoten">
+    <div style="flex:1"><span>Họ và tên:</span><span class="o"></span></div>
+    <div><span>Lớp:</span><span class="o hep"></span></div>
+  </div>
+
+  <div class="phan"><span class="so">I</span><span class="ten">Đọc hiểu</span><span class="line"></span></div>
+  <div class="dan">Đọc thầm bài sau:</div>
+
+  <div class="vb">
+    <div class="ten-bai">CHÂN SÚT DỰ BỊ</div>
+
+    <svg class="tranh" viewBox="0 0 230 200" aria-label="Tranh: bạn nhỏ đang sút bóng vào khung thành">
+      <use href="#h-da-bong"/>
+    </svg>
+
+    <p>Đội bóng lớp 2A có bảy bạn. Nam là người thứ tám, nên bạn ngồi ngoài sân.</p>
+    <p>Suốt trận, Nam ngồi bó gối nhìn các bạn chạy. Đến hiệp hai, bạn Khoa bị đau chân.
+      Thầy quay sang gọi: “Nam, vào sân!”</p>
+    <p>Nam đứng bật dậy. Chân run, tim đập thình thịch. Nhưng khi quả bóng lăn tới, Nam quên hết.
+      Bạn chạy, đỡ bóng rồi chuyền cho Khoa… à không, cho bạn Hà đang trống chỗ.</p>
+    <p>Hà sút. Bóng vào lưới. Cả đội chạy lại ôm lấy Nam, dù bàn thắng không phải Nam ghi.</p>
+    <p>Về nhà, Nam khoe mẹ: “Con là dự bị, mà con chuyền bóng ạ!”</p>
+    <p class="tacgia">Bút Xanh</p>
+  </div>
+
+  <div class="dan">Dựa vào bài đọc, khoanh vào chữ đặt trước câu trả lời đúng hoặc làm theo yêu cầu:</div>
+
+  <div class="cau"><div class="de"><b>Câu 1.</b> Vì sao lúc đầu Nam phải ngồi ngoài sân?</div>
+    <div class="pa mot"><span><i class="k">A.</i>Vì Nam là người thứ tám, đội chỉ cần bảy bạn.</span>
+      <span><i class="k">B.</i>Vì Nam bị đau chân.</span>
+      <span><i class="k">C.</i>Vì Nam không thích đá bóng.</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 2.</b> Nam được vào sân khi nào?</div>
+    <div class="pa mot"><span><i class="k">A.</i>Ngay từ đầu trận.</span>
+      <span><i class="k">B.</i>Ở hiệp hai, khi bạn Khoa bị đau chân.</span>
+      <span><i class="k">C.</i>Khi trận đấu đã kết thúc.</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 3.</b> Nam đã làm gì trong trận đấu?</div>
+    <div class="pa mot"><span><i class="k">A.</i>Ghi bàn thắng.</span>
+      <span><i class="k">B.</i>Đỡ bóng rồi chuyền cho bạn Hà.</span>
+      <span><i class="k">C.</i>Bắt gôn cho đội.</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 4.</b> Vì sao Nam vui dù không phải người ghi bàn?
+    Em hãy viết câu trả lời của mình.</div>
+    <div class="ke"><div class="d"></div><div class="d"></div></div></div>
+
+  <div class="chan"><span>Tiếng Việt 2 · Tuần 4</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU BÀI TẬP CUỐI TUẦN</h1>
+      <div class="mon">MÔN TIẾNG VIỆT — LỚP 2</div><div class="tuan">TUẦN 4</div></div>
+    <div class="ngay">Họ và tên: ……………………<br>Lớp: ………<br>Trang 2/2</div>
+  </div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Luyện từ và câu</span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 1.</b> Viết lại cho đúng <b>quy tắc viết hoa tên người</b>:</div>
+    <div class="yc" style="font-size:13.5pt;line-height:2">
+      a) nguyễn hoài nam → …………………………………<br>
+      b) bạn trần thu hà → …………………………………</div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 2.</b> Tìm và viết lại <b>4 từ ngữ</b> chỉ hoạt động
+    <b>thể thao, vui chơi</b> (ví dụ: <i>đá bóng</i>).</div>
+    <div class="ke hep" style="margin-left:6mm"><div class="d"></div></div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 3.</b> Đặt <b>một câu nêu hoạt động</b> nói về một môn thể thao
+    hoặc trò chơi em thích (theo mẫu: <i>Ai làm gì?</i>).</div>
+    <div class="ke hep" style="margin-left:6mm"><div class="d"></div><div class="d"></div></div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 4.</b> Tập viết chữ hoa <b>C</b> — tô theo nét chấm rồi viết tiếp:</div>
+    <div class="o-viet">
+      <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="60" text-anchor="middle"
+        font-family="Times New Roman, serif" font-size="58" stroke-width="2.2">C</text></svg></div>
+      <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="60" text-anchor="middle"
+        font-family="Times New Roman, serif" font-size="58" stroke-width="2.2">C</text></svg></div>
+      <div class="o"></div>
+      <div class="o"><svg viewBox="0 0 110 80"><text class="hv-cham" x="55" y="60" text-anchor="middle"
+        font-family="Times New Roman, serif" font-size="48" stroke-width="2">Cầu</text></svg></div>
+      <div class="o"></div>
+    </div>
+  </div>
+
+  <div class="phan"><span class="so">III</span><span class="ten">Viết</span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 5.</b> Viết <b>3 – 4 câu</b> kể về một <b>trò chơi hoặc môn thể thao</b>
+    em đã chơi (chơi ở đâu, chơi với ai, em thấy thế nào).</div>
+    <div class="ke"><div class="d"></div><div class="d"></div><div class="d"></div>
+      <div class="d"></div><div class="d"></div></div>
+  </div>
+
+  <div class="chan"><span>Tiếng Việt 2 · Tuần 4</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang dapan">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>ĐÁP ÁN &amp; HƯỚNG DẪN</h1>
+      <div class="mon">MÔN TIẾNG VIỆT — LỚP 2</div><div class="tuan">TUẦN 4</div></div>
+    <div class="ngay">Dành cho<br>thầy cô &amp; phụ huynh<br><b>Trang cuối</b></div>
+  </div>
+
+  <div class="muc">Đáp án</div>
+  <div class="bai"><b>Câu 1.</b> <span class="gia">A</span> &nbsp;·&nbsp; <b>Câu 2.</b> <span class="gia">B</span>
+    &nbsp;·&nbsp; <b>Câu 3.</b> <span class="gia">B</span></div>
+  <div class="bai"><b>Câu 4.</b> Câu trả lời mở. Ý đúng: vì Nam <span class="gia">đã góp sức cho đội bằng
+    đường chuyền của mình</span>; cả đội cùng vui, thắng lợi là của chung chứ không của riêng ai.</div>
+
+  <div class="muc">Luyện từ và câu · Viết</div>
+  <div class="bai"><b>Bài 1.</b> a) <span class="gia">Nguyễn Hoài Nam</span> ·
+    b) <span class="gia">bạn Trần Thu Hà</span>.
+    <i>(Viết hoa chữ cái đầu của TẤT CẢ các tiếng trong tên người. Chữ “bạn” chỉ là từ chỉ người
+    đứng trước, không viết hoa.)</i></div>
+  <div class="bai"><b>Bài 2.</b> Mở. Ví dụ: <span class="gia">đá bóng · nhảy dây · đá cầu · bơi ·
+    chạy · trốn tìm · kéo co · đánh cầu lông</span>.</div>
+  <div class="bai"><b>Bài 3.</b> Câu mở. Ví dụ: <i>“Em đá cầu cùng các bạn ở sân trường.”</i>
+    Câu phải có đủ <b>Ai</b> + <b>làm gì</b>, đầu câu viết hoa, cuối câu có dấu chấm.</div>
+  <div class="bai"><b>Bài 4.</b> Tô rồi viết chữ hoa <span class="gia">C</span> và tiếng
+    <span class="gia">Cầu</span>.</div>
+  <div class="bai"><b>Bài 5.</b> Đoạn mở. Đủ ý là được: <i>chơi trò gì · chơi ở đâu, với ai · cảm nghĩ</i>.
+    Ví dụ: <i>“Chiều thứ Bảy, em chơi nhảy dây cùng các bạn ở sân nhà văn hoá. Em nhảy được hai mươi
+    cái liền. Em thấy rất vui và hơi mỏi chân.”</i></div>
+
+  <div class="muc">Chỗ học sinh hay sai</div>
+  <p>· <b>Bài 1 — chỉ viết hoa chữ đầu tiên</b> (“Nguyễn hoài nam”). Quy tắc tuần này:
+    <b>viết hoa chữ cái đầu của tất cả các tiếng</b> tạo thành tên người.</p>
+  <p>· <b>Bài 1 ý b — nhiều em viết hoa cả chữ “bạn”.</b> “Bạn”, “anh”, “chị”, “cô” chỉ là từ chỉ người
+    đứng trước tên, không viết hoa.</p>
+  <p>· <b>Bài 3 hay bị viết thành câu nêu ĐẶC ĐIỂM</b> (“Trò chơi này rất vui”). Tuần này yêu cầu
+    câu nêu <b>hoạt động</b> — ai <i>làm gì</i>.</p>
+  <p>· <b>Chữ hoa C</b> có một nét cong lớn, em hay viết hở miệng quá rộng thành chữ L.</p>
+
+  <div class="luuy"><b>Căn cứ chương trình:</b> Tiếng Việt 2 — Kết nối tri thức với cuộc sống,
+    <b>tuần 4</b> gồm <i>Bài 7 “Cây xấu hổ”</i> (đọc · chữ hoa <b>C</b> · kể chuyện) và
+    <i>Bài 8 “Cầu thủ dự bị”</i> (đọc · nghe-viết · <b>viết hoa tên người</b> · mở rộng vốn từ về
+    hoạt động thể thao, vui chơi · câu nêu hoạt động · viết đoạn kể về một hoạt động thể thao).
+    <ul>
+      <li><b>Bài đọc do Bút Xanh tự viết</b> theo đúng mạch bài “Cầu thủ dự bị” của tuần —
+        bạn nhỏ ngồi ngoài sân rồi được vào chơi — không chép bài của sách giáo khoa;
+        tranh minh hoạ cũng do Bút Xanh tự vẽ.</li>
+      <li>Phiếu bám đủ bốn nội dung tuần: <b>viết hoa tên người</b> (bài 1), <b>vốn từ thể thao</b>
+        (bài 2), <b>câu nêu hoạt động</b> (bài 3), <b>chữ hoa C</b> (bài 4).</li>
+    </ul>
+  </div>
+
+  <div class="chan"><span>Đáp án · Tiếng Việt 2 · Tuần 4</span>
+    <span class="giua">trang đáp án — thầy cô và phụ huynh xem sau khi em làm xong</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<script src="nut-in.js"></script>
+</body>
+</html>

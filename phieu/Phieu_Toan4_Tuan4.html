@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=794">
+<title>Phiếu bài tập cuối tuần — Toán 4 — Tuần 4</title>
+<link rel="stylesheet" href="khuon.css">
+<style>
+.cau { margin-bottom: 2.1mm; }
+/* Bốn loại góc xếp thành hàng để so sánh trực tiếp */
+.bo-goc { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4mm; margin-top: 2mm; }
+.bo-goc .o { border: 1pt solid #dfe8e3; border-radius: 2.5mm; padding: 2mm; text-align: center; }
+.bo-goc .o svg { width: 100%; height: 26mm; }
+.bo-goc .ten { font-size: 11pt; color: #8aa093; margin-top: 1mm; }
+.hinh-goc { width: 100%; display: block; margin: 2mm 0 1mm; }
+.hinh-goc text { font-family: "Times New Roman", Times, serif; fill: #101c15; }
+</style>
+</head>
+<!-- Bám kế hoạch giáo dục của app (khgd-lop4.js), tuần 4 — Chủ đề 2 "GÓC VÀ ĐƠN VỊ ĐO GÓC":
+     Bài 7 "Đo góc, đơn vị đo góc" (tiết 1, 2) · Bài 8 "Góc nhọn, góc tù, góc bẹt" (tiết 1, 2, 3).
+     ⚠️ Đây là chủ đề HÌNH HỌC nên phiếu phải có hình thật: bốn loại góc vẽ đúng độ mở,
+     và một thước đo góc vẽ đủ vạch để học sinh hình dung cách đặt thước.
+     Số liệu do Bút Xanh tự đặt. -->
+<body class="mon-toan">
+
+<!-- Hình do Bút Xanh tự vẽ, KHÔNG lấy từ sách giáo khoa (bản quyền NXB Giáo dục Việt Nam).
+     Các góc vẽ ĐÚNG SỐ ĐO: nhọn 45°, vuông 90°, tù 130°, bẹt 180°. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <g id="g-nhon">
+    <path class="hv-n" style="stroke-width:3.4" d="M18 82h64M18 82L67 33"/>
+    <path class="hv-n2" style="stroke:#E0871C" d="M46 82a28 28 0 0 0-8-19.8"/>
+    <circle class="hv-den" cx="18" cy="82" r="3"/>
+  </g>
+  <g id="g-vuong">
+    <path class="hv-n" style="stroke-width:3.4" d="M18 82h64M18 82V18"/>
+    <path class="hv-n2" style="stroke:#E0871C" d="M34 82V66h16"/>
+    <circle class="hv-den" cx="18" cy="82" r="3"/>
+  </g>
+  <!-- Góc tù 130°. Bản đầu đặt đỉnh sát mép trái nên cạnh thứ hai chạy ra toạ độ ÂM và bị
+       cắt mất ngoài khung (sửa 17/8/2026 sau khi chụp ảnh kiểm tra). Nay dời đỉnh vào giữa. -->
+  <g id="g-tu">
+    <path class="hv-n" style="stroke-width:3.4" d="M50 84h44M50 84L22 50"/>
+    <path class="hv-n2" style="stroke:#E0871C" d="M74 84A24 24 0 0 0 34.6 65.6"/>
+    <circle class="hv-den" cx="50" cy="84" r="3"/>
+  </g>
+  <g id="g-bet">
+    <path class="hv-n" style="stroke-width:3.4" d="M6 60h88"/>
+    <path class="hv-n2" style="stroke:#E0871C" d="M78 60a28 28 0 0 0-56 0"/>
+    <circle class="hv-den" cx="50" cy="60" r="3"/>
+  </g>
+  <!-- Thước đo góc nửa vòng tròn, có vạch và số 0 – 180 -->
+  <g id="thuoc-do">
+    <path class="hv-tr" style="fill:#EAF4FF" d="M18 108a92 92 0 0 1 184 0z"/>
+    <path class="hv-n" style="stroke-width:2.6" d="M18 108h184"/>
+    <path class="hv-n2" d="M110 108v-84M110 108l-72 0M110 108l72 0"/>
+    <path class="hv-n2" d="M110 108L64 28M110 108l46-80M110 108L38 66M110 108l72-42"/>
+    <text x="24" y="124" font-size="13">0</text>
+    <text x="102" y="20" font-size="13">90</text>
+    <text x="186" y="124" font-size="13">180</text>
+    <circle class="hv-den" cx="110" cy="108" r="3.4"/>
+  </g>
+</defs></svg>
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU BÀI TẬP CUỐI TUẦN</h1>
+      <div class="mon">MÔN TOÁN — LỚP 4</div><div class="tuan">TUẦN 4</div></div>
+    <div class="ngay">Ngày …… / …… / 20……<br>Góc và đo góc<br>Trang 1/2</div>
+  </div>
+
+  <div class="hoten">
+    <div style="flex:1"><span>Họ và tên:</span><span class="o"></span></div>
+    <div><span>Lớp:</span><span class="o hep"></span></div>
+  </div>
+
+  <div class="phan"><span class="so">I</span><span class="ten">Trắc nghiệm</span><span class="line"></span></div>
+  <div class="dan">Khoanh vào chữ đặt trước câu trả lời đúng:</div>
+
+  <div class="cau"><div class="de"><b>Câu 1.</b> Đơn vị đo góc là:</div>
+    <div class="pa"><span><i class="k">A.</i>xăng-ti-mét</span><span><i class="k">B.</i>độ</span>
+      <span><i class="k">C.</i>ki-lô-gam</span><span><i class="k">D.</i>mi-li-mét</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 2.</b> Góc vuông có số đo là:</div>
+    <div class="pa"><span><i class="k">A.</i>45°</span><span><i class="k">B.</i>90°</span>
+      <span><i class="k">C.</i>180°</span><span><i class="k">D.</i>360°</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 3.</b> Góc bẹt có số đo là:</div>
+    <div class="pa"><span><i class="k">A.</i>90°</span><span><i class="k">B.</i>120°</span>
+      <span><i class="k">C.</i>180°</span><span><i class="k">D.</i>200°</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 4.</b> Góc có số đo 65° là:</div>
+    <div class="pa"><span><i class="k">A.</i>góc nhọn</span><span><i class="k">B.</i>góc vuông</span>
+      <span><i class="k">C.</i>góc tù</span><span><i class="k">D.</i>góc bẹt</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 5.</b> Góc có số đo 130° là:</div>
+    <div class="pa"><span><i class="k">A.</i>góc nhọn</span><span><i class="k">B.</i>góc vuông</span>
+      <span><i class="k">C.</i>góc tù</span><span><i class="k">D.</i>góc bẹt</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 6.</b> Góc tù là góc:</div>
+    <div class="pa hai"><span><i class="k">A.</i>bé hơn góc vuông.</span><span><i class="k">B.</i>lớn hơn góc vuông và bé hơn góc bẹt.</span>
+      <span><i class="k">C.</i>bằng góc vuông.</span><span><i class="k">D.</i>lớn hơn góc bẹt.</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 7.</b> Dụng cụ dùng để đo góc là:</div>
+    <div class="pa hai"><span><i class="k">A.</i>thước thẳng.</span><span><i class="k">B.</i>thước đo góc.</span>
+      <span><i class="k">C.</i>com-pa.</span><span><i class="k">D.</i>ê-ke.</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 8.</b> Một góc bẹt bằng mấy góc vuông?</div>
+    <div class="pa"><span><i class="k">A.</i>1</span><span><i class="k">B.</i>2</span>
+      <span><i class="k">C.</i>3</span><span><i class="k">D.</i>4</span></div></div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Tự luận</span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 1.</b> Viết tên mỗi góc vào chỗ chấm
+    (<i>góc nhọn · góc vuông · góc tù · góc bẹt</i>):</div>
+    <div class="bo-goc">
+      <div class="o"><svg viewBox="0 0 100 100"><use href="#g-nhon"/></svg><div class="ten">……………………</div></div>
+      <div class="o"><svg viewBox="0 0 100 100"><use href="#g-bet"/></svg><div class="ten">……………………</div></div>
+      <div class="o"><svg viewBox="0 0 100 100"><use href="#g-vuong"/></svg><div class="ten">……………………</div></div>
+      <div class="o"><svg viewBox="0 0 100 100"><use href="#g-tu"/></svg><div class="ten">……………………</div></div>
+    </div>
+  </div>
+
+  <div class="chan"><span>Toán 4 · Tuần 4</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU BÀI TẬP CUỐI TUẦN</h1>
+      <div class="mon">MÔN TOÁN — LỚP 4</div><div class="tuan">TUẦN 4</div></div>
+    <div class="ngay">Họ và tên: ……………………<br>Lớp: ………<br>Trang 2/2</div>
+  </div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Tự luận <span style="font-weight:normal;text-transform:none">(tiếp theo)</span></span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 2.</b> Nhìn thước đo góc dưới đây rồi trả lời:</div>
+    <div class="o-lam">
+      <svg class="hinh-goc" viewBox="0 0 220 130" style="height:42mm">
+        <use href="#thuoc-do"/>
+      </svg>
+      <div class="yc" style="font-size:13.5pt;line-height:1.9">
+        a) Khi đo góc, ta đặt <b>tâm</b> của thước trùng với …………………… của góc.<br>
+        b) Một cạnh của góc phải trùng với vạch …………… của thước.<br>
+        c) Số đo góc đọc ở vạch mà …………………………………… đi qua.</div>
+    </div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 3.</b> Viết <b>góc nhọn</b>, <b>góc vuông</b>, <b>góc tù</b>
+    hay <b>góc bẹt</b> vào chỗ chấm:</div>
+    <div class="yc" style="font-size:13.5pt;line-height:2">
+      a) Góc 40° là ……………………… &nbsp;&nbsp;&nbsp; b) Góc 90° là ………………………<br>
+      c) Góc 155° là ……………………… &nbsp;&nbsp;&nbsp; d) Góc 180° là ………………………</div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 4.</b> Trong các số đo sau, số đo nào là của <b>góc tù</b>?
+    Khoanh vào số đo đó.</div>
+    <div style="border:1pt solid #dfe8e3;border-radius:2.5mm;padding:3mm 5mm;font-size:19pt;font-weight:bold;
+      display:flex;justify-content:space-around;margin-top:2mm">
+      <span>35°</span><span>100°</span><span>90°</span><span>145°</span><span>180°</span><span>70°</span></div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 5.</b> Kim giờ và kim phút của đồng hồ lúc <b>3 giờ</b> tạo thành
+    một góc. Đó là góc gì? Vì sao?</div>
+    <div class="ke hep" style="margin-left:6mm"><div class="d"></div><div class="d"></div></div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 6.</b> Tính giá trị của biểu thức:</div>
+    <div class="yc" style="font-size:13.5pt;display:grid;grid-template-columns:repeat(2,1fr);gap:4mm 8mm;margin-top:2mm">
+      <div>a) 168 + 24 × 5 = ……………………</div>
+      <div>b) (250 − 90) : 8 = ……………………</div>
+    </div>
+  </div>
+
+  <div class="chan"><span>Toán 4 · Tuần 4</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang dapan">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>ĐÁP ÁN &amp; HƯỚNG DẪN</h1>
+      <div class="mon">MÔN TOÁN — LỚP 4</div><div class="tuan">TUẦN 4</div></div>
+    <div class="ngay">Dành cho<br>thầy cô &amp; phụ huynh<br><b>Trang cuối</b></div>
+  </div>
+
+  <div class="muc">Đáp án</div>
+  <table class="bang-da">
+    <tr><th>Câu</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr>
+    <tr><td>Đáp án</td><td>B</td><td>B</td><td>C</td><td>A</td><td>C</td><td>B</td><td>B</td><td>B</td></tr>
+  </table>
+
+  <div class="bai"><b>Bài 1.</b> Theo thứ tự từ trái sang phải: <span class="gia">góc nhọn · góc bẹt ·
+    góc vuông · góc tù</span>. <i>(Cố ý xếp không theo thứ tự để em phải nhìn hình mà nhận, không đoán.)</i></div>
+  <div class="bai"><b>Bài 2.</b> a) trùng với <span class="gia">đỉnh</span> của góc ·
+    b) trùng với vạch <span class="gia">0</span> · c) đọc ở vạch mà <span class="gia">cạnh còn lại
+    của góc</span> đi qua.</div>
+  <div class="bai"><b>Bài 3.</b> a) <span class="gia">góc nhọn</span> · b) <span class="gia">góc vuông</span> ·
+    c) <span class="gia">góc tù</span> · d) <span class="gia">góc bẹt</span>.</div>
+  <div class="bai"><b>Bài 4.</b> Khoanh <span class="gia">100°</span> và <span class="gia">145°</span>
+    (lớn hơn 90° và bé hơn 180°).</div>
+  <div class="bai"><b>Bài 5.</b> Lúc 3 giờ, kim giờ chỉ số 3, kim phút chỉ số 12, hai kim tạo thành
+    <span class="gia">góc vuông (90°)</span> — vì mặt đồng hồ chia thành 12 phần, ba phần ứng với
+    một phần tư vòng tròn.</div>
+  <div class="bai"><b>Bài 6.</b> a) 168 + 120 = <span class="gia">288</span> ·
+    b) 160 : 8 = <span class="gia">20</span>.</div>
+
+  <div class="muc">Chỗ học sinh hay sai</div>
+  <p>· <b>Nhận dạng góc bằng cách nhìn “độ dài hai cạnh”.</b> Đây là lỗi phổ biến nhất: em thấy hai
+    cạnh vẽ dài thì tưởng góc lớn. Nhắc em: <b>góc lớn hay bé là do ĐỘ MỞ giữa hai cạnh</b>,
+    không liên quan đến cạnh vẽ dài hay ngắn.</p>
+  <p>· <b>Đặt thước sai khi đo.</b> Ba việc phải làm đúng: tâm thước trùng <i>đỉnh góc</i>,
+    một cạnh trùng <i>vạch 0</i>, rồi mới đọc ở cạnh kia. Bài 2 luyện đúng ba bước này.</p>
+  <p>· <b>Nhớ mốc để phân loại:</b> bé hơn 90° là <b>nhọn</b> · bằng 90° là <b>vuông</b> ·
+    lớn hơn 90° và bé hơn 180° là <b>tù</b> · bằng 180° là <b>bẹt</b>.</p>
+  <p>· <b>Bài 5 gắn góc với đồng hồ</b> — nếu em lúng túng, cho em nhìn đồng hồ thật trong nhà
+    rồi ước lượng.</p>
+
+  <div class="luuy"><b>Căn cứ chương trình:</b> Toán 4 — Kết nối tri thức với cuộc sống, <b>tuần 4</b> là
+    chủ đề 2 <i>“Góc và đơn vị đo góc”</i>: Bài 7 <i>“Đo góc, đơn vị đo góc”</i> và
+    Bài 8 <i>“Góc nhọn, góc tù, góc bẹt”</i>.
+    <ul>
+      <li>Bốn loại góc trong phiếu <b>vẽ đúng số đo thật</b> — nhọn 45°, vuông 90°, tù 130°, bẹt 180° —
+        để em nhìn hình mà nhận ra, không phải đoán.</li>
+      <li>Thước đo góc vẽ đủ <b>tâm, vạch 0, vạch 90 và vạch 180</b> để em hình dung cách đặt thước
+        khi làm bài trên lớp.</li>
+      <li>Bài 6 giữ lại phần <b>biểu thức</b> của tuần trước cho em khỏi quên; hình và số liệu
+        do <b>Bút Xanh tự làm</b>.</li>
+    </ul>
+  </div>
+
+  <div class="chan"><span>Đáp án · Toán 4 · Tuần 4</span>
+    <span class="giua">trang đáp án — thầy cô và phụ huynh xem sau khi em làm xong</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<script src="nut-in.js"></script>
+</body>
+</html>
