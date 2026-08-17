@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-17 · 59';
+  var PB='2026-08-17 · 60';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -3646,10 +3646,13 @@ window.BX_phieuXem=function(url, ten){
   if(!o){
     o=document.createElement('div'); o.id='pw-doc';
     o.innerHTML=
+      /* (17/8/2026 — thầy Chung chốt sau khi xem trên máy thật) Tên phiếu bên trái, nút ĐÓNG
+         bên PHẢI — tay phải cầm điện thoại là ngón cái với tới ngay. Nút In BỎ trên điện thoại:
+         các cô xem phiếu trên điện thoại rồi mới in ở máy tính, để đó chỉ tổ chật thanh. */
       '<div class="pwd-bar">'+
-        '<button class="pwd-x" onclick="BX_phieuDong()" aria-label="Đóng phiếu">✕ Đóng</button>'+
         '<div class="pwd-ten" id="pwd-ten"></div>'+
         '<button class="pwd-in" onclick="BX_phieuInKhung()">🖨 In</button>'+
+        '<button class="pwd-x" onclick="BX_phieuDong()" aria-label="Đóng phiếu">✕ Đóng</button>'+
       '</div>'+
       '<div class="pwd-scroll" id="pwd-scroll"><div class="pwd-inner" id="pwd-inner"></div></div>';
     document.body.appendChild(o);
@@ -3663,11 +3666,14 @@ window.BX_phieuXem=function(url, ten){
       '#pw-doc .pwd-x{flex:none;border:1.5px solid #cfe3d6;background:#fff;color:#1a6b41;font-family:inherit;'+
         'font-size:15px;font-weight:800;border-radius:999px;padding:11px 18px;cursor:pointer}'+
       '#pw-doc .pwd-x:active{background:#f2f8f4}'+
-      '#pw-doc .pwd-ten{flex:1;min-width:0;font-size:14px;font-weight:700;color:#42544a;'+
-        'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}'+
+      '#pw-doc .pwd-ten{flex:1;min-width:0;font-size:15px;font-weight:800;color:#42544a;'+
+        'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:4px}'+
       '#pw-doc .pwd-in{flex:none;border:0;background:#1a8a4e;color:#fff;font-family:inherit;font-size:15px;'+
         'font-weight:800;border-radius:999px;padding:11px 18px;cursor:pointer}'+
       '#pw-doc .pwd-in:active{background:#157040}'+
+      /* Điện thoại/máy tính bảng: giấu nút In (thầy Chung 17/8/2026). Máy tính chạy app cài
+         sẵn cũng dùng lớp phủ này — ở đó vẫn giữ nút In vì in ngay được. */
+      '@media(pointer:coarse){#pw-doc .pwd-in{display:none}}'+
       '#pw-doc .pwd-scroll{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:10px 0 24px}'+
       '#pw-doc .pwd-inner{margin:0 auto;position:relative}'+
       '#pw-doc iframe{border:0;display:block;width:794px;transform-origin:top left;background:#eef2f0}';
