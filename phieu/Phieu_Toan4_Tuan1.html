@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=794">
+<title>Phiếu bài tập cuối tuần — Toán 4 — Tuần 1</title>
+<style>
+/* ===== PHIẾU BÀI TẬP CUỐI TUẦN · BÚT XANH =====
+   Khổ A4 dọc, in ra là dùng được ngay. Mỗi .trang = một trang giấy.
+   Bản này có 3 trang: 2 trang phiếu cho học sinh + 1 trang đáp án cho thầy cô.
+   Muốn in riêng phần học sinh: thêm class "an-khi-in" cho trang đáp án. */
+@page { size: A4 portrait; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #eef2f0; }
+body {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 12.8pt; line-height: 1.38; color: #101c15;
+}
+.trang {
+  width: 210mm; height: 297mm; margin: 0 auto 8mm; padding: 10mm 12mm 12mm;
+  background: #fff; position: relative; z-index: 0; page-break-after: always; overflow: hidden;
+}
+.trang:last-child { page-break-after: auto; margin-bottom: 0; }
+
+/* ---------- đầu phiếu ---------- */
+.dau { display: flex; align-items: center; gap: 10mm; border-bottom: 2.4pt solid #1FA45C; padding-bottom: 3mm; }
+.hieu { flex: 0 0 auto; text-align: center; line-height: 1.15; }
+.hieu .la { font-size: 22pt; color: #1FA45C; }
+.hieu .ten { font-family: Arial, Helvetica, sans-serif; font-size: 10pt; font-weight: bold;
+  color: #0f5a34; letter-spacing: .3pt; }
+.hieu .phu { font-family: Arial, Helvetica, sans-serif; font-size: 6.6pt; color: #6b7f73; letter-spacing: .2pt; }
+.tieu { flex: 1; text-align: center; }
+.tieu h1 { margin: 0; font-size: 19pt; font-weight: bold; color: #0f5a34; letter-spacing: .4pt; }
+.tieu .mon { margin-top: 1.2mm; font-size: 13.5pt; font-weight: bold; color: #101c15; }
+/* Huy hiệu TUẦN: viền + chữ, KHÔNG tô nền — in máy đen trắng không bị ra mảng xám đen
+   (thầy Chung góp ý 17/8/2026). Cả phiếu theo nguyên tắc này: dùng viền và chữ đậm thay cho nền. */
+.tieu .tuan { display: inline-block; margin-top: 1.6mm; padding: 0.6mm 5mm; border-radius: 20pt;
+  border: 1.1pt solid #1FA45C; color: #0f5a34; background: #fff; font-family: Arial, Helvetica, sans-serif;
+  font-size: 10.5pt; font-weight: bold; letter-spacing: .5pt; }
+.ngay { flex: 0 0 auto; text-align: right; font-size: 10pt; color: #55665c; line-height: 1.5; }
+
+/* ---------- dòng họ tên ---------- */
+.hoten { display: flex; gap: 6mm; margin: 4mm 0 4mm; font-size: 12.5pt; }
+.hoten > div { display: flex; align-items: flex-end; gap: 2mm; }
+.hoten .o { flex: 1; border-bottom: 1pt dotted #7d8f85; min-height: 6.2mm; }
+.hoten .o.hep { flex: 0 0 26mm; }
+
+/* ---------- tiêu đề phần ---------- */
+.phan { display: flex; align-items: center; gap: 3mm; margin: 3.4mm 0 2mm; }
+.phan .so { flex: 0 0 auto; width: 8mm; height: 8mm; border-radius: 50%; border: 1.1pt solid #1FA45C;
+  background: #fff; color: #0f5a34;
+  font-family: Arial, Helvetica, sans-serif; font-size: 11pt; font-weight: bold;
+  display: flex; align-items: center; justify-content: center; }
+.phan .ten { font-family: Arial, Helvetica, sans-serif; font-size: 12.5pt; font-weight: bold;
+  color: #0f5a34; letter-spacing: .3pt; text-transform: uppercase; }
+.phan .line { flex: 1; height: 1pt; background: #cfe3d7; }
+.dan { font-style: italic; font-size: 11.6pt; color: #47584e; margin: 0 0 3mm; }
+
+/* ---------- câu trắc nghiệm ---------- */
+.cau { margin-bottom: 3.2mm; break-inside: avoid; }
+.cau .de { font-weight: bold; }
+.cau .de b { color: #0f5a34; }
+/* Phương án trả lời: CHỈ có chữ cái + dấu chấm, KHÔNG vẽ vòng tròn sẵn — vòng tròn in sẵn làm
+   học sinh tưởng đã khoanh và không còn chỗ khoanh (thầy Chung góp ý 17/8/2026).
+   Chừa khoảng thở quanh chữ cái để các em khoanh bút vào vừa đẹp. */
+.pa { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.4mm 3mm; margin-top: 1.8mm; padding-left: 6mm; }
+.pa.hai { grid-template-columns: repeat(2, 1fr); }
+.pa.mot { grid-template-columns: 1fr; }
+.pa span { white-space: nowrap; }
+.pa.dai span { white-space: normal; }
+.pa .k { display: inline-block; min-width: 6.4mm; text-align: left; font-weight: bold;
+  font-size: 12.8pt; color: #101c15; font-style: normal; }
+
+/* ---------- phần tự luận ---------- */
+.bai { margin-bottom: 3mm; break-inside: avoid; }
+.bai .de { font-weight: bold; }
+.bai .de b { color: #0f5a34; }
+table.bl { border-collapse: collapse; width: 100%; margin: 2mm 0 1mm; }
+table.bl th, table.bl td { border: 1pt solid #6f8579; padding: 2.1mm 2mm; text-align: center; font-size: 12.5pt; }
+/* Nền bảng để RẤT nhạt: máy in đen trắng của trường in nền đậm ra thành mảng xám khó nhìn */
+table.bl th { background: #f7faf8; font-family: Arial, Helvetica, sans-serif; font-size: 11pt; color: #0f5a34; }
+table.bl td.co { font-weight: bold; background: #fff; }
+.ds { margin: 1.5mm 0 0 6mm; }
+.ds .y { display: flex; align-items: center; gap: 3mm; margin-bottom: 1.4mm; }
+.ds .o { flex: 0 0 auto; width: 9mm; height: 6.4mm; border: 1pt solid #6f8579; border-radius: 1.4mm; background: #fff; }
+.ke { margin-top: 1.5mm; }
+.ke .d { border-bottom: 1pt dotted #90a297; height: 6.6mm; }
+.giai { margin-top: 1.5mm; }
+.giai .nhan { font-style: italic; text-align: center; font-weight: bold; color: #0f5a34; margin-bottom: 1mm; }
+
+/* ---------- chân phiếu ---------- */
+.chan { position: absolute; left: 13mm; right: 13mm; bottom: 7mm; display: flex; align-items: center;
+  gap: 4mm; border-top: 1pt solid #d6e3db; padding-top: 2mm;
+  font-family: Arial, Helvetica, sans-serif; font-size: 8.4pt; color: #6b7f73; }
+.chan .giua { margin: 0 auto; }
+.chan .b { margin-left: auto; }
+
+/* ---------- trang đáp án ---------- */
+.dapan .tieu h1 { color: #b3480f; }
+.dapan .dau { border-bottom-color: #E0871C; }
+.dapan .phan .so { border-color: #E0871C; color: #b3480f; background: #fff; }
+.dapan .phan .ten { color: #b3480f; }
+.dapan .phan .line { background: #f2dfc3; }
+.dapan .tieu .tuan { border-color: #E0871C; color: #b3480f; }
+.bang-da { border-collapse: collapse; width: 100%; margin: 2mm 0 4mm; }
+.bang-da th, .bang-da td { border: 1pt solid #6f8579; padding: 2.2mm; text-align: center; }
+.bang-da th { background: #fdfaf6; font-family: Arial, Helvetica, sans-serif; font-size: 10.5pt; color: #b3480f; }
+.bang-da td { font-weight: bold; font-size: 13pt; }
+.luuy { border: 1pt solid #e6d3b8; background: #fff; border-radius: 2mm; padding: 2.5mm 4mm; margin-top: 2mm; font-size: 10.6pt; line-height: 1.34; }
+.luuy b { color: #b3480f; }
+.luuy ul { margin: 1.5mm 0 0; padding-left: 5mm; }
+.luuy li { margin-bottom: 1.2mm; }
+.gia { color: #1a7a45; font-weight: bold; }
+
+/* ---------- DẤU BẢN QUYỀN CHÌM (17/8/2026, thầy Chung yêu cầu) ----------
+   Đặt z-index:-1 nên chữ chìm nằm DƯỚI toàn bộ nội dung — không bao giờ che chữ của phiếu.
+   Độ mờ để rất thấp (.06) để máy in đen trắng chỉ ra một vệt nhạt, học sinh vẫn đọc rõ đề.
+   Muốn đậm/nhạt hơn: sửa đúng một số `opacity` dưới đây. */
+.chim { position: absolute; inset: 0; z-index: -1; display: flex; align-items: center;
+  justify-content: center; pointer-events: none; overflow: hidden; }
+.chim .cx { transform: rotate(-27deg); text-align: center; color: #0f5a34; opacity: .09;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.chim .cx .la { font-size: 60pt; line-height: .9; }
+.chim .cx .tn { font-family: Arial, Helvetica, sans-serif; font-size: 44pt; font-weight: bold;
+  letter-spacing: 7pt; line-height: 1.1; margin-top: 2mm; }
+.chim .cx .ph { font-family: Arial, Helvetica, sans-serif; font-size: 12.5pt; letter-spacing: 4pt;
+  margin-top: 1.5mm; }
+
+@media print {
+  html, body { background: #fff; }
+  .trang { margin: 0; box-shadow: none; }
+  .an-khi-in { display: none !important; }
+}
+@media screen {
+  .trang { box-shadow: 0 2px 14px rgba(16,40,26,.14); }
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== TRANG 1 ==================== -->
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div>
+  </div></div>
+  <div class="dau">
+    <div class="hieu">
+      <div class="la">🌿</div>
+      <div class="ten">BÚT XANH</div>
+      <div class="phu">TRỢ LÝ CỦA THẦY CÔ</div>
+    </div>
+    <div class="tieu">
+      <h1>PHIẾU BÀI TẬP CUỐI TUẦN</h1>
+      <div class="mon">MÔN TOÁN — LỚP 4</div>
+      <div class="tuan">TUẦN 1</div>
+    </div>
+    <div class="ngay">
+      Ngày …… / …… / 20……<br>
+      Thời gian: 40 phút<br>
+      Trang 1/2
+    </div>
+  </div>
+
+  <div class="hoten">
+    <div style="flex:1"><span>Họ và tên:</span><span class="o"></span></div>
+    <div><span>Lớp:</span><span class="o hep"></span></div>
+  </div>
+
+  <div class="phan"><span class="so">I</span><span class="ten">Trắc nghiệm</span><span class="line"></span></div>
+  <div class="dan">Khoanh vào chữ đặt trước câu trả lời đúng hoặc làm theo yêu cầu:</div>
+
+  <div class="cau">
+    <div class="de"><b>Câu 1.</b> Biết số gồm bảy trăm nghìn, hai chục nghìn, chín trăm, ba chục, hai đơn vị. Số đó được viết là:</div>
+    <div class="pa">
+      <span><i class="k">A.</i>7 903</span><span><i class="k">B.</i>72 932</span>
+      <span><i class="k">C.</i>720 932</span><span><i class="k">D.</i>729 032</span>
+    </div>
+  </div>
+
+  <div class="cau">
+    <div class="de"><b>Câu 2.</b> Số 65 243 được đọc là:</div>
+    <div class="pa hai dai">
+      <span><i class="k">A.</i>Sáu mươi năm nghìn hai trăm tư ba</span>
+      <span><i class="k">B.</i>Sáu mươi lăm nghìn hai trăm bốn mươi ba</span>
+      <span><i class="k">C.</i>Sáu năm nghìn hai trăm bốn mươi ba</span>
+      <span><i class="k">D.</i>Sáu lăm nghìn hai trăm bốn mươi ba</span>
+    </div>
+  </div>
+
+  <div class="cau">
+    <div class="de"><b>Câu 3.</b> Số nào dưới đây có chữ số hàng trăm là 7?</div>
+    <div class="pa">
+      <span><i class="k">A.</i>23 467</span><span><i class="k">B.</i>23 746</span>
+      <span><i class="k">C.</i>23 476</span><span><i class="k">D.</i>23 674</span>
+    </div>
+  </div>
+
+  <div class="cau">
+    <div class="de"><b>Câu 4.</b> Các số 65 371; 75 631; 56 731; 67 351 được viết theo thứ tự từ bé đến lớn là:</div>
+    <div class="pa hai dai">
+      <span><i class="k">A.</i>65 371 &nbsp; 75 631 &nbsp; 56 731 &nbsp; 67 351</span>
+      <span><i class="k">B.</i>75 631 &nbsp; 67 351 &nbsp; 65 371 &nbsp; 56 731</span>
+      <span><i class="k">C.</i>56 731 &nbsp; 65 371 &nbsp; 67 351 &nbsp; 75 631</span>
+      <span><i class="k">D.</i>65 371 &nbsp; 75 631 &nbsp; 67 351 &nbsp; 56 731</span>
+    </div>
+  </div>
+
+  <div class="cau">
+    <div class="de"><b>Câu 5.</b> Chu vi hình chữ nhật có chiều dài 45 cm, chiều rộng 20 cm là:</div>
+    <div class="pa">
+      <span><i class="k">A.</i>130 cm</span><span><i class="k">B.</i>900 cm</span>
+      <span><i class="k">C.</i>65 cm</span><span><i class="k">D.</i>56 cm</span>
+    </div>
+  </div>
+
+  <div class="cau">
+    <div class="de"><b>Câu 6.</b> Số bé nhất là:</div>
+    <div class="pa">
+      <span><i class="k">A.</i>1 346</span><span><i class="k">B.</i>12 487</span>
+      <span><i class="k">C.</i>84 689</span><span><i class="k">D.</i>93 451</span>
+    </div>
+  </div>
+
+  <div class="cau">
+    <div class="de"><b>Câu 7.</b> Số lớn nhất là:</div>
+    <div class="pa">
+      <span><i class="k">A.</i>8 204</span><span><i class="k">B.</i>8 454</span>
+      <span><i class="k">C.</i>4 887</span><span><i class="k">D.</i>8 840</span>
+    </div>
+  </div>
+
+  <div class="cau">
+    <div class="de"><b>Câu 8.</b> Có ba con lợn với số cân lần lượt là: 125 kg, 129 kg, 152 kg. Biết con lợn đen nặng nhất,
+      con lợn trắng nhẹ hơn con lợn khoang. Điền số thích hợp vào chỗ chấm:</div>
+    <div class="pa mot" style="padding-left:6mm">
+      <span style="white-space:normal">a) Con lợn đen nặng …………… kg. &nbsp;&nbsp; b) Con lợn trắng nặng …………… kg. &nbsp;&nbsp; c) Con lợn khoang nặng …………… kg.</span>
+    </div>
+  </div>
+
+  <div class="chan">
+    <span>Toán 4 · Tuần 1</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span><span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span>
+  </div>
+</section>
+
+<!-- ==================== TRANG 2 ==================== -->
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div>
+  </div></div>
+  <div class="dau">
+    <div class="hieu">
+      <div class="la">🌿</div>
+      <div class="ten">BÚT XANH</div>
+      <div class="phu">TRỢ LÝ CỦA THẦY CÔ</div>
+    </div>
+    <div class="tieu">
+      <h1>PHIẾU BÀI TẬP CUỐI TUẦN</h1>
+      <div class="mon">MÔN TOÁN — LỚP 4</div>
+      <div class="tuan">TUẦN 1</div>
+    </div>
+    <div class="ngay">
+      Họ và tên: ……………………<br>
+      Lớp: ………<br>
+      Trang 2/2
+    </div>
+  </div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Tự luận</span><span class="line"></span></div>
+
+  <div class="bai">
+    <div class="de"><b>Bài 1.</b> Viết số thích hợp vào ô trống:</div>
+    <table class="bl">
+      <tr><th style="width:33%">Số liền trước</th><th style="width:34%">Số đã cho</th><th style="width:33%">Số liền sau</th></tr>
+      <tr><td>&nbsp;</td><td class="co">6 780</td><td>&nbsp;</td></tr>
+      <tr><td>&nbsp;</td><td class="co">6 678</td><td>&nbsp;</td></tr>
+      <tr><td>&nbsp;</td><td class="co">5 463</td><td>&nbsp;</td></tr>
+    </table>
+  </div>
+
+  <div class="bai">
+    <div class="de"><b>Bài 2.</b> Đúng ghi <b>Đ</b>, sai ghi <b>S</b> vào ô trống:</div>
+    <div class="ds">
+      <div class="y"><span class="o"></span><span>a) Số 6 234 là số liền trước của 6 233.</span></div>
+      <div class="y"><span class="o"></span><span>b) Số 6 234 là số liền trước của 6 235.</span></div>
+      <div class="y"><span class="o"></span><span>c) Số lẻ liền sau của 6 455 là 6 457.</span></div>
+      <div class="y"><span class="o"></span><span>d) Số 1 000 là số bé nhất có bốn chữ số.</span></div>
+    </div>
+  </div>
+
+  <div class="bai">
+    <div class="de"><b>Bài 3.</b> Cho các số: 3 106; 6 165; 3 298; 4 289; 4 388. Hãy sắp xếp theo thứ tự:</div>
+    <div class="ke">
+      <div>a) Từ bé đến lớn:</div><div class="d"></div>
+      <div style="margin-top:1mm">b) Từ lớn đến bé:</div><div class="d"></div>
+      <div style="margin-top:1mm">c) Tính tổng của số lớn nhất và số bé nhất trong dãy số trên.</div>
+      <div class="d"></div><div class="d"></div>
+    </div>
+  </div>
+
+  <div class="bai">
+    <div class="de"><b>Bài 4.</b> Một quyển truyện có giá 36 000 đồng, giá một cặp sách nhiều hơn giá một quyển truyện
+      114 000 đồng. Bố mua cho Lan một quyển truyện và một cặp sách. Hỏi:</div>
+    <div style="padding-left:6mm">a) Bố phải trả người bán hàng bao nhiêu tiền?</div>
+    <div style="padding-left:6mm">b) Bố đưa cho người bán hàng 200 000 đồng thì người bán hàng phải trả lại cho bố bao nhiêu tiền?</div>
+    <div class="giai">
+      <div class="nhan">Bài giải</div>
+      <div class="ke">
+        <div class="d"></div><div class="d"></div><div class="d"></div><div class="d"></div>
+        <div class="d"></div><div class="d"></div><div class="d"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chan">
+    <span>Toán 4 · Tuần 1</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span><span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span>
+  </div>
+</section>
+
+<!-- ==================== TRANG 3: ĐÁP ÁN (cho thầy cô) ==================== -->
+<section class="trang dapan">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div>
+  </div></div>
+  <div class="dau">
+    <div class="hieu">
+      <div class="la">🌿</div>
+      <div class="ten">BÚT XANH</div>
+      <div class="phu">TRỢ LÝ CỦA THẦY CÔ</div>
+    </div>
+    <div class="tieu">
+      <h1>ĐÁP ÁN &amp; GỢI Ý CHỮA</h1>
+      <div class="mon">MÔN TOÁN — LỚP 4</div>
+      <div class="tuan">TUẦN 1</div>
+    </div>
+    <div class="ngay">Dành cho<br>thầy cô &amp; phụ huynh<br><b>Trang cuối</b></div>
+  </div>
+
+  <div class="phan"><span class="so">I</span><span class="ten">Trắc nghiệm</span><span class="line"></span></div>
+  <table class="bang-da">
+    <tr><th>Câu</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th></tr>
+    <tr><th>Đáp án</th><td>C</td><td>B</td><td>B</td><td>C</td><td>A</td><td>A</td><td>D</td></tr>
+  </table>
+  <div><b>Câu 8.</b> a) Con lợn đen nặng <span class="gia">152 kg</span>. &nbsp; b) Con lợn trắng nặng <span class="gia">125 kg</span>.
+    &nbsp; c) Con lợn khoang nặng <span class="gia">129 kg</span>.</div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Tự luận</span><span class="line"></span></div>
+
+  <div class="bai">
+    <div class="de"><b>Bài 1.</b></div>
+    <table class="bl">
+      <tr><th>Số liền trước</th><th>Số đã cho</th><th>Số liền sau</th></tr>
+      <tr><td class="gia">6 779</td><td class="co">6 780</td><td class="gia">6 781</td></tr>
+      <tr><td class="gia">6 677</td><td class="co">6 678</td><td class="gia">6 679</td></tr>
+      <tr><td class="gia">5 462</td><td class="co">5 463</td><td class="gia">5 464</td></tr>
+    </table>
+  </div>
+
+  <div class="bai">
+    <div class="de"><b>Bài 2.</b> &nbsp; a) <span class="gia">S</span> &nbsp;·&nbsp; b) <span class="gia">Đ</span>
+      &nbsp;·&nbsp; c) <span class="gia">Đ</span> &nbsp;·&nbsp; d) <span class="gia">Đ</span></div>
+    <div style="padding-left:6mm;font-style:italic;font-size:11.4pt">Ý a sai vì số liền trước của 6 233 là 6 232.</div>
+  </div>
+
+  <div class="bai">
+    <div class="de"><b>Bài 3.</b></div>
+    <div style="padding-left:6mm">
+      a) Từ bé đến lớn: <span class="gia">3 106; 3 298; 4 289; 4 388; 6 165.</span><br>
+      b) Từ lớn đến bé: <span class="gia">6 165; 4 388; 4 289; 3 298; 3 106.</span><br>
+      c) Tổng số lớn nhất và số bé nhất: <span class="gia">6 165 + 3 106 = 9 271.</span>
+    </div>
+  </div>
+
+  <div class="bai">
+    <div class="de"><b>Bài 4.</b> <i>Bài giải</i></div>
+    <div style="padding-left:6mm">
+      a) Giá một cặp sách là: <span class="gia">36 000 + 114 000 = 150 000 (đồng)</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;Bố phải trả người bán hàng: <span class="gia">150 000 + 36 000 = 186 000 (đồng)</span><br>
+      b) Người bán hàng trả lại bố: <span class="gia">200 000 − 186 000 = 14 000 (đồng)</span><br>
+      <i>Đáp số: a) 186 000 đồng; &nbsp; b) 14 000 đồng.</i>
+    </div>
+  </div>
+
+  <div class="luuy">
+    <b>Ghi chú của Bút Xanh khi biên tập từ tài liệu tham khảo</b> (Bài tập cuối tuần Toán 4 — Kết nối tri thức, học kì I):
+    <ul>
+      <li><b>Câu 2:</b> tài liệu gốc chọn đáp án D. Cách đọc đúng chuẩn của số 65 243 là
+        <i>“Sáu mươi lăm nghìn hai trăm bốn mươi ba”</i> → đáp án đúng là <b>B</b>.</li>
+      <li><b>Câu 3:</b> tài liệu gốc có phương án D trùng hệt phương án A (đều là 23 467) → đã đổi D thành <b>23 674</b>.</li>
+      <li><b>Câu 4:</b> tài liệu gốc có phương án B trùng hệt phương án A → đã đổi B thành một thứ tự khác.</li>
+      <li><b>Bài 3:</b> đáp án gốc bỏ sót số <b>4 388</b> khi sắp xếp → đã bổ sung đủ 5 số.</li>
+    </ul>
+  </div>
+
+  <div class="chan">
+    <span>Đáp án · Toán 4 · Tuần 1</span>
+    <span class="giua">trang đáp án — thầy cô và phụ huynh xem sau khi em làm xong</span><span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span>
+  </div>
+</section>
+
+<!-- BX-NUT-IN — nút In / Lưu PDF, thêm 17/8/2026. Ẩn khi in nên không dính vào bản giấy.
+     Sinh tự động bởi _them-nut-in.js — đừng sửa tay từng tệp, sửa ở script rồi chạy lại. -->
+<style>
+.bx-in{position:fixed;top:14px;right:14px;z-index:9999;display:inline-flex;align-items:center;gap:8px;
+  font-family:system-ui,"Segoe UI",Roboto,Arial,sans-serif;font-size:14px;font-weight:700;color:#fff;
+  background:#1a8a4e;border:0;border-radius:999px;padding:11px 18px;cursor:pointer;
+  box-shadow:0 4px 14px rgba(16,60,36,.28);transition:background .15s,box-shadow .15s}
+.bx-in:hover{background:#157040;box-shadow:0 6px 18px rgba(16,60,36,.36)}
+.bx-in:active{transform:translateY(1px)}
+.bx-in svg{width:17px;height:17px;flex:none;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* Điện thoại/máy tính bảng: rút còn nút TRÒN chỉ có biểu tượng máy in, và ĐẨY XUỐNG GÓC DƯỚI.
+   Hai chỗ khác máy tính, đều do đo thật 17/8/2026:
+   · Dùng (pointer:coarse) chứ KHÔNG dùng (max-width) — trang phiếu rộng cố định 794px nên
+     trình duyệt điện thoại thu nhỏ cả trang, max-width không bao giờ khớp mà nút thì bé tí
+     không chạm nổi. Nút tròn 96px sau khi thu còn ~47px thật — vừa đầu ngón tay.
+   · Để trên bên phải như máy tính thì nút che mất ô "Ngày …/…/20…", "Thời gian" và "Trang 1/2"
+     (màn điện thoại hẹp, trang chiếm trọn bề ngang). Xuống dưới vừa không che gì, vừa gần
+     ngón cái. Muốn đổi lại lên trên: thay bottom:18px thành top:16px, bỏ bottom.
+   Bản in không dính nút ở cả hai kiểu máy. */
+@media(pointer:coarse){
+  .bx-in{top:auto;bottom:18px;right:18px;padding:0;width:96px;height:96px;border-radius:50%;justify-content:center;
+    box-shadow:0 6px 20px rgba(16,60,36,.34)}
+  .bx-in .bx-in-chu{display:none}
+  .bx-in svg{width:46px;height:46px;stroke-width:2.1}
+}
+@media print{.bx-in{display:none!important}}
+</style>
+<button class="bx-in" onclick="window.print()" title="In phiếu hoặc lưu thành tệp PDF">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 9.5V3.5h11v6"/><path d="M6.5 18.5h-2a1 1 0 01-1-1v-5a2 2 0 012-2h13a2 2 0 012 2v5a1 1 0 01-1 1h-2"/><path d="M6.5 14.5h11v6h-11z"/></svg>
+  <span class="bx-in-chu">In / Lưu PDF</span>
+</button>
+<!-- /BX-NUT-IN -->
+</body>
+</html>

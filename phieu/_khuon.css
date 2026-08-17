@@ -1,0 +1,195 @@
+/* ===================================================================
+   KHUÔN CHUNG CHO MỌI PHIẾU BÀI TẬP CUỐI TUẦN · BÚT XANH   (17/8/2026)
+   Mọi phiếu chỉ cần: <link rel="stylesheet" href="_khuon.css">
+   Sửa thiết kế ở ĐÂY là cả bộ phiếu đổi theo — đừng chép CSS vào từng phiếu nữa.
+
+   Ba nguyên tắc thầy Chung đã chốt, không được phá:
+   1) KHÔNG vẽ vòng tròn sẵn quanh A/B/C/D — học sinh tự khoanh.
+   2) KHÔNG tô nền đậm — in máy đen trắng phải sạch (chỉ dùng viền + chữ đậm).
+   3) Mỗi phiếu là MỘT tệp, trang ĐÁP ÁN nằm ở CUỐI.
+
+   Màu nhận diện đặt ở <body class="mon-toan"> hoặc <body class="mon-tv">.
+   =================================================================== */
+@page { size: A4 portrait; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #eef2f0; }
+body { font-family: "Times New Roman", Times, serif; font-size: 12.8pt; line-height: 1.38; color: #101c15;
+  --mc: #1FA45C; --mc-dam: #0f5a34; --mc-nhat: #cfe3d7; }
+body.mon-tv { --mc: #2C7BD6; --mc-dam: #16497f; --mc-nhat: #d3e2f2; }
+/* lớp 1: chữ to hơn, dòng thoáng hơn cho mắt trẻ */
+body.lop1 { font-size: 14pt; line-height: 1.4; }
+
+.trang { width: 210mm; height: 297mm; margin: 0 auto 8mm; padding: 10mm 12mm 12mm;
+  background: #fff; position: relative; z-index: 0; page-break-after: always; overflow: hidden; }
+.trang:last-child { page-break-after: auto; margin-bottom: 0; }
+
+/* ---------- đầu phiếu ---------- */
+.dau { display: flex; align-items: center; gap: 10mm; border-bottom: 2.4pt solid var(--mc); padding-bottom: 3mm; }
+.hieu { flex: 0 0 auto; text-align: center; line-height: 1.15; }
+.hieu .la { font-size: 22pt; color: #1FA45C; }
+.hieu .ten { font-family: Arial, Helvetica, sans-serif; font-size: 10pt; font-weight: bold; color: #0f5a34; letter-spacing: .3pt; }
+.hieu .phu { font-family: Arial, Helvetica, sans-serif; font-size: 6.6pt; color: #6b7f73; letter-spacing: .2pt; }
+.tieu { flex: 1; text-align: center; }
+.tieu h1 { margin: 0; font-size: 19pt; font-weight: bold; color: var(--mc-dam); letter-spacing: .4pt; }
+.tieu .mon { margin-top: 1.2mm; font-size: 13.5pt; font-weight: bold; color: #101c15; }
+.tieu .tuan { display: inline-block; margin-top: 1.6mm; padding: 0.6mm 5mm; border-radius: 20pt;
+  border: 1.1pt solid var(--mc); color: var(--mc-dam); background: #fff;
+  font-family: Arial, Helvetica, sans-serif; font-size: 10.5pt; font-weight: bold; letter-spacing: .5pt; }
+.ngay { flex: 0 0 auto; text-align: right; font-size: 10pt; color: #55665c; line-height: 1.5; }
+
+.hoten { display: flex; gap: 6mm; margin: 3.5mm 0 2mm; font-size: 12.5pt; }
+.hoten > div { display: flex; align-items: flex-end; gap: 2mm; }
+.hoten .o { flex: 1; border-bottom: 1pt dotted #7d8f85; min-height: 6.2mm; }
+.hoten .o.hep { flex: 0 0 26mm; }
+
+/* khung dặn người lớn (dùng cho lớp 1–2) */
+.dan-lon { display: flex; gap: 3mm; align-items: flex-start; border: 1pt solid var(--mc-nhat); border-radius: 2mm;
+  padding: 2.2mm 4mm; margin-bottom: 3mm; font-size: 11.4pt; color: #47584e; font-style: italic; }
+.dan-lon b { color: var(--mc-dam); font-style: normal; }
+
+/* ---------- tiêu đề phần ---------- */
+.phan { display: flex; align-items: center; gap: 3mm; margin: 3.4mm 0 2mm; }
+.phan .so { flex: 0 0 auto; width: 8mm; height: 8mm; border-radius: 50%; border: 1.1pt solid var(--mc);
+  background: #fff; color: var(--mc-dam);
+  font-family: Arial, Helvetica, sans-serif; font-size: 10.5pt; font-weight: bold;
+  display: flex; align-items: center; justify-content: center; }
+.phan .ten { font-family: Arial, Helvetica, sans-serif; font-size: 12.5pt; font-weight: bold;
+  color: var(--mc-dam); letter-spacing: .3pt; text-transform: uppercase; }
+.phan .line { flex: 1; height: 1pt; background: var(--mc-nhat); }
+.dan { font-style: italic; font-size: 11.4pt; color: #47584e; margin: 0 0 2.5mm; }
+
+/* ---------- câu hỏi / bài tập ---------- */
+.cau, .bai { margin-bottom: 2.6mm; break-inside: avoid; }
+.cau .de, .bai .de { font-weight: bold; }
+.cau .de b, .bai .de b { color: var(--mc-dam); }
+body.lop1 .bai .de, body.lop1 .cau .de { display: flex; gap: 2.5mm; align-items: baseline; font-size: 14pt; }
+body.lop1 .bai .de .n, body.lop1 .cau .de .n { flex: 0 0 auto; color: var(--mc-dam); }
+body.lop1 .bai .de .loa, body.lop1 .cau .de .loa { flex: 0 0 auto; font-size: 12pt; }
+.o-lam { padding-left: 8mm; margin-top: 2mm; }
+
+/* phương án trắc nghiệm — CHỈ chữ cái, không vòng tròn */
+.pa { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.4mm 3mm; margin-top: 1.8mm; padding-left: 6mm; }
+.pa.hai { grid-template-columns: repeat(2, 1fr); }
+.pa.mot { grid-template-columns: 1fr; }
+.pa span { white-space: nowrap; }
+.pa.dai span { white-space: normal; }
+.pa .k { display: inline-block; min-width: 6.4mm; text-align: left; font-weight: bold;
+  font-size: 12.8pt; color: #101c15; font-style: normal; }
+
+/* dòng kẻ để viết */
+.ke { margin-top: 1.5mm; }
+.ke .d { border-bottom: 1pt dotted #90a297; height: 6.6mm; }
+.ke.hep .d { height: 5.6mm; }
+.giai { margin-top: 1.5mm; }
+.giai .nhan { font-style: italic; text-align: center; font-weight: bold; color: var(--mc-dam); margin-bottom: 1mm; }
+
+/* bảng kẻ */
+table.bl { border-collapse: collapse; width: 100%; margin: 2mm 0 1mm; }
+table.bl th, table.bl td { border: 1pt solid #6f8579; padding: 2.1mm 2mm; text-align: center; font-size: 12.5pt; }
+table.bl th { background: #f7faf8; font-family: Arial, Helvetica, sans-serif; font-size: 11pt; color: var(--mc-dam); }
+table.bl td.co { font-weight: bold; background: #fff; }
+
+/* ô vuông ghi Đ/S */
+.ds { margin: 1.5mm 0 0 6mm; }
+.ds .y { display: flex; align-items: center; gap: 3mm; margin-bottom: 1.4mm; }
+.ds .o { flex: 0 0 auto; width: 9mm; height: 6.4mm; border: 1pt solid #6f8579; border-radius: 1.4mm; background: #fff; }
+
+/* đoạn văn trích dẫn trong đề */
+.doan { border-left: 2.4pt solid var(--mc-nhat); padding: 0.4mm 0 0.4mm 4mm; margin: 1.2mm 0 1.2mm 4mm;
+  text-align: justify; font-size: 11.5pt; line-height: 1.3; }
+.yc { padding-left: 6mm; margin-top: 1mm; }
+
+/* văn bản đọc hiểu */
+.vb { border: 1pt solid var(--mc-nhat); border-radius: 2mm; padding: 2.4mm 4.5mm 2.8mm; margin-bottom: 2.5mm; }
+.vb .ten-bai { text-align: center; font-weight: bold; font-size: 14pt; color: var(--mc-dam);
+  letter-spacing: .5pt; margin-bottom: 2mm; }
+.vb p { margin: 0 0 1.1mm; text-align: justify; font-size: 11.4pt; line-height: 1.3; text-indent: 6mm; }
+.vb .tacgia { text-align: right; font-style: italic; font-size: 11pt; margin: 1.5mm 0 0; text-indent: 0; }
+
+/* nối hai cột */
+.noi { display: flex; justify-content: space-between; gap: 10mm; margin-top: 2mm; }
+.noi .cot { flex: 1; display: flex; flex-direction: column; gap: 3.5mm; }
+.noi .item { display: flex; align-items: center; gap: 3mm; border: 1pt solid #dfe8e3; border-radius: 2.5mm;
+  padding: 2.5mm 3mm; min-height: 17mm; }
+.noi .cot.phai .item { justify-content: center; font-size: 20pt; font-weight: bold; color: #101c15; }
+.noi .cham { width: 3.4mm; height: 3.4mm; border-radius: 50%; border: 1.2pt solid #6f8579; flex: 0 0 auto; }
+.noi .cot.trai .item .cham { margin-left: auto; }
+
+/* ===== phần dùng cho LỚP 1 – 2: đếm hình, tô nét, khoanh nhóm ===== */
+.dem { display: flex; align-items: center; gap: 4mm; margin-bottom: 3mm; }
+.dem .hinh { flex: 1; display: flex; align-items: center; gap: 3mm; flex-wrap: wrap;
+  border: 1pt solid #dfe8e3; border-radius: 2.5mm; padding: 3mm 3.5mm; min-height: 19mm; }
+.dem .oso { flex: 0 0 auto; width: 17mm; height: 17mm; border: 1.4pt solid #6f8579; border-radius: 2.5mm; }
+.tap { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3mm; margin-top: 2mm; }
+.tap.sau { grid-template-columns: repeat(6, 1fr); }
+.tap .o { border: 1.2pt solid #cfd8d2; border-radius: 2mm; height: 32mm; position: relative;
+  display: flex; align-items: center; justify-content: center; }
+.tap .o:before { content: ""; position: absolute; left: 2mm; right: 2mm; top: 50%; border-top: .8pt dashed #dfe6e2; }
+.tap .o svg { height: 25mm; position: relative; }
+.tap .ten { text-align: center; font-size: 9.5pt; color: #8aa093; margin-top: 1mm; }
+.viet { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3mm; margin-top: 2mm; }
+.viet .o { border: 1.2pt solid #cfd8d2; border-radius: 2mm; height: 26mm; display: flex;
+  align-items: center; justify-content: center; }
+.viet .o svg { height: 20mm; }
+.nhom { display: flex; gap: 5mm; margin-top: 2mm; }
+.nhom .k { flex: 1; border: 1pt solid #dfe8e3; border-radius: 3mm; padding: 3mm; min-height: 24mm;
+  display: flex; align-items: center; justify-content: center; gap: 2.5mm; flex-wrap: wrap; }
+.them { display: flex; align-items: center; gap: 4mm; margin-top: 2mm; }
+.them .co { flex: 1; border: 1pt solid #dfe8e3; border-radius: 2.5mm; padding: 2.5mm 3mm; min-height: 20mm;
+  display: flex; align-items: center; gap: 3mm; flex-wrap: wrap; }
+.them .so { flex: 0 0 auto; width: 15mm; text-align: center; font-size: 22pt; font-weight: bold; color: var(--mc-dam); }
+.hang { display: flex; gap: 5mm; margin-top: 2mm; }
+.hang .k { flex: 1; border: 1pt solid #dfe8e3; border-radius: 3mm; padding: 3mm; min-height: 34mm;
+  display: flex; align-items: center; justify-content: center; }
+.dau-thanh { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3mm; margin-top: 2mm; }
+.dau-thanh .o { border: 1.2pt solid #cfd8d2; border-radius: 2mm; height: 24mm; display: flex;
+  flex-direction: column; align-items: center; justify-content: center; gap: 1mm; }
+.dau-thanh .o .tenkh { font-size: 9.5pt; color: #8aa093; }
+/* ô vuông nhỏ để tô màu theo số lượng */
+.ovuong { display: inline-block; width: 9mm; height: 9mm; border: 1.2pt solid #6f8579; border-radius: 1.4mm; }
+
+/* ---------- chân phiếu ---------- */
+.chan { position: absolute; left: 12mm; right: 12mm; bottom: 7mm; display: flex; align-items: center;
+  gap: 4mm; border-top: 1pt solid #d6e3db; padding-top: 2mm;
+  font-family: Arial, Helvetica, sans-serif; font-size: 8.4pt; color: #6b7f73; }
+.chan .giua { margin: 0 auto; }
+.chan .b { margin-left: auto; }
+
+/* ---------- TRANG ĐÁP ÁN (luôn là trang cuối) ---------- */
+.dapan { font-size: 11.9pt; line-height: 1.3; }
+.dapan .dau { border-bottom-color: #E0871C; }
+.dapan .tieu h1 { color: #b3480f; }
+.dapan .tieu .tuan { border-color: #E0871C; color: #b3480f; }
+.dapan .phan .so { border-color: #E0871C; color: #b3480f; }
+.dapan .phan .ten { color: #b3480f; }
+.dapan .phan .line { background: #f2dfc3; }
+.dapan .muc { font-family: Arial, Helvetica, sans-serif; font-size: 12pt; font-weight: bold;
+  color: #b3480f; margin: 3.5mm 0 1.5mm; }
+.dapan p { margin: 0 0 1.6mm; }
+.dapan .bai { margin-bottom: 1.5mm; }
+.dapan .bai .de { font-weight: bold; color: var(--mc-dam); }
+.gia { color: #1a7a45; font-weight: bold; }
+.bang-da { border-collapse: collapse; width: 100%; margin: 2mm 0 4mm; }
+.bang-da th, .bang-da td { border: 1pt solid #6f8579; padding: 2.2mm; text-align: center; }
+.bang-da th { background: #fdfaf6; font-family: Arial, Helvetica, sans-serif; font-size: 10.5pt; color: #b3480f; }
+.bang-da td { font-weight: bold; font-size: 13pt; }
+.luuy { border: 1pt solid #e6d3b8; background: #fff; border-radius: 2mm; padding: 2.5mm 4mm; margin-top: 2mm;
+  font-size: 10.4pt; line-height: 1.32; }
+.luuy b { color: #b3480f; }
+.luuy ul { margin: 1.2mm 0 0; padding-left: 5mm; }
+.luuy li { margin-bottom: 1mm; }
+
+/* ---------- DẤU BẢN QUYỀN CHÌM ----------
+   z-index:-1 → nằm DƯỚI toàn bộ nội dung, không bao giờ che chữ.
+   .trang phải có position:relative; z-index:0, nếu không nền trắng sẽ che mất. */
+.chim { position: absolute; inset: 0; z-index: -1; display: flex; align-items: center;
+  justify-content: center; pointer-events: none; overflow: hidden; }
+.chim .cx { transform: rotate(-27deg); text-align: center; color: #0f5a34; opacity: .09;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.chim .cx .la { font-size: 60pt; line-height: .9; }
+.chim .cx .tn { font-family: Arial, Helvetica, sans-serif; font-size: 44pt; font-weight: bold;
+  letter-spacing: 7pt; line-height: 1.1; margin-top: 2mm; }
+.chim .cx .ph { font-family: Arial, Helvetica, sans-serif; font-size: 12.5pt; letter-spacing: 4pt; margin-top: 1.5mm; }
+
+@media print { html, body { background: #fff; } .trang { margin: 0; box-shadow: none; } }
+@media screen { .trang { box-shadow: 0 2px 14px rgba(16,40,26,.14); } }

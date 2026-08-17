@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=794">
+<title>Phiếu bài tập cuối tuần — Tiếng Việt 4 — Tuần 1</title>
+<style>
+/* ===== PHIẾU BÀI TẬP CUỐI TUẦN · BÚT XANH — TIẾNG VIỆT 4, TUẦN 1 =====
+   Dùng chung khuôn với phiếu Toán 4 (xem DOC-TRUOC.md). Hai nguyên tắc thầy Chung đã chốt:
+   · KHÔNG vẽ vòng tròn sẵn quanh A/B/C/D — học sinh tự khoanh;
+   · KHÔNG tô nền đậm — in máy đen trắng phải sạch, chỉ dùng viền và chữ đậm.
+   Phiếu Tiếng Việt dài hơn phiếu Toán nên có 3 trang học sinh + 1 trang đáp án. */
+@page { size: A4 portrait; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #eef2f0; }
+body { font-family: "Times New Roman", Times, serif; font-size: 12.6pt; line-height: 1.36; color: #101c15; }
+.trang { width: 210mm; height: 297mm; margin: 0 auto 8mm; padding: 10mm 12mm 12mm;
+  background: #fff; position: relative; z-index: 0; page-break-after: always; overflow: hidden; }
+.trang:last-child { page-break-after: auto; margin-bottom: 0; }
+
+/* ---------- đầu phiếu ---------- */
+.dau { display: flex; align-items: center; gap: 10mm; border-bottom: 2.4pt solid #2C7BD6; padding-bottom: 3mm; }
+.hieu { flex: 0 0 auto; text-align: center; line-height: 1.15; }
+.hieu .la { font-size: 22pt; color: #1FA45C; }
+.hieu .ten { font-family: Arial, Helvetica, sans-serif; font-size: 10pt; font-weight: bold; color: #0f5a34; letter-spacing: .3pt; }
+.hieu .phu { font-family: Arial, Helvetica, sans-serif; font-size: 6.6pt; color: #6b7f73; letter-spacing: .2pt; }
+.tieu { flex: 1; text-align: center; }
+.tieu h1 { margin: 0; font-size: 19pt; font-weight: bold; color: #16497f; letter-spacing: .4pt; }
+.tieu .mon { margin-top: 1.2mm; font-size: 13.5pt; font-weight: bold; color: #101c15; }
+.tieu .tuan { display: inline-block; margin-top: 1.6mm; padding: 0.6mm 5mm; border-radius: 20pt;
+  border: 1.1pt solid #2C7BD6; color: #16497f; background: #fff;
+  font-family: Arial, Helvetica, sans-serif; font-size: 10.5pt; font-weight: bold; letter-spacing: .5pt; }
+.ngay { flex: 0 0 auto; text-align: right; font-size: 10pt; color: #55665c; line-height: 1.5; }
+
+/* ---------- dòng họ tên ---------- */
+.hoten { display: flex; gap: 6mm; margin: 3.5mm 0; font-size: 12.5pt; }
+.hoten > div { display: flex; align-items: flex-end; gap: 2mm; }
+.hoten .o { flex: 1; border-bottom: 1pt dotted #7d8f85; min-height: 6mm; }
+.hoten .o.hep { flex: 0 0 26mm; }
+
+/* ---------- tiêu đề phần ---------- */
+.phan { display: flex; align-items: center; gap: 3mm; margin: 3.4mm 0 2mm; }
+.phan .so { flex: 0 0 auto; width: 8mm; height: 8mm; border-radius: 50%; border: 1.1pt solid #2C7BD6;
+  background: #fff; color: #16497f; font-family: Arial, Helvetica, sans-serif; font-size: 10.5pt; font-weight: bold;
+  display: flex; align-items: center; justify-content: center; }
+.phan .ten { font-family: Arial, Helvetica, sans-serif; font-size: 12.5pt; font-weight: bold;
+  color: #16497f; letter-spacing: .3pt; text-transform: uppercase; }
+.phan .line { flex: 1; height: 1pt; background: #d3e2f2; }
+.dan { font-style: italic; font-size: 11.4pt; color: #47584e; margin: 0 0 2.5mm; }
+
+/* ---------- văn bản đọc ---------- */
+.vb { border: 1pt solid #cfdcea; border-radius: 2mm; padding: 2.4mm 4.5mm 2.8mm; margin-bottom: 2.5mm; }
+.vb .ten-bai { text-align: center; font-weight: bold; font-size: 14pt; color: #16497f;
+  letter-spacing: .5pt; margin-bottom: 2mm; }
+.vb p { margin: 0 0 1.1mm; text-align: justify; font-size: 11.4pt; line-height: 1.3; text-indent: 6mm; }
+.vb .tacgia { text-align: right; font-style: italic; font-size: 11pt; margin: 1.5mm 0 0; text-indent: 0; }
+.vb .thoai { text-indent: 6mm; }
+
+/* ---------- câu hỏi ---------- */
+.cau { margin-bottom: 2.1mm; break-inside: avoid; }
+.cau .de { font-weight: bold; }
+.cau .de b { color: #16497f; }
+.pa { display: grid; grid-template-columns: 1fr; gap: 1.4mm; margin-top: 1.4mm; padding-left: 6mm; }
+.pa.hai { grid-template-columns: repeat(2, 1fr); gap: 1.4mm 4mm; }
+.pa .k { display: inline-block; min-width: 6.4mm; font-weight: bold; font-size: 12.6pt; color: #101c15; font-style: normal; }
+.doan { border-left: 2.4pt solid #d3e2f2; padding: 0.4mm 0 0.4mm 4mm; margin: 1.2mm 0 1.2mm 4mm;
+  text-align: justify; font-size: 11.5pt; line-height: 1.3; }
+.yc { padding-left: 6mm; margin-top: 1mm; }
+.ke { margin-top: 1.2mm; }
+.ke .d { border-bottom: 1pt dotted #90a297; height: 6mm; }
+.ke.hep .d { height: 5.4mm; }
+
+/* ---------- sơ đồ ghi nhớ danh từ ---------- */
+.sodo { display: flex; align-items: stretch; gap: 3mm; margin: 2mm 0 1mm; }
+.sodo .loi { flex: 0 0 52mm; border: 1pt solid #2C7BD6; border-radius: 2mm; padding: 2.5mm;
+  display: flex; flex-direction: column; justify-content: center; text-align: center; font-weight: bold; color: #16497f; }
+.sodo .loi .cham { display: block; border-bottom: 1pt dotted #8fa2b5; height: 5.5mm; margin-top: 1.5mm; }
+.sodo .nhanh { flex: 1; display: grid; grid-template-columns: repeat(2, 1fr); gap: 2.5mm; }
+.sodo .o { border: 1pt solid #cfdcea; border-radius: 2mm; padding: 2mm 2.5mm; display: flex; align-items: center; }
+.sodo .o span { flex: 1; border-bottom: 1pt dotted #8fa2b5; height: 5.2mm; }
+.sodo .o i { font-style: normal; font-weight: bold; color: #16497f; margin-right: 2mm; }
+
+/* ---------- chân phiếu ---------- */
+.chan { position: absolute; left: 12mm; right: 12mm; bottom: 7mm; display: flex; align-items: center;
+  gap: 4mm; border-top: 1pt solid #d6e3db; padding-top: 2mm;
+  font-family: Arial, Helvetica, sans-serif; font-size: 8.4pt; color: #6b7f73; }
+.chan .giua { margin: 0 auto; }
+.chan .b { margin-left: auto; }
+
+/* ---------- trang đáp án ---------- */
+.dapan .dau { border-bottom-color: #E0871C; }
+.dapan .tieu h1 { color: #b3480f; }
+.dapan .tieu .tuan { border-color: #E0871C; color: #b3480f; }
+.dapan .phan .so { border-color: #E0871C; color: #b3480f; }
+.dapan .phan .ten { color: #b3480f; }
+.dapan .phan .line { background: #f2dfc3; }
+/* Trang đáp án chữ nhỏ hơn một chút để cả bốn phần nằm gọn đúng một trang */
+.dapan { font-size: 11.9pt; line-height: 1.3; }
+.dapan .bai { margin-bottom: 1.5mm; }
+.dapan .bai .de { font-weight: bold; color: #16497f; }
+.gia { color: #1a7a45; font-weight: bold; }
+.luuy { border: 1pt solid #e6d3b8; background: #fff; border-radius: 2mm; padding: 2.5mm 4mm; margin-top: 2mm;
+  font-size: 9.8pt; line-height: 1.3; }
+.luuy b { color: #b3480f; }
+.luuy ul { margin: 1.2mm 0 0; padding-left: 5mm; }
+.luuy li { margin-bottom: 1mm; }
+
+/* ---------- DẤU BẢN QUYỀN CHÌM (17/8/2026, thầy Chung yêu cầu) ----------
+   Đặt z-index:-1 nên chữ chìm nằm DƯỚI toàn bộ nội dung — không bao giờ che chữ của phiếu.
+   Độ mờ để rất thấp (.06) để máy in đen trắng chỉ ra một vệt nhạt, học sinh vẫn đọc rõ đề.
+   Muốn đậm/nhạt hơn: sửa đúng một số `opacity` dưới đây. */
+.chim { position: absolute; inset: 0; z-index: -1; display: flex; align-items: center;
+  justify-content: center; pointer-events: none; overflow: hidden; }
+.chim .cx { transform: rotate(-27deg); text-align: center; color: #0f5a34; opacity: .09;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.chim .cx .la { font-size: 60pt; line-height: .9; }
+.chim .cx .tn { font-family: Arial, Helvetica, sans-serif; font-size: 44pt; font-weight: bold;
+  letter-spacing: 7pt; line-height: 1.1; margin-top: 2mm; }
+.chim .cx .ph { font-family: Arial, Helvetica, sans-serif; font-size: 12.5pt; letter-spacing: 4pt;
+  margin-top: 1.5mm; }
+
+@media print { html, body { background: #fff; } .trang { margin: 0; box-shadow: none; } .an-khi-in { display: none !important; } }
+@media screen { .trang { box-shadow: 0 2px 14px rgba(16,40,26,.14); } }
+</style>
+</head>
+<body>
+
+<!-- ==================== TRANG 1: ĐỌC HIỂU ==================== -->
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div>
+  </div></div>
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu">
+      <h1>PHIẾU BÀI TẬP CUỐI TUẦN</h1>
+      <div class="mon">MÔN TIẾNG VIỆT — LỚP 4</div>
+      <div class="tuan">TUẦN 1</div>
+    </div>
+    <div class="ngay">Ngày …… / …… / 20……<br>Thời gian: 40 phút<br>Trang 1/3</div>
+  </div>
+
+  <div class="hoten">
+    <div style="flex:1"><span>Họ và tên:</span><span class="o"></span></div>
+    <div><span>Lớp:</span><span class="o hep"></span></div>
+  </div>
+
+  <div class="phan"><span class="so">I</span><span class="ten">Đọc hiểu</span><span class="line"></span></div>
+  <div class="dan">Đọc thầm văn bản sau:</div>
+
+  <div class="vb">
+    <div class="ten-bai">VỆT PHẤN TRÊN MẶT BÀN</div>
+    <p>Lớp Minh có thêm học sinh mới. Đó là một cô bạn có cái tên rất ngộ: Thi Ca. Cô giáo xếp Thi Ca ngồi
+      ngay cạnh Minh. Minh tò mò ngó mái tóc xù lông nhím của bạn, định bụng sẽ làm quen với “người hàng
+      xóm” mới thật vui vẻ.</p>
+    <p>Nhưng cô bạn tóc xù toàn làm Minh bực mình. Trong lúc Minh bặm môi, nắn nót từng dòng chữ trên trang
+      vở thì hai cái cùi chỏ đụng nhau đánh cộp làm chữ nhảy chồm lên, rớt khỏi dòng. Tất cả rắc rối là do
+      Thi Ca viết tay trái.</p>
+    <p>Hai, ba lần, Minh phải kêu lên:</p>
+    <p class="thoai">— Bạn xê ra chút coi! Đụng tay mình rồi nè!</p>
+    <p>Tới lần thứ tư, Minh lấy phấn kẻ một đường chia đôi mặt bàn:</p>
+    <p class="thoai">— Đây là ranh giới. Bạn không được để tay thò qua chỗ mình nhé!</p>
+    <p>Thi Ca nhìn đường phấn trắng, gương mặt thoảng buồn. Đường ranh giới cứ thế tồn tại trên mặt bàn hết
+      một tuần.</p>
+    <p>Hôm ấy, trống vào lớp lâu rồi mà không thấy Thi Ca xuất hiện. Thì ra bạn ấy phải vào bệnh viện. Cô
+      giáo nói:</p>
+    <p class="thoai">— Hi vọng lần này bác sĩ sẽ giúp chữa lành cánh tay phải để bạn không phải viết bằng tay
+      trái nữa!</p>
+    <p>Lời cô giáo làm Minh chợt nhớ ra Thi Ca hay giấu bàn tay phải trong hộc bàn. Minh nhớ ánh mắt buồn
+      của bạn lúc nhìn Minh vạch đường phấn trắng. Càng nhớ càng ân hận. Mím môi, Minh đè mạnh chiếc khăn,
+      xoá vệt phấn trên mặt bàn.</p>
+    <p>“Mau về nhé, Thi Ca!” — Minh nói với vệt phấn chỉ còn là một đường mờ nhạt trên mặt gỗ lốm đốm vân nâu.</p>
+    <p class="tacgia">Theo Nguyễn Thị Kim Hoà</p>
+  </div>
+
+  <div class="dan">Dựa vào nội dung bài đọc, khoanh vào chữ đặt trước câu trả lời đúng nhất hoặc làm theo yêu cầu:</div>
+
+  <div class="cau">
+    <div class="de"><b>Câu 1.</b> Những đặc điểm nào của người bạn mới khiến Minh chú ý?</div>
+    <div class="pa">
+      <span><i class="k">A.</i>cái tên rất ngộ</span>
+      <span><i class="k">B.</i>cái tên rất ngộ, mái tóc xù như lông nhím</span>
+      <span><i class="k">C.</i>cái tên rất ngộ, mái tóc xù như lông nhím, viết bằng tay trái</span>
+    </div>
+  </div>
+
+  <div class="cau">
+    <div class="de"><b>Câu 2.</b> Vì sao Thi Ca thường đụng vào tay Minh khi đang viết?</div>
+    <div class="pa">
+      <span><i class="k">A.</i>Vì Thi Ca viết bằng tay trái.</span>
+      <span><i class="k">B.</i>Vì Thi Ca vốn là cô bé hậu đậu.</span>
+      <span><i class="k">C.</i>Vì ngay từ đầu Minh không chia ranh giới bàn với Thi Ca.</span>
+    </div>
+  </div>
+
+  <div class="chan"><span>Tiếng Việt 4 · Tuần 1</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span><span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<!-- ==================== TRANG 2: CÂU HỎI ĐỌC HIỂU + LUYỆN TỪ VÀ CÂU ==================== -->
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div>
+  </div></div>
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu">
+      <h1>PHIẾU BÀI TẬP CUỐI TUẦN</h1>
+      <div class="mon">MÔN TIẾNG VIỆT — LỚP 4</div>
+      <div class="tuan">TUẦN 1</div>
+    </div>
+    <div class="ngay">Họ và tên: ……………………<br>Lớp: ………<br>Trang 2/3</div>
+  </div>
+
+  <div class="cau" style="margin-top:3mm">
+    <div class="de"><b>Câu 3.</b> Minh dùng phấn kẻ một đường chia đôi mặt bàn để làm gì?</div>
+    <div class="pa">
+      <span><i class="k">A.</i>Để Thi Ca không lấn vở sang bàn mình.</span>
+      <span><i class="k">B.</i>Để trang trí cho đẹp mắt.</span>
+      <span><i class="k">C.</i>Để chia ranh giới bàn với Thi Ca.</span>
+    </div>
+  </div>
+
+  <div class="cau">
+    <div class="de"><b>Câu 4.</b> Tại sao Minh lại ân hận khi nhớ đến “ánh mắt buồn của bạn lúc nhìn Minh vạch
+      đường phấn trắng”? Nếu em là bạn Minh trong câu chuyện trên, em sẽ nói gì khi Thi Ca quay trở lại lớp học?</div>
+    <div class="ke"><div class="d"></div><div class="d"></div><div class="d"></div><div class="d"></div></div>
+  </div>
+
+  <div class="cau">
+    <div class="de"><b>Câu 5.</b> Câu chuyện muốn nói với em điều gì?</div>
+    <div class="pa">
+      <span><i class="k">A.</i>Cần giúp đỡ bạn bè lúc khó khăn.</span>
+      <span><i class="k">B.</i>Không ai là người hoàn hảo, hãy thông cảm cho những khuyết điểm của người khác.</span>
+      <span><i class="k">C.</i>Hãy là người bao dung, sẵn sàng bỏ qua cho lỗi lầm của người khác.</span>
+    </div>
+  </div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Luyện từ và câu</span><span class="line"></span></div>
+
+  <div class="cau">
+    <div class="de"><b>Bài 1.</b> Điền vào chỗ chấm để hoàn thiện ghi nhớ về danh từ:</div>
+    <div class="sodo">
+      <div class="loi">Danh từ là các từ chỉ<span class="cham"></span></div>
+      <div class="nhanh">
+        <div class="o"><i>1.</i><span></span></div>
+        <div class="o"><i>2.</i><span></span></div>
+        <div class="o"><i>3.</i><span></span></div>
+        <div class="o"><i>4.</i><span></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cau">
+    <div class="de"><b>Bài 2.</b> Ở mỗi nhóm, em hãy viết thêm 5 ví dụ về danh từ:</div>
+    <div class="yc">
+      <div>a) Danh từ chỉ <b>người</b>:</div><div class="ke hep"><div class="d"></div></div>
+      <div>b) Danh từ chỉ <b>vật</b>:</div><div class="ke hep"><div class="d"></div></div>
+      <div>c) Danh từ chỉ <b>hiện tượng</b>:</div><div class="ke hep"><div class="d"></div></div>
+      <div>d) Danh từ chỉ <b>thời gian</b>:</div><div class="ke hep"><div class="d"></div></div>
+    </div>
+  </div>
+
+  <div class="cau">
+    <div class="de"><b>Bài 3.</b> Gạch dưới các danh từ trong mỗi câu sau:</div>
+    <div class="doan">a) Trong lúc Minh bặm môi, nắn nót từng dòng chữ trên trang vở thì hai cái cùi chỏ đụng
+      nhau đánh cộp làm chữ nhảy chồm lên, rớt khỏi dòng.</div>
+    <div class="doan">b) Thi Ca nhìn đường phấn trắng, gương mặt thoảng buồn. Đường ranh giới cứ thế tồn tại
+      trên mặt bàn hết một tuần.</div>
+  </div>
+
+  <div class="chan"><span>Tiếng Việt 4 · Tuần 1</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span><span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<!-- ==================== TRANG 3: LUYỆN TỪ VÀ CÂU (tiếp) + VIẾT ==================== -->
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div>
+  </div></div>
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu">
+      <h1>PHIẾU BÀI TẬP CUỐI TUẦN</h1>
+      <div class="mon">MÔN TIẾNG VIỆT — LỚP 4</div>
+      <div class="tuan">TUẦN 1</div>
+    </div>
+    <div class="ngay">Họ và tên: ……………………<br>Lớp: ………<br>Trang 3/3</div>
+  </div>
+
+  <div class="cau" style="margin-top:3mm">
+    <div class="de"><b>Bài 4.</b> Trong câu <i>“Bốn cái cánh mỏng như giấy bóng, cái đầu tròn và hai con mắt
+      long lanh như thuỷ tinh.”</i> có mấy danh từ chỉ vật?</div>
+    <div class="pa">
+      <span><i class="k">A.</i>3 danh từ. Đó là: ……………………………………………………………</span>
+      <span><i class="k">B.</i>4 danh từ. Đó là: ……………………………………………………………</span>
+      <span><i class="k">C.</i>5 danh từ. Đó là: ……………………………………………………………</span>
+      <span><i class="k">D.</i>6 danh từ. Đó là: ……………………………………………………………</span>
+    </div>
+  </div>
+
+  <div class="cau">
+    <div class="de"><b>Bài 5.</b></div>
+    <div class="yc">
+      <div>a) Tìm 3 danh từ (có 2 tiếng), trong mỗi từ đều có tiếng <b>“biển”</b>. Đặt câu với 1 trong các danh
+        từ vừa tìm được.</div>
+      <div class="ke hep"><div class="d"></div><div class="d"></div></div>
+      <div style="margin-top:1.5mm">b) Tìm 3 danh từ (có 2 tiếng), trong mỗi từ đều có tiếng <b>“gió”</b>. Đặt câu với 1 trong các danh
+        từ vừa tìm được.</div>
+      <div class="ke hep"><div class="d"></div><div class="d"></div></div>
+    </div>
+  </div>
+
+  <div class="phan"><span class="so">III</span><span class="ten">Viết</span><span class="line"></span></div>
+
+  <div class="cau">
+    <div class="de"><b>Bài 1.</b> Gạch dưới câu nêu chủ đề trong mỗi đoạn văn dưới đây:</div>
+    <div class="doan">a) Lớp Minh có thêm học sinh mới. Đó là một cô bạn có cái tên rất ngộ: Thi Ca. Cô giáo xếp
+      Thi Ca ngồi ngay cạnh Minh. Minh tò mò ngó mái tóc xù lông nhím của bạn, định bụng sẽ làm quen với
+      “người hàng xóm” mới thật vui vẻ.</div>
+    <div class="doan">b) Trong lúc Minh bặm môi, nắn nót từng dòng chữ trên trang vở thì hai cái cùi chỏ đụng
+      nhau đánh cộp làm chữ nhảy chồm lên, rớt khỏi dòng. Tất cả rắc rối là do Thi Ca viết tay trái.</div>
+  </div>
+
+  <div class="cau">
+    <div class="de"><b>Bài 2.</b> Đọc mỗi đoạn văn dưới đây và thực hiện yêu cầu: <i>gạch dưới câu chủ đề, rồi
+      viết lại một câu chủ đề khác phù hợp với đoạn văn.</i></div>
+    <div class="doan">a) Sáng Chủ nhật, An mang cần đi câu cá. Tìm mãi mới được vị trí đẹp bên bờ ao, An mắc
+      mồi vào và ngồi đợi. Cứ vài phút, cậu lại nhấc cần lên xem. Cá đâu chẳng thấy, chỉ thấy mất mồi liên
+      tục. Chú nhái bén ngồi trên tàu lá ngước mắt nhìn An lạ lẫm.</div>
+    <div class="ke hep" style="margin-left:4mm"><div class="d"></div></div>
+    <div class="doan">b) Mỗi lần bố mẹ cho tiền ăn quà, mua sách, có chút tiền lẻ thừa ra, tôi lại được gửi heo
+      đất giữ giúp. Tết đến, có tiền mừng tuổi, tôi cũng dành cho heo luôn. Từ ngày có heo, tôi không còn mua
+      quà vặt, không đòi những món đồ chơi lãng phí. Tôi thấy mình đã lớn, đã học được cách tiết kiệm.</div>
+    <div class="ke hep" style="margin-left:4mm"><div class="d"></div></div>
+    <div class="doan">c) Một trận động đất lớn xảy ra. Chỉ trong vòng bốn phút, nó đã san bằng thành phố. Giữa
+      cơn hỗn loạn đó, một người cha chạy vội đến trường học của con. Ông bàng hoàng, lặng đi vì ngôi trường
+      chỉ còn là một đống đổ nát.</div>
+    <div class="ke hep" style="margin-left:4mm"><div class="d"></div></div>
+  </div>
+
+  <div class="chan"><span>Tiếng Việt 4 · Tuần 1</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span><span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<!-- ==================== TRANG 4: ĐÁP ÁN ==================== -->
+<section class="trang dapan">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div>
+  </div></div>
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu">
+      <h1>ĐÁP ÁN &amp; GỢI Ý CHỮA</h1>
+      <div class="mon">MÔN TIẾNG VIỆT — LỚP 4</div>
+      <div class="tuan">TUẦN 1</div>
+    </div>
+    <div class="ngay">Dành cho<br>thầy cô &amp; phụ huynh<br><b>Trang cuối</b></div>
+  </div>
+
+  <div class="phan"><span class="so">I</span><span class="ten">Đọc hiểu</span><span class="line"></span></div>
+  <div class="bai"><b>Câu 1.</b> <span class="gia">B</span> &nbsp;·&nbsp; <b>Câu 2.</b> <span class="gia">A</span>
+    &nbsp;·&nbsp; <b>Câu 3.</b> <span class="gia">C</span> &nbsp;·&nbsp; <b>Câu 5.</b> <span class="gia">B</span></div>
+  <div class="bai"><b>Câu 4.</b> <i>(gợi ý)</i> Minh ân hận vì chưa tìm hiểu kĩ nguyên nhân khiến Thi Ca gây ra
+    rắc rối mà đã vội tỏ thái độ giận dữ, làm bạn buồn. Nếu em là Minh, khi Thi Ca đi học trở lại em sẽ nói:
+    <span class="gia">“Mình xin lỗi vì đã có hành động chưa đúng với cậu. Mình rất mong cậu chóng khỏi tay để
+    chúng mình cùng học nhé!”</span></div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Luyện từ và câu</span><span class="line"></span></div>
+  <div class="bai"><b>Bài 1.</b> Danh từ là các từ chỉ <span class="gia">sự vật</span>, gồm bốn nhóm:
+    <span class="gia">1. người &nbsp; 2. vật &nbsp; 3. hiện tượng &nbsp; 4. thời gian</span>.</div>
+  <div class="bai"><b>Bài 2.</b> <i>(gợi ý)</i><br>
+    a) <b>người:</b> <span class="gia">ông, bà, cha, mẹ, giáo viên, bác sĩ…</span><br>
+    b) <b>vật:</b> <span class="gia">bàn, ghế, bát, đũa, cây ổi, con mèo…</span><br>
+    c) <b>hiện tượng:</b> <span class="gia">nắng, mưa, gió, bão, sấm, sét…</span><br>
+    d) <b>thời gian:</b> <span class="gia">ngày, tháng, năm, giờ, phút, hôm qua…</span></div>
+  <div class="bai"><b>Bài 3.</b> Các danh từ cần gạch dưới:<br>
+    a) <span class="gia">Minh, môi, dòng chữ, trang vở, cùi chỏ, chữ, dòng.</span><br>
+    b) <span class="gia">Thi Ca, đường phấn, gương mặt, đường ranh giới, mặt bàn, tuần.</span></div>
+  <div class="bai"><b>Bài 4.</b> <span class="gia">C — 5 danh từ:</span> cánh, giấy bóng, đầu, mắt, thuỷ tinh.</div>
+  <div class="bai"><b>Bài 5.</b> <i>(gợi ý)</i><br>
+    a) <span class="gia">biển báo, biển hiệu, biển khơi</span> — <i>Trước cổng trường em mới đặt một chiếc
+      biển báo ưu tiên trẻ em qua đường.</i><br>
+    b) <span class="gia">gió heo may, gió bấc, gió phơn</span> — <i>Mùa thu trở nên mát mẻ nhờ những cơn gió
+      heo may.</i></div>
+
+  <div class="phan"><span class="so">III</span><span class="ten">Viết</span><span class="line"></span></div>
+  <div class="bai"><b>Bài 1.</b> Câu nêu chủ đề:<br>
+    a) <span class="gia">Lớp Minh có thêm học sinh mới.</span> (đứng đầu đoạn)<br>
+    b) <span class="gia">Tất cả rắc rối là do Thi Ca viết tay trái.</span> (đứng cuối đoạn)</div>
+  <div class="bai"><b>Bài 2.</b><br>
+    a) Câu chủ đề: <span class="gia">Sáng Chủ nhật, An mang cần đi câu cá.</span> — Viết lại:
+      <i>Vào ngày nghỉ, An thường đi câu cá.</i><br>
+    b) Câu chủ đề: <span class="gia">Tôi thấy mình đã lớn, đã học được cách tiết kiệm.</span> — Viết lại:
+      <i>Sau một năm, tôi đã có chút vốn nhỏ của riêng mình.</i><br>
+    c) Câu chủ đề: <span class="gia">Một trận động đất lớn xảy ra.</span> — Viết lại:
+      <i>Trận động đất bất ngờ ập đến.</i></div>
+
+  <div class="luuy">
+    <b>Ghi chú của Bút Xanh khi biên tập</b> (nguồn: Bài tập cuối tuần Tiếng Việt 4 — Kết nối tri thức, học kì I):
+    <ul>
+      <li><b>Bài 2 phần II:</b> tài liệu gốc đánh nhầm thứ tự ý — bốn nhóm ghi <i>a, d, c, d</i> → đã sửa lại
+        thành <b>a, b, c, d</b>.</li>
+      <li><b>Bài 1 phần II:</b> sơ đồ gốc là hình vẽ rời trong Word, khó in rõ → đã dựng lại thành ô ghi nhớ
+        có bốn nhánh để học sinh điền.</li>
+      <li>Các câu hỏi <b>gạch dưới danh từ / câu chủ đề</b> giữ nguyên đề gốc; đáp án phần này tài liệu gốc để
+        dưới dạng gạch chân trong ảnh nên Bút Xanh liệt kê lại bằng chữ cho thầy cô dễ đối chiếu.</li>
+    </ul>
+  </div>
+
+  <div class="chan"><span>Đáp án · Tiếng Việt 4 · Tuần 1</span>
+    <span class="giua">trang đáp án — thầy cô và phụ huynh xem sau khi em làm xong</span><span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<!-- BX-NUT-IN — nút In / Lưu PDF, thêm 17/8/2026. Ẩn khi in nên không dính vào bản giấy.
+     Sinh tự động bởi _them-nut-in.js — đừng sửa tay từng tệp, sửa ở script rồi chạy lại. -->
+<style>
+.bx-in{position:fixed;top:14px;right:14px;z-index:9999;display:inline-flex;align-items:center;gap:8px;
+  font-family:system-ui,"Segoe UI",Roboto,Arial,sans-serif;font-size:14px;font-weight:700;color:#fff;
+  background:#1a8a4e;border:0;border-radius:999px;padding:11px 18px;cursor:pointer;
+  box-shadow:0 4px 14px rgba(16,60,36,.28);transition:background .15s,box-shadow .15s}
+.bx-in:hover{background:#157040;box-shadow:0 6px 18px rgba(16,60,36,.36)}
+.bx-in:active{transform:translateY(1px)}
+.bx-in svg{width:17px;height:17px;flex:none;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* Điện thoại/máy tính bảng: rút còn nút TRÒN chỉ có biểu tượng máy in, và ĐẨY XUỐNG GÓC DƯỚI.
+   Hai chỗ khác máy tính, đều do đo thật 17/8/2026:
+   · Dùng (pointer:coarse) chứ KHÔNG dùng (max-width) — trang phiếu rộng cố định 794px nên
+     trình duyệt điện thoại thu nhỏ cả trang, max-width không bao giờ khớp mà nút thì bé tí
+     không chạm nổi. Nút tròn 96px sau khi thu còn ~47px thật — vừa đầu ngón tay.
+   · Để trên bên phải như máy tính thì nút che mất ô "Ngày …/…/20…", "Thời gian" và "Trang 1/2"
+     (màn điện thoại hẹp, trang chiếm trọn bề ngang). Xuống dưới vừa không che gì, vừa gần
+     ngón cái. Muốn đổi lại lên trên: thay bottom:18px thành top:16px, bỏ bottom.
+   Bản in không dính nút ở cả hai kiểu máy. */
+@media(pointer:coarse){
+  .bx-in{top:auto;bottom:18px;right:18px;padding:0;width:96px;height:96px;border-radius:50%;justify-content:center;
+    box-shadow:0 6px 20px rgba(16,60,36,.34)}
+  .bx-in .bx-in-chu{display:none}
+  .bx-in svg{width:46px;height:46px;stroke-width:2.1}
+}
+@media print{.bx-in{display:none!important}}
+</style>
+<button class="bx-in" onclick="window.print()" title="In phiếu hoặc lưu thành tệp PDF">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 9.5V3.5h11v6"/><path d="M6.5 18.5h-2a1 1 0 01-1-1v-5a2 2 0 012-2h13a2 2 0 012 2v5a1 1 0 01-1 1h-2"/><path d="M6.5 14.5h11v6h-11z"/></svg>
+  <span class="bx-in-chu">In / Lưu PDF</span>
+</button>
+<!-- /BX-NUT-IN -->
+</body>
+</html>

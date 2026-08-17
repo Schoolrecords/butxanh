@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-17 · 56';
+  var PB='2026-08-17 · 57';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1965,7 +1965,7 @@ window.bxMergeKho = function(){
     <section class="view" id="v-phieu">
       <div class="page-head">
         <div><h2 class="ph-title" id="pw-title">Phiếu bài tập cuối tuần</h2>
-          <div class="ph-sub">Phiếu ôn luyện <b>Toán</b> và <b>Tiếng Việt</b> theo từng tuần — mở hoặc tải trực tiếp từ Google Drive</div></div>
+          <div class="ph-sub">Phiếu ôn luyện <b>Toán</b> và <b>Tiếng Việt</b> theo từng tuần — bấm ô tuần là mở ra, in được ngay</div></div>
       </div>
       <!-- 17/8/2026: bỏ hàng chip khối lớp ở đây — chọn lớp nay nằm trong thanh điều khiển
            của #pw-body (một ô chọn duy nhất thay cho 15 nút lớp trước kia). -->
@@ -3531,10 +3531,15 @@ function BX_slideDetail(lop,mon){
    nên màn này KHÔNG đi hai cấp như Bài giảng trình chiếu (13 môn): chọn lớp là thấy ngay
    cả hai môn cạnh nhau, cộng một thẻ "Tuần này" để mở đúng phiếu tuần hiện tại bằng MỘT
    lần chạm.
-   Phiếu KHÔNG nhồi vào app mà nhúng link thư mục Google Drive, đúng khuôn BX_SLIDE_SEED —
-   thầy cô thả file mới vào Drive là app có ngay, không phải sửa code rồi phát hành lại.
-   ⚠️ Bảng link dưới đây CỐ Ý ĐỂ TRỐNG: làm giao diện trước, gắn link sau. Tuần chưa có
-   phiếu hiện mờ "chưa có phiếu" chứ không báo lỗi. */
+   ⚠️ ĐỔI CÁCH CHỨA PHIẾU — 17/8/2026 (thầy Chung duyệt).
+   Trước: mỗi tuần là một LINK Google Drive (khuôn BX_SLIDE_SEED). Nay: phiếu là TỆP HTML
+   nằm ngay trong app, thư mục web/phieu/. Vì sao đổi:
+     · phiếu chỉ để MỞ RA XEM và IN — app không cần đọc bên trong như kho giáo án,
+       nên không nhồi nội dung vào JS; mở app vẫn tốn 0 KB, bấm tuần nào tải tuần đó (~16 KB);
+     · bỏ hẳn việc phải dựng cây thư mục Drive + chia sẻ quyền + chạy script quét link;
+     · link Drive hay hỏng trong webview Zalo/Facebook, tệp cùng tên miền thì mở thẳng;
+     · trạng thái "tuần đã có phiếu" bám vào tệp có thật, không lệch như bẫy cũ.
+   Đủ 350 phiếu (5 khối × 2 môn × 35 tuần) ước ~5,8 MB — nhẹ hơn kho giáo án MỘT lớp (6 MB). */
 var BX_PHIEU_TEN='Phiếu bài tập cuối tuần';   /* đổi tên hiển thị ở ĐÚNG chỗ này là đổi cả app */
 /* Tên NGẮN cho những chỗ hẹp (menu bên trái, thẻ ở Bảng điều khiển) — để chữ nằm gọn một dòng,
    không bị gãy thành "Phiếu bài tập cuối / tuần" (thầy Chung 17/8/2026). */
@@ -3542,27 +3547,40 @@ var BX_PHIEU_TEN_NGAN='Phiếu BT cuối tuần';
 var BX_PHIEU_MON=['Toán','Tiếng Việt'];
 var BX_PHIEU_WEEKS=35;
 var BX_PHIEU_META={'Toán':{ic:'🔢',c:'#E5503B'},'Tiếng Việt':{ic:'📖',c:'#2C7BD6'}};
-/* Khoá 'L{lop}|{môn}' → {folder: link thư mục cả môn, weeks: {tuần: link riêng}}.
-   Gắn link bằng tay hoặc bằng script quét Drive (khuôn _quet-has-baigiang.js). */
-var BX_PHIEU_SEED={
-  'L1|Toán':{folder:'',weeks:{}}, 'L1|Tiếng Việt':{folder:'',weeks:{}},
-  'L2|Toán':{folder:'',weeks:{}}, 'L2|Tiếng Việt':{folder:'',weeks:{}},
-  'L3|Toán':{folder:'',weeks:{}}, 'L3|Tiếng Việt':{folder:'',weeks:{}},
-  'L4|Toán':{folder:'',weeks:{}}, 'L4|Tiếng Việt':{folder:'',weeks:{}},
-  'L5|Toán':{folder:'',weeks:{}}, 'L5|Tiếng Việt':{folder:'',weeks:{}}
+/* ===== KHO PHIẾU = TỆP TĨNH TRONG APP =====
+   Tên tệp theo ĐÚNG một khuôn, khỏi phải chép 350 đường dẫn vào đây:
+       web/phieu/Phieu_<Toan|TiengViet><lớp>_Tuan<tuần>.html
+   vd: web/phieu/Phieu_Toan4_Tuan1.html · web/phieu/Phieu_TiengViet1_Tuan1.html
+   👉 SOẠN XONG PHIẾU MỚI CHỈ PHẢI LÀM 2 VIỆC: chép tệp vào web/phieu/ đúng tên trên,
+      rồi thêm SỐ TUẦN vào mảng dưới đây. Không đụng gì khác. */
+var BX_PHIEU_THUMUC='phieu/';
+var BX_PHIEU_MA={'Toán':'Toan','Tiếng Việt':'TiengViet'};   /* tên môn → phần tên tệp (không dấu) */
+/* 'L{lop}|{môn}' → danh sách TUẦN đã có phiếu. 17/8/2026: mới xong tuần 1 cả 10 ô. */
+var BX_PHIEU_CO={
+  'L1|Toán':[1], 'L1|Tiếng Việt':[1],
+  'L2|Toán':[1], 'L2|Tiếng Việt':[1],
+  'L3|Toán':[1], 'L3|Tiếng Việt':[1],
+  'L4|Toán':[1], 'L4|Tiếng Việt':[1],
+  'L5|Toán':[1], 'L5|Tiếng Việt':[1]
 };
 /* lop/mon: bộ lọc trên thanh; tuan: tuần đang mở ở panel chi tiết (mặc định tuần hiện tại) */
 var _phieuSel={lop:null, mon:'', tuan:0};
 function BX_phieuKey(lop,mon){ return 'L'+lop+'|'+mon; }
-function BX_phieuEntry(lop,mon){
-  var sd=BX_PHIEU_SEED[BX_phieuKey(lop,mon)]||{};
-  return { folder: sd.folder||'', weeks: Object.assign({}, sd.weeks||{}) };
+/* Đường dẫn tệp phiếu — dựng theo khuôn tên, KHÔNG tra bảng link nữa. */
+function BX_phieuTep(lop,mon,w){
+  var ma=BX_PHIEU_MA[mon]||''; if(!ma) return '';
+  return BX_PHIEU_THUMUC+'Phieu_'+ma+String(lop)+'_Tuan'+String(w)+'.html';
 }
-/* CÓ PHIẾU TUẦN NÀY = có ĐÚNG link của tuần đó. Trước đây chỉ cần môn có link thư mục là mọi
-   tuần đều tính "đã có" — giao diện mới đếm tiến độ theo tuần nên hoá ra báo 100% dù kho mới
-   có mỗi cái thư mục (17/8/2026). Link thư mục cả môn nay tra riêng bằng BX_phieuCoThuMuc. */
-function BX_phieuCoTuan(lop,mon,w){ return !!BX_phieuEntry(lop,mon).weeks[String(w)]; }
-function BX_phieuCoThuMuc(lop,mon){ return !!BX_phieuEntry(lop,mon).folder; }
+/* CÓ PHIẾU TUẦN NÀY = tuần đó có tên trong BX_PHIEU_CO. Bẫy cũ (17/8/2026): hồi còn dùng Drive,
+   môn mới chỉ có link THƯ MỤC đã tính là cả 35 tuần "đã có" → tiến độ báo 100% dù kho trống.
+   Nay danh sách là từng tuần một nên không lặp lại được cái bẫy đó. */
+function BX_phieuCoTuan(lop,mon,w){
+  var ds=BX_PHIEU_CO[BX_phieuKey(lop,mon)]||[];
+  return ds.indexOf(parseInt(w,10))>=0;
+}
+/* Không còn thư mục Drive cho cả môn. Giữ hàm để các chỗ gọi cũ (thẻ ở Bảng điều khiển)
+   khỏi ném lỗi — luôn trả false. */
+function BX_phieuCoThuMuc(){ return false; }
 function BX_phieuDemTuan(lop,mon){
   var n=0; for(var i=1;i<=BX_PHIEU_WEEKS;i++) if(BX_phieuCoTuan(lop,mon,i)) n++;
   return n;
@@ -3603,13 +3621,8 @@ function BX_phieuMonMacDinh(){
   try{ var v=localStorage.getItem(PHIEU_MON_KEY); if(BX_PHIEU_MON.indexOf(v)>=0) return v; }catch(e){}
   return BX_PHIEU_MON[0];
 }
-/* Link Google Drive → id tệp, để dựng đường tải thẳng cho nút ⬇ trên ô tuần.
-   Không nhận ra id (vd link thư mục) thì không hiện nút tải, chỉ mở link như thường. */
-function BX_phieuDriveId(url){
-  var s=String(url||''), m=s.match(/\/file\/d\/([-\w]{20,})/)||s.match(/[?&]id=([-\w]{20,})/)||s.match(/\/d\/([-\w]{20,})/);
-  return m?m[1]:'';
-}
-function BX_phieuLinkTai(url){ var id=BX_phieuDriveId(url); return id?('https://drive.google.com/uc?export=download&id='+id):''; }
+/* (17/8/2026 — đã bỏ BX_phieuDriveId / BX_phieuLinkTai: phiếu không còn nằm trên Drive nên
+   không phải bóc id tệp để dựng đường tải. Muốn có bản PDF thì mở phiếu rồi bấm Ctrl+P.) */
 window.BX_phieuLop=function(l){
   _phieuSel.lop=String(l);
   try{ localStorage.setItem(PHIEU_LOP_KEY,String(l)); }catch(e){}
@@ -3622,14 +3635,16 @@ window.BX_phieuMon=function(m){
   renderPhieu();
 };
 /* MỞ PHIẾU — dùng chung cho ô tuần ở màn Phiếu và thẻ ở Bảng điều khiển.
-   Chưa có link tuần thì thử link thư mục cả môn; không có gì thì nói rõ, KHÔNG im lặng. */
+   Chưa có phiếu thì nói rõ, KHÔNG im lặng (đây là hàm hay bị đánh rơi khi thay cả khối mã —
+   sau mỗi lần sửa màn này phải bấm thử MỘT ô đã có và MỘT ô chưa có). */
 window.BX_phieuMo=function(lop,mon,w){
-  var e=BX_phieuEntry(lop,mon), url=e.weeks[String(w)]||e.folder||'';
-  if(!url){
+  if(!BX_phieuCoTuan(lop,mon,w)){
     if(typeof bxAlert==='function') bxAlert('📄 Tuần '+w+' môn '+mon+' lớp '+lop+' chưa có phiếu.\n\nPhiếu sẽ được bổ sung dần — thầy cô quay lại sau nhé.');
     return;
   }
-  BX_moLink(url,'phiếu bài tập trên Google Drive');
+  var url=BX_phieuTep(lop,mon,w);
+  if(!url) return;
+  BX_moLink(url,'phiếu bài tập');
 };
 function BX_phieuStyleOnce(){
   if(el('pw-style')) return;
@@ -3739,7 +3754,6 @@ function renderPhieu(){
   var lop=_phieuSel.lop, mon=_phieuSel.mon, tuanNay=BX_phieuTuanNay();
   var m=BX_PHIEU_META[mon]||{ic:'📘',c:'#1FA45C'};
   var t=el('pw-title'); if(t) t.textContent=BX_PHIEU_TEN;
-  var q=function(s){ return "'"+String(s).replace(/'/g,"\\'")+"'"; };
 
   /* --- Thanh lọc: khối lớp · môn học (ô "Năm học" đã bỏ theo yêu cầu 17/8) --- */
   var chipLop=['1','2','3','4','5'].map(function(l){
@@ -3757,17 +3771,17 @@ function renderPhieu(){
   /* --- Lưới 35 tuần chạy liền một mạch: bỏ tiêu đề học kỳ để cả năm nằm gọn một trang --- */
   var g='';
   for(var w=1; w<=BX_PHIEU_WEEKS; w++) g+=BX_phieuWeekCell(lop,mon,w,tuanNay);
-  var daCo=BX_phieuDemTuan(lop,mon), folder=BX_phieuEntry(lop,mon).folder||'';
+  /* 17/8/2026: bỏ nút "📁 Mở cả thư mục môn" — phiếu nằm trong app, không còn thư mục Drive. */
+  var daCo=BX_phieuDemTuan(lop,mon);
   var khung='<div class="pw-panel" style="--mc:'+m.c+'">'+
     '<div class="pw-ph"><span class="pw-ph-t">'+m.ic+' '+mon+' · Lớp '+lop+'</span>'+
       '<span class="pw-ph-dem"><b>'+daCo+'</b>/'+BX_PHIEU_WEEKS+' tuần đã có phiếu</span>'+
-      (folder?('<button class="pw-ph-btn" onclick="BX_moLink('+q(folder)+',\'thư mục phiếu trên Google Drive\')">📁 Mở cả thư mục môn</button>'):'')+
     '</div>'+
     '<div class="pw-weeks">'+g+'</div></div>';
 
   body.innerHTML=bar+khung+
     '<div class="pw-note"><span>ℹ️</span><span>Phiếu để thầy cô <b>tự chọn</b> giao cho học sinh ôn luyện cuối tuần — '+
-      'không chấm điểm, không bắt buộc nộp. Phiếu để trên Google Drive nên bổ sung tới đâu app có tới đó.</span></div>';
+      'không chấm điểm, không bắt buộc nộp. Mở phiếu ra bấm <b>Ctrl + P</b> là in được ngay hoặc lưu thành PDF.</span></div>';
 }
 
 /* ---------- 8) LỊCH BÁO GIẢNG (đầy đủ) ---------- */
@@ -4697,11 +4711,10 @@ function renderDashMats(){
   const q=s=>_xe(JSON.stringify(String(s==null?'':s)));   // thoát đủ cả nháy đơn lẫn nháy kép
   box.innerHTML=(BX_PHIEU_MON||[]).map(mon=>{
     const m=(BX_PHIEU_META||{})[mon]||{ic:'📘',c:'#1FA45C'};
-    /* Có link riêng của tuần thì mở thẳng phiếu; mới có thư mục cả môn thì nói đúng như vậy,
-       đừng ghi "chưa có" rồi bấm lại mở được (17/8/2026). */
-    const co=BX_phieuCoTuan(lop,mon,w), coTM=(typeof BX_phieuCoThuMuc==='function')&&BX_phieuCoThuMuc(lop,mon);
-    const nhan=co?'mở phiếu 🔗':(coTM?'mở thư mục môn 🔗':'chưa có phiếu');
-    return `<div class="fileitem matitem" style="cursor:pointer" onclick="BX_phieuMo(${q(lop)},${q(mon)},${w})" title="${co?'Mở phiếu':(coTM?'Mở thư mục môn':'Chưa có phiếu')}">`+
+    /* 17/8/2026: phiếu là tệp trong app nên chỉ còn hai trạng thái — có hoặc chưa có. */
+    const co=BX_phieuCoTuan(lop,mon,w);
+    const nhan=co?'mở phiếu 🔗':'chưa có phiếu';
+    return `<div class="fileitem matitem" style="cursor:pointer" onclick="BX_phieuMo(${q(lop)},${q(mon)},${w})" title="${co?'Mở phiếu':'Chưa có phiếu'}">`+
       `<div class="thumb" style="background:${m.c}1a">${m.ic}</div>`+
       `<div><div class="ftitle">${mon} — Tuần ${w}</div>`+
       `<div class="fmeta">Lớp ${lop}${ngay?' · '+ngay:''} · ${nhan}</div></div></div>`;
