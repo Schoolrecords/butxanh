@@ -166,7 +166,8 @@
     <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
 </section>
 
-<!-- BX-NUT-IN — nút In / Lưu PDF, thêm 17/8/2026. Ẩn khi in nên không dính vào bản giấy.
+<!-- BX-NUT-IN — nút "Quay lại Bút Xanh" + "In / Lưu PDF", thêm 17/8/2026.
+     Cả hai ẩn khi in nên không dính vào bản giấy phát cho học sinh.
      Sinh tự động bởi _them-nut-in.js — đừng sửa tay từng tệp, sửa ở script rồi chạy lại. -->
 <style>
 .bx-in{position:fixed;top:14px;right:14px;z-index:9999;display:inline-flex;align-items:center;gap:8px;
@@ -185,18 +186,64 @@
      (màn điện thoại hẹp, trang chiếm trọn bề ngang). Xuống dưới vừa không che gì, vừa gần
      ngón cái. Muốn đổi lại lên trên: thay bottom:18px thành top:16px, bỏ bottom.
    Bản in không dính nút ở cả hai kiểu máy. */
+/* Nút QUAY LẠI — đối xứng với nút In, ở phía bên kia màn hình. Nền trắng để không tranh
+   chỗ với nút In màu xanh: một cái là "làm việc chính", một cái là "đi ra". */
+.bx-ve{position:fixed;top:14px;left:14px;z-index:9999;display:inline-flex;align-items:center;gap:8px;
+  font-family:system-ui,"Segoe UI",Roboto,Arial,sans-serif;font-size:14px;font-weight:700;color:#1a6b41;
+  background:#fff;border:1.5px solid #cfe3d6;border-radius:999px;padding:10px 17px;cursor:pointer;
+  box-shadow:0 4px 14px rgba(16,60,36,.18);transition:border-color .15s,box-shadow .15s}
+.bx-ve:hover{border-color:#1a8a4e;box-shadow:0 6px 18px rgba(16,60,36,.26)}
+.bx-ve:active{transform:translateY(1px)}
+.bx-ve svg{width:17px;height:17px;flex:none;fill:none;stroke:#1a6b41;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 @media(pointer:coarse){
   .bx-in{top:auto;bottom:18px;right:18px;padding:0;width:96px;height:96px;border-radius:50%;justify-content:center;
     box-shadow:0 6px 20px rgba(16,60,36,.34)}
   .bx-in .bx-in-chu{display:none}
   .bx-in svg{width:46px;height:46px;stroke-width:2.1}
+  /* Nút quay lại trên điện thoại GIỮ NGUYÊN CHỮ: đây là lối thoát duy nhất khi app chạy toàn
+     màn hình (không có thanh địa chỉ). Chỉ có mũi tên trơ trọi thì các cô không đoán ra. */
+  .bx-ve{top:auto;bottom:18px;left:18px;font-size:26px;padding:20px 30px;gap:14px;border-width:2.5px;
+    box-shadow:0 6px 20px rgba(16,60,36,.26)}
+  .bx-ve svg{width:30px;height:30px;stroke-width:2.6}
 }
-@media print{.bx-in{display:none!important}}
+@media print{.bx-in,.bx-ve{display:none!important}}
 </style>
+<button class="bx-ve" onclick="bxVeApp()" title="Quay lại Bút Xanh">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+  <span>Quay lại</span>
+</button>
 <button class="bx-in" onclick="window.print()" title="In phiếu hoặc lưu thành tệp PDF">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 9.5V3.5h11v6"/><path d="M6.5 18.5h-2a1 1 0 01-1-1v-5a2 2 0 012-2h13a2 2 0 012 2v5a1 1 0 01-1 1h-2"/><path d="M6.5 14.5h11v6h-11z"/></svg>
   <span class="bx-in-chu">In / Lưu PDF</span>
 </button>
+<script>
+/* ĐƯỜNG VỀ APP — thử ba lối, lối nào cũng phải đưa thầy cô về Bút Xanh, tuyệt đối không
+   để bấm mà không thấy gì (17/8/2026, thầy Chung báo: các cô phải tắt cả app mới thoát được).
+   1) Lùi lại — điện thoại mở phiếu ngay trong cửa sổ app nên đây là lối chính, app lấy lại
+      từ bộ nhớ trình duyệt, KHÔNG phải tải lại từ đầu.
+   2) Đóng thẻ — máy tính mở phiếu ở thẻ mới, thẻ nào do app mở thì đóng được.
+   3) Cùng lắm thì đi thẳng về trang app. */
+function bxVeApp(){
+  var daRoi=false;
+  try{ addEventListener('pagehide',function(){ daRoi=true; },{once:true}); }catch(e){}
+  try{ if(history.length>1) history.back(); }catch(e){}
+  setTimeout(function(){
+    if(daRoi) return;
+    try{ window.close(); }catch(e){}
+    setTimeout(function(){ if(!daRoi) location.replace('../index.html'); }, 250);
+  }, 450);
+}
+/* Phiếu đang nằm trong LỚP PHỦ của app (khung nhúng): giấu hai nút này đi, vì thanh trên cùng
+   của app đã có "✕ Đóng" và "🖨 In" rồi — hai bộ nút chồng nhau chỉ làm rối. */
+try{
+  if(window.top!==window.self){
+    document.documentElement.classList.add('bx-trong-khung');
+    var _s=document.createElement('style');
+    _s.textContent='.bx-trong-khung .bx-in,.bx-trong-khung .bx-ve{display:none!important}';
+    document.head.appendChild(_s);
+  }
+}catch(e){}
+</script>
 <!-- /BX-NUT-IN -->
 </body>
 </html>
