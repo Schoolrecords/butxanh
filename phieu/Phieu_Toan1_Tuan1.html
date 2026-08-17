@@ -4,139 +4,64 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=794">
 <title>Phiếu bài tập cuối tuần — Toán 1 — Tuần 1</title>
+<link rel="stylesheet" href="khuon.css">
 <style>
-/* ===== PHIẾU BÀI TẬP CUỐI TUẦN · BÚT XANH — TOÁN 1, TUẦN 1 =====
-   Bám chương trình KNTT tuần 1: "Tiết học đầu tiên" + "Các số 0, 1, 2, 3, 4, 5".
-   ⚠️ ĐẶC THÙ LỚP 1 TUẦN 1: học sinh CHƯA ĐỌC ĐƯỢC CHỮ. Vì vậy:
-   · mọi yêu cầu đều có biểu tượng 🔊 để người lớn đọc hộ;
-   · việc của các em chỉ là ĐẾM · TÔ · NỐI · KHOANH · VIẾT SỐ theo nét chấm;
-   · chữ to (14pt), hình vẽ nét dày, ô rộng cho tay trẻ còn vụng.
-   Giữ hai nguyên tắc chung của bộ phiếu: không khoanh sẵn đáp án, không tô nền đậm. */
-@page { size: A4 portrait; margin: 0; }
-* { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; background: #eef2f0; }
-body { font-family: "Times New Roman", Times, serif; font-size: 14pt; line-height: 1.4; color: #101c15; }
-.trang { width: 210mm; height: 297mm; margin: 0 auto 8mm; padding: 10mm 12mm 12mm;
-  background: #fff; position: relative; z-index: 0; page-break-after: always; overflow: hidden; }
-.trang:last-child { page-break-after: auto; margin-bottom: 0; }
-
-/* ---------- đầu phiếu ---------- */
-.dau { display: flex; align-items: center; gap: 10mm; border-bottom: 2.4pt solid #1FA45C; padding-bottom: 3mm; }
-.hieu { flex: 0 0 auto; text-align: center; line-height: 1.15; }
-.hieu .la { font-size: 22pt; color: #1FA45C; }
-.hieu .ten { font-family: Arial, Helvetica, sans-serif; font-size: 10pt; font-weight: bold; color: #0f5a34; letter-spacing: .3pt; }
-.hieu .phu { font-family: Arial, Helvetica, sans-serif; font-size: 6.6pt; color: #6b7f73; letter-spacing: .2pt; }
-.tieu { flex: 1; text-align: center; }
-.tieu h1 { margin: 0; font-size: 19pt; font-weight: bold; color: #0f5a34; letter-spacing: .4pt; }
-.tieu .mon { margin-top: 1.2mm; font-size: 13.5pt; font-weight: bold; color: #101c15; }
-.tieu .tuan { display: inline-block; margin-top: 1.6mm; padding: 0.6mm 5mm; border-radius: 20pt;
-  border: 1.1pt solid #1FA45C; color: #0f5a34; background: #fff;
-  font-family: Arial, Helvetica, sans-serif; font-size: 10.5pt; font-weight: bold; letter-spacing: .5pt; }
-.ngay { flex: 0 0 auto; text-align: right; font-size: 10pt; color: #55665c; line-height: 1.5; }
-
-.hoten { display: flex; gap: 6mm; margin: 3.5mm 0 2mm; font-size: 13.5pt; }
-.hoten > div { display: flex; align-items: flex-end; gap: 2mm; }
-.hoten .o { flex: 1; border-bottom: 1pt dotted #7d8f85; min-height: 7mm; }
-.hoten .o.hep { flex: 0 0 26mm; }
-
-/* lời dặn người lớn */
-.dan-lon { display: flex; gap: 3mm; align-items: flex-start; border: 1pt solid #cfe3d7; border-radius: 2mm;
-  padding: 2.2mm 4mm; margin-bottom: 3mm; font-size: 11.4pt; color: #47584e; font-style: italic; }
-.dan-lon b { color: #0f5a34; font-style: normal; }
-
-/* ---------- bài tập ---------- */
-.bai { margin-bottom: 4mm; break-inside: avoid; }
-.bai .de { display: flex; gap: 2.5mm; align-items: baseline; font-weight: bold; font-size: 14pt; }
-.bai .de .n { flex: 0 0 auto; color: #0f5a34; }
-.bai .de .loa { flex: 0 0 auto; font-size: 12pt; }
-.o-lam { padding-left: 8mm; margin-top: 2mm; }
-
-/* hàng hình đếm */
-.dem { display: flex; align-items: center; gap: 4mm; margin-bottom: 3mm; }
-.dem .hinh { flex: 1; display: flex; align-items: center; gap: 3mm; flex-wrap: wrap;
-  border: 1pt solid #dfe8e3; border-radius: 2.5mm; padding: 3mm 3.5mm; min-height: 19mm; }
-.dem .oso { flex: 0 0 auto; width: 17mm; height: 17mm; border: 1.4pt solid #6f8579; border-radius: 2.5mm; }
-
-/* lưới nối */
-.noi { display: flex; justify-content: space-between; gap: 10mm; margin-top: 2mm; }
-.noi .cot { flex: 1; display: flex; flex-direction: column; gap: 3.5mm; }
-.noi .item { display: flex; align-items: center; gap: 3mm; border: 1pt solid #dfe8e3; border-radius: 2.5mm;
-  padding: 2.5mm 3mm; min-height: 17mm; }
-.noi .cot.phai .item { justify-content: center; font-size: 22pt; font-weight: bold; color: #101c15; }
-.noi .cham { width: 3.4mm; height: 3.4mm; border-radius: 50%; border: 1.2pt solid #6f8579; flex: 0 0 auto; }
-.noi .cot.trai .item .cham { margin-left: auto; }
-
-/* ô viết số theo nét chấm */
-.viet { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3mm; margin-top: 2mm; }
-.viet .o { border: 1.2pt solid #cfd8d2; border-radius: 2mm; height: 26mm; display: flex;
-  align-items: center; justify-content: center; }
-.viet .o svg { height: 20mm; }
-
-/* khoanh nhóm */
-.nhom { display: flex; gap: 5mm; margin-top: 2mm; }
-.nhom .k { flex: 1; border: 1pt solid #dfe8e3; border-radius: 3mm; padding: 3mm; min-height: 24mm;
-  display: flex; align-items: center; justify-content: center; gap: 2.5mm; flex-wrap: wrap; }
-
-/* vẽ thêm */
-.them { display: flex; align-items: center; gap: 4mm; margin-top: 2mm; }
-.them .co { flex: 1; border: 1pt solid #dfe8e3; border-radius: 2.5mm; padding: 2.5mm 3mm; min-height: 20mm;
-  display: flex; align-items: center; gap: 3mm; flex-wrap: wrap; }
-.them .so { flex: 0 0 auto; width: 15mm; text-align: center; font-size: 22pt; font-weight: bold; color: #0f5a34; }
-
-/* ---------- chân phiếu ---------- */
-.chan { position: absolute; left: 12mm; right: 12mm; bottom: 7mm; display: flex; align-items: center;
-  gap: 4mm; border-top: 1pt solid #d6e3db; padding-top: 2mm;
-  font-family: Arial, Helvetica, sans-serif; font-size: 8.4pt; color: #6b7f73; }
-.chan .giua { margin: 0 auto; }
-.chan .b { margin-left: auto; }
-
-/* ---------- trang dành cho người lớn ---------- */
-.dapan .dau { border-bottom-color: #E0871C; }
-.dapan .tieu h1 { color: #b3480f; }
-.dapan .tieu .tuan { border-color: #E0871C; color: #b3480f; }
-.dapan { font-size: 12.4pt; line-height: 1.36; }
-.dapan .muc { font-family: Arial, Helvetica, sans-serif; font-size: 12pt; font-weight: bold;
-  color: #b3480f; margin: 3.5mm 0 1.5mm; }
-.dapan p { margin: 0 0 1.6mm; }
-.gia { color: #1a7a45; font-weight: bold; }
-.luuy { border: 1pt solid #e6d3b8; border-radius: 2mm; padding: 2.5mm 4mm; margin-top: 2mm; font-size: 11pt; }
-.luuy b { color: #b3480f; }
-.luuy ul { margin: 1.2mm 0 0; padding-left: 5mm; }
-.luuy li { margin-bottom: 1.2mm; }
-
-/* ---------- dấu bản quyền chìm ---------- */
-.chim { position: absolute; inset: 0; z-index: -1; display: flex; align-items: center;
-  justify-content: center; pointer-events: none; overflow: hidden; }
-.chim .cx { transform: rotate(-27deg); text-align: center; color: #0f5a34; opacity: .09;
-  -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-.chim .cx .la { font-size: 60pt; line-height: .9; }
-.chim .cx .tn { font-family: Arial, Helvetica, sans-serif; font-size: 44pt; font-weight: bold;
-  letter-spacing: 7pt; line-height: 1.1; margin-top: 2mm; }
-.chim .cx .ph { font-family: Arial, Helvetica, sans-serif; font-size: 12.5pt; letter-spacing: 4pt; margin-top: 1.5mm; }
-
-@media print { html, body { background: #fff; } .trang { margin: 0; box-shadow: none; } .an-khi-in { display: none !important; } }
-@media screen { .trang { box-shadow: 0 2px 14px rgba(16,40,26,.14); } }
+/* Vài chỗ riêng của phiếu Toán 1, phần còn lại lấy từ khuon.css */
+.day-so { flex: 0 0 auto; font-size: 24pt; font-weight: bold; letter-spacing: 8mm; padding-right: 8mm; }
+.noi .cot.trai .item > svg { margin-right: 1mm; }
 </style>
 </head>
-<body>
+<!-- ===== PHIẾU BÀI TẬP CUỐI TUẦN · BÚT XANH — TOÁN 1, TUẦN 1 =====
+     Bám chương trình KNTT tuần 1: "Tiết học đầu tiên" và "Các số 0, 1, 2, 3, 4, 5".
+     Chỉ dùng đúng phạm vi số 0–5; chưa có cộng, trừ, so sánh lớn bé.
+     ⚠️ Học sinh chưa đọc được chữ → yêu cầu nào cũng có dấu 🔊 để người lớn đọc hộ. -->
+<body class="mon-toan lop1">
 
-<!-- Bộ hình vẽ dùng lại nhiều lần: nét dày, in đen trắng vẫn rõ -->
+<!-- ==================================================================
+     BỘ HÌNH VẼ — dựng lại ngày 17/8/2026 (thầy Chung: "chất lượng hình ảnh tệ quá").
+     Hình đếm được thì phải NHÌN RA NGAY LÀ CON GÌ, QUẢ GÌ: quả táo có cuống và lá,
+     con cá có mắt – vây – đuôi, bông hoa có năm cánh và nhụy. Các em lớp 1 đếm bằng mắt,
+     hình mờ nghĩa là bài toán sai ngay từ đầu.
+     Hình do Bút Xanh tự vẽ, KHÔNG lấy từ sách giáo khoa (bản quyền NXB Giáo dục Việt Nam).
+     Bút vẽ chung (.hv-n, .hv-tr, .hv-den, .hv-cham) đặt trong khuon.css.
+     ================================================================== -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-  <g id="qua"><circle cx="12" cy="13" r="9.4" fill="none" stroke="#2b3a31" stroke-width="1.6"/>
-    <path d="M12 3.6c0-2 1.6-2.6 3-2.6" fill="none" stroke="#2b3a31" stroke-width="1.6" stroke-linecap="round"/></g>
-  <g id="sao"><path d="M12 2.2l2.9 6.1 6.7.9-4.9 4.7 1.2 6.6L12 17.4l-5.9 3.1 1.2-6.6-4.9-4.7 6.7-.9z"
-    fill="none" stroke="#2b3a31" stroke-width="1.6" stroke-linejoin="round"/></g>
-  <g id="vuong"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="2" fill="none" stroke="#2b3a31" stroke-width="1.6"/></g>
-  <g id="tamgiac"><path d="M12 3l9 17H3z" fill="none" stroke="#2b3a31" stroke-width="1.6" stroke-linejoin="round"/></g>
-  <g id="tron"><circle cx="12" cy="12" r="8.8" fill="none" stroke="#2b3a31" stroke-width="1.6"/></g>
-  <g id="ca"><path d="M3.4 12c3.4-4.6 9.4-4.6 12.8 0-3.4 4.6-9.4 4.6-12.8 0z" fill="none" stroke="#2b3a31" stroke-width="1.6"/>
-    <path d="M16.2 12l4.4-3.2v6.4z" fill="none" stroke="#2b3a31" stroke-width="1.6" stroke-linejoin="round"/>
-    <circle cx="7.4" cy="11.2" r=".9" fill="#2b3a31"/></g>
-  <g id="hoa"><circle cx="12" cy="6.4" r="3.5" fill="none" stroke="#2b3a31" stroke-width="1.5"/>
-    <circle cx="6.4" cy="12" r="3.5" fill="none" stroke="#2b3a31" stroke-width="1.5"/>
-    <circle cx="17.6" cy="12" r="3.5" fill="none" stroke="#2b3a31" stroke-width="1.5"/>
-    <circle cx="12" cy="17.6" r="3.5" fill="none" stroke="#2b3a31" stroke-width="1.5"/>
-    <circle cx="12" cy="12" r="2.4" fill="none" stroke="#2b3a31" stroke-width="1.5"/></g>
+  <g id="h-tao">
+    <path class="hv-tr mv-do" d="M50 32c-6-6-16-8-24-3-9 6-11 20-6 33 5 12 14 22 21 20 3-1 6-2 9-2s6 1 9 2c7 2 16-8 21-20 5-13 3-27-6-33-8-5-18-3-24 3z"/>
+    <path class="hv-n" style="stroke-width:4.4" d="M50 32V18"/>
+    <path style="fill:none;stroke:#C98A52;stroke-width:2.4;stroke-linecap:round" d="M50 32V18"/>
+    <path class="hv-tr mv-xanhl" d="M50 22c2-8 10-12 16-10 1 7-5 13-16 10z"/>
+  </g>
+  <g id="h-ca">
+    <path class="hv-tr mv-cam" d="M18 50c8-13 22-20 34-20s24 7 30 20c-6 13-18 20-30 20s-26-7-34-20z"/>
+    <path class="hv-tr mv-vang" d="M82 50l15-14v28z"/>
+    <path class="hv-tr mv-vang" d="M48 31c3-8 10-12 15-9 1 6-4 11-15 9z"/>
+    <path class="hv-tr mv-vang" d="M48 69c3 8 10 12 15 9 1-6-4-11-15-9z"/>
+    <circle class="hv-den" cx="33" cy="45" r="3"/>
+    <path class="hv-n2" d="M27 36c-5 8-5 20 0 28"/>
+  </g>
+  <g id="h-hoa">
+    <path class="hv-n" style="stroke-width:4.6" d="M50 58v34"/>
+    <path style="fill:none;stroke:#6FC98B;stroke-width:2.6;stroke-linecap:round" d="M50 58v34"/>
+    <path class="hv-tr mv-xanhl" d="M50 76c6-9 16-9 19-4-4 8-14 10-19 4z"/>
+    <ellipse class="hv-tr mv-hong" cx="50" cy="26" rx="11" ry="18"/>
+    <ellipse class="hv-tr mv-hong" cx="50" cy="26" rx="11" ry="18" transform="rotate(72 50 52)"/>
+    <ellipse class="hv-tr mv-hong" cx="50" cy="26" rx="11" ry="18" transform="rotate(144 50 52)"/>
+    <ellipse class="hv-tr mv-hong" cx="50" cy="26" rx="11" ry="18" transform="rotate(216 50 52)"/>
+    <ellipse class="hv-tr mv-hong" cx="50" cy="26" rx="11" ry="18" transform="rotate(288 50 52)"/>
+    <circle class="hv-tr mv-vang" cx="50" cy="52" r="10"/>
+  </g>
+  <!-- Ngôi sao có HAI bản: bản vàng để đếm – nối – khoanh, bản TRẮNG cho bài 7 "tô màu 5 ngôi sao".
+       Tô sẵn màu rồi thì các em không còn gì để tô nữa. -->
+  <g id="h-sao">
+    <path class="hv-tr mv-vang" d="M50 8l12.4 25.1 27.7 4-20 19.6 4.7 27.6L50 71.2 25.2 84.3l4.7-27.6-20-19.6 27.7-4z"/>
+  </g>
+  <g id="h-sao-tr">
+    <path class="hv-tr" d="M50 8l12.4 25.1 27.7 4-20 19.6 4.7 27.6L50 71.2 25.2 84.3l4.7-27.6-20-19.6 27.7-4z"/>
+  </g>
+  <g id="h-vuong"><rect class="hv-tr mv-xanhd" x="14" y="14" width="72" height="72" rx="3"/></g>
+  <g id="h-tamgiac"><path class="hv-tr mv-xanhl" d="M50 12l38 68H12z"/></g>
+  <g id="h-tron"><circle class="hv-tr mv-tim" cx="50" cy="50" r="37"/></g>
 </defs></svg>
 
 <!-- ==================== TRANG 1 ==================== -->
@@ -168,26 +93,26 @@ body { font-family: "Times New Roman", Times, serif; font-size: 14pt; line-heigh
     <div class="o-lam">
       <div class="dem">
         <div class="hinh">
-          <svg width="46" height="46" viewBox="0 0 24 24"><use href="#qua"/></svg>
-          <svg width="46" height="46" viewBox="0 0 24 24"><use href="#qua"/></svg>
-          <svg width="46" height="46" viewBox="0 0 24 24"><use href="#qua"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-tao"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-tao"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-tao"/></svg>
         </div>
         <div class="oso"></div>
       </div>
       <div class="dem">
         <div class="hinh">
-          <svg width="46" height="46" viewBox="0 0 24 24"><use href="#ca"/></svg>
-          <svg width="46" height="46" viewBox="0 0 24 24"><use href="#ca"/></svg>
-          <svg width="46" height="46" viewBox="0 0 24 24"><use href="#ca"/></svg>
-          <svg width="46" height="46" viewBox="0 0 24 24"><use href="#ca"/></svg>
-          <svg width="46" height="46" viewBox="0 0 24 24"><use href="#ca"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-ca"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-ca"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-ca"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-ca"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-ca"/></svg>
         </div>
         <div class="oso"></div>
       </div>
       <div class="dem">
         <div class="hinh">
-          <svg width="46" height="46" viewBox="0 0 24 24"><use href="#hoa"/></svg>
-          <svg width="46" height="46" viewBox="0 0 24 24"><use href="#hoa"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-hoa"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-hoa"/></svg>
         </div>
         <div class="oso"></div>
       </div>
@@ -204,22 +129,22 @@ body { font-family: "Times New Roman", Times, serif; font-size: 14pt; line-heigh
       <div class="noi">
         <div class="cot trai">
           <div class="item">
-            <svg width="42" height="42" viewBox="0 0 24 24"><use href="#sao"/></svg>
-            <svg width="42" height="42" viewBox="0 0 24 24"><use href="#sao"/></svg>
-            <svg width="42" height="42" viewBox="0 0 24 24"><use href="#sao"/></svg>
-            <svg width="42" height="42" viewBox="0 0 24 24"><use href="#sao"/></svg>
+            <svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-sao"/></svg>
+            <svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-sao"/></svg>
+            <svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-sao"/></svg>
+            <svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-sao"/></svg>
             <span class="cham"></span>
           </div>
           <div class="item">
-            <svg width="42" height="42" viewBox="0 0 24 24"><use href="#tron"/></svg>
+            <svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-tron"/></svg>
             <span class="cham"></span>
           </div>
           <div class="item">
-            <svg width="42" height="42" viewBox="0 0 24 24"><use href="#vuong"/></svg>
-            <svg width="42" height="42" viewBox="0 0 24 24"><use href="#vuong"/></svg>
-            <svg width="42" height="42" viewBox="0 0 24 24"><use href="#vuong"/></svg>
-            <svg width="42" height="42" viewBox="0 0 24 24"><use href="#vuong"/></svg>
-            <svg width="42" height="42" viewBox="0 0 24 24"><use href="#vuong"/></svg>
+            <svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-vuong"/></svg>
+            <svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-vuong"/></svg>
+            <svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-vuong"/></svg>
+            <svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-vuong"/></svg>
+            <svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-vuong"/></svg>
             <span class="cham"></span>
           </div>
         </div>
@@ -236,14 +161,14 @@ body { font-family: "Times New Roman", Times, serif; font-size: 14pt; line-heigh
     <div class="de"><span class="loa">🔊</span><span class="n">Bài 3.</span><span>Tô theo nét chấm rồi viết tiếp số vào ô trống.</span></div>
     <div class="o-lam">
       <div class="viet">
-        <div class="o"><svg viewBox="0 0 60 90"><text x="30" y="72" text-anchor="middle" font-family="Times New Roman, serif"
-          font-size="80" fill="none" stroke="#8a978f" stroke-width="2.4" stroke-dasharray="5 4">0</text></svg></div>
-        <div class="o"><svg viewBox="0 0 60 90"><text x="30" y="72" text-anchor="middle" font-family="Times New Roman, serif"
-          font-size="80" fill="none" stroke="#8a978f" stroke-width="2.4" stroke-dasharray="5 4">1</text></svg></div>
-        <div class="o"><svg viewBox="0 0 60 90"><text x="30" y="72" text-anchor="middle" font-family="Times New Roman, serif"
-          font-size="80" fill="none" stroke="#8a978f" stroke-width="2.4" stroke-dasharray="5 4">2</text></svg></div>
-        <div class="o"><svg viewBox="0 0 60 90"><text x="30" y="72" text-anchor="middle" font-family="Times New Roman, serif"
-          font-size="80" fill="none" stroke="#8a978f" stroke-width="2.4" stroke-dasharray="5 4">3</text></svg></div>
+        <div class="o"><svg viewBox="0 0 60 90"><text class="hv-cham" x="30" y="72" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="80" stroke-width="2.4">0</text></svg></div>
+        <div class="o"><svg viewBox="0 0 60 90"><text class="hv-cham" x="30" y="72" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="80" stroke-width="2.4">1</text></svg></div>
+        <div class="o"><svg viewBox="0 0 60 90"><text class="hv-cham" x="30" y="72" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="80" stroke-width="2.4">2</text></svg></div>
+        <div class="o"><svg viewBox="0 0 60 90"><text class="hv-cham" x="30" y="72" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="80" stroke-width="2.4">3</text></svg></div>
         <div class="o"></div>
         <div class="o"></div>
       </div>
@@ -276,20 +201,20 @@ body { font-family: "Times New Roman", Times, serif; font-size: 14pt; line-heigh
     <div class="o-lam">
       <div class="nhom">
         <div class="k">
-          <svg width="44" height="44" viewBox="0 0 24 24"><use href="#tamgiac"/></svg>
-          <svg width="44" height="44" viewBox="0 0 24 24"><use href="#tamgiac"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-tamgiac"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-tamgiac"/></svg>
         </div>
         <div class="k">
-          <svg width="44" height="44" viewBox="0 0 24 24"><use href="#tron"/></svg>
-          <svg width="44" height="44" viewBox="0 0 24 24"><use href="#tron"/></svg>
-          <svg width="44" height="44" viewBox="0 0 24 24"><use href="#tron"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-tron"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-tron"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-tron"/></svg>
         </div>
         <div class="k">
-          <svg width="44" height="44" viewBox="0 0 24 24"><use href="#sao"/></svg>
-          <svg width="44" height="44" viewBox="0 0 24 24"><use href="#sao"/></svg>
-          <svg width="44" height="44" viewBox="0 0 24 24"><use href="#sao"/></svg>
-          <svg width="44" height="44" viewBox="0 0 24 24"><use href="#sao"/></svg>
-          <svg width="44" height="44" viewBox="0 0 24 24"><use href="#sao"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-sao"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-sao"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-sao"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-sao"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-sao"/></svg>
         </div>
       </div>
     </div>
@@ -301,22 +226,22 @@ body { font-family: "Times New Roman", Times, serif; font-size: 14pt; line-heigh
       <div class="them">
         <div class="so">4</div>
         <div class="co">
-          <svg width="44" height="44" viewBox="0 0 24 24"><use href="#tron"/></svg>
-          <svg width="44" height="44" viewBox="0 0 24 24"><use href="#tron"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-tron"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-tron"/></svg>
         </div>
       </div>
       <div class="them">
         <div class="so">5</div>
         <div class="co">
-          <svg width="44" height="44" viewBox="0 0 24 24"><use href="#vuong"/></svg>
-          <svg width="44" height="44" viewBox="0 0 24 24"><use href="#vuong"/></svg>
-          <svg width="44" height="44" viewBox="0 0 24 24"><use href="#vuong"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-vuong"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-vuong"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-vuong"/></svg>
         </div>
       </div>
       <div class="them">
         <div class="so">2</div>
         <div class="co">
-          <svg width="44" height="44" viewBox="0 0 24 24"><use href="#qua"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-tao"/></svg>
         </div>
       </div>
     </div>
@@ -327,19 +252,19 @@ body { font-family: "Times New Roman", Times, serif; font-size: 14pt; line-heigh
     <div class="o-lam">
       <div class="dem">
         <div class="hinh">
-          <svg width="46" height="46" viewBox="0 0 24 24"><use href="#hoa"/></svg>
-          <svg width="46" height="46" viewBox="0 0 24 24"><use href="#hoa"/></svg>
-          <svg width="46" height="46" viewBox="0 0 24 24"><use href="#hoa"/></svg>
-          <svg width="46" height="46" viewBox="0 0 24 24"><use href="#hoa"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-hoa"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-hoa"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-hoa"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-hoa"/></svg>
         </div>
-        <div style="flex:0 0 auto;font-size:22pt;font-weight:bold;letter-spacing:8mm;padding-right:8mm">3&nbsp;4&nbsp;5</div>
+        <div class="day-so">3&nbsp;4&nbsp;5</div>
       </div>
       <div class="dem">
         <div class="hinh">
-          <svg width="46" height="46" viewBox="0 0 24 24"><use href="#ca"/></svg>
-          <svg width="46" height="46" viewBox="0 0 24 24"><use href="#ca"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-ca"/></svg>
+          <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-ca"/></svg>
         </div>
-        <div style="flex:0 0 auto;font-size:22pt;font-weight:bold;letter-spacing:8mm;padding-right:8mm">1&nbsp;2&nbsp;3</div>
+        <div class="day-so">1&nbsp;2&nbsp;3</div>
       </div>
     </div>
   </div>
@@ -347,15 +272,16 @@ body { font-family: "Times New Roman", Times, serif; font-size: 14pt; line-heigh
   <div class="bai">
     <div class="de"><span class="loa">🔊</span><span class="n">Bài 7.</span><span>Tô màu 5 ngôi sao.</span></div>
     <div class="o-lam">
-      <div class="k" style="border:1pt solid #dfe8e3;border-radius:3mm;padding:3mm;display:flex;gap:4mm;flex-wrap:wrap">
-        <svg width="48" height="48" viewBox="0 0 24 24"><use href="#sao"/></svg>
-        <svg width="48" height="48" viewBox="0 0 24 24"><use href="#sao"/></svg>
-        <svg width="48" height="48" viewBox="0 0 24 24"><use href="#sao"/></svg>
-        <svg width="48" height="48" viewBox="0 0 24 24"><use href="#sao"/></svg>
-        <svg width="48" height="48" viewBox="0 0 24 24"><use href="#sao"/></svg>
-        <svg width="48" height="48" viewBox="0 0 24 24"><use href="#sao"/></svg>
-        <svg width="48" height="48" viewBox="0 0 24 24"><use href="#sao"/></svg>
-        <svg width="48" height="48" viewBox="0 0 24 24"><use href="#sao"/></svg>
+      <!-- ngôi sao TRẮNG — chính các em tô màu vào, nên không tô sẵn -->
+      <div style="border:1pt solid #dfe8e3;border-radius:3mm;padding:3mm;display:flex;gap:4mm;flex-wrap:wrap;justify-content:center">
+        <svg width="56" height="56" viewBox="0 0 100 100"><use href="#h-sao-tr"/></svg>
+        <svg width="56" height="56" viewBox="0 0 100 100"><use href="#h-sao-tr"/></svg>
+        <svg width="56" height="56" viewBox="0 0 100 100"><use href="#h-sao-tr"/></svg>
+        <svg width="56" height="56" viewBox="0 0 100 100"><use href="#h-sao-tr"/></svg>
+        <svg width="56" height="56" viewBox="0 0 100 100"><use href="#h-sao-tr"/></svg>
+        <svg width="56" height="56" viewBox="0 0 100 100"><use href="#h-sao-tr"/></svg>
+        <svg width="56" height="56" viewBox="0 0 100 100"><use href="#h-sao-tr"/></svg>
+        <svg width="56" height="56" viewBox="0 0 100 100"><use href="#h-sao-tr"/></svg>
       </div>
     </div>
   </div>
@@ -390,7 +316,7 @@ body { font-family: "Times New Roman", Times, serif; font-size: 14pt; line-heigh
     <span class="gia">5</span>.</p>
   <p><b>Bài 4.</b> Khoanh vào <span class="gia">nhóm ở giữa</span> (3 hình tròn).</p>
   <p><b>Bài 5.</b> Vẽ thêm: <span class="gia">2 hình tròn</span> (cho đủ 4) ·
-    <span class="gia">2 hình vuông</span> (cho đủ 5) · <span class="gia">1 quả</span> (cho đủ 2).</p>
+    <span class="gia">2 hình vuông</span> (cho đủ 5) · <span class="gia">1 quả táo</span> (cho đủ 2).</p>
   <p><b>Bài 6.</b> Khoanh số <span class="gia">4</span> (4 bông hoa) và số <span class="gia">2</span> (2 con cá).</p>
   <p><b>Bài 7.</b> Tô màu đúng <span class="gia">5</span> ngôi sao trong 8 ngôi sao (tô ngôi sao nào cũng được).</p>
 
@@ -405,8 +331,10 @@ body { font-family: "Times New Roman", Times, serif; font-size: 14pt; line-heigh
     <i>“Tiết học đầu tiên”</i> và <i>“Các số 0, 1, 2, 3, 4, 5”</i>. Phiếu chỉ dùng đúng phạm vi số
     <b>0 – 5</b>, chưa đưa phép cộng, phép trừ hay so sánh lớn – bé (các nội dung đó ở tuần sau).
     <ul>
-      <li>Hình vẽ do Bút Xanh tự dựng bằng nét đen đơn giản để in máy đen trắng vẫn rõ, không phụ thuộc
-        tranh của sách giáo khoa.</li>
+      <li>Hình vẽ do <b>Bút Xanh tự vẽ</b>, không lấy từ sách giáo khoa. Nét đen, ruột trắng nên in máy
+        đen trắng vẫn rõ và các em tô màu được vào trong.</li>
+      <li>Hình phải nhìn ra ngay là <b>quả táo, con cá, bông hoa</b> — các em lớp 1 đếm bằng mắt,
+        hình mờ là bài toán hỏng ngay từ đầu.</li>
       <li>Bài 7 để các em tô màu — vừa luyện đếm vừa nghỉ tay sau khi viết số.</li>
     </ul>
   </div>

@@ -4,161 +4,205 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=794">
 <title>Phiếu bài tập cuối tuần — Tiếng Việt 1 — Tuần 1</title>
+<link rel="stylesheet" href="khuon.css">
 <style>
-/* ===== PHIẾU BÀI TẬP CUỐI TUẦN · BÚT XANH — TIẾNG VIỆT 1, TUẦN 1 =====
-   Bám chương trình KNTT tuần 1 = phần LÀM QUEN: trường lớp – đồ dùng học tập · tư thế đọc viết ·
-   CÁC NÉT CƠ BẢN · các chữ số · bảng chữ cái · dấu thanh. (Bài 1 “A a” sang tuần 2 mới học,
-   nên phiếu này KHÔNG có chữ ghi âm nào để không đi trước chương trình.)
-   ⚠️ Học sinh chưa đọc được chữ → mọi yêu cầu có dấu 🔊 để người lớn đọc hộ; việc của các em là
-   TÔ · NỐI · KHOANH · ĐẾM. Giữ nguyên tắc chung: không khoanh sẵn đáp án, không tô nền đậm. */
-@page { size: A4 portrait; margin: 0; }
-* { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; background: #eef2f0; }
-body { font-family: "Times New Roman", Times, serif; font-size: 14pt; line-height: 1.4; color: #101c15; }
-.trang { width: 210mm; height: 297mm; margin: 0 auto 8mm; padding: 10mm 12mm 12mm;
-  background: #fff; position: relative; z-index: 0; page-break-after: always; overflow: hidden; }
-.trang:last-child { page-break-after: auto; margin-bottom: 0; }
-
-.dau { display: flex; align-items: center; gap: 10mm; border-bottom: 2.4pt solid #2C7BD6; padding-bottom: 3mm; }
-.hieu { flex: 0 0 auto; text-align: center; line-height: 1.15; }
-.hieu .la { font-size: 22pt; color: #1FA45C; }
-.hieu .ten { font-family: Arial, Helvetica, sans-serif; font-size: 10pt; font-weight: bold; color: #0f5a34; letter-spacing: .3pt; }
-.hieu .phu { font-family: Arial, Helvetica, sans-serif; font-size: 6.6pt; color: #6b7f73; letter-spacing: .2pt; }
-.tieu { flex: 1; text-align: center; }
-.tieu h1 { margin: 0; font-size: 19pt; font-weight: bold; color: #16497f; letter-spacing: .4pt; }
-.tieu .mon { margin-top: 1.2mm; font-size: 13.5pt; font-weight: bold; color: #101c15; }
-.tieu .tuan { display: inline-block; margin-top: 1.6mm; padding: 0.6mm 5mm; border-radius: 20pt;
-  border: 1.1pt solid #2C7BD6; color: #16497f; background: #fff;
-  font-family: Arial, Helvetica, sans-serif; font-size: 10.5pt; font-weight: bold; letter-spacing: .5pt; }
-.ngay { flex: 0 0 auto; text-align: right; font-size: 10pt; color: #55665c; line-height: 1.5; }
-
-.hoten { display: flex; gap: 6mm; margin: 3.5mm 0 2mm; font-size: 13.5pt; }
-.hoten > div { display: flex; align-items: flex-end; gap: 2mm; }
-.hoten .o { flex: 1; border-bottom: 1pt dotted #7d8f85; min-height: 7mm; }
-.hoten .o.hep { flex: 0 0 26mm; }
-
-.dan-lon { display: flex; gap: 3mm; align-items: flex-start; border: 1pt solid #cfdcea; border-radius: 2mm;
-  padding: 2.2mm 4mm; margin-bottom: 3mm; font-size: 11.4pt; color: #47584e; font-style: italic; }
-.dan-lon b { color: #16497f; font-style: normal; }
-
-.bai { margin-bottom: 4mm; break-inside: avoid; }
-.bai .de { display: flex; gap: 2.5mm; align-items: baseline; font-weight: bold; font-size: 14pt; }
-.bai .de .n { flex: 0 0 auto; color: #16497f; }
-.bai .de .loa { flex: 0 0 auto; font-size: 12pt; }
-.o-lam { padding-left: 8mm; margin-top: 2mm; }
-
-/* ô tập tô nét cơ bản / chữ số — có dòng kẻ ngang như vở ô li */
-.tap { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3mm; margin-top: 2mm; }
-.tap.sau { grid-template-columns: repeat(6, 1fr); }
-.tap .o { border: 1.2pt solid #cfd8d2; border-radius: 2mm; height: 32mm; position: relative;
+/* Vài chỗ riêng của phiếu lớp 1, phần còn lại lấy từ khuon.css */
+/* hai bạn ngồi viết — vẽ to hẳn ra, đây là hình học sinh phải nhìn kỹ mới khoanh được */
+.tu-the { display: flex; gap: 6mm; margin-top: 2mm; }
+.tu-the .k { flex: 1; border: 1pt solid #dfe8e3; border-radius: 3mm; padding: 2mm;
   display: flex; align-items: center; justify-content: center; }
-.tap .o:before { content: ""; position: absolute; left: 2mm; right: 2mm; top: 50%;
-  border-top: .8pt dashed #dfe6e2; }
-.tap .o svg { height: 25mm; position: relative; }
-.tap .ten { text-align: center; font-size: 9.5pt; color: #8aa093; margin-top: 1mm; }
-
-/* nối hình với hình */
-.noi { display: flex; justify-content: space-between; gap: 12mm; margin-top: 2mm; }
-.noi .cot { flex: 1; display: flex; flex-direction: column; gap: 4mm; }
-.noi .item { display: flex; align-items: center; gap: 3mm; border: 1pt solid #dfe8e3; border-radius: 2.5mm;
-  padding: 2.5mm 3mm; min-height: 19mm; }
-.noi .cot.phai .item { justify-content: flex-start; }
-.noi .cham { width: 3.4mm; height: 3.4mm; border-radius: 50%; border: 1.2pt solid #6f8579; flex: 0 0 auto; }
-.noi .cot.trai .item .cham { margin-left: auto; }
-
-/* hàng khoanh */
-.hang { display: flex; gap: 5mm; margin-top: 2mm; }
-.hang .k { flex: 1; border: 1pt solid #dfe8e3; border-radius: 3mm; padding: 3mm; min-height: 34mm;
+.tu-the .k svg { width: 100%; height: 52mm; }
+/* dãy đồ vật để khoanh — ô vuông, hình chiếm gần hết ô */
+.day-hinh { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3mm; margin-top: 2mm; }
+.day-hinh .o { border: 1pt solid #dfe8e3; border-radius: 2.5mm; height: 30mm;
   display: flex; align-items: center; justify-content: center; }
-
-/* bảng dấu thanh */
-.dau-thanh { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3mm; margin-top: 2mm; }
-.dau-thanh .o { border: 1.2pt solid #cfd8d2; border-radius: 2mm; height: 24mm; display: flex;
-  flex-direction: column; align-items: center; justify-content: center; gap: 1mm; }
-.dau-thanh .o .kh { font-size: 26pt; font-weight: bold; line-height: 1; color: #101c15; }
-.dau-thanh .o .tenkh { font-size: 9.5pt; color: #8aa093; }
-
-.chan { position: absolute; left: 12mm; right: 12mm; bottom: 7mm; display: flex; align-items: center;
-  gap: 4mm; border-top: 1pt solid #d6e3db; padding-top: 2mm;
-  font-family: Arial, Helvetica, sans-serif; font-size: 8.4pt; color: #6b7f73; }
-.chan .giua { margin: 0 auto; }
-.chan .b { margin-left: auto; }
-
-.dapan .dau { border-bottom-color: #E0871C; }
-.dapan .tieu h1 { color: #b3480f; }
-.dapan .tieu .tuan { border-color: #E0871C; color: #b3480f; }
-.dapan { font-size: 12.4pt; line-height: 1.36; }
-.dapan .muc { font-family: Arial, Helvetica, sans-serif; font-size: 12pt; font-weight: bold;
-  color: #b3480f; margin: 3.5mm 0 1.5mm; }
-.dapan p { margin: 0 0 1.6mm; }
-.gia { color: #1a7a45; font-weight: bold; }
-.luuy { border: 1pt solid #e6d3b8; border-radius: 2mm; padding: 2.5mm 4mm; margin-top: 2mm; font-size: 11pt; }
-.luuy b { color: #b3480f; }
-.luuy ul { margin: 1.2mm 0 0; padding-left: 5mm; }
-.luuy li { margin-bottom: 1.2mm; }
-
-.chim { position: absolute; inset: 0; z-index: -1; display: flex; align-items: center;
-  justify-content: center; pointer-events: none; overflow: hidden; }
-.chim .cx { transform: rotate(-27deg); text-align: center; color: #0f5a34; opacity: .09;
-  -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-.chim .cx .la { font-size: 60pt; line-height: .9; }
-.chim .cx .tn { font-family: Arial, Helvetica, sans-serif; font-size: 44pt; font-weight: bold;
-  letter-spacing: 7pt; line-height: 1.1; margin-top: 2mm; }
-.chim .cx .ph { font-family: Arial, Helvetica, sans-serif; font-size: 12.5pt; letter-spacing: 4pt; margin-top: 1.5mm; }
-
-@media print { html, body { background: #fff; } .trang { margin: 0; box-shadow: none; } .an-khi-in { display: none !important; } }
-@media screen { .trang { box-shadow: 0 2px 14px rgba(16,40,26,.14); } }
+.day-hinh .o svg { width: 92%; height: 92%; }
+/* ô dấu thanh cao hơn khuôn chung cho dễ tô màu */
+.dau-thanh .o { height: 30mm; }
+/* bài nối: hình nằm GIỮA ô, chấm nối vẫn bám mép — nhìn cân, không lệch hẳn về một bên */
+.noi .cot.trai .item > svg { margin: 0 auto; }
 </style>
 </head>
-<body>
+<!-- ===== PHIẾU BÀI TẬP CUỐI TUẦN · BÚT XANH — TIẾNG VIỆT 1, TUẦN 1 =====
+     Bám chương trình KNTT tuần 1 = phần LÀM QUEN: trường lớp – đồ dùng học tập · tư thế đọc viết ·
+     CÁC NÉT CƠ BẢN · các chữ số · bảng chữ cái · dấu thanh. (Bài 1 "A a" sang tuần 2 mới học,
+     nên phiếu này KHÔNG có chữ ghi âm nào để không đi trước chương trình.)
+     ⚠️ Học sinh chưa đọc được chữ → mọi yêu cầu có dấu 🔊 để người lớn đọc hộ; việc của các em là
+     TÔ · NỐI · KHOANH · ĐẾM. Giữ nguyên tắc chung: không khoanh sẵn đáp án, không tô nền đậm. -->
+<body class="mon-tv lop1">
 
-<!-- Bộ hình: đồ dùng học tập + nét cơ bản. Nét chấm để trẻ tô theo. -->
+<!-- ==================================================================
+     BỘ HÌNH VẼ — dựng lại toàn bộ ngày 17/8/2026 (thầy Chung: "chất lượng hình ảnh tệ quá,
+     đồ dùng học tập vẽ đơn giản quá, học sinh lớp 1 không biết được").
+     Nguyên tắc vẽ: mỗi vật phải có ĐẶC ĐIỂM NHẬN DẠNG riêng, không được là hình hộp trơn.
+       · bút chì  → đầu gọt nhọn có ruột chì đen + đai kim loại + cục tẩy ở đuôi
+       · cặp sách → quai xách + nắp + hai khoá + ngăn trước
+       · quyển vở → gáy + nhãn vở + dòng kẻ
+       · bạn ngồi viết → người thật: tóc, mặt nhìn nghiêng, tay cầm bút, ngồi ghế có tựa
+     Hình do Bút Xanh tự vẽ, KHÔNG lấy từ sách giáo khoa (bản quyền NXB Giáo dục Việt Nam).
+     ================================================================== -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-  <g id="but"><path d="M5 27l2.6-6.4L21 7.2l3.8 3.8L11.4 24.4z" fill="none" stroke="#2b3a31" stroke-width="1.7" stroke-linejoin="round"/>
-    <path d="M7.6 20.6l3.8 3.8" fill="none" stroke="#2b3a31" stroke-width="1.7"/>
-    <path d="M19 5.2l3.8 3.8" fill="none" stroke="#2b3a31" stroke-width="1.7"/></g>
-  <g id="thuoc"><rect x="3" y="10" width="26" height="9" rx="1.4" fill="none" stroke="#2b3a31" stroke-width="1.7"/>
-    <path d="M8 10v3.4M13 10v4.6M18 10v3.4M23 10v4.6" fill="none" stroke="#2b3a31" stroke-width="1.5"/></g>
-  <g id="sach"><path d="M4 6h10c1.6 0 2.6.8 2.6 2v16c0-1.2-1-2-2.6-2H4z" fill="none" stroke="#2b3a31" stroke-width="1.7" stroke-linejoin="round"/>
-    <path d="M28 6H18c-1.6 0-2.6.8-2.6 2v16c0-1.2 1-2 2.6-2h10z" fill="none" stroke="#2b3a31" stroke-width="1.7" stroke-linejoin="round"/></g>
-  <g id="cap"><rect x="4.5" y="10" width="23" height="15" rx="2.4" fill="none" stroke="#2b3a31" stroke-width="1.7"/>
-    <path d="M11 10V8.2c0-1.6 1.2-2.6 2.8-2.6h4.4c1.6 0 2.8 1 2.8 2.6V10" fill="none" stroke="#2b3a31" stroke-width="1.7"/>
-    <path d="M4.5 17h23" fill="none" stroke="#2b3a31" stroke-width="1.5"/></g>
-  <g id="tay"><rect x="6" y="11" width="20" height="10" rx="2" fill="none" stroke="#2b3a31" stroke-width="1.7"/>
-    <path d="M16 11v10" fill="none" stroke="#2b3a31" stroke-width="1.5"/></g>
-  <!-- Tư thế ngồi viết. Vẽ đủ BÀN + GHẾ + người để trẻ nhận ra ngay đang nói về chuyện ngồi học.
-       ĐÚNG: lưng thẳng, đầu cách vở một khoảng. SAI: lưng còng, đầu cúi gí xuống mặt bàn. -->
-  <g id="ngoi-dung">
-    <!-- bàn -->
-    <path d="M6 40h44M12 40v14M46 40v14" fill="none" stroke="#2b3a31" stroke-width="2" stroke-linecap="round"/>
-    <!-- quyển vở trên bàn -->
-    <path d="M16 40l4-4h14l-4 4z" fill="none" stroke="#2b3a31" stroke-width="1.6" stroke-linejoin="round"/>
-    <!-- người: đầu, lưng thẳng, tay với tới vở -->
-    <circle cx="40" cy="16" r="6" fill="none" stroke="#2b3a31" stroke-width="2"/>
-    <path d="M40 22v16" fill="none" stroke="#2b3a31" stroke-width="2" stroke-linecap="round"/>
-    <path d="M40 27l-12 9" fill="none" stroke="#2b3a31" stroke-width="2" stroke-linecap="round"/>
-    <!-- ghế -->
-    <path d="M40 38h10M50 38v12M50 30v8" fill="none" stroke="#2b3a31" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- ---------- đồ dùng học tập ---------- -->
+  <g id="h-but">
+    <path class="hv-tr mv-den" d="M50 9 L54.5 21 H45.5 Z"/>
+    <path class="hv-tr mv-go" d="M45.5 21 H54.5 L61 34 H39 Z"/>
+    <rect class="hv-tr mv-vang" x="39" y="34" width="22" height="40"/>
+    <path class="hv-n2" d="M46 34v40M54 34v40"/>
+    <rect class="hv-tr mv-bac" x="39" y="74" width="22" height="8"/>
+    <path class="hv-tr mv-hong" d="M39 82h22v6a4 4 0 0 1-4 4H43a4 4 0 0 1-4-4z"/>
   </g>
-  <g id="ngoi-sai">
-    <path d="M6 40h44M12 40v14M46 40v14" fill="none" stroke="#2b3a31" stroke-width="2" stroke-linecap="round"/>
-    <path d="M16 40l4-4h14l-4 4z" fill="none" stroke="#2b3a31" stroke-width="1.6" stroke-linejoin="round"/>
-    <!-- đầu cúi sát mặt bàn, lưng còng -->
-    <circle cx="26" cy="31" r="6" fill="none" stroke="#2b3a31" stroke-width="2"/>
-    <path d="M32 30c6-2 8-1 9 8" fill="none" stroke="#2b3a31" stroke-width="2" stroke-linecap="round"/>
-    <path d="M30 34l-6 3" fill="none" stroke="#2b3a31" stroke-width="2" stroke-linecap="round"/>
-    <path d="M41 38h9M50 38v12M50 30v8" fill="none" stroke="#2b3a31" stroke-width="2" stroke-linecap="round"/>
+  <g id="h-thuoc">
+    <rect class="hv-tr mv-xanhd" x="6" y="38" width="88" height="24" rx="2"/>
+    <path class="hv-n2" d="M14 38v10M22 38v6M30 38v6M38 38v6M46 38v10M54 38v6M62 38v6M70 38v6M78 38v10M86 38v6"/>
   </g>
-  <!-- năm dấu thanh, vẽ nét dày để trẻ tô màu được -->
-  <!-- ⚠️ Dấu HUYỀN nghiêng XUỐNG bên phải (\), dấu SẮC nghiêng LÊN bên phải (/).
-       Bản đầu vẽ ngược hai dấu này — sai kiến thức lớp 1, đã sửa 17/8/2026. -->
-  <g id="d-huyen"><path d="M6 6L26 20" fill="none" stroke="#2b3a31" stroke-width="4" stroke-linecap="round"/></g>
-  <g id="d-sac"><path d="M6 20L26 6" fill="none" stroke="#2b3a31" stroke-width="4" stroke-linecap="round"/></g>
-  <g id="d-hoi"><path d="M8 9c0-6 12-7 12 0 0 6-6 4-6 11" fill="none" stroke="#2b3a31" stroke-width="4"
-    stroke-linecap="round"/></g>
-  <g id="d-nga"><path d="M5 15c3-9 8 3 11-3 2-4 5-2 7 1" fill="none" stroke="#2b3a31" stroke-width="4"
-    stroke-linecap="round"/></g>
-  <g id="d-nang"><circle cx="16" cy="13" r="5" fill="none" stroke="#2b3a31" stroke-width="4"/></g>
+  <g id="h-vo">
+    <rect class="hv-tr mv-xanhl" x="20" y="10" width="60" height="80" rx="2"/>
+    <path class="hv-n" d="M31 10v80"/>
+    <path class="hv-n2" d="M25 10v80"/>
+    <rect class="hv-tr" x="39" y="24" width="34" height="20" rx="2"/>
+    <path class="hv-n2" d="M44 32h24M44 38h16"/>
+    <path class="hv-n2" d="M39 58h34M39 66h34M39 74h24"/>
+  </g>
+  <g id="h-sach">
+    <path class="hv-tr mv-giay" d="M50 28C41 21 26 18 10 21v56c16-3 31 0 40 7z"/>
+    <path class="hv-tr mv-giay" d="M50 28c9-7 24-10 40-7v56c-16-3-31 0-40 7z"/>
+    <path class="hv-n2" d="M50 28v63M18 34c8-1 17 0 24 4M18 46c8-1 17 0 24 4M18 58c8-1 17 0 24 4M58 38c8-4 17-5 24-4M58 50c8-4 17-5 24-4M58 62c8-4 17-5 24-4"/>
+  </g>
+  <g id="h-cap">
+    <path class="hv-n" d="M40 42c0-14 20-14 20 0"/>
+    <rect class="hv-tr mv-do" x="12" y="40" width="76" height="50" rx="7"/>
+    <path class="hv-tr mv-do2" d="M12 60V48c0-5 4-8 9-8h58c5 0 9 3 9 8v12z"/>
+    <rect class="hv-tr mv-vang" x="30" y="55" width="12" height="10" rx="2"/>
+    <rect class="hv-tr mv-vang" x="58" y="55" width="12" height="10" rx="2"/>
+    <rect class="hv-tr mv-do2" x="26" y="70" width="48" height="16" rx="3"/>
+  </g>
+  <g id="h-tay">
+    <path class="hv-tr mv-hong2" d="M20 40l8-8h56l-8 8z"/>
+    <path class="hv-tr mv-hong2" d="M76 40l8-8v20l-8 8z"/>
+    <rect class="hv-tr mv-hong" x="20" y="40" width="56" height="28" rx="3"/>
+    <rect class="hv-tr" x="38" y="40" width="20" height="28"/>
+    <path class="hv-n2" d="M42 46l12 6M42 56l12 6"/>
+  </g>
+  <g id="h-bang">
+    <rect class="hv-tr mv-nau" x="10" y="16" width="80" height="58" rx="4"/>
+    <rect class="hv-tr mv-bang" x="18" y="24" width="64" height="42"/>
+    <path class="hv-n2" d="M18 45h64M39 24v42M61 24v42"/>
+    <circle class="hv-tr2" cx="18" cy="20" r="2.6"/>
+    <circle class="hv-tr2" cx="82" cy="20" r="2.6"/>
+  </g>
+
+  <!-- ---------- đồ CHƠI (để đối chiếu với đồ dùng học tập ở Bài 7) ---------- -->
+  <g id="h-bong">
+    <circle class="hv-tr" cx="50" cy="50" r="36"/>
+    <path class="hv-tr mv-den" d="M50 30l16 12-6 19H40l-6-19z"/>
+    <path class="hv-n2" d="M50 30V14M66 42l17-6M60 61l11 16M40 61L29 77M34 42L17 36"/>
+  </g>
+  <g id="h-oto">
+    <path class="hv-tr mv-xanhd" d="M12 66V54c0-3 2-5 5-5h8l9-12c1-2 3-3 5-3h20c2 0 4 1 5 3l7 12h11c3 0 5 2 5 5v12z"/>
+    <path class="hv-n2" d="M25 49h50M50 37v12"/>
+    <circle class="hv-tr mv-den" cx="31" cy="68" r="9"/>
+    <circle class="hv-tr mv-den" cx="71" cy="68" r="9"/>
+    <circle class="hv-tr2 mv-bac" cx="31" cy="68" r="3.4"/>
+    <circle class="hv-tr2 mv-bac" cx="71" cy="68" r="3.4"/>
+  </g>
+  <g id="h-gau">
+    <circle class="hv-tr mv-nau" cx="30" cy="24" r="9"/>
+    <circle class="hv-tr mv-nau" cx="70" cy="24" r="9"/>
+    <circle class="hv-tr mv-nau" cx="24" cy="70" r="9"/>
+    <circle class="hv-tr mv-nau" cx="76" cy="70" r="9"/>
+    <circle class="hv-tr mv-nau" cx="37" cy="88" r="9"/>
+    <circle class="hv-tr mv-nau" cx="63" cy="88" r="9"/>
+    <ellipse class="hv-tr mv-nau" cx="50" cy="72" rx="20" ry="17"/>
+    <ellipse class="hv-tr2 mv-go" cx="50" cy="74" rx="11" ry="9"/>
+    <circle class="hv-tr mv-nau" cx="50" cy="36" r="20"/>
+    <ellipse class="hv-tr2 mv-go" cx="50" cy="43" rx="10" ry="7"/>
+    <circle class="hv-den" cx="43" cy="33" r="2.3"/>
+    <circle class="hv-den" cx="57" cy="33" r="2.3"/>
+    <ellipse class="hv-den" cx="50" cy="40" rx="4" ry="3"/>
+    <path class="hv-n2" d="M50 43v3M50 46c-2 2-5 2-6 0M50 46c2 2 5 2 6 0"/>
+  </g>
+
+  <!-- ---------- bạn nhỏ ngồi viết ----------
+       Tay, chân, chân bàn, chân ghế là NÉT chứ không phải mảng, mà nét thì không có viền.
+       Cách làm: vẽ hai lần cùng một đường — lớp dưới nét ĐEN dày làm viền, lớp trên nét MÀU
+       mảnh hơn làm ruột. Nhờ vậy tay chân vẫn có màu da mà in đen trắng vẫn thấy rõ đường nét. -->
+  <g id="dau-be">
+    <circle class="hv-tr mv-da" cx="100" cy="34" r="13"/>
+    <path class="hv-tr mv-toc" d="M87 33c0-9 6-16 14-16s14 7 13 16c-3-5-8-8-13-8-6 0-11 3-14 8z"/>
+    <path class="hv-tr2 mv-da" d="M112 33c3 0 4 2 4 4s-1 4-4 4"/>
+    <circle class="hv-den" cx="91" cy="33" r="2.1"/>
+    <path class="hv-n2" d="M87 37c-1 1-1 2 1 2"/>
+    <path class="hv-n2" d="M89 42c2 1.6 4 1.6 6 0"/>
+  </g>
+  <!-- thân NGỒI THẲNG: cạnh lưng bên phải là đường thẳng -->
+  <g id="than-thang">
+    <path class="hv-tr mv-xanhd" d="M94 60c0-7 3-11 8-12 6-1 10 3 11 9l6 33-24 3z"/>
+    <path class="hv-tr mv-da" d="M99 46h9v8h-9z"/>
+    <use href="#dau-be"/>
+  </g>
+  <!-- thân NGỒI CÒNG: lưng gù, vai đổ về trước, đầu cúi gí xuống vở -->
+  <g id="than-cong">
+    <path class="hv-tr mv-xanhd" d="M76 74c-3-11 6-17 13-12 13 9 24 16 30 26l-24 5c-8-4-15-11-19-19z"/>
+    <path class="hv-tr mv-da" d="M80 56l8 5-5 8-8-5z"/>
+    <g transform="translate(-26 16) rotate(-28 100 34)"><use href="#dau-be"/></g>
+  </g>
+  <g id="ban-ghe">
+    <rect class="hv-tr mv-go" x="4" y="62" width="74" height="6" rx="1.5"/>
+    <path class="hv-n" style="stroke-width:6" d="M12 68v44M70 68v44"/>
+    <path style="fill:none;stroke:#E8B77E;stroke-width:3.2;stroke-linecap:round" d="M12 68v44M70 68v44"/>
+    <path class="hv-tr" d="M38 62l6-6h28l-6 6z"/>
+    <path class="hv-n2" d="M58 56v6"/>
+    <rect class="hv-tr mv-go" x="88" y="86" width="44" height="6" rx="1.5"/>
+    <path class="hv-n" style="stroke-width:6" d="M94 92v20M126 92v20"/>
+    <path style="fill:none;stroke:#E8B77E;stroke-width:3.2;stroke-linecap:round" d="M94 92v20M126 92v20"/>
+    <rect class="hv-tr mv-go" x="124" y="42" width="7" height="46" rx="2"/>
+    <rect class="hv-tr mv-go" x="110" y="50" width="21" height="8" rx="2.5"/>
+  </g>
+  <g id="h-ngoi-dung">
+    <use href="#ban-ghe"/>
+    <path class="hv-n" style="stroke-width:8" d="M104 86H86"/>
+    <path style="fill:none;stroke:#3F6B9E;stroke-width:5;stroke-linecap:round" d="M104 86H86"/>
+    <path class="hv-n" style="stroke-width:8" d="M86 86v24h-9"/>
+    <path style="fill:none;stroke:#FFD6B0;stroke-width:5;stroke-linecap:round;stroke-linejoin:round" d="M86 86v22"/>
+    <path style="fill:none;stroke:#3A4750;stroke-width:5;stroke-linecap:round;stroke-linejoin:round" d="M86 110h-9"/>
+    <use href="#than-thang"/>
+    <path class="hv-n" style="stroke-width:7" d="M97 62 87 70 72 58"/>
+    <path style="fill:none;stroke:#FFD6B0;stroke-width:4;stroke-linecap:round;stroke-linejoin:round" d="M97 62 87 70 72 58"/>
+    <circle class="hv-tr2 mv-da" cx="70" cy="57" r="4.5"/>
+    <path class="hv-n" style="stroke-width:4.6" d="M76 48 66 61"/>
+    <path style="fill:none;stroke:#FFC93C;stroke-width:2.4;stroke-linecap:round" d="M76 48 66 61"/>
+  </g>
+  <g id="h-ngoi-sai">
+    <use href="#ban-ghe"/>
+    <path class="hv-n" style="stroke-width:8" d="M104 86H86"/>
+    <path style="fill:none;stroke:#3F6B9E;stroke-width:5;stroke-linecap:round" d="M104 86H86"/>
+    <path class="hv-n" style="stroke-width:8" d="M86 86v24h-9"/>
+    <path style="fill:none;stroke:#FFD6B0;stroke-width:5;stroke-linecap:round;stroke-linejoin:round" d="M86 86v22"/>
+    <path style="fill:none;stroke:#3A4750;stroke-width:5;stroke-linecap:round;stroke-linejoin:round" d="M86 110h-9"/>
+    <use href="#than-cong"/>
+    <path class="hv-n" style="stroke-width:7" d="M86 68 72 74 56 58"/>
+    <path style="fill:none;stroke:#FFD6B0;stroke-width:4;stroke-linecap:round;stroke-linejoin:round" d="M86 68 72 74 56 58"/>
+    <circle class="hv-tr2 mv-da" cx="54" cy="57" r="4.5"/>
+    <path class="hv-n" style="stroke-width:4.6" d="M60 48 50 61"/>
+    <path style="fill:none;stroke:#FFC93C;stroke-width:2.4;stroke-linecap:round" d="M60 48 50 61"/>
+  </g>
+
+  <!-- ---------- năm dấu thanh, vẽ VIỀN RỖNG để tô màu vào trong ----------
+       ⚠️ Dấu HUYỀN nghiêng XUỐNG bên phải (\), dấu SẮC nghiêng LÊN bên phải (/).
+       Hỏi và ngã là nét cong, không dựng được bằng đa giác: vẽ hai lần cùng một đường —
+       lần 1 nét đen thật dày làm viền ngoài, lần 2 nét trắng mảnh hơn đè lên làm ruột. -->
+  <g id="d-huyen"><path class="hv-tr" d="M18 24l12-8 54 44-12 8z"/></g>
+  <g id="d-sac"><path class="hv-tr" d="M84 24L72 16 18 60l12 8z"/></g>
+  <g id="d-hoi">
+    <path d="M30 34c0-16 40-16 40 0 0 12-16 14-16 30" fill="none" stroke="#1f2a24" stroke-width="15" stroke-linecap="round"/>
+    <path d="M30 34c0-16 40-16 40 0 0 12-16 14-16 30" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round"/>
+  </g>
+  <g id="d-nga">
+    <path d="M18 54c4-22 20-14 28-6 8 8 14 6 20-8" fill="none" stroke="#1f2a24" stroke-width="15" stroke-linecap="round"/>
+    <path d="M18 54c4-22 20-14 28-6 8 8 14 6 20-8" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round"/>
+  </g>
+  <g id="d-nang"><circle class="hv-tr" cx="50" cy="48" r="22"/></g>
 </defs></svg>
 
 <!-- ==================== TRANG 1 ==================== -->
@@ -191,56 +235,46 @@ body { font-family: "Times New Roman", Times, serif; font-size: 14pt; line-heigh
     <div class="o-lam">
       <div class="tap">
         <div>
-          <div class="o"><svg viewBox="0 0 40 60"><path d="M20 6v48" fill="none" stroke="#8a978f" stroke-width="2.6"
-            stroke-dasharray="5 4" stroke-linecap="round"/></svg></div>
+          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M20 6v48"/></svg></div>
           <div class="ten">nét thẳng đứng</div>
         </div>
         <div>
-          <div class="o"><svg viewBox="0 0 40 60"><path d="M5 30h30" fill="none" stroke="#8a978f" stroke-width="2.6"
-            stroke-dasharray="5 4" stroke-linecap="round"/></svg></div>
+          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M5 30h30"/></svg></div>
           <div class="ten">nét ngang</div>
         </div>
         <div>
-          <div class="o"><svg viewBox="0 0 40 60"><path d="M9 54L31 6" fill="none" stroke="#8a978f" stroke-width="2.6"
-            stroke-dasharray="5 4" stroke-linecap="round"/></svg></div>
+          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M9 54L31 6"/></svg></div>
           <div class="ten">nét xiên phải</div>
         </div>
         <div>
-          <div class="o"><svg viewBox="0 0 40 60"><path d="M31 54L9 6" fill="none" stroke="#8a978f" stroke-width="2.6"
-            stroke-dasharray="5 4" stroke-linecap="round"/></svg></div>
+          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M31 54L9 6"/></svg></div>
           <div class="ten">nét xiên trái</div>
         </div>
         <div>
-          <div class="o"><svg viewBox="0 0 40 60"><path d="M12 8v34c0 6 5 9 10 9s10-3 10-9" fill="none" stroke="#8a978f"
-            stroke-width="2.6" stroke-dasharray="5 4" stroke-linecap="round"/></svg></div>
+          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M12 8v34c0 6 5 9 10 9s10-3 10-9"/></svg></div>
           <div class="ten">nét móc xuôi</div>
         </div>
       </div>
       <div class="tap" style="margin-top:3mm">
         <div>
-          <div class="o"><svg viewBox="0 0 40 60"><path d="M8 20c0-6 5-9 10-9s10 3 10 9v32" fill="none" stroke="#8a978f"
-            stroke-width="2.6" stroke-dasharray="5 4" stroke-linecap="round"/></svg></div>
+          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M8 20c0-6 5-9 10-9s10 3 10 9v32"/></svg></div>
           <div class="ten">nét móc ngược</div>
         </div>
         <div>
-          <div class="o"><svg viewBox="0 0 40 60"><path d="M28 12a15 18 0 100 36" fill="none" stroke="#8a978f"
-            stroke-width="2.6" stroke-dasharray="5 4" stroke-linecap="round"/></svg></div>
+          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M28 12a15 18 0 100 36"/></svg></div>
           <div class="ten">nét cong trái</div>
         </div>
         <div>
-          <div class="o"><svg viewBox="0 0 40 60"><path d="M12 12a15 18 0 0 1 0 36" fill="none" stroke="#8a978f"
-            stroke-width="2.6" stroke-dasharray="5 4" stroke-linecap="round"/></svg></div>
+          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M12 12a15 18 0 0 1 0 36"/></svg></div>
           <div class="ten">nét cong phải</div>
         </div>
         <div>
-          <div class="o"><svg viewBox="0 0 40 60"><circle cx="20" cy="30" r="13" fill="none" stroke="#8a978f"
-            stroke-width="2.6" stroke-dasharray="5 4"/></svg></div>
+          <div class="o"><svg viewBox="0 0 40 60"><circle class="hv-cham" cx="20" cy="30" r="13"/></svg></div>
           <div class="ten">nét cong kín</div>
         </div>
         <div>
           <!-- nét khuyết trên: vòng khuyết ở phía trên rồi kéo thẳng xuống (nét của chữ h, l, b) -->
-          <div class="o"><svg viewBox="0 0 40 60"><path d="M24 54V20c0-9-10-11-10-3 0 5 4 6 10 3" fill="none"
-            stroke="#8a978f" stroke-width="2.6" stroke-dasharray="5 4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M24 54V20c0-9-10-11-10-3 0 5 4 6 10 3"/></svg></div>
           <div class="ten">nét khuyết trên</div>
         </div>
       </div>
@@ -251,17 +285,36 @@ body { font-family: "Times New Roman", Times, serif; font-size: 14pt; line-heigh
     <div class="de"><span class="loa">🔊</span><span class="n">Bài 2.</span><span>Tô theo nét chấm các chữ số.</span></div>
     <div class="o-lam">
       <div class="tap sau">
-        <div class="o"><svg viewBox="0 0 60 90"><text x="30" y="72" text-anchor="middle" font-family="Times New Roman, serif"
-          font-size="80" fill="none" stroke="#8a978f" stroke-width="2.4" stroke-dasharray="5 4">1</text></svg></div>
-        <div class="o"><svg viewBox="0 0 60 90"><text x="30" y="72" text-anchor="middle" font-family="Times New Roman, serif"
-          font-size="80" fill="none" stroke="#8a978f" stroke-width="2.4" stroke-dasharray="5 4">2</text></svg></div>
-        <div class="o"><svg viewBox="0 0 60 90"><text x="30" y="72" text-anchor="middle" font-family="Times New Roman, serif"
-          font-size="80" fill="none" stroke="#8a978f" stroke-width="2.4" stroke-dasharray="5 4">3</text></svg></div>
-        <div class="o"><svg viewBox="0 0 60 90"><text x="30" y="72" text-anchor="middle" font-family="Times New Roman, serif"
-          font-size="80" fill="none" stroke="#8a978f" stroke-width="2.4" stroke-dasharray="5 4">4</text></svg></div>
-        <div class="o"><svg viewBox="0 0 60 90"><text x="30" y="72" text-anchor="middle" font-family="Times New Roman, serif"
-          font-size="80" fill="none" stroke="#8a978f" stroke-width="2.4" stroke-dasharray="5 4">5</text></svg></div>
+        <div class="o"><svg viewBox="0 0 60 90"><text class="hv-cham" x="30" y="72" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="80" stroke-width="2.4">1</text></svg></div>
+        <div class="o"><svg viewBox="0 0 60 90"><text class="hv-cham" x="30" y="72" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="80" stroke-width="2.4">2</text></svg></div>
+        <div class="o"><svg viewBox="0 0 60 90"><text class="hv-cham" x="30" y="72" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="80" stroke-width="2.4">3</text></svg></div>
+        <div class="o"><svg viewBox="0 0 60 90"><text class="hv-cham" x="30" y="72" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="80" stroke-width="2.4">4</text></svg></div>
+        <div class="o"><svg viewBox="0 0 60 90"><text class="hv-cham" x="30" y="72" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="80" stroke-width="2.4">5</text></svg></div>
         <div class="o"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bai">
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 3.</span><span>Nối đồ dùng học tập với chiếc cặp.</span></div>
+    <div class="o-lam">
+      <div class="noi">
+        <div class="cot trai">
+          <div class="item"><svg width="54" height="54" viewBox="0 0 100 100"><use href="#h-but"/></svg><span class="cham"></span></div>
+          <div class="item"><svg width="54" height="54" viewBox="0 0 100 100"><use href="#h-thuoc"/></svg><span class="cham"></span></div>
+          <div class="item"><svg width="54" height="54" viewBox="0 0 100 100"><use href="#h-vo"/></svg><span class="cham"></span></div>
+        </div>
+        <div class="cot phai" style="justify-content:center">
+          <div class="item" style="min-height:62mm;justify-content:center;gap:5mm">
+            <span class="cham"></span>
+            <svg width="112" height="112" viewBox="0 0 100 100"><use href="#h-cap"/></svg>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -288,30 +341,11 @@ body { font-family: "Times New Roman", Times, serif; font-size: 14pt; line-heigh
   </div>
 
   <div class="bai" style="margin-top:3mm">
-    <div class="de"><span class="loa">🔊</span><span class="n">Bài 3.</span><span>Nối đồ dùng học tập với chiếc cặp.</span></div>
-    <div class="o-lam">
-      <div class="noi">
-        <div class="cot trai">
-          <div class="item"><svg width="46" height="46" viewBox="0 0 32 32"><use href="#but"/></svg><span class="cham"></span></div>
-          <div class="item"><svg width="46" height="46" viewBox="0 0 32 32"><use href="#thuoc"/></svg><span class="cham"></span></div>
-          <div class="item"><svg width="46" height="46" viewBox="0 0 32 32"><use href="#sach"/></svg><span class="cham"></span></div>
-        </div>
-        <div class="cot phai" style="justify-content:center">
-          <div class="item" style="min-height:58mm;justify-content:center">
-            <span class="cham"></span>
-            <svg width="90" height="90" viewBox="0 0 32 32"><use href="#cap"/></svg>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="bai">
     <div class="de"><span class="loa">🔊</span><span class="n">Bài 4.</span><span>Khoanh vào bạn ngồi viết <b>đúng</b> tư thế.</span></div>
     <div class="o-lam">
-      <div class="hang">
-        <div class="k"><svg width="112" height="112" viewBox="0 0 56 56"><use href="#ngoi-sai"/></svg></div>
-        <div class="k"><svg width="112" height="112" viewBox="0 0 56 56"><use href="#ngoi-dung"/></svg></div>
+      <div class="tu-the">
+        <div class="k"><svg viewBox="0 0 140 118"><use href="#h-ngoi-sai"/></svg></div>
+        <div class="k"><svg viewBox="0 0 140 118"><use href="#h-ngoi-dung"/></svg></div>
       </div>
     </div>
   </div>
@@ -320,11 +354,11 @@ body { font-family: "Times New Roman", Times, serif; font-size: 14pt; line-heigh
     <div class="de"><span class="loa">🔊</span><span class="n">Bài 5.</span><span>Tô màu các dấu thanh em đã làm quen.</span></div>
     <div class="o-lam">
       <div class="dau-thanh">
-        <div class="o"><svg width="52" height="34" viewBox="0 0 32 26"><use href="#d-huyen"/></svg><span class="tenkh">dấu huyền</span></div>
-        <div class="o"><svg width="52" height="34" viewBox="0 0 32 26"><use href="#d-sac"/></svg><span class="tenkh">dấu sắc</span></div>
-        <div class="o"><svg width="52" height="34" viewBox="0 0 32 26"><use href="#d-hoi"/></svg><span class="tenkh">dấu hỏi</span></div>
-        <div class="o"><svg width="52" height="34" viewBox="0 0 32 26"><use href="#d-nga"/></svg><span class="tenkh">dấu ngã</span></div>
-        <div class="o"><svg width="52" height="34" viewBox="0 0 32 26"><use href="#d-nang"/></svg><span class="tenkh">dấu nặng</span></div>
+        <div class="o"><svg width="64" height="48" viewBox="0 0 100 78"><use href="#d-huyen"/></svg><span class="tenkh">dấu huyền</span></div>
+        <div class="o"><svg width="64" height="48" viewBox="0 0 100 78"><use href="#d-sac"/></svg><span class="tenkh">dấu sắc</span></div>
+        <div class="o"><svg width="64" height="48" viewBox="0 0 100 78"><use href="#d-hoi"/></svg><span class="tenkh">dấu hỏi</span></div>
+        <div class="o"><svg width="64" height="48" viewBox="0 0 100 78"><use href="#d-nga"/></svg><span class="tenkh">dấu ngã</span></div>
+        <div class="o"><svg width="64" height="48" viewBox="0 0 100 78"><use href="#d-nang"/></svg><span class="tenkh">dấu nặng</span></div>
       </div>
     </div>
   </div>
@@ -334,32 +368,40 @@ body { font-family: "Times New Roman", Times, serif; font-size: 14pt; line-heigh
     <div class="o-lam">
       <div class="noi" style="gap:6mm">
         <div class="cot trai" style="flex:1.2">
-          <div class="item" style="gap:4mm">
-            <svg width="42" height="42" viewBox="0 0 32 32"><use href="#but"/></svg>
-            <svg width="42" height="42" viewBox="0 0 32 32"><use href="#but"/></svg>
-            <svg width="42" height="42" viewBox="0 0 32 32"><use href="#but"/></svg>
+          <div class="item" style="gap:3mm">
+            <svg width="44" height="44" viewBox="0 0 100 100"><use href="#h-but"/></svg>
+            <svg width="44" height="44" viewBox="0 0 100 100"><use href="#h-but"/></svg>
+            <svg width="44" height="44" viewBox="0 0 100 100"><use href="#h-but"/></svg>
           </div>
-          <div class="item" style="gap:4mm">
-            <svg width="42" height="42" viewBox="0 0 32 32"><use href="#tay"/></svg>
-            <svg width="42" height="42" viewBox="0 0 32 32"><use href="#tay"/></svg>
+          <div class="item" style="gap:3mm">
+            <svg width="44" height="44" viewBox="0 0 100 100"><use href="#h-tay"/></svg>
+            <svg width="44" height="44" viewBox="0 0 100 100"><use href="#h-tay"/></svg>
           </div>
         </div>
         <div class="cot phai" style="flex:1">
           <div class="item" style="gap:2.5mm">
-            <span style="display:inline-block;width:9mm;height:9mm;border:1.2pt solid #6f8579;border-radius:1.4mm"></span>
-            <span style="display:inline-block;width:9mm;height:9mm;border:1.2pt solid #6f8579;border-radius:1.4mm"></span>
-            <span style="display:inline-block;width:9mm;height:9mm;border:1.2pt solid #6f8579;border-radius:1.4mm"></span>
-            <span style="display:inline-block;width:9mm;height:9mm;border:1.2pt solid #6f8579;border-radius:1.4mm"></span>
-            <span style="display:inline-block;width:9mm;height:9mm;border:1.2pt solid #6f8579;border-radius:1.4mm"></span>
+            <span class="ovuong"></span><span class="ovuong"></span><span class="ovuong"></span>
+            <span class="ovuong"></span><span class="ovuong"></span>
           </div>
           <div class="item" style="gap:2.5mm">
-            <span style="display:inline-block;width:9mm;height:9mm;border:1.2pt solid #6f8579;border-radius:1.4mm"></span>
-            <span style="display:inline-block;width:9mm;height:9mm;border:1.2pt solid #6f8579;border-radius:1.4mm"></span>
-            <span style="display:inline-block;width:9mm;height:9mm;border:1.2pt solid #6f8579;border-radius:1.4mm"></span>
-            <span style="display:inline-block;width:9mm;height:9mm;border:1.2pt solid #6f8579;border-radius:1.4mm"></span>
-            <span style="display:inline-block;width:9mm;height:9mm;border:1.2pt solid #6f8579;border-radius:1.4mm"></span>
+            <span class="ovuong"></span><span class="ovuong"></span><span class="ovuong"></span>
+            <span class="ovuong"></span><span class="ovuong"></span>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bai">
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 7.</span><span>Khoanh vào những <b>đồ dùng học tập</b>.</span></div>
+    <div class="o-lam">
+      <div class="day-hinh">
+        <div class="o"><svg viewBox="0 0 100 100"><use href="#h-sach"/></svg></div>
+        <div class="o"><svg viewBox="0 0 100 100"><use href="#h-bong"/></svg></div>
+        <div class="o"><svg viewBox="0 0 100 100"><use href="#h-bang"/></svg></div>
+        <div class="o"><svg viewBox="0 0 100 100"><use href="#h-gau"/></svg></div>
+        <div class="o"><svg viewBox="0 0 100 100"><use href="#h-tay"/></svg></div>
+        <div class="o"><svg viewBox="0 0 100 100"><use href="#h-oto"/></svg></div>
       </div>
     </div>
   </div>
@@ -391,20 +433,23 @@ body { font-family: "Times New Roman", Times, serif; font-size: 14pt; line-heigh
     nét khuyết trên.</p>
   <p><b>Bài 2.</b> Tô các chữ số <span class="gia">1, 2, 3, 4, 5</span>; ô cuối để em tự viết lại một số
     em thích.</p>
-  <p><b>Bài 3.</b> Nối cả <span class="gia">ba đồ dùng</span> (bút chì, thước kẻ, quyển sách) với chiếc cặp —
+  <p><b>Bài 3.</b> Nối cả <span class="gia">ba đồ dùng</span> (bút chì, thước kẻ, quyển vở) với chiếc cặp —
     vì cả ba đều là đồ dùng học tập cần cho vào cặp.</p>
-  <p><b>Bài 4.</b> Khoanh vào <span class="gia">bạn bên phải</span> — ngồi lưng thẳng, đầu không cúi sát vở.</p>
+  <p><b>Bài 4.</b> Khoanh vào <span class="gia">bạn bên phải</span> — ngồi lưng thẳng, đầu không cúi sát vở.
+    Bạn bên trái gù lưng, mặt gí xuống vở là sai.</p>
   <p><b>Bài 5.</b> Tô màu 5 dấu thanh: <span class="gia">huyền · sắc · hỏi · ngã · nặng</span>
     (tô màu nào cũng được).</p>
-  <p><b>Bài 6.</b> Hàng trên có <span class="gia">3</span> chiếc bút → tô 3 ô vuông;
+  <p><b>Bài 6.</b> Hàng trên có <span class="gia">3</span> chiếc bút chì → tô 3 ô vuông;
     hàng dưới có <span class="gia">2</span> cục tẩy → tô 2 ô vuông.</p>
+  <p><b>Bài 7.</b> Khoanh vào <span class="gia">quyển sách · bảng con · cục tẩy</span> — đó là đồ dùng học tập.
+    Không khoanh quả bóng, con gấu bông, ô tô vì đó là <i>đồ chơi</i>.</p>
 
   <div class="muc">Người lớn giúp em thế nào</div>
   <p>· <b>Đọc hộ mọi yêu cầu</b> (chỗ có dấu 🔊). Tuần 1 các em chưa học chữ ghi âm nào nên không tự đọc được.</p>
   <p>· <b>Bài 1 là bài quan trọng nhất.</b> Cho em tô chậm, đúng chiều: nét thẳng tô từ trên xuống,
     nét ngang tô từ trái sang phải. Đây là nền cho việc viết chữ các tuần sau.</p>
-  <p>· <b>Nhắc tư thế ngồi</b> khi em làm bài: lưng thẳng, mắt cách vở khoảng một gang tay, cầm bút bằng
-    ba ngón.</p>
+  <p>· <b>Bài 4 nên cho em nhìn kỹ rồi bắt chước bạn ngồi đúng</b> — lưng thẳng, mắt cách vở khoảng
+    một gang tay, cầm bút bằng ba ngón.</p>
   <p>· Cả phiếu làm khoảng <b>15–20 phút</b>, nên chia hai lần cho tay em đỡ mỏi.</p>
 
   <div class="luuy">
@@ -414,8 +459,9 @@ body { font-family: "Times New Roman", Times, serif; font-size: 14pt; line-heigh
     <ul>
       <li><b>Phiếu cố ý KHÔNG có chữ ghi âm nào</b> (a, b, c…) vì Bài 1 “A a” sang <b>tuần 2</b> mới học —
         đưa sớm là đi trước chương trình.</li>
-      <li>Hình vẽ do Bút Xanh tự dựng bằng nét đen đơn giản, in máy đen trắng vẫn rõ.</li>
-      <li>Tên gọi các nét ghi chữ nhỏ dưới ô là để <b>người lớn đọc</b>, không bắt em đọc.</li>
+      <li>Toàn bộ hình do <b>Bút Xanh tự vẽ</b>, không lấy từ sách giáo khoa. Hình vẽ nét đen,
+        có ruột trắng để in máy đen trắng vẫn rõ và các em tô màu được vào trong.</li>
+      <li>Tên gọi các nét, tên dấu thanh ghi chữ nhỏ dưới ô là để <b>người lớn đọc</b>, không bắt em đọc.</li>
     </ul>
   </div>
 

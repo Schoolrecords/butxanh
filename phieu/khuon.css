@@ -148,6 +148,55 @@ table.bl td.co { font-weight: bold; background: #fff; }
 /* ô vuông nhỏ để tô màu theo số lượng */
 .ovuong { display: inline-block; width: 9mm; height: 9mm; border: 1.2pt solid #6f8579; border-radius: 1.4mm; }
 
+/* ===================================================================
+   BÚT VẼ CHUNG CHO BỘ HÌNH LỚP 1 – 2   (17/8/2026)
+   Học sinh lớp 1 chưa đọc được chữ nên NHÌN HÌNH LÀ CHÍNH. Hình phải vẽ đủ chi tiết
+   để các em gọi tên được ngay: cặp sách phải có quai và khoá, bút chì phải có đầu gọt
+   và cục tẩy, bạn ngồi viết phải ra hình người có tóc – mặt – tay cầm bút.
+   Bốn "cây bút" dưới đây dùng cho mọi hình, đổi ở đây là cả bộ hình đổi theo:
+     .hv-n   nét chính, dày           .hv-n2  nét phụ, mảnh hơn
+     .hv-tr  mảng có ruột TRẮNG       .hv-den mảng tô đặc
+   Ruột trắng để (1) hình chồng lên nhau không lộn xộn, (2) học sinh tô màu được vào trong.
+   =================================================================== */
+.hv-n   { fill: none; stroke: #1f2a24; stroke-width: 3;   stroke-linecap: round; stroke-linejoin: round; }
+.hv-n2  { fill: none; stroke: #1f2a24; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.hv-tr  { fill: #fff;  stroke: #1f2a24; stroke-width: 3;   stroke-linecap: round; stroke-linejoin: round; }
+.hv-tr2 { fill: #fff;  stroke: #1f2a24; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.hv-den { fill: #1f2a24; }
+/* nét chấm mờ để học sinh tô theo (bài tập tô nét cơ bản, tô chữ số) */
+.hv-cham { fill: none; stroke: #8a978f; stroke-width: 2.6; stroke-dasharray: 5 4;
+  stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- BẢNG MÀU HÌNH VẼ (thầy Chung 17/8/2026: "muốn hình ảnh màu thật như SGK") ----------
+   Cách dùng: class="hv-tr mv-vang" — .hv-tr lo phần VIỀN, .mv-* lo phần RUỘT.
+   Các lớp .mv-* phải đứng SAU .hv-tr trong tệp này thì mới đè được màu nền trắng.
+
+   ⚠️ HAI QUY TẮC KHÔNG ĐƯỢC PHÁ:
+   1) Mọi mảng màu đều GIỮ VIỀN ĐEN. Phiếu in ra giấy phát cho cả lớp, máy in trường
+      phần lớn là đen trắng — mất viền thì hình thành mảng xám không đọc được.
+   2) Hình nào học sinh phải TÔ MÀU thì để TRẮNG (dùng .hv-tr trơn, không thêm .mv-*):
+      dấu thanh, ngôi sao ở bài "tô màu 5 ngôi sao", các ô vuông đếm số lượng.
+      Tô sẵn rồi thì các em hết việc để làm. */
+.mv-vang  { fill: #FFC93C; }   /* thân bút chì, nhụy hoa, ngôi sao */
+.mv-cam   { fill: #FF9A4D; }   /* con cá */
+.mv-do    { fill: #F2635F; }   /* quả táo, cặp sách, ô tô */
+.mv-do2   { fill: #DE4A46; }   /* mảng đậm hơn của cùng vật: nắp cặp, ngăn trước */
+.mv-hong  { fill: #FFA3B5; }   /* cục tẩy, cánh hoa */
+.mv-hong2 { fill: #FFC7D2; }
+.mv-tim   { fill: #B79BE0; }
+.mv-xanhd { fill: #5FB0EE; }   /* thước kẻ, áo bạn nhỏ */
+.mv-xanhl { fill: #6FC98B; }   /* bìa vở, lá cây */
+.mv-nau   { fill: #C98A52; }   /* gấu bông, khung bảng con */
+.mv-go    { fill: #E8B77E; }   /* gỗ: phần gọt bút chì, mặt bàn, ghế */
+.mv-da    { fill: #FFD6B0; }   /* màu da bạn nhỏ */
+.mv-toc   { fill: #4A3728; }
+.mv-bac   { fill: #CBD5D8; }   /* đai kim loại, vành bánh xe */
+.mv-bang  { fill: #8FB5A6; }   /* mặt bảng con — cố ý chọn nhạt cho đỡ tốn mực in */
+.mv-giay  { fill: #FFF6E4; }   /* trang sách */
+.mv-den   { fill: #3A4750; }   /* lốp xe, múi bóng đá */
+/* Trình duyệt hay bỏ màu khi in cho tiết kiệm mực — dòng này buộc in đúng màu đang thấy. */
+svg { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
 /* ---------- chân phiếu ---------- */
 .chan { position: absolute; left: 12mm; right: 12mm; bottom: 7mm; display: flex; align-items: center;
   gap: 4mm; border-top: 1pt solid #d6e3db; padding-top: 2mm;
