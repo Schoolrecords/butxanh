@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-17 · 55';
+  var PB='2026-08-17 · 56';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1565,7 +1565,9 @@ window.bxMergeKho = function(){
       <a data-view="ppt"><svg class="icn ic" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/><path d="M7 11l3-2 2 2 4-4"/></svg> Bài giảng trình chiếu</a>
       <!-- 17/8/2026 (thầy Chung): chuyển "Phiếu bài tập cuối tuần" lên ngay sau Bài giảng
            trình chiếu — cùng nhóm "tài nguyên dạy học sẵn có", tìm theo thói quen dễ hơn. -->
-      <a data-view="phieu"><svg class="icn ic" viewBox="0 0 24 24"><path d="M6 2.5h8l4 4V21a1 1 0 01-1 1H6a1 1 0 01-1-1V3.5a1 1 0 011-1z"/><path d="M13 2.5V7h5"/><path d="M8 12.5h8M8 16h5"/></svg> Phiếu bài tập cuối tuần</a>
+      <!-- Menu ghi TẮT "Phiếu BT cuối tuần" để nằm gọn MỘT dòng (thầy Chung 17/8/2026);
+           tên đầy đủ vẫn dùng ở tiêu đề màn và thẻ Bảng điều khiển. -->
+      <a data-view="phieu"><svg class="icn ic" viewBox="0 0 24 24"><path d="M6 2.5h8l4 4V21a1 1 0 01-1 1H6a1 1 0 01-1-1V3.5a1 1 0 011-1z"/><path d="M13 2.5V7h5"/><path d="M8 12.5h8M8 16h5"/></svg> Phiếu BT cuối tuần</a>
       <div class="nav-grp">Chương trình</div>
       <a data-view="khdh"><svg class="icn ic" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg> KHDH môn học</a>
       <a data-view="map"><svg class="icn ic" viewBox="0 0 24 24"><path d="M9 4l6 2 6-2v14l-6 2-6-2-6 2V6z"/><path d="M9 4v14M15 6v14"/></svg> Bản đồ chương trình</a>
@@ -1700,7 +1702,7 @@ window.bxMergeKho = function(){
 
         <!-- Phiếu bài tập cuối tuần (16/8/2026: thay chỗ thẻ "Học liệu gợi ý") -->
         <div class="card">
-          <div class="card-head"><h3 id="dash-phieu-title">Phiếu bài tập cuối tuần</h3><span class="link" onclick="showView('phieu')">Xem tất cả</span></div>
+          <div class="card-head"><h3 id="dash-phieu-title">Phiếu BT cuối tuần</h3><span class="link" onclick="showView('phieu')">Xem tất cả</span></div>
           <div class="matlist" id="dash-mats"></div>
         </div>
       </div>
@@ -3534,6 +3536,9 @@ function BX_slideDetail(lop,mon){
    ⚠️ Bảng link dưới đây CỐ Ý ĐỂ TRỐNG: làm giao diện trước, gắn link sau. Tuần chưa có
    phiếu hiện mờ "chưa có phiếu" chứ không báo lỗi. */
 var BX_PHIEU_TEN='Phiếu bài tập cuối tuần';   /* đổi tên hiển thị ở ĐÚNG chỗ này là đổi cả app */
+/* Tên NGẮN cho những chỗ hẹp (menu bên trái, thẻ ở Bảng điều khiển) — để chữ nằm gọn một dòng,
+   không bị gãy thành "Phiếu bài tập cuối / tuần" (thầy Chung 17/8/2026). */
+var BX_PHIEU_TEN_NGAN='Phiếu BT cuối tuần';
 var BX_PHIEU_MON=['Toán','Tiếng Việt'];
 var BX_PHIEU_WEEKS=35;
 var BX_PHIEU_META={'Toán':{ic:'🔢',c:'#E5503B'},'Tiếng Việt':{ic:'📖',c:'#2C7BD6'}};
@@ -3664,15 +3669,17 @@ function BX_phieuStyleOnce(){
       DẢI MÀU BÊN TRÁI theo màu môn (thầy Chung chọn mẫu này 17/8/2026). */
    '#v-phieu .pw-weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}'+
    '#v-phieu .pw-wk{position:relative;border-radius:13px;padding:9px 8px 10px 12px;cursor:pointer;text-align:left;'+
-     'border:1px solid #e9eeeb;border-left:4px solid #d7dedb;background:#fff;'+
-     'box-shadow:0 1px 3px rgba(16,40,26,.07);transition:transform .14s,box-shadow .14s,border-color .14s}'+
+     'border:1px solid #e9eeeb;border-left:4px solid #d7dedb;background:#f7faf8;'+
+     'box-shadow:0 1px 3px rgba(16,40,26,.07);transition:transform .14s,box-shadow .14s,border-color .14s,background .14s}'+
+   '#v-phieu .pw-wk:hover{background:#fff}'+
    '#v-phieu .pw-wk:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(16,40,26,.13)}'+
    '#v-phieu .pw-wk:active{transform:translateY(0) scale(.97)}'+
    '#v-phieu .pw-wk-lb{font-size:8.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#a8b5ad;line-height:1}'+
    '#v-phieu .pw-wk-n{font-size:19px;font-weight:800;line-height:1.15;color:#243}'+
    '#v-phieu .pw-wk-d{font-size:9.5px;color:#9aa8a0;line-height:1.2;margin-top:1px}'+
    /* đã có phiếu → dải màu bên trái đậm màu môn, chữ mang màu môn */
-   '#v-phieu .pw-wk.co{border-left-color:var(--mc)}'+
+   '#v-phieu .pw-wk.co{border-left-color:var(--mc);background:color-mix(in srgb,var(--mc) 7%,#fff)}'+
+   '#v-phieu .pw-wk.co:hover{background:color-mix(in srgb,var(--mc) 12%,#fff)}'+
    '#v-phieu .pw-wk.co .pw-wk-lb{color:color-mix(in srgb,var(--mc) 72%,#fff)}'+
    '#v-phieu .pw-wk.co .pw-wk-n{color:var(--mc)}'+
    '#v-phieu .pw-wk.co .pw-wk-d{color:color-mix(in srgb,var(--mc) 60%,#fff)}'+
@@ -4683,7 +4690,7 @@ function renderDashRecent(){
    của tuần đang học — bấm là mở thẳng phiếu, không phải đi qua màn trung gian. */
 function renderDashMats(){
   const box=el('dash-mats'); if(!box) return;
-  const t=el('dash-phieu-title'); if(t&&typeof BX_PHIEU_TEN==='string') t.textContent=BX_PHIEU_TEN;
+  const t=el('dash-phieu-title'); if(t&&typeof BX_PHIEU_TEN_NGAN==='string') t.textContent=BX_PHIEU_TEN_NGAN;
   const lop=String((String(state.klass).match(/[1-5]/)||['5'])[0]);
   const w=(typeof BX_phieuTuanNay==='function')?BX_phieuTuanNay():1;
   const ngay=(typeof BX_phieuNgayTuan==='function')?BX_phieuNgayTuan(w):'';
