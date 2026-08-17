@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=794">
+<title>Phiếu bài tập cuối tuần — Tiếng Việt 1 — Tuần 5</title>
+<link rel="stylesheet" href="khuon.css">
+<style>
+.chu-to { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; margin-top: 2mm; }
+.chu-to .o { border: 1.2pt solid #cfd8d2; border-radius: 2mm; height: 26mm; position: relative;
+  display: flex; align-items: center; justify-content: center; }
+.chu-to .o:before { content: ""; position: absolute; left: 2mm; right: 2mm; top: 62%;
+  border-top: .8pt dashed #dfe6e2; }
+.chu-to .o svg { height: 20mm; position: relative; }
+.hang-chu { display: flex; justify-content: space-around; align-items: center;
+  border: 1pt solid #dfe8e3; border-radius: 2.5mm; padding: 3mm 4mm; margin-top: 2mm;
+  font-size: 26pt; line-height: 1; }
+.o-tieng { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3mm; margin-top: 2mm; }
+.o-tieng .o { border: 1.2pt solid #cfd8d2; border-radius: 2mm; height: 17mm;
+  display: flex; align-items: center; justify-content: center; font-size: 21pt; font-weight: bold; }
+.noi .cot.trai .item > svg { margin: 0 auto; }
+.noi .cot.phai .item { justify-content: center; font-size: 25pt; font-weight: bold; }
+</style>
+</head>
+<!-- ===== PHIẾU BÀI TẬP CUỐI TUẦN · BÚT XANH — TIẾNG VIỆT 1, TUẦN 5 =====
+     Bám kế hoạch giáo dục của app (khgd-lop1.js), tuần 5 — phần HỌC ÂM:
+     Bài 16 "M m N n" · Bài 17 "G g Gi gi" · Bài 18 "Gh gh Nh nh" ·
+     Bài 19 "Ng ng Ngh ngh" · Bài 20 "Ôn tập và kể chuyện".
+     ⚠️ Tuần này có tới SÁU chữ ghép: gi, gh, nh, ng, ngh — trong đó NGH là chữ ghép ba con chữ,
+     dài nhất trong tiếng Việt. Phiếu dành hẳn bài 2 và bài 7 cho chỗ dễ nhầm này.
+     Chỉ dùng chữ đã học tính đến hết tuần 5. Yêu cầu nào cũng có dấu 🔊 để người lớn đọc hộ. -->
+<body class="mon-tv lop1">
+
+<!-- Hình do Bút Xanh tự vẽ, KHÔNG lấy từ sách giáo khoa (bản quyền NXB Giáo dục Việt Nam). -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <!-- CON GÀ: nguyên con nhìn ngang, có mào đỏ, mỏ vàng, đuôi cong -->
+  <g id="h-ga">
+    <path class="hv-n" style="stroke-width:5" d="M44 82v12M60 82v12"/>
+    <path style="fill:none;stroke:#FF9A4D;stroke-width:2.6;stroke-linecap:round" d="M44 82v12M60 82v12"/>
+    <path class="hv-n" style="stroke-width:3.4" d="M38 94h10M54 94h10"/>
+    <path class="hv-tr mv-do" d="M78 40c10-8 18-4 18 6-6 10-14 14-22 8z"/>
+    <path class="hv-tr mv-cam" d="M84 62c8-10 14-24 12-36-10 6-18 18-20 30z"/>
+    <ellipse class="hv-tr" style="fill:#FBF0D4" cx="52" cy="62" rx="26" ry="22"/>
+    <circle class="hv-tr" style="fill:#FBF0D4" cx="28" cy="40" r="14"/>
+    <path class="hv-tr mv-do" d="M22 27c-2-7 2-11 6-9 1-5 6-6 8-2 4-1 6 3 4 7-4 3-13 5-18 4z"/>
+    <path class="hv-tr mv-vang" d="M14 40l-12 4 12 5z"/>
+    <path class="hv-tr mv-do" d="M28 52c-4 3-4 8 0 10 4-2 4-7 0-10z"/>
+    <circle class="hv-den" cx="26" cy="37" r="2.6"/>
+  </g>
+  <!-- BẮP NGÔ: có lá bẹ hai bên, thân hạt xếp hàng -->
+  <g id="h-ngo">
+    <path class="hv-tr mv-xanhl" d="M40 84C22 74 14 52 20 30c18 6 28 26 26 50z"/>
+    <path class="hv-tr mv-xanhl" d="M60 84c18-10 26-32 20-54-18 6-28 26-26 50z"/>
+    <path class="hv-tr mv-vang" d="M50 10c-12 0-20 12-20 30s8 46 20 46 20-28 20-46-8-30-20-30z"/>
+    <path class="hv-n2" style="stroke:#C9A94E" d="M38 26h24M35 42h30M34 58h32M37 72h26M50 12v72"/>
+  </g>
+  <!-- CHÙM NHO -->
+  <g id="h-nho">
+    <path class="hv-n" style="stroke-width:4" d="M50 26V10"/>
+    <path style="fill:none;stroke:#C98A52;stroke-width:2.2;stroke-linecap:round" d="M50 26V10"/>
+    <path class="hv-tr mv-xanhl" d="M50 16c6-10 18-12 24-8-2 10-14 15-24 8z"/>
+    <circle class="hv-tr mv-tim" cx="50" cy="34" r="11"/>
+    <circle class="hv-tr mv-tim" cx="36" cy="50" r="11"/>
+    <circle class="hv-tr mv-tim" cx="64" cy="50" r="11"/>
+    <circle class="hv-tr mv-tim" cx="50" cy="56" r="11"/>
+    <circle class="hv-tr mv-tim" cx="30" cy="68" r="11"/>
+    <circle class="hv-tr mv-tim" cx="70" cy="68" r="11"/>
+    <circle class="hv-tr mv-tim" cx="50" cy="76" r="11"/>
+  </g>
+  <!-- NGÔI NHÀ: mái ngói, cửa, hai cửa sổ -->
+  <g id="h-nha">
+    <path class="hv-tr mv-do" d="M12 46h76l-16-24H28z"/>
+    <rect class="hv-tr" style="fill:#FBF0D4" x="20" y="46" width="60" height="42"/>
+    <rect class="hv-tr mv-nau" x="42" y="62" width="18" height="26" rx="1.5"/>
+    <path class="hv-n2" d="M51 62v26"/>
+    <rect class="hv-tr" style="fill:#C9E6F7" x="26" y="54" width="12" height="12"/>
+    <rect class="hv-tr" style="fill:#C9E6F7" x="64" y="54" width="12" height="12"/>
+    <path class="hv-n" d="M8 88h84"/>
+  </g>
+  <!-- CÁI GHẾ: nhìn nghiêng, có tựa lưng -->
+  <g id="h-ghe">
+    <rect class="hv-tr mv-go" x="24" y="52" width="54" height="9" rx="2"/>
+    <path class="hv-n" style="stroke-width:6" d="M30 61v30M72 61v30"/>
+    <path style="fill:none;stroke:#E8B77E;stroke-width:3.2;stroke-linecap:round" d="M30 61v30M72 61v30"/>
+    <rect class="hv-tr mv-go" x="66" y="14" width="9" height="40" rx="2"/>
+    <rect class="hv-tr mv-go" x="40" y="20" width="35" height="8" rx="2"/>
+    <rect class="hv-tr mv-go" x="40" y="34" width="35" height="8" rx="2"/>
+  </g>
+  <!-- CÁI MŨ: mũ lưỡi trai -->
+  <g id="h-mu">
+    <path class="hv-tr mv-xanhd" d="M22 60c0-20 12-32 28-32s28 12 28 32z"/>
+    <path class="hv-n2" d="M50 28v32M34 34c8 16 24 16 32 0"/>
+    <path class="hv-tr" style="fill:#3F6B9E" d="M20 60h60c8 0 14 4 14 9H10c0-5 4-9 10-9z"/>
+    <circle class="hv-tr mv-vang" cx="50" cy="28" r="5"/>
+  </g>
+</defs></svg>
+
+<!-- ==================== TRANG 1 ==================== -->
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div>
+  </div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu">
+      <h1>PHIẾU BÀI TẬP CUỐI TUẦN</h1>
+      <div class="mon">MÔN TIẾNG VIỆT — LỚP 1</div>
+      <div class="tuan">TUẦN 5</div>
+    </div>
+    <div class="ngay">Ngày …… / …… / 20……<br>Học âm: m n g gi gh nh ng ngh<br>Trang 1/2</div>
+  </div>
+
+  <div class="hoten">
+    <div style="flex:1"><span>Họ và tên:</span><span class="o"></span></div>
+    <div><span>Lớp:</span><span class="o hep"></span></div>
+  </div>
+
+  <div class="dan-lon"><span>🔊</span><span><b>Nhờ người lớn đọc giúp em các yêu cầu.</b>
+    Tuần này các em học <b>m · n · g · gi · gh · nh · ng · ngh</b>. Chữ <b>ngh</b> có tới ba con chữ
+    nhưng vẫn <b>đọc liền một hơi</b> nhé.</span></div>
+
+  <div class="bai">
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 1.</span><span>Tô theo nét chấm các chữ mới học.</span></div>
+    <div class="o-lam">
+      <div class="chu-to">
+        <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="62" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="60" stroke-width="2.4">m</text></svg></div>
+        <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="62" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="60" stroke-width="2.4">n</text></svg></div>
+        <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="62" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="60" stroke-width="2.4">g</text></svg></div>
+        <div class="o"><svg viewBox="0 0 90 80"><text class="hv-cham" x="45" y="62" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="56" stroke-width="2.2">gi</text></svg></div>
+        <div class="o"><svg viewBox="0 0 90 80"><text class="hv-cham" x="45" y="62" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="56" stroke-width="2.2">gh</text></svg></div>
+        <div class="o"><svg viewBox="0 0 90 80"><text class="hv-cham" x="45" y="62" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="56" stroke-width="2.2">nh</text></svg></div>
+        <div class="o"><svg viewBox="0 0 90 80"><text class="hv-cham" x="45" y="62" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="56" stroke-width="2.2">ng</text></svg></div>
+        <div class="o"><svg viewBox="0 0 110 80"><text class="hv-cham" x="55" y="62" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="52" stroke-width="2.2">ngh</text></svg></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bai">
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 2.</span><span>Khoanh vào chữ <b>ngh</b>.</span></div>
+    <div class="o-lam">
+      <div class="hang-chu"><span>ng</span><span>ngh</span><span>nh</span><span>ngh</span><span>gh</span><span>ngh</span><span>ng</span></div>
+    </div>
+  </div>
+
+  <div class="bai">
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 3.</span><span>Nối hình với tiếng thích hợp.</span></div>
+    <div class="o-lam">
+      <div class="noi">
+        <div class="cot trai">
+          <div class="item"><svg width="54" height="54" viewBox="0 0 100 100"><use href="#h-ga"/></svg><span class="cham"></span></div>
+          <div class="item"><svg width="54" height="54" viewBox="0 0 100 100"><use href="#h-ngo"/></svg><span class="cham"></span></div>
+          <div class="item"><svg width="54" height="54" viewBox="0 0 100 100"><use href="#h-nho"/></svg><span class="cham"></span></div>
+        </div>
+        <div class="cot phai">
+          <div class="item"><span class="cham"></span>&nbsp;&nbsp;nho</div>
+          <div class="item"><span class="cham"></span>&nbsp;&nbsp;gà</div>
+          <div class="item"><span class="cham"></span>&nbsp;&nbsp;ngô</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bai">
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 4.</span><span>Tô màu ô có tiếng <b>nhà</b>.</span></div>
+    <div class="o-lam">
+      <div class="o-tieng">
+        <div class="o">na</div><div class="o">nhà</div><div class="o">ngà</div>
+        <div class="o">nhà</div><div class="o">nhá</div><div class="o">nhà</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chan"><span>Tiếng Việt 1 · Tuần 5</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<!-- ==================== TRANG 2 ==================== -->
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div>
+  </div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu">
+      <h1>PHIẾU BÀI TẬP CUỐI TUẦN</h1>
+      <div class="mon">MÔN TIẾNG VIỆT — LỚP 1</div>
+      <div class="tuan">TUẦN 5</div>
+    </div>
+    <div class="ngay">Họ và tên: ……………………<br>Lớp: ………<br>Trang 2/2</div>
+  </div>
+
+  <div class="bai" style="margin-top:3mm">
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 5.</span><span>Nối hình với tiếng rồi đọc to tiếng đó.</span></div>
+    <div class="o-lam">
+      <div class="noi">
+        <div class="cot trai">
+          <div class="item" style="min-height:26mm"><svg width="66" height="66" viewBox="0 0 100 100"><use href="#h-nha"/></svg><span class="cham"></span></div>
+          <div class="item" style="min-height:26mm"><svg width="66" height="66" viewBox="0 0 100 100"><use href="#h-ghe"/></svg><span class="cham"></span></div>
+        </div>
+        <div class="cot phai">
+          <div class="item" style="min-height:26mm"><span class="cham"></span>&nbsp;&nbsp;ghế</div>
+          <div class="item" style="min-height:26mm"><span class="cham"></span>&nbsp;&nbsp;nhà</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bai">
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 6.</span><span>Tô theo nét chấm rồi viết tiếp.</span></div>
+    <div class="o-lam">
+      <div class="chu-to">
+        <div class="o"><svg viewBox="0 0 110 80"><text class="hv-cham" x="55" y="62" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="52" stroke-width="2.2">gà</text></svg></div>
+        <div class="o"><svg viewBox="0 0 110 80"><text class="hv-cham" x="55" y="62" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="52" stroke-width="2.2">ngô</text></svg></div>
+        <div class="o"><svg viewBox="0 0 110 80"><text class="hv-cham" x="55" y="62" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="52" stroke-width="2.2">mẹ</text></svg></div>
+        <div class="o"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bai">
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 7.</span><span>Điền <b>ng</b> hay <b>ngh</b>
+      vào chỗ trống.</span></div>
+    <div class="o-lam">
+      <div style="display:flex;gap:8mm;margin-top:2mm">
+        <div style="flex:1;border:1pt solid #dfe8e3;border-radius:2.5mm;padding:2.5mm;text-align:center">
+          <svg width="56" height="56" viewBox="0 0 100 100"><use href="#h-ngo"/></svg>
+          <div style="font-size:23pt;font-weight:bold;letter-spacing:1mm">… ô</div>
+        </div>
+        <div style="flex:1;border:1pt solid #dfe8e3;border-radius:2.5mm;padding:2.5mm;text-align:center">
+          <div style="height:56px;display:flex;align-items:center;justify-content:center;font-size:15pt;color:#8aa093;font-style:italic">
+            (con bê con)</div>
+          <div style="font-size:23pt;font-weight:bold;letter-spacing:1mm">… é</div>
+        </div>
+        <div style="flex:1;border:1pt solid #dfe8e3;border-radius:2.5mm;padding:2.5mm;text-align:center">
+          <svg width="56" height="56" viewBox="0 0 100 100"><use href="#h-mu"/></svg>
+          <div style="font-size:23pt;font-weight:bold;letter-spacing:1mm">mũ</div>
+          <div style="font-size:10pt;color:#8aa093">(không điền gì)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chan"><span>Tiếng Việt 1 · Tuần 5</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<!-- ==================== TRANG 3: DÀNH CHO NGƯỜI LỚN ==================== -->
+<section class="trang dapan">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div>
+  </div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu">
+      <h1>ĐÁP ÁN &amp; HƯỚNG DẪN</h1>
+      <div class="mon">MÔN TIẾNG VIỆT — LỚP 1</div>
+      <div class="tuan">TUẦN 5</div>
+    </div>
+    <div class="ngay">Dành cho<br>thầy cô &amp; phụ huynh<br><b>Trang cuối</b></div>
+  </div>
+
+  <div class="muc">Đáp án</div>
+  <p><b>Bài 1.</b> Tô kín tám chữ: <span class="gia">m · n · g · gi · gh · nh · ng · ngh</span>.</p>
+  <p><b>Bài 2.</b> Khoanh vào <span class="gia">ba chữ ngh</span> (vị trí thứ 2, thứ 4 và thứ 6).</p>
+  <p><b>Bài 3.</b> Nối: hình con gà → <span class="gia">gà</span>; hình bắp ngô → <span class="gia">ngô</span>;
+    hình chùm nho → <span class="gia">nho</span>.</p>
+  <p><b>Bài 4.</b> Tô màu <span class="gia">ba ô</span> có tiếng <b>nhà</b> (ô thứ 2, thứ 4 và thứ 6).
+    Lưu ý phân biệt <i>na – nhà – ngà – nhá</i>.</p>
+  <p><b>Bài 5.</b> Nối: hình ngôi nhà → <span class="gia">nhà</span>; hình cái ghế → <span class="gia">ghế</span>.</p>
+  <p><b>Bài 6.</b> Tô các tiếng <span class="gia">gà · ngô · mẹ</span>; ô cuối để em tự viết một tiếng em thích.</p>
+  <p><b>Bài 7.</b> Điền: <span class="gia">ngô</span> (ng) · <span class="gia">nghé</span> (ngh) ·
+    ô thứ ba đã đủ chữ, <span class="gia">không điền gì</span> — đây là ô để em đọc lại tiếng đã học.</p>
+
+  <div class="muc">Người lớn giúp em thế nào</div>
+  <p>· <b>Tuần này khó nhất cả phần Học âm</b> — có tới sáu chữ ghép: gi, gh, nh, ng, ngh.
+    Đừng ép em thuộc hết trong một buổi; chia hai lần, mỗi lần vài chữ.</p>
+  <p>· <b>NGH là chữ ghép ba con chữ, dài nhất tiếng Việt.</b> Nhưng vẫn chỉ ghi <b>một âm</b> và
+    <b>đọc liền một hơi</b>. Bài 2 và bài 7 luyện đúng chỗ này.</p>
+  <p>· <b>Quy tắc chính tả để người lớn biết</b> (chưa cần giảng cho em): <b>ngh</b> và <b>gh</b> chỉ
+    đứng trước <b>e, ê, i</b> (nghe, nghé, nghỉ, ghế, ghi); còn trước các chữ khác thì viết
+    <b>ng</b>, <b>g</b> (ngô, ngã, gà, gỗ). Cứ cho em đọc nhiều là quen dần.</p>
+  <p>· <b>Chữ m và n rất hay lẫn</b> — m có ba nét xuống, n chỉ có hai. Khi em tô, đếm nét cùng em.</p>
+  <p>· Cả phiếu làm khoảng <b>15–20 phút</b>, nên chia hai lần.</p>
+
+  <div class="luuy">
+    <b>Căn cứ chương trình:</b> Tiếng Việt 1 — Kết nối tri thức với cuộc sống, <b>tuần 5</b> là phần
+    <i>Học âm</i>: Bài 16 <b>M m N n</b> · Bài 17 <b>G g Gi gi</b> · Bài 18 <b>Gh gh Nh nh</b> ·
+    Bài 19 <b>Ng ng Ngh ngh</b> · Bài 20 <i>Ôn tập và kể chuyện</i>.
+    <ul>
+      <li><b>Chỉ dùng chữ đã học</b> tính đến hết tuần 5. Mọi tiếng — gà, ngô, nho, nhà, ghế, mẹ,
+        nghé — đều ghép từ những chữ đó.</li>
+      <li>Ô thứ ba của Bài 7 <b>cố ý không phải điền gì</b>: để em phải đọc kĩ chứ không điền
+        theo quán tính. Chữ nhỏ trong ngoặc là để <b>người lớn đọc</b>.</li>
+      <li>Hình do <b>Bút Xanh tự vẽ</b>: con gà có mào và đuôi cong, bắp ngô có lá bẹ hai bên,
+        chùm nho xếp hình tháp — mỗi hình một đặc điểm riêng để các em nhận ra ngay.</li>
+    </ul>
+  </div>
+
+  <div class="chan"><span>Đáp án · Tiếng Việt 1 · Tuần 5</span>
+    <span class="giua">trang đáp án — thầy cô và phụ huynh xem sau khi em làm xong</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<script src="nut-in.js"></script>
+</body>
+</html>
