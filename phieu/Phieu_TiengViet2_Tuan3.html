@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=794">
+<title>Phiếu bài tập cuối tuần — Tiếng Việt 2 — Tuần 3</title>
+<link rel="stylesheet" href="khuon.css">
+<style>
+.tranh { float: right; width: 42mm; height: auto; margin: 0 0 2mm 5mm; shape-outside: margin-box; }
+.o-viet { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3mm; margin-top: 2mm; }
+.o-viet .o { border: 1.2pt solid #cfd8d2; border-radius: 2mm; height: 24mm; position: relative;
+  display: flex; align-items: center; justify-content: center; }
+.o-viet .o:before { content: ""; position: absolute; left: 2mm; right: 2mm; top: 62%;
+  border-top: .8pt dashed #dfe6e2; }
+.o-viet .o svg { height: 19mm; position: relative; }
+</style>
+</head>
+<!-- Bám kế hoạch giáo dục của app (khgd-lop2.js), tuần 3 — chủ điểm "Em lớn lên từng ngày":
+     Bài 5 "Em có xinh không?" (đọc · chữ hoa B · kể chuyện) và
+     Bài 6 "Một giờ học" (đọc · bảng chữ cái · TỪ CHỈ ĐẶC ĐIỂM, CÂU NÊU ĐẶC ĐIỂM ·
+     viết đoạn văn kể việc thường làm).
+     Bài đọc do Bút Xanh tự viết theo chủ điểm, KHÔNG chép của sách giáo khoa. -->
+<body class="mon-tv">
+
+<!-- Tranh do Bút Xanh tự vẽ, không lấy từ sách giáo khoa (bản quyền NXB Giáo dục Việt Nam). -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <!-- Bạn nhỏ đứng trước lớp phát biểu: một tay giơ lên, phía sau là tấm bảng -->
+  <g id="h-phat-bieu">
+    <rect class="hv-tr mv-nau" x="96" y="10" width="120" height="86" rx="4"/>
+    <rect class="hv-tr mv-bang" x="104" y="18" width="104" height="70"/>
+    <path class="hv-n2" style="stroke:#fff" d="M116 40h60M116 54h76M116 68h44"/>
+    <path class="hv-n" style="stroke-width:10" d="M52 196v-18M74 196v-18"/>
+    <path style="fill:none;stroke:#3F6B9E;stroke-width:5.6;stroke-linecap:round" d="M52 196v-18M74 196v-18"/>
+    <path class="hv-n" style="stroke-width:9" d="M46 200h14M68 200h14"/>
+    <path class="hv-tr mv-do" d="M38 178v-42c0-13 11-23 25-23s25 10 25 23v42z"/>
+    <path class="hv-n" style="stroke-width:9" d="M84 140l22-34"/>
+    <path style="fill:none;stroke:#FFD6B0;stroke-width:5;stroke-linecap:round" d="M84 140l22-34"/>
+    <circle class="hv-tr mv-da" cx="108" cy="100" r="7"/>
+    <path class="hv-n" style="stroke-width:9" d="M42 140l-18 22"/>
+    <path style="fill:none;stroke:#FFD6B0;stroke-width:5;stroke-linecap:round" d="M42 140l-18 22"/>
+    <circle class="hv-tr mv-da" cx="63" cy="96" r="20"/>
+    <path class="hv-tr mv-toc" d="M43 95c0-13 9-23 20-23s20 10 20 23c-5-7-12-11-20-11s-15 4-20 11z"/>
+    <circle class="hv-den" cx="56" cy="96" r="2.6"/>
+    <circle class="hv-den" cx="70" cy="96" r="2.6"/>
+    <path class="hv-n2" d="M57 105c4 4 9 4 13 0"/>
+    <path class="hv-n" d="M8 200h216"/>
+  </g>
+</defs></svg>
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU BÀI TẬP CUỐI TUẦN</h1>
+      <div class="mon">MÔN TIẾNG VIỆT — LỚP 2</div><div class="tuan">TUẦN 3</div></div>
+    <div class="ngay">Ngày …… / …… / 20……<br>Em lớn lên từng ngày<br>Trang 1/2</div>
+  </div>
+
+  <div class="hoten">
+    <div style="flex:1"><span>Họ và tên:</span><span class="o"></span></div>
+    <div><span>Lớp:</span><span class="o hep"></span></div>
+  </div>
+
+  <div class="phan"><span class="so">I</span><span class="ten">Đọc hiểu</span><span class="line"></span></div>
+  <div class="dan">Đọc thầm bài sau:</div>
+
+  <div class="vb">
+    <div class="ten-bai">GIỜ HỌC CỦA BI</div>
+
+    <svg class="tranh" viewBox="0 0 230 210" aria-label="Tranh: bạn nhỏ giơ tay phát biểu trước lớp">
+      <use href="#h-phat-bieu"/>
+    </svg>
+
+    <p>Cô giáo hỏi: “Bạn nào kể được một việc mình làm ở nhà?”</p>
+    <p>Cả lớp im lặng. Bi ngồi cuối lớp, tay cứ nắm chặt vạt áo. Bi muốn nói lắm, mà tiếng cứ nghẹn
+      ở cổ.</p>
+    <p>Cô nhìn Bi, gật đầu khẽ. Bi đứng dậy. Chân run run. Nhưng khi cất tiếng, Bi thấy nhẹ hẳn:</p>
+    <p>— Thưa cô, em biết gấp chăn ạ. Sáng nào em cũng gấp.</p>
+    <p>Cả lớp vỗ tay. Bi ngồi xuống, má nóng bừng mà lòng vui. Hoá ra nói trước lớp không đáng sợ
+      như Bi tưởng.</p>
+    <p class="tacgia">Bút Xanh</p>
+  </div>
+
+  <div class="dan">Dựa vào bài đọc, khoanh vào chữ đặt trước câu trả lời đúng hoặc làm theo yêu cầu:</div>
+
+  <div class="cau"><div class="de"><b>Câu 1.</b> Cô giáo hỏi cả lớp điều gì?</div>
+    <div class="pa mot"><span><i class="k">A.</i>Kể một việc mình làm ở nhà.</span>
+      <span><i class="k">B.</i>Kể một câu chuyện cổ tích.</span>
+      <span><i class="k">C.</i>Đọc một bài thơ đã học.</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 2.</b> Lúc đầu Bi cảm thấy thế nào?</div>
+    <div class="pa mot"><span><i class="k">A.</i>Rất tự tin, muốn nói ngay.</span>
+      <span><i class="k">B.</i>Muốn nói nhưng hồi hộp, tiếng nghẹn ở cổ.</span>
+      <span><i class="k">C.</i>Không muốn nói gì cả.</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 3.</b> Bi đã kể việc gì?</div>
+    <div class="pa mot"><span><i class="k">A.</i>Em biết nấu cơm.</span>
+      <span><i class="k">B.</i>Em biết quét nhà.</span>
+      <span><i class="k">C.</i>Em biết gấp chăn, sáng nào cũng gấp.</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 4.</b> Vì sao cuối bài Bi thấy “lòng vui”?
+    Em hãy viết câu trả lời của mình.</div>
+    <div class="ke"><div class="d"></div><div class="d"></div></div></div>
+
+  <div class="chan"><span>Tiếng Việt 2 · Tuần 3</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU BÀI TẬP CUỐI TUẦN</h1>
+      <div class="mon">MÔN TIẾNG VIỆT — LỚP 2</div><div class="tuan">TUẦN 3</div></div>
+    <div class="ngay">Họ và tên: ……………………<br>Lớp: ………<br>Trang 2/2</div>
+  </div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Luyện từ và câu</span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 1.</b> Viết tiếp các chữ cái còn thiếu theo đúng thứ tự
+    trong bảng chữ cái:</div>
+    <div style="padding-left:6mm;margin-top:2mm;font-size:14pt;word-spacing:4mm">
+      r &nbsp; s &nbsp; …… &nbsp; u &nbsp; ư &nbsp; …… &nbsp; x &nbsp; y</div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 2.</b> Gạch dưới <b>từ chỉ đặc điểm</b> trong mỗi câu sau:</div>
+    <div class="doan">a) Bàn tay Bi nắm chặt vạt áo.</div>
+    <div class="doan">b) Má Bi nóng bừng.</div>
+    <div class="doan">c) Cái chăn của em rất ấm.</div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 3.</b> Đặt <b>một câu nêu đặc điểm</b> để nói về một người bạn
+    của em (theo mẫu: <i>Ai thế nào?</i>).</div>
+    <div class="ke hep" style="margin-left:6mm"><div class="d"></div><div class="d"></div></div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 4.</b> Tập viết chữ hoa <b>B</b> — tô theo nét chấm rồi viết tiếp:</div>
+    <div class="o-viet">
+      <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="60" text-anchor="middle"
+        font-family="Times New Roman, serif" font-size="58" stroke-width="2.2">B</text></svg></div>
+      <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="60" text-anchor="middle"
+        font-family="Times New Roman, serif" font-size="58" stroke-width="2.2">B</text></svg></div>
+      <div class="o"></div>
+      <div class="o"><svg viewBox="0 0 90 80"><text class="hv-cham" x="45" y="60" text-anchor="middle"
+        font-family="Times New Roman, serif" font-size="52" stroke-width="2.2">Bi</text></svg></div>
+      <div class="o"></div>
+    </div>
+  </div>
+
+  <div class="phan"><span class="so">III</span><span class="ten">Viết</span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 5.</b> Viết <b>3 – 4 câu</b> kể về một việc em <b>thường làm</b>
+    hằng ngày (việc gì, làm lúc nào, em làm thế nào).</div>
+    <div class="ke"><div class="d"></div><div class="d"></div><div class="d"></div>
+      <div class="d"></div><div class="d"></div></div>
+  </div>
+
+  <div class="chan"><span>Tiếng Việt 2 · Tuần 3</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang dapan">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>ĐÁP ÁN &amp; HƯỚNG DẪN</h1>
+      <div class="mon">MÔN TIẾNG VIỆT — LỚP 2</div><div class="tuan">TUẦN 3</div></div>
+    <div class="ngay">Dành cho<br>thầy cô &amp; phụ huynh<br><b>Trang cuối</b></div>
+  </div>
+
+  <div class="muc">Đáp án</div>
+  <div class="bai"><b>Câu 1.</b> <span class="gia">A</span> &nbsp;·&nbsp; <b>Câu 2.</b> <span class="gia">B</span>
+    &nbsp;·&nbsp; <b>Câu 3.</b> <span class="gia">C</span></div>
+  <div class="bai"><b>Câu 4.</b> Câu trả lời mở. Ý đúng: vì Bi <span class="gia">đã dám đứng lên nói
+    trước lớp và được cả lớp vỗ tay</span>; Bi thấy mình làm được điều tưởng như đáng sợ.</div>
+
+  <div class="muc">Luyện từ và câu · Viết</div>
+  <div class="bai"><b>Bài 1.</b> Điền: <span class="gia">t</span> (r, s, <b>t</b>, u, ư) ·
+    <span class="gia">v</span> (ư, <b>v</b>, x, y).</div>
+  <div class="bai"><b>Bài 2.</b> Gạch: a) <span class="gia">chặt</span> · b) <span class="gia">nóng bừng</span> ·
+    c) <span class="gia">ấm</span>.</div>
+  <div class="bai"><b>Bài 3.</b> Câu mở. Ví dụ: <i>“Bạn Lan rất chăm chỉ.”</i> · <i>“Tóc bạn Mai dài và đen.”</i>
+    Câu phải trả lời được câu hỏi <b>Ai thế nào?</b>, đầu câu viết hoa, cuối câu có dấu chấm.</div>
+  <div class="bai"><b>Bài 4.</b> Tô rồi viết chữ hoa <span class="gia">B</span> và tiếng
+    <span class="gia">Bi</span> (tên riêng nên viết hoa chữ B).</div>
+  <div class="bai"><b>Bài 5.</b> Đoạn mở. Đủ ý là được: <i>việc gì · làm lúc nào · làm thế nào</i>.
+    Ví dụ: <i>“Sáng nào em cũng gấp chăn. Em gấp ngay khi vừa ngủ dậy. Em gấp đôi chăn lại rồi
+    đặt gọn ở cuối giường. Mẹ khen em chăm.”</i></div>
+
+  <div class="muc">Chỗ học sinh hay sai</div>
+  <p>· <b>Bài 2 — lẫn từ chỉ đặc điểm với từ chỉ hoạt động.</b> Mẹo: từ chỉ đặc điểm trả lời câu hỏi
+    <i>“như thế nào?”</i> (nóng bừng, ấm, chặt); từ chỉ hoạt động trả lời <i>“làm gì?”</i> (nắm, gấp).</p>
+  <p>· <b>Bài 3 hay bị viết thành câu nêu HOẠT ĐỘNG</b> (“Bạn Lan quét nhà”). Yêu cầu tuần này là
+    câu nêu <b>đặc điểm</b> — nói bạn ấy <i>thế nào</i>, không phải bạn ấy <i>làm gì</i>.</p>
+  <p>· <b>Chữ hoa B</b> có nét cong kép bên phải, em hay viết thành số 3. Cho em tô chậm phần bụng chữ.</p>
+
+  <div class="luuy"><b>Căn cứ chương trình:</b> Tiếng Việt 2 — Kết nối tri thức với cuộc sống,
+    <b>tuần 3</b> gồm <i>Bài 5 “Em có xinh không?”</i> (đọc · chữ hoa <b>B</b> · kể chuyện) và
+    <i>Bài 6 “Một giờ học”</i> (đọc · bảng chữ cái · <b>từ chỉ đặc điểm, câu nêu đặc điểm</b> ·
+    viết đoạn văn kể việc thường làm).
+    <ul>
+      <li><b>Bài đọc do Bút Xanh tự viết</b> theo đúng chủ điểm (một giờ học, bạn nhỏ tập nói trước
+        lớp), không chép bài của sách giáo khoa; tranh minh hoạ cũng do Bút Xanh tự vẽ.</li>
+      <li>Phiếu bám đúng bốn nội dung tuần này: <b>bảng chữ cái</b> (bài 1), <b>từ chỉ đặc điểm</b>
+        (bài 2), <b>câu nêu đặc điểm</b> (bài 3), <b>chữ hoa B</b> (bài 4).</li>
+    </ul>
+  </div>
+
+  <div class="chan"><span>Đáp án · Tiếng Việt 2 · Tuần 3</span>
+    <span class="giua">trang đáp án — thầy cô và phụ huynh xem sau khi em làm xong</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<script src="nut-in.js"></script>
+</body>
+</html>

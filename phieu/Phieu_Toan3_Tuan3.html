@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=794">
+<title>Phiếu bài tập cuối tuần — Toán 3 — Tuần 3</title>
+<link rel="stylesheet" href="khuon.css">
+<style>
+.hinh-toan { width: 100%; display: block; margin: 2mm 0 1mm; }
+.hinh-toan text { font-family: "Times New Roman", Times, serif; fill: #101c15; }
+.cau { margin-bottom: 2.1mm; }
+/* Ba hình học đặt cạnh nhau để đếm và gọi tên */
+.bo-hinh { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; margin-top: 2mm; }
+.bo-hinh .o { border: 1pt solid #dfe8e3; border-radius: 2.5mm; padding: 2mm; text-align: center; }
+.bo-hinh .o svg { width: 100%; height: 26mm; }
+.bo-hinh .ten { font-size: 11pt; color: #8aa093; margin-top: 1mm; }
+</style>
+</head>
+<!-- Bám kế hoạch giáo dục của app (khgd-lop3.js), tuần 3 — chủ đề "Ôn tập và bổ sung":
+     Bài 6 "Bảng nhân 4, bảng chia 4" · Bài 7 "Ôn tập hình học và đo lường" ·
+     Bài 8 "Luyện tập chung" (tiết 1).
+     ⚠️ Bảng nhân – chia dùng trong phiếu chỉ tới bảng 4 (cùng với 2, 3, 5 đã học);
+     bảng 6, 7, 8, 9 sang tuần 4 – 5 mới học. Số liệu do Bút Xanh tự đặt. -->
+<body class="mon-toan">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <!-- Hình do Bút Xanh tự vẽ. Hình học vẽ bằng nét đen, không tô màu đặc để học sinh
+       nhìn rõ cạnh và đỉnh — đây là bài đếm cạnh, gọi tên hình. -->
+  <g id="hh-tamgiac"><path class="hv-tr" style="fill:#EAF4FF" d="M50 14 90 84H10z"/></g>
+  <g id="hh-tugiac"><path class="hv-tr" style="fill:#FFF3DC" d="M14 24h58l16 26-24 34H24z"/></g>
+  <g id="hh-gapkhuc">
+    <path class="hv-n" style="stroke-width:3.4" d="M10 78L34 26l24 40 32-46"/>
+    <circle class="hv-den" cx="10" cy="78" r="3.4"/><circle class="hv-den" cx="34" cy="26" r="3.4"/>
+    <circle class="hv-den" cx="58" cy="66" r="3.4"/><circle class="hv-den" cx="90" cy="20" r="3.4"/>
+  </g>
+</defs></svg>
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU BÀI TẬP CUỐI TUẦN</h1>
+      <div class="mon">MÔN TOÁN — LỚP 3</div><div class="tuan">TUẦN 3</div></div>
+    <div class="ngay">Ngày …… / …… / 20……<br>Bảng nhân, chia 4<br>Trang 1/2</div>
+  </div>
+
+  <div class="hoten">
+    <div style="flex:1"><span>Họ và tên:</span><span class="o"></span></div>
+    <div><span>Lớp:</span><span class="o hep"></span></div>
+  </div>
+
+  <div class="phan"><span class="so">I</span><span class="ten">Trắc nghiệm</span><span class="line"></span></div>
+  <div class="dan">Khoanh vào chữ đặt trước câu trả lời đúng:</div>
+
+  <div class="cau"><div class="de"><b>Câu 1.</b> Kết quả của phép tính 4 × 8 là:</div>
+    <div class="pa"><span><i class="k">A.</i>28</span><span><i class="k">B.</i>32</span>
+      <span><i class="k">C.</i>36</span><span><i class="k">D.</i>12</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 2.</b> Kết quả của phép tính 36 : 4 là:</div>
+    <div class="pa"><span><i class="k">A.</i>6</span><span><i class="k">B.</i>7</span>
+      <span><i class="k">C.</i>8</span><span><i class="k">D.</i>9</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 3.</b> Gấp số 7 lên 4 lần ta được:</div>
+    <div class="pa"><span><i class="k">A.</i>11</span><span><i class="k">B.</i>24</span>
+      <span><i class="k">C.</i>28</span><span><i class="k">D.</i>74</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 4.</b> 1 dm bằng:</div>
+    <div class="pa"><span><i class="k">A.</i>10 cm</span><span><i class="k">B.</i>100 cm</span>
+      <span><i class="k">C.</i>10 mm</span><span><i class="k">D.</i>1 m</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 5.</b> Hình tứ giác có mấy cạnh?</div>
+    <div class="pa"><span><i class="k">A.</i>3 cạnh</span><span><i class="k">B.</i>4 cạnh</span>
+      <span><i class="k">C.</i>5 cạnh</span><span><i class="k">D.</i>6 cạnh</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 6.</b> Số thích hợp điền vào chỗ chấm: 3 m 20 cm = …… cm</div>
+    <div class="pa"><span><i class="k">A.</i>32</span><span><i class="k">B.</i>302</span>
+      <span><i class="k">C.</i>320</span><span><i class="k">D.</i>3 020</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 7.</b> Một đường gấp khúc gồm 3 đoạn thẳng dài 4 cm, 5 cm và 6 cm.
+    Độ dài đường gấp khúc đó là:</div>
+    <div class="pa"><span><i class="k">A.</i>14 cm</span><span><i class="k">B.</i>15 cm</span>
+      <span><i class="k">C.</i>16 cm</span><span><i class="k">D.</i>120 cm</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 8.</b> Số thích hợp điền vào chỗ chấm: 4 × …… = 28</div>
+    <div class="pa"><span><i class="k">A.</i>6</span><span><i class="k">B.</i>7</span>
+      <span><i class="k">C.</i>8</span><span><i class="k">D.</i>9</span></div></div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Tự luận</span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 1.</b> Tính nhẩm:</div>
+    <div style="padding-left:6mm;margin-top:2mm;font-size:13.5pt;line-height:2">
+      4 × 3 = …… &nbsp;&nbsp;&nbsp; 4 × 6 = …… &nbsp;&nbsp;&nbsp; 4 × 9 = …… &nbsp;&nbsp;&nbsp; 4 × 10 = ……<br>
+      20 : 4 = …… &nbsp;&nbsp;&nbsp; 32 : 4 = …… &nbsp;&nbsp;&nbsp; 40 : 4 = …… &nbsp;&nbsp;&nbsp; 24 : 4 = ……</div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 2.</b> Viết tên mỗi hình vào chỗ chấm rồi đếm số cạnh:</div>
+    <div class="bo-hinh">
+      <div class="o"><svg viewBox="0 0 100 100"><use href="#hh-tamgiac"/></svg>
+        <div class="ten">Tên hình: …………… · …… cạnh</div></div>
+      <div class="o"><svg viewBox="0 0 100 100"><use href="#hh-tugiac"/></svg>
+        <div class="ten">Tên hình: …………… · …… cạnh</div></div>
+      <div class="o"><svg viewBox="0 0 100 100"><use href="#hh-gapkhuc"/></svg>
+        <div class="ten">Đường gấp khúc · …… đoạn</div></div>
+    </div>
+  </div>
+
+  <div class="chan"><span>Toán 3 · Tuần 3</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU BÀI TẬP CUỐI TUẦN</h1>
+      <div class="mon">MÔN TOÁN — LỚP 3</div><div class="tuan">TUẦN 3</div></div>
+    <div class="ngay">Họ và tên: ……………………<br>Lớp: ………<br>Trang 2/2</div>
+  </div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Tự luận <span style="font-weight:normal;text-transform:none">(tiếp theo)</span></span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 3.</b> Số?</div>
+    <div class="yc" style="font-size:13.5pt;line-height:2">
+      a) 5 dm = …… cm &nbsp;&nbsp;&nbsp; b) 2 m 40 cm = …… cm &nbsp;&nbsp;&nbsp; c) 70 cm = …… dm</div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 4.</b> Điền dấu <b>&gt;</b>, <b>&lt;</b>, <b>=</b> vào chỗ chấm:</div>
+    <div style="padding-left:6mm;margin-top:2mm;font-size:13.5pt;line-height:2">
+      4 × 6 …… 3 × 8 &nbsp;&nbsp;&nbsp; 28 : 4 …… 20 : 5 &nbsp;&nbsp;&nbsp; 1 dm …… 9 cm</div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 5.</b> Mỗi bàn học có 4 học sinh ngồi.
+    Hỏi 8 bàn như thế có bao nhiêu học sinh?</div>
+    <div class="o-lam">
+      <!-- SƠ ĐỒ ĐOẠN THẲNG — dạng nhân: TÁM phần bằng nhau, mỗi phần 4 em. -->
+      <svg class="hinh-toan" viewBox="0 0 620 112" style="height:24mm">
+        <text x="310" y="18" text-anchor="middle" font-size="20">mỗi bàn 4 học sinh</text>
+        <path class="hv-n" d="M60 44h500"/>
+        <path class="hv-n2" d="M60 33v22M122.5 33v22M185 33v22M247.5 33v22M310 33v22M372.5 33v22M435 33v22M497.5 33v22M560 33v22"/>
+        <text x="91" y="39" text-anchor="middle" font-size="17">4</text>
+        <text x="153" y="39" text-anchor="middle" font-size="17">4</text>
+        <text x="216" y="39" text-anchor="middle" font-size="17">4</text>
+        <text x="278" y="39" text-anchor="middle" font-size="17">4</text>
+        <text x="341" y="39" text-anchor="middle" font-size="17">4</text>
+        <text x="403" y="39" text-anchor="middle" font-size="17">4</text>
+        <text x="466" y="39" text-anchor="middle" font-size="17">4</text>
+        <text x="528" y="39" text-anchor="middle" font-size="17">4</text>
+        <path class="hv-n2" d="M60 64v10h500V64"/>
+        <text x="310" y="100" text-anchor="middle" font-size="23" font-weight="bold">? học sinh</text>
+      </svg>
+      <div class="giai"><div class="nhan">Bài giải</div>
+        <div class="ke"><div class="d"></div><div class="d"></div><div class="d"></div><div class="d"></div></div></div>
+    </div>
+  </div>
+
+  <div class="chan"><span>Toán 3 · Tuần 3</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang dapan">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>ĐÁP ÁN &amp; HƯỚNG DẪN</h1>
+      <div class="mon">MÔN TOÁN — LỚP 3</div><div class="tuan">TUẦN 3</div></div>
+    <div class="ngay">Dành cho<br>thầy cô &amp; phụ huynh<br><b>Trang cuối</b></div>
+  </div>
+
+  <div class="muc">Đáp án</div>
+  <table class="bang-da">
+    <tr><th>Câu</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr>
+    <tr><td>Đáp án</td><td>B</td><td>D</td><td>C</td><td>A</td><td>B</td><td>C</td><td>B</td><td>B</td></tr>
+  </table>
+
+  <div class="bai"><b>Bài 1.</b> 4 × 3 = <span class="gia">12</span>; 4 × 6 = <span class="gia">24</span>;
+    4 × 9 = <span class="gia">36</span>; 4 × 10 = <span class="gia">40</span>;
+    20 : 4 = <span class="gia">5</span>; 32 : 4 = <span class="gia">8</span>;
+    40 : 4 = <span class="gia">10</span>; 24 : 4 = <span class="gia">6</span>.</div>
+  <div class="bai"><b>Bài 2.</b> Hình 1: <span class="gia">hình tam giác · 3 cạnh</span>.
+    Hình 2: <span class="gia">hình tứ giác · 4 cạnh</span>.
+    Hình 3: đường gấp khúc gồm <span class="gia">3 đoạn thẳng</span>.</div>
+  <div class="bai"><b>Bài 3.</b> a) <span class="gia">50</span> cm · b) <span class="gia">240</span> cm ·
+    c) <span class="gia">7</span> dm.</div>
+  <div class="bai"><b>Bài 4.</b> 4 × 6 <span class="gia">=</span> 3 × 8 (đều bằng 24) ·
+    28 : 4 <span class="gia">&gt;</span> 20 : 5 (7 &gt; 4) · 1 dm <span class="gia">&gt;</span> 9 cm (10 cm &gt; 9 cm).</div>
+  <div class="bai"><b>Bài 5.</b> <i>Bài giải</i> — 8 bàn có số học sinh là:
+    <span class="gia">4 × 8 = 32 (học sinh)</span>. &nbsp; <i>Đáp số: 32 học sinh.</i></div>
+
+  <div class="muc">Chỗ học sinh hay sai</div>
+  <p>· <b>Câu 4 và bài 4 ý c — đổi đơn vị trước rồi mới so sánh.</b> Nhiều em thấy “1” bé hơn “9”
+    liền điền dấu &lt;, quên rằng 1 dm = 10 cm.</p>
+  <p>· <b>Câu 7 — độ dài đường gấp khúc là TỔNG các đoạn</b>, không phải nhân. Nhìn hình ở bài 2
+    sẽ dễ hình dung hơn.</p>
+  <p>· <b>Bài 2 — đếm cạnh chứ không đếm đỉnh.</b> Với đường gấp khúc thì đếm <i>đoạn thẳng</i>,
+    ba chấm nối nhau bằng ba đoạn.</p>
+  <p>· <b>Bài 5 nên viết 4 × 8</b> — lấy <i>số học sinh mỗi bàn</i> nhân với <i>số bàn</i>,
+    đúng với sơ đồ tám phần bằng nhau ở trên.</p>
+
+  <div class="luuy"><b>Căn cứ chương trình:</b> Toán 3 — Kết nối tri thức với cuộc sống, <b>tuần 3</b> gồm
+    <i>Bài 6 “Bảng nhân 4, bảng chia 4”</i>, <i>Bài 7 “Ôn tập hình học và đo lường”</i> và
+    <i>Bài 8 “Luyện tập chung”</i>.
+    <ul>
+      <li>Phiếu <b>chỉ dùng bảng nhân – chia 2, 3, 4, 5</b>. Bảng 6, 7, 8, 9 sang tuần 4 – 5 mới học.</li>
+      <li>Phần hình học – đo lường bám đúng Bài 7: <b>hình tam giác, tứ giác, đường gấp khúc,
+        đổi đơn vị độ dài</b>.</li>
+      <li>Toàn bộ <b>số liệu và hình do Bút Xanh tự làm</b>, không lấy nguyên bài của sách giáo khoa.</li>
+    </ul>
+  </div>
+
+  <div class="chan"><span>Đáp án · Toán 3 · Tuần 3</span>
+    <span class="giua">trang đáp án — thầy cô và phụ huynh xem sau khi em làm xong</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<script src="nut-in.js"></script>
+</body>
+</html>
