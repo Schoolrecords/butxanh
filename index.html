@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-17 · 54';
+  var PB='2026-08-17 · 55';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -3660,23 +3660,23 @@ function BX_phieuStyleOnce(){
    /* ----- Ô TUẦN: khối nhỏ nhưng nổi, cả 35 tuần vừa một trang (17/8/2026) -----
       Ô cũ cao 139px × 6 hàng = phải cuộn. Nay ~68px × 4 hàng là hết 35 tuần.
       Trạng thái đọc bằng MÀU, không cần dòng chữ "chưa có phiếu" nữa. */
-   '#v-phieu .pw-weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(106px,1fr));gap:9px}'+
-   '#v-phieu .pw-wk{position:relative;border-radius:12px;padding:9px 6px 10px;cursor:pointer;text-align:center;'+
-     'border:1px solid #e3eae6;background:linear-gradient(180deg,#fff 0%,#f7faf8 100%);'+
-     'box-shadow:0 1px 2px rgba(16,40,26,.06),inset 0 1px 0 #fff;transition:transform .14s,box-shadow .14s,border-color .14s}'+
-   '#v-phieu .pw-wk:hover{transform:translateY(-2px);border-color:#cfd8d2;box-shadow:0 8px 16px rgba(16,40,26,.12)}'+
+   /* Kiểu thẻ giống màn "Bài giảng trình chiếu": nền trắng, bo góc, bóng nhẹ và
+      DẢI MÀU BÊN TRÁI theo màu môn (thầy Chung chọn mẫu này 17/8/2026). */
+   '#v-phieu .pw-weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}'+
+   '#v-phieu .pw-wk{position:relative;border-radius:13px;padding:9px 8px 10px 12px;cursor:pointer;text-align:left;'+
+     'border:1px solid #e9eeeb;border-left:4px solid #d7dedb;background:#fff;'+
+     'box-shadow:0 1px 3px rgba(16,40,26,.07);transition:transform .14s,box-shadow .14s,border-color .14s}'+
+   '#v-phieu .pw-wk:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(16,40,26,.13)}'+
    '#v-phieu .pw-wk:active{transform:translateY(0) scale(.97)}'+
    '#v-phieu .pw-wk-lb{font-size:8.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#a8b5ad;line-height:1}'+
    '#v-phieu .pw-wk-n{font-size:19px;font-weight:800;line-height:1.15;color:#243}'+
    '#v-phieu .pw-wk-d{font-size:9.5px;color:#9aa8a0;line-height:1.2;margin-top:1px}'+
-   /* đã có phiếu → khối mang màu môn, nổi hẳn lên */
-   '#v-phieu .pw-wk.co{border-color:color-mix(in srgb,var(--mc) 40%,#fff);'+
-     'background:linear-gradient(180deg,#fff 0%,color-mix(in srgb,var(--mc) 12%,#fff) 100%);'+
-     'box-shadow:0 2px 5px color-mix(in srgb,var(--mc) 16%,transparent),inset 0 1px 0 #fff}'+
-   '#v-phieu .pw-wk.co .pw-wk-lb{color:color-mix(in srgb,var(--mc) 70%,#fff)}'+
+   /* đã có phiếu → dải màu bên trái đậm màu môn, chữ mang màu môn */
+   '#v-phieu .pw-wk.co{border-left-color:var(--mc)}'+
+   '#v-phieu .pw-wk.co .pw-wk-lb{color:color-mix(in srgb,var(--mc) 72%,#fff)}'+
    '#v-phieu .pw-wk.co .pw-wk-n{color:var(--mc)}'+
-   '#v-phieu .pw-wk.co .pw-wk-d{color:color-mix(in srgb,var(--mc) 62%,#fff)}'+
-   '#v-phieu .pw-wk.co:hover{border-color:var(--mc);box-shadow:0 9px 18px color-mix(in srgb,var(--mc) 26%,transparent)}'+
+   '#v-phieu .pw-wk.co .pw-wk-d{color:color-mix(in srgb,var(--mc) 60%,#fff)}'+
+   '#v-phieu .pw-wk.co:hover{box-shadow:0 10px 20px color-mix(in srgb,var(--mc) 22%,transparent)}'+
    /* tuần hiện tại → vòng xanh + chấm nhỏ, không cần chữ */
    '#v-phieu .pw-wk.nay{box-shadow:0 0 0 2px #1FA45C,0 2px 5px rgba(16,40,26,.08)}'+
    '#v-phieu .pw-wk.nay:hover{box-shadow:0 0 0 2px #1FA45C,0 8px 16px rgba(16,40,26,.14)}'+
@@ -3741,9 +3741,11 @@ function renderPhieu(){
     var mm=BX_PHIEU_META[mn]||{ic:'📘',c:'#1FA45C'};
     return '<button class="pw-mchip'+(mn===mon?' on':'')+'" style="--mc:'+mm.c+'" onclick="BX_phieuMon(\''+BX_escAttr(mn).replace(/'/g,"\\'")+'\')">'+
       '<span>'+mm.ic+'</span>'+mn+'</button>'; }).join('');
+  /* Thứ tự MÔN HỌC trước rồi mới tới KHỐI LỚP — thầy Chung chốt 17/8/2026:
+     chọn môn là việc đầu tiên thầy cô nghĩ tới, chọn lớp là bước sau. */
   var bar='<div class="pw-bar">'+
-    '<div class="pw-grp"><span class="pw-glb">Khối lớp</span>'+chipLop+'</div>'+
-    '<div class="pw-grp"><span class="pw-glb">Môn học</span>'+chipMon+'</div></div>';
+    '<div class="pw-grp"><span class="pw-glb">Môn học</span>'+chipMon+'</div>'+
+    '<div class="pw-grp"><span class="pw-glb">Khối lớp</span>'+chipLop+'</div></div>';
 
   /* --- Lưới 35 tuần chạy liền một mạch: bỏ tiêu đề học kỳ để cả năm nằm gọn một trang --- */
   var g='';
