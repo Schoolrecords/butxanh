@@ -81,6 +81,24 @@
     ].join('|');
     return fnv(parts).toString(16);
   }
+  /* (17/8/2026 — CHỮA CA "ĐÃ TRẢ TIỀN VẪN ĐÒI KÍCH HOẠT LẠI") VÂN TAY BỀN.
+     deviceId() ở trên trộn cả userAgent — mà Chrome tự cập nhật khoảng 4 tuần một lần là
+     userAgent đổi → máy vẫn nguyên si mà app tưởng máy lạ, bắt thầy cô tiêu một lượt đổi máy.
+     Hết 2 lượt là khoá cứng, dù đã trả đủ tiền (gặp thật ở chungtrt@gmail.com và
+     xebatcheotrt@gmail.com ngày 17/8/2026).
+     Vân tay này CỐ Ý bỏ userAgent và language, chỉ giữ những thứ không đổi khi cập nhật trình
+     duyệt: nền tảng · kích thước màn hình · múi giờ · số nhân CPU · số điểm chạm.
+     Dùng làm LƯỚI ĐỠ: mã bền trong máy mất (xoá dữ liệu duyệt web) mà vân tay bền còn khớp thì
+     nhận lại đúng máy cũ, KHÔNG tính là đổi máy. */
+  function fpOn(){
+    var n=navigator, parts=[
+      n.platform||'',
+      (screen.width+'x'+screen.height+'x'+(screen.colorDepth||'')),
+      (new Date().getTimezoneOffset()), (n.hardwareConcurrency||''),
+      (n.maxTouchPoints||'')
+    ].join('|');
+    return 'f'+fnv(parts).toString(16);
+  }
   /* (9/8/2026 — Bước 2 kế hoạch 2 thiết bị) MÃ THIẾT BỊ BỀN: chuỗi ngẫu nhiên lưu trong máy,
      KHÔNG đổi khi trình duyệt cập nhật (vân tay deviceId() ở trên hay trôi vì lẫn userAgent —
      nguồn của các ca "tự nhiên bị hỏi đổi máy" oan). Vân tay cũ chỉ còn dùng để NHẬN RA
@@ -125,7 +143,7 @@
   /* ------------------------------------------------------------------ *
    *  TRẠNG THÁI                                                          *
    * ------------------------------------------------------------------ */
-  var auth=null, db=null, user=null, licRef=null, rec=null, dev=deviceId(), devB=devIdBen();
+  var auth=null, db=null, user=null, licRef=null, rec=null, dev=deviceId(), devB=devIdBen(), fpB=fpOn();
   var paid=false;               // đã trả phí & hợp lệ trên MÁY NÀY
   window.__bxPaid=false;
 
@@ -414,16 +432,34 @@
     var D=rec.devices||{};
     var chinhId=(D.chinh&&D.chinh.id)||null, phuId=(D.phu&&D.phu.id)||null;
     var laChinh=!!(chinhId&&chinhId===devB), laPhu=!!(phuId&&phuId===devB);
+    /* (17/8/2026) LƯỚI ĐỠ 1 — NHẬN LẠI MÁY CŨ BẰNG VÂN TAY BỀN.
+       Mã bền nằm trong localStorage: thầy cô xoá dữ liệu duyệt web, hay trình duyệt tự dọn, là
+       mất — máy vẫn máy ấy mà app hỏi "đổi máy?", tiêu một lượt oan. Nay nếu vân tay bền
+       (nền tảng · màn hình · múi giờ · CPU · điểm chạm) vẫn khớp cái đã lưu thì nhận lại đúng
+       ngăn đó và ghi mã bền mới đè lên, KHÔNG tính lượt. Chỉ so khi vân tay đã từng được lưu. */
+    if(!laChinh && !laPhu && D.chinh && D.chinh.fp && D.chinh.fp===fpB && !cam){
+      laChinh=true;
+      try{ db.ref('licenses/'+user.uid+'/devices/chinh').update({id:devB, ts:Date.now()}); }catch(e){}
+    }
+    if(!laChinh && !laPhu && D.phu && D.phu.fp && D.phu.fp===fpB && cam){
+      laPhu=true;
+      try{ db.ref('licenses/'+user.uid+'/devices/phu').update({id:devB, ts:Date.now()}); }catch(e){}
+    }
     // Tương thích ngược: máy đã gắn theo vân tay cũ chính là ngăn chính → nâng cấp êm sang mã bền
     if(!laChinh && !chinhId && rec.device && rec.device===dev){
       laChinh=true;
-      try{ db.ref('licenses/'+user.uid+'/devices/chinh').set({id:devB, ts:Date.now()}); }catch(e){}
+      try{ db.ref('licenses/'+user.uid+'/devices/chinh').set({id:devB, fp:fpB, ts:Date.now()}); }catch(e){}
     }
-    // Vừa kích hoạt, chưa gắn máy nào: MÁY TÍNH đầu tiên mở app thành ngăn chính
-    if(!laChinh && !laPhu && !chinhId && !rec.device && !cam){
+    /* (17/8/2026) LƯỚI ĐỠ 2 — NGĂN CHÍNH ĐANG TRỐNG THÌ MÁY TÍNH NÀY VÀO LUÔN.
+       Trước đây còn đòi thêm !rec.device (vân tay đời cũ phải rỗng). Nhưng mọi hồ sơ kích hoạt
+       thời một-ngăn đều CÓ rec.device, mà ngăn chính thì chưa bao giờ được ghi → điều kiện không
+       bao giờ đúng: ngăn trống hoác mà máy nào tới cũng bị coi là máy lạ, phải tiêu lượt đổi máy.
+       Ngăn trống = chưa máy nào giữ, cho vào là đúng. Ghi đè luôn rec.device để bản license.js
+       cũ còn trong bộ đệm máy khác không tiếp tục mở khoá bằng vân tay đời cũ. */
+    if(!laChinh && !laPhu && !chinhId && !cam){
       laChinh=true;
       try{
-        db.ref('licenses/'+user.uid+'/devices/chinh').set({id:devB, ts:Date.now()});
+        db.ref('licenses/'+user.uid+'/devices/chinh').set({id:devB, fp:fpB, ts:Date.now()});
         db.ref('licenses/'+user.uid+'/device').set(dev);   // cầu cho bản license.js cũ trong bộ đệm
       }catch(e){}
     }
@@ -431,8 +467,11 @@
     // (!laChinh: điện thoại từng gắn legacy thời 1-ngăn là máy CHÍNH rồi — đừng chiếm nốt ngăn phụ)
     if(cam && !laChinh && !laPhu && !phuId){
       laPhu=true;
-      try{ db.ref('licenses/'+user.uid+'/devices/phu').set({id:devB, ts:Date.now()}); }catch(e){}
+      try{ db.ref('licenses/'+user.uid+'/devices/phu').set({id:devB, fp:fpB, ts:Date.now()}); }catch(e){}
     }
+    /* Máy đã gắn từ trước bản này thì chưa có vân tay bền — bổ sung êm để lần sau có lưới đỡ. */
+    if(laChinh && D.chinh && !D.chinh.fp){ try{ db.ref('licenses/'+user.uid+'/devices/chinh/fp').set(fpB); }catch(e){} }
+    if(laPhu && D.phu && !D.phu.fp){ try{ db.ref('licenses/'+user.uid+'/devices/phu/fp').set(fpB); }catch(e){} }
 
     /* Vai soạn: mặc định ngăn chính; vaiSoan='phu' = thầy cô đã chuyển quyền soạn sang điện thoại
        (van dự phòng máy tính hỏng). Cờ này chỉ quyết CHẾ ĐỘ XEM (index.html), không đụng trả phí. */
@@ -470,7 +509,7 @@
     var used=rec.soLanDoiMay||0;
     if(used>=CONFIG.SO_LAN_DOI_MAY_TOI_DA){ return; }
     var upd={}; upd['licenses/'+user.uid+'/device']=dev; upd['licenses/'+user.uid+'/soLanDoiMay']=used+1;
-    upd['licenses/'+user.uid+'/devices/chinh']={id:devB, ts:Date.now()};   // (9/8/2026) ghi cả mã bền ngăn chính
+    upd['licenses/'+user.uid+'/devices/chinh']={id:devB, fp:fpB, ts:Date.now()};   // mã bền + vân tay bền (lưới đỡ 17/8/2026)
     db.ref().update(upd).then(function(){ closeOv('bxlic-dev'); /* listener sẽ tự mở khoá */ })
       .catch(function(){ if(window.bxAlert) bxAlert('Chưa đổi được máy (kiểm tra mạng).'); });
   };
@@ -495,7 +534,7 @@
     if(!user||!db||!rec) return;
     var used=rec.soLanDoiMayPhu||0;
     if(used>=CONFIG.SO_LAN_DOI_MAY_PHU_TOI_DA){ return; }
-    var upd={}; upd['licenses/'+user.uid+'/devices/phu']={id:devB, ts:Date.now()}; upd['licenses/'+user.uid+'/soLanDoiMayPhu']=used+1;
+    var upd={}; upd['licenses/'+user.uid+'/devices/phu']={id:devB, fp:fpB, ts:Date.now()}; upd['licenses/'+user.uid+'/soLanDoiMayPhu']=used+1;
     db.ref().update(upd).then(function(){ closeOv('bxlic-dev'); /* listener sẽ tự mở khoá */ })
       .catch(function(){ if(window.bxAlert) bxAlert('Chưa đổi được điện thoại (kiểm tra mạng).'); });
   };
