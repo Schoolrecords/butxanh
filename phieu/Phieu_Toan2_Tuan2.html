@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=794">
+<title>Phiếu bài tập cuối tuần — Toán 2 — Tuần 2</title>
+<link rel="stylesheet" href="khuon.css">
+<style>
+/* Sơ đồ đoạn thẳng vẽ bằng SVG — bài toán có lời văn ở tiểu học phải có sơ đồ,
+   đây là công cụ bắt buộc của phương pháp dạy toán chứ không phải hình trang trí. */
+.hinh-toan { width: 100%; display: block; margin: 2mm 0 1mm; }
+.hinh-toan text { font-family: "Times New Roman", Times, serif; fill: #101c15; }
+.hinh-toan .nhan { font-family: Arial, Helvetica, sans-serif; font-size: 19px; font-weight: bold; fill: #0f5a34; }
+.cau { margin-bottom: 2.1mm; }
+</style>
+</head>
+<!-- Bám kế hoạch giáo dục của app (khgd-lop2.js), tuần 2 — Chủ đề 1 "Ôn tập và bổ sung":
+     Bài 3 "Các thành phần của phép cộng, phép trừ" (số hạng – tổng; số bị trừ – số trừ – hiệu)
+     và Bài 4 "Hơn, kém nhau bao nhiêu".
+     Vì vậy phiếu xoay quanh GỌI ĐÚNG TÊN thành phần và dạng toán "hơn kém nhau bao nhiêu"
+     (giải bằng phép trừ). Số liệu do Bút Xanh tự đặt, không lấy nguyên của sách giáo khoa. -->
+<body class="mon-toan">
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU BÀI TẬP CUỐI TUẦN</h1>
+      <div class="mon">MÔN TOÁN — LỚP 2</div><div class="tuan">TUẦN 2</div></div>
+    <div class="ngay">Ngày …… / …… / 20……<br>Thành phần phép cộng, phép trừ<br>Trang 1/2</div>
+  </div>
+
+  <div class="hoten">
+    <div style="flex:1"><span>Họ và tên:</span><span class="o"></span></div>
+    <div><span>Lớp:</span><span class="o hep"></span></div>
+  </div>
+
+  <div class="phan"><span class="so">I</span><span class="ten">Trắc nghiệm</span><span class="line"></span></div>
+  <div class="dan">Khoanh vào chữ đặt trước câu trả lời đúng:</div>
+
+  <div class="cau"><div class="de"><b>Câu 1.</b> Trong phép cộng 25 + 13 = 38, số 25 được gọi là:</div>
+    <div class="pa"><span><i class="k">A.</i>số hạng</span><span><i class="k">B.</i>tổng</span>
+      <span><i class="k">C.</i>số trừ</span><span><i class="k">D.</i>hiệu</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 2.</b> Trong phép cộng 25 + 13 = 38, số 38 được gọi là:</div>
+    <div class="pa"><span><i class="k">A.</i>số hạng</span><span><i class="k">B.</i>tổng</span>
+      <span><i class="k">C.</i>số bị trừ</span><span><i class="k">D.</i>hiệu</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 3.</b> Trong phép trừ 47 − 15 = 32, số 47 được gọi là:</div>
+    <div class="pa"><span><i class="k">A.</i>số hạng</span><span><i class="k">B.</i>số bị trừ</span>
+      <span><i class="k">C.</i>số trừ</span><span><i class="k">D.</i>hiệu</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 4.</b> Trong phép trừ 47 − 15 = 32, số 32 được gọi là:</div>
+    <div class="pa"><span><i class="k">A.</i>tổng</span><span><i class="k">B.</i>số bị trừ</span>
+      <span><i class="k">C.</i>số trừ</span><span><i class="k">D.</i>hiệu</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 5.</b> Tổng của 40 và 26 là:</div>
+    <div class="pa"><span><i class="k">A.</i>14</span><span><i class="k">B.</i>66</span>
+      <span><i class="k">C.</i>46</span><span><i class="k">D.</i>60</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 6.</b> Số 18 hơn số 12 là:</div>
+    <div class="pa"><span><i class="k">A.</i>4</span><span><i class="k">B.</i>5</span>
+      <span><i class="k">C.</i>6</span><span><i class="k">D.</i>30</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 7.</b> Số 25 kém số 40 là:</div>
+    <div class="pa"><span><i class="k">A.</i>15</span><span><i class="k">B.</i>25</span>
+      <span><i class="k">C.</i>65</span><span><i class="k">D.</i>10</span></div></div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Tự luận</span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 1.</b> Viết số thích hợp vào ô trống:</div>
+    <table class="bl">
+      <tr><th style="width:25%">Số hạng</th><th style="width:25%">Số hạng</th><th style="width:25%">Tổng</th>
+        <th style="width:25%">Phép tính</th></tr>
+      <tr><td class="co">32</td><td class="co">15</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td class="co">24</td><td class="co">40</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+    </table>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 2.</b> Viết số thích hợp vào ô trống:</div>
+    <table class="bl">
+      <tr><th style="width:25%">Số bị trừ</th><th style="width:25%">Số trừ</th><th style="width:25%">Hiệu</th>
+        <th style="width:25%">Phép tính</th></tr>
+      <tr><td class="co">58</td><td class="co">26</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td class="co">79</td><td class="co">45</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+    </table>
+  </div>
+
+  <div class="chan"><span>Toán 2 · Tuần 2</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU BÀI TẬP CUỐI TUẦN</h1>
+      <div class="mon">MÔN TOÁN — LỚP 2</div><div class="tuan">TUẦN 2</div></div>
+    <div class="ngay">Họ và tên: ……………………<br>Lớp: ………<br>Trang 2/2</div>
+  </div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Tự luận <span style="font-weight:normal;text-transform:none">(tiếp theo)</span></span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 3.</b> Tính nhẩm:</div>
+    <div style="padding-left:6mm;margin-top:2mm;font-size:14pt;line-height:2.1">
+      30 + 20 = …… &nbsp;&nbsp;&nbsp;&nbsp; 45 + 4 = …… &nbsp;&nbsp;&nbsp;&nbsp; 60 + 30 = ……<br>
+      70 − 40 = …… &nbsp;&nbsp;&nbsp;&nbsp; 58 − 6 = …… &nbsp;&nbsp;&nbsp;&nbsp; 90 − 50 = ……</div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 4.</b> Viết số thích hợp vào chỗ chấm:</div>
+    <div class="yc" style="font-size:13.5pt;line-height:2">
+      a) Số 36 hơn số 20 là …… đơn vị.<br>
+      b) Số 15 kém số 42 là …… đơn vị.<br>
+      c) Số 27 và số 27 …… nhau.</div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 5.</b> Lan có 24 quyển vở. Hùng có 18 quyển vở.
+    Hỏi Lan có nhiều hơn Hùng bao nhiêu quyển vở?</div>
+    <div class="o-lam">
+      <!-- SƠ ĐỒ ĐOẠN THẲNG — dạng "hơn kém nhau bao nhiêu". Hai đoạn vẽ đúng tỉ lệ 24 : 18,
+           phần Lan nhiều hơn Hùng để trống với dấu ? — nhìn ra ngay phải làm phép trừ. -->
+      <svg class="hinh-toan" viewBox="0 0 620 152" style="height:32mm">
+       <g transform="translate(0,20)">
+        <text class="nhan" x="10" y="42">Lan:</text>
+        <path class="hv-n" d="M100 34h384"/>
+        <path class="hv-n2" d="M100 20v28M484 20v28"/>
+        <path class="hv-n2" d="M100 14h384"/>
+        <text x="292" y="10" text-anchor="middle" font-size="22">24 quyển vở</text>
+
+        <text class="nhan" x="10" y="102">Hùng:</text>
+        <path class="hv-n" d="M100 94h288"/>
+        <path class="hv-n2" d="M100 80v28M388 80v28"/>
+        <path style="fill:none;stroke:#7d8f85;stroke-width:2.4;stroke-dasharray:6 5" d="M388 94h96M484 80v28"/>
+        <text x="436" y="80" text-anchor="middle" font-size="22" font-weight="bold">? quyển</text>
+        <text x="244" y="124" text-anchor="middle" font-size="21">18 quyển vở</text>
+       </g>
+      </svg>
+      <div class="giai"><div class="nhan">Bài giải</div>
+        <div class="ke"><div class="d"></div><div class="d"></div><div class="d"></div><div class="d"></div>
+          <div class="d"></div><div class="d"></div></div></div>
+    </div>
+  </div>
+
+  <div class="chan"><span>Toán 2 · Tuần 2</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang dapan">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>ĐÁP ÁN &amp; HƯỚNG DẪN</h1>
+      <div class="mon">MÔN TOÁN — LỚP 2</div><div class="tuan">TUẦN 2</div></div>
+    <div class="ngay">Dành cho<br>thầy cô &amp; phụ huynh<br><b>Trang cuối</b></div>
+  </div>
+
+  <div class="muc">Đáp án</div>
+  <table class="bang-da">
+    <tr><th>Câu</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th></tr>
+    <tr><td>Đáp án</td><td>A</td><td>B</td><td>B</td><td>D</td><td>B</td><td>C</td><td>A</td></tr>
+  </table>
+
+  <div class="bai"><b>Bài 1.</b> Tổng lần lượt là <span class="gia">47</span> (32 + 15 = 47) và
+    <span class="gia">64</span> (24 + 40 = 64).</div>
+  <div class="bai"><b>Bài 2.</b> Hiệu lần lượt là <span class="gia">32</span> (58 − 26 = 32) và
+    <span class="gia">34</span> (79 − 45 = 34).</div>
+  <div class="bai"><b>Bài 3.</b> 30 + 20 = <span class="gia">50</span>; 45 + 4 = <span class="gia">49</span>;
+    60 + 30 = <span class="gia">90</span>; 70 − 40 = <span class="gia">30</span>;
+    58 − 6 = <span class="gia">52</span>; 90 − 50 = <span class="gia">40</span>.</div>
+  <div class="bai"><b>Bài 4.</b> a) <span class="gia">16</span> đơn vị · b) <span class="gia">27</span> đơn vị ·
+    c) <span class="gia">bằng</span> nhau.</div>
+  <div class="bai"><b>Bài 5.</b> <i>Bài giải</i> — Lan có nhiều hơn Hùng số quyển vở là:
+    <span class="gia">24 − 18 = 6 (quyển vở)</span>. &nbsp; <i>Đáp số: 6 quyển vở.</i></div>
+
+  <div class="muc">Chỗ học sinh hay sai</div>
+  <p>· <b>Lẫn “số bị trừ” với “số trừ”.</b> Mẹo nhắc em: số <i>bị</i> trừ là số <b>đứng trước</b> dấu trừ —
+    nó “bị” lấy đi bớt.</p>
+  <p>· <b>Câu 7 “kém” cũng làm phép trừ như “hơn”.</b> Nhiều em thấy chữ “kém” lại đi cộng.
+    Hơn hay kém đều là <i>tìm phần chênh lệch</i> nên đều lấy số lớn trừ số bé.</p>
+  <p>· <b>Bài 5 phải viết đúng câu lời giải</b> rồi mới đến phép tính, và nhớ ghi tên đơn vị
+    “(quyển vở)” trong ngoặc.</p>
+
+  <div class="luuy"><b>Căn cứ chương trình:</b> Toán 2 — Kết nối tri thức với cuộc sống, <b>tuần 2</b> gồm
+    <i>Bài 3 “Các thành phần của phép cộng, phép trừ”</i> (số hạng – tổng; số bị trừ – số trừ – hiệu)
+    và <i>Bài 4 “Hơn, kém nhau bao nhiêu”</i>.
+    <ul>
+      <li>Toàn bộ <b>số liệu do Bút Xanh tự đặt</b>, không lấy nguyên bài của sách giáo khoa.</li>
+      <li>Phép tính giữ trong phạm vi 100 và <b>không nhớ</b> — cộng trừ có nhớ phải sang
+        chủ đề 2 (tuần 4 trở đi) mới học.</li>
+      <li>Bài 5 có <b>sơ đồ đoạn thẳng vẽ đúng tỉ lệ 24 : 18</b>; nhìn sơ đồ là thấy phải trừ,
+        đây là bước bắt buộc của phương pháp dạy toán tiểu học.</li>
+    </ul>
+  </div>
+
+  <div class="chan"><span>Đáp án · Toán 2 · Tuần 2</span>
+    <span class="giua">trang đáp án — thầy cô và phụ huynh xem sau khi em làm xong</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<script src="nut-in.js"></script>
+</body>
+</html>

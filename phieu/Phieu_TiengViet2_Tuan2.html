@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=794">
+<title>Phiếu bài tập cuối tuần — Tiếng Việt 2 — Tuần 2</title>
+<link rel="stylesheet" href="khuon.css">
+<style>
+/* Tranh minh hoạ bài đọc: thả nổi bên phải để chữ chảy quanh — nhờ vậy tranh không
+   đẩy khung bài đọc cao thêm, trang 1 vẫn đủ chỗ cho bốn câu hỏi. */
+.tranh { float: right; width: 44mm; height: auto; margin: 0 0 2mm 5mm; shape-outside: margin-box; }
+/* Ô tập viết chữ hoa — có dòng kẻ ngang mờ như vở ô li. */
+.o-viet { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3mm; margin-top: 2mm; }
+.o-viet .o { border: 1.2pt solid #cfd8d2; border-radius: 2mm; height: 24mm; position: relative;
+  display: flex; align-items: center; justify-content: center; }
+.o-viet .o:before { content: ""; position: absolute; left: 2mm; right: 2mm; top: 62%;
+  border-top: .8pt dashed #dfe6e2; }
+.o-viet .o svg { height: 19mm; position: relative; }
+</style>
+</head>
+<!-- Bám kế hoạch giáo dục của app (khgd-lop2.js), tuần 2 — chủ điểm "Em lớn lên từng ngày":
+     Bài 3 "Niềm vui của Bi và Bống" (đọc · chữ hoa Ă, Â · kể chuyện) và
+     Bài 4 "Làm việc thật là vui" (đọc · bảng chữ cái · từ ngữ chỉ sự vật, hoạt động ·
+     câu nêu hoạt động · viết đoạn kể một việc em đã làm ở nhà).
+     Bài đọc do Bút Xanh tự viết theo chủ điểm, KHÔNG chép của sách giáo khoa. -->
+<body class="mon-tv">
+
+<!-- Tranh do Bút Xanh tự vẽ, không lấy từ sách giáo khoa (bản quyền NXB Giáo dục Việt Nam). -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <!-- hai anh em quét sân, có cái chổi và đống lá -->
+  <g id="h-quet-san">
+    <!-- bạn lớn -->
+    <path class="hv-n" style="stroke-width:10" d="M52 150v34M72 150v34"/>
+    <path style="fill:none;stroke:#3F6B9E;stroke-width:5.6;stroke-linecap:round" d="M52 150v18M72 150v18"/>
+    <path style="fill:none;stroke:#FFD6B0;stroke-width:5.6;stroke-linecap:round" d="M52 170v14M72 170v14"/>
+    <path class="hv-tr mv-xanhd" d="M40 148v-30c0-12 10-21 22-21s22 9 22 21v30z"/>
+    <path class="hv-n" style="stroke-width:9" d="M82 118l26 16"/>
+    <path style="fill:none;stroke:#FFD6B0;stroke-width:5;stroke-linecap:round" d="M82 118l26 16"/>
+    <circle class="hv-tr mv-da" cx="62" cy="82" r="19"/>
+    <path class="hv-tr mv-toc" d="M43 81c0-13 9-22 19-22s19 9 19 22c-5-7-11-11-19-11s-14 4-19 11z"/>
+    <circle class="hv-den" cx="55" cy="82" r="2.6"/>
+    <circle class="hv-den" cx="69" cy="82" r="2.6"/>
+    <path class="hv-n2" d="M56 91c4 4 9 4 13 0"/>
+    <!-- cái chổi -->
+    <path class="hv-n" style="stroke-width:6" d="M108 134l38 34"/>
+    <path style="fill:none;stroke:#C98A52;stroke-width:3;stroke-linecap:round" d="M108 134l38 34"/>
+    <path class="hv-tr" style="fill:#E8B77E" d="M146 168l24 22-30 12-14-22z"/>
+    <path class="hv-n2" d="M150 176l-10 16M158 182l-10 14"/>
+    <!-- đống lá vàng quét được -->
+    <path class="hv-tr" style="fill:#F7E7B0" d="M180 204c-14 0-24-6-24-12s10-10 24-10 26 4 26 10-12 12-26 12z"/>
+    <path class="hv-n2" style="stroke:#C9A94E" d="M166 190c4-4 10-5 14-2M190 188c4 0 8 2 9 5"/>
+    <!-- mặt sân -->
+    <path class="hv-n" d="M8 208h212"/>
+  </g>
+</defs></svg>
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU BÀI TẬP CUỐI TUẦN</h1>
+      <div class="mon">MÔN TIẾNG VIỆT — LỚP 2</div><div class="tuan">TUẦN 2</div></div>
+    <div class="ngay">Ngày …… / …… / 20……<br>Em lớn lên từng ngày<br>Trang 1/2</div>
+  </div>
+
+  <div class="hoten">
+    <div style="flex:1"><span>Họ và tên:</span><span class="o"></span></div>
+    <div><span>Lớp:</span><span class="o hep"></span></div>
+  </div>
+
+  <div class="phan"><span class="so">I</span><span class="ten">Đọc hiểu</span><span class="line"></span></div>
+  <div class="dan">Đọc thầm bài sau:</div>
+
+  <div class="vb">
+    <div class="ten-bai">SÁNG CHỦ NHẬT</div>
+
+    <svg class="tranh" viewBox="0 0 230 220" aria-label="Tranh: hai anh em quét sân, gom lá vàng thành đống">
+      <use href="#h-quet-san"/>
+    </svg>
+
+    <p>Sáng chủ nhật, Bin dậy sớm. Em ra sân thì thấy lá rụng đầy. Bin lấy chổi quét gom lá lại
+      thành một đống nhỏ.</p>
+    <p>Bống chạy ra, tay ôm cái hót rác:</p>
+    <p>— Anh quét, em hót nhé!</p>
+    <p>Hai anh em vừa làm vừa cười. Chỉ một lát, cái sân đã sạch bong. Mẹ đi chợ về, nhìn sân rồi
+      nhìn hai đứa, khen: “Hai anh em giỏi quá!”</p>
+    <p>Bin thấy vui lạ. Hoá ra làm việc cũng vui như chơi.</p>
+    <p class="tacgia">Bút Xanh</p>
+  </div>
+
+  <div class="dan">Dựa vào bài đọc, khoanh vào chữ đặt trước câu trả lời đúng hoặc làm theo yêu cầu:</div>
+
+  <div class="cau"><div class="de"><b>Câu 1.</b> Sáng chủ nhật, Bin thấy gì ngoài sân?</div>
+    <div class="pa mot"><span><i class="k">A.</i>Lá rụng đầy sân.</span>
+      <span><i class="k">B.</i>Trời đang mưa to.</span>
+      <span><i class="k">C.</i>Các bạn đang chơi bóng.</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 2.</b> Bống đã làm gì cùng anh?</div>
+    <div class="pa mot"><span><i class="k">A.</i>Ôm cái hót rác ra hót lá.</span>
+      <span><i class="k">B.</i>Đi chợ giúp mẹ.</span>
+      <span><i class="k">C.</i>Ngồi xem anh quét sân.</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 3.</b> Mẹ đã nói gì với hai anh em?</div>
+    <div class="pa mot"><span><i class="k">A.</i>“Hai anh em giỏi quá!”</span>
+      <span><i class="k">B.</i>“Các con đi học đi!”</span>
+      <span><i class="k">C.</i>“Sân bẩn quá!”</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 4.</b> Vì sao Bin thấy “làm việc cũng vui như chơi”?
+    Em hãy viết câu trả lời của mình.</div>
+    <div class="ke"><div class="d"></div><div class="d"></div></div></div>
+
+  <div class="chan"><span>Tiếng Việt 2 · Tuần 2</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU BÀI TẬP CUỐI TUẦN</h1>
+      <div class="mon">MÔN TIẾNG VIỆT — LỚP 2</div><div class="tuan">TUẦN 2</div></div>
+    <div class="ngay">Họ và tên: ……………………<br>Lớp: ………<br>Trang 2/2</div>
+  </div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Luyện từ và câu</span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 1.</b> Viết tiếp các chữ cái còn thiếu theo đúng thứ tự
+    trong bảng chữ cái:</div>
+    <div style="padding-left:6mm;margin-top:2mm;font-size:14pt;word-spacing:4mm">
+      i &nbsp; k &nbsp; …… &nbsp; m &nbsp; n &nbsp; …… &nbsp; ô &nbsp; ơ &nbsp; …… &nbsp; q</div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 2.</b> Xếp các từ sau vào đúng nhóm:
+    <i>cái chổi, quét sân, mẹ, hót rác, cái sân, cười.</i></div>
+    <table class="bl" style="margin-top:2mm">
+      <tr><th style="width:50%">Từ ngữ chỉ sự vật</th><th style="width:50%">Từ ngữ chỉ hoạt động</th></tr>
+      <tr><td style="height:20mm">&nbsp;</td><td>&nbsp;</td></tr>
+    </table>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 3.</b> Đặt <b>một câu nêu hoạt động</b> để nói về việc em đã làm
+    giúp bố mẹ (theo mẫu: <i>Ai làm gì?</i>).</div>
+    <div class="ke hep" style="margin-left:6mm"><div class="d"></div><div class="d"></div></div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 4.</b> Tập viết chữ hoa <b>Ă</b>, <b>Â</b> — tô theo nét chấm rồi viết tiếp:</div>
+    <div class="o-viet">
+      <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="60" text-anchor="middle"
+        font-family="Times New Roman, serif" font-size="58" stroke-width="2.2">Ă</text></svg></div>
+      <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="60" text-anchor="middle"
+        font-family="Times New Roman, serif" font-size="58" stroke-width="2.2">Ă</text></svg></div>
+      <div class="o"></div>
+      <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="60" text-anchor="middle"
+        font-family="Times New Roman, serif" font-size="58" stroke-width="2.2">Â</text></svg></div>
+      <div class="o"></div>
+    </div>
+  </div>
+
+  <div class="phan"><span class="so">III</span><span class="ten">Viết</span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 5.</b> Viết <b>2 – 3 câu</b> kể về một việc em đã làm ở nhà
+    (em đã làm việc gì, làm cùng ai, em cảm thấy thế nào).</div>
+    <div class="ke"><div class="d"></div><div class="d"></div><div class="d"></div>
+      <div class="d"></div><div class="d"></div></div>
+  </div>
+
+  <div class="chan"><span>Tiếng Việt 2 · Tuần 2</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang dapan">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>ĐÁP ÁN &amp; HƯỚNG DẪN</h1>
+      <div class="mon">MÔN TIẾNG VIỆT — LỚP 2</div><div class="tuan">TUẦN 2</div></div>
+    <div class="ngay">Dành cho<br>thầy cô &amp; phụ huynh<br><b>Trang cuối</b></div>
+  </div>
+
+  <div class="muc">Đáp án</div>
+  <div class="bai"><b>Câu 1.</b> <span class="gia">A</span> — lá rụng đầy sân.</div>
+  <div class="bai"><b>Câu 2.</b> <span class="gia">A</span> — Bống ôm cái hót rác ra hót lá.</div>
+  <div class="bai"><b>Câu 3.</b> <span class="gia">A</span> — “Hai anh em giỏi quá!”.</div>
+  <div class="bai"><b>Câu 4.</b> Câu trả lời mở. Ý đúng: vì Bin <span class="gia">làm việc cùng em, được
+    mẹ khen và thấy sân sạch do chính mình quét</span> nên em thấy vui.
+    <i>Chấp nhận mọi cách diễn đạt nêu được một trong các ý đó.</i></div>
+
+  <div class="muc">Luyện từ và câu · Viết</div>
+  <div class="bai"><b>Bài 1.</b> Điền: <span class="gia">l</span> (i, k, <b>l</b>, m, n) ·
+    <span class="gia">o</span> (n, <b>o</b>, ô, ơ) · <span class="gia">p</span> (ơ, <b>p</b>, q).</div>
+  <div class="bai"><b>Bài 2.</b> Từ chỉ <b>sự vật</b>: <span class="gia">cái chổi · mẹ · cái sân</span>.
+    Từ chỉ <b>hoạt động</b>: <span class="gia">quét sân · hót rác · cười</span>.</div>
+  <div class="bai"><b>Bài 3.</b> Câu mở. Ví dụ: <i>“Em quét nhà giúp mẹ.”</i> · <i>“Em rửa bát cùng chị.”</i>
+    Câu phải có đủ <b>Ai</b> + <b>làm gì</b>, đầu câu viết hoa, cuối câu có dấu chấm.</div>
+  <div class="bai"><b>Bài 4.</b> Tô rồi viết chữ hoa <span class="gia">Ă</span> và <span class="gia">Â</span>.
+    Hai chữ này viết như chữ A, chỉ khác phần dấu ở trên: Ă có dấu cong (như cái võng), Â có dấu mũ.</div>
+  <div class="bai"><b>Bài 5.</b> Đoạn mở. Đủ ý là được: <i>việc đã làm · làm cùng ai · cảm nghĩ</i>.
+    Ví dụ: <i>“Chủ nhật vừa rồi, em giúp mẹ nhặt rau. Em ngồi cùng mẹ ở hiên nhà. Em thấy rất vui
+    vì đã giúp được mẹ.”</i></div>
+
+  <div class="muc">Chỗ học sinh hay sai</div>
+  <p>· <b>Bài 2 — lẫn “cái chổi” với “quét sân”.</b> Mẹo: cái gì <i>sờ được, cầm được</i> thì là sự vật;
+    cái gì <i>làm được, kể ra bằng động tác</i> thì là hoạt động.</p>
+  <p>· <b>Bài 4 — chữ Ă và Â hay bị viết thiếu dấu ở trên</b>, thành ra chữ A. Nhắc em viết xong
+    thân chữ thì nhớ đặt dấu.</p>
+  <p>· <b>Bài 5 — nhiều em chỉ viết một câu.</b> Yêu cầu là 2 – 3 câu, nên gợi cho em ba ý:
+    làm việc gì, làm với ai, thấy thế nào.</p>
+
+  <div class="luuy"><b>Căn cứ chương trình:</b> Tiếng Việt 2 — Kết nối tri thức với cuộc sống,
+    <b>tuần 2</b> gồm <i>Bài 3 “Niềm vui của Bi và Bống”</i> (đọc · chữ hoa <b>Ă, Â</b> · kể chuyện) và
+    <i>Bài 4 “Làm việc thật là vui”</i> (đọc · bảng chữ cái · từ ngữ chỉ sự vật, hoạt động ·
+    câu nêu hoạt động · viết đoạn kể một việc em đã làm ở nhà).
+    <ul>
+      <li><b>Bài đọc do Bút Xanh tự viết</b> theo đúng chủ điểm, không chép bài của sách giáo khoa;
+        tranh minh hoạ cũng do Bút Xanh tự vẽ.</li>
+      <li>Phiếu bám đúng ba nội dung tuần này: <b>bảng chữ cái</b> (bài 1), <b>từ chỉ sự vật – hoạt động</b>
+        (bài 2), <b>câu nêu hoạt động</b> (bài 3), <b>chữ hoa Ă, Â</b> (bài 4).</li>
+    </ul>
+  </div>
+
+  <div class="chan"><span>Đáp án · Tiếng Việt 2 · Tuần 2</span>
+    <span class="giua">trang đáp án — thầy cô và phụ huynh xem sau khi em làm xong</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<script src="nut-in.js"></script>
+</body>
+</html>
