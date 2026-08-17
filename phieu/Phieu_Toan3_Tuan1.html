@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=794">
 <title>Phiếu bài tập cuối tuần — Toán 3 — Tuần 1</title>
 <link rel="stylesheet" href="khuon.css">
+<style>
+/* Sơ đồ toán vẽ bằng SVG — xem ghi chú ngay tại chỗ dùng. */
+.hinh-toan { width: 100%; display: block; margin: 2mm 0 1mm; }
+.hinh-toan text { font-family: "Times New Roman", Times, serif; fill: #101c15; }
+</style>
 </head>
 <!-- Bám tuần 1 KNTT: "Ôn tập các số đến 1000" · "Ôn phép cộng, phép trừ trong phạm vi 1000" ·
      "Tìm thành phần trong phép cộng, phép trừ". Số liệu do Bút Xanh tự đặt. -->
@@ -61,6 +66,17 @@
     <div class="pa"><span><i class="k">A.</i>999</span><span><i class="k">B.</i>987</span>
       <span><i class="k">C.</i>900</span><span><i class="k">D.</i>989</span></div></div>
 
+  <div class="phan"><span class="so">II</span><span class="ten">Tự luận</span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 1.</b> Đặt tính rồi tính:</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;margin-top:2mm;padding-left:6mm">
+      <div style="border:1pt solid #dfe8e3;border-radius:2mm;height:30mm;padding:2mm;font-size:13pt">236 + 142</div>
+      <div style="border:1pt solid #dfe8e3;border-radius:2mm;height:30mm;padding:2mm;font-size:13pt">508 + 394</div>
+      <div style="border:1pt solid #dfe8e3;border-radius:2mm;height:30mm;padding:2mm;font-size:13pt">675 − 231</div>
+      <div style="border:1pt solid #dfe8e3;border-radius:2mm;height:30mm;padding:2mm;font-size:13pt">700 − 268</div>
+    </div>
+  </div>
+
   <div class="chan"><span>Toán 3 · Tuần 1</span>
     <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
     <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
@@ -77,16 +93,7 @@
     <div class="ngay">Họ và tên: ……………………<br>Lớp: ………<br>Trang 2/2</div>
   </div>
 
-  <div class="phan"><span class="so">II</span><span class="ten">Tự luận</span><span class="line"></span></div>
-
-  <div class="bai"><div class="de"><b>Bài 1.</b> Đặt tính rồi tính:</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;margin-top:2mm;padding-left:6mm">
-      <div style="border:1pt solid #dfe8e3;border-radius:2mm;height:30mm;padding:2mm;font-size:13pt">236 + 142</div>
-      <div style="border:1pt solid #dfe8e3;border-radius:2mm;height:30mm;padding:2mm;font-size:13pt">508 + 394</div>
-      <div style="border:1pt solid #dfe8e3;border-radius:2mm;height:30mm;padding:2mm;font-size:13pt">675 − 231</div>
-      <div style="border:1pt solid #dfe8e3;border-radius:2mm;height:30mm;padding:2mm;font-size:13pt">700 − 268</div>
-    </div>
-  </div>
+  <div class="phan"><span class="so">II</span><span class="ten">Tự luận <span style="font-weight:normal;text-transform:none">(tiếp theo)</span></span><span class="line"></span></div>
 
   <div class="bai"><div class="de"><b>Bài 2.</b> Tìm <i>x</i>:</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:2mm;padding-left:6mm">
@@ -111,8 +118,21 @@
 
   <div class="bai"><div class="de"><b>Bài 5.</b> Thư viện trường có 425 quyển truyện. Nhà trường mua thêm
     168 quyển truyện nữa. Hỏi thư viện có tất cả bao nhiêu quyển truyện?</div>
-    <div class="giai"><div class="nhan">Bài giải</div>
-      <div class="ke"><div class="d"></div><div class="d"></div><div class="d"></div><div class="d"></div></div></div>
+    <div class="o-lam">
+      <!-- SƠ ĐỒ ĐOẠN THẲNG — dạng toán "thêm vào": hai phần nối tiếp nhau, dấu ngoặc dưới
+           ôm trọn cả hai để học sinh nhìn ra phải làm phép cộng. Độ dài hai đoạn vẽ đúng
+           tỉ lệ 425 : 168 chứ không vẽ bằng nhau. -->
+      <svg class="hinh-toan" viewBox="0 0 620 116" style="height:26mm">
+        <text x="257" y="20" text-anchor="middle" font-size="22">425 quyển</text>
+        <text x="462" y="20" text-anchor="middle" font-size="22">168 quyển</text>
+        <path class="hv-n" d="M110 40h410"/>
+        <path class="hv-n2" d="M110 28v24M405 28v24M520 28v24"/>
+        <path class="hv-n2" d="M110 62v10h410V62"/>
+        <text x="315" y="100" text-anchor="middle" font-size="24" font-weight="bold">? quyển truyện</text>
+      </svg>
+      <div class="giai"><div class="nhan">Bài giải</div>
+        <div class="ke"><div class="d"></div><div class="d"></div><div class="d"></div><div class="d"></div></div></div>
+    </div>
   </div>
 
   <div class="chan"><span>Toán 3 · Tuần 1</span>
