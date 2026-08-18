@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-18 · 62';
+  var PB='2026-08-18 · 63';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -4404,7 +4404,14 @@ function saveCurrentKHBD(){
     const item={id:'k'+Date.now(),mon:l.mon,bai:l.bai,lop:l.lop||state.klass,tuan:l.tuan||state.week,day:l.day,date:l.date,content,fromBank:l.bankId||null,created:new Date().toLocaleDateString('vi-VN')};
     state.khbd.unshift(item); state.current=item;
   }
-  persistKHBD();
+  /* (18/8/2026) NÓI THẬT KHI LƯU HỎNG. Trước đây dù bộ nhớ trình duyệt đầy (BX_luu trả
+     false) nút vẫn đổi thành "✓ Đã lưu vào kho" — thầy cô yên tâm tắt máy và mất bài.
+     Nay lưu hỏng thì giữ nguyên nút để còn cứu được nội dung đang có trên màn hình. */
+  var _daLuu=persistKHBD();
+  if(_daLuu===false){
+    var b0=el('btn-save'); if(b0){ b0.textContent='⚠ Chưa lưu được — xem thông báo'; b0.disabled=false; }
+    return;
+  }
   const b=el('btn-save'); b.textContent='✓ Đã lưu vào kho'; b.disabled=true;
   if(el('v-khbd').classList.contains('active')) renderKHBDList();
   if(el('v-kho').classList.contains('active')) renderKho();
@@ -5216,7 +5223,10 @@ function saveHs(){
   if(type==='hoa-nhap'){ obj.disability=el('hs-disability').value||''; obj.severity=el('hs-severity').value||''; obj.iep=el('hs-iep').value||'chua'; }
   if(hsEditId){ const s=state.hocsinh.find(x=>x.id===hsEditId); if(s){ delete s.tag; delete s.color; delete s.icon; delete s.disability; delete s.severity; delete s.iep; Object.assign(s,obj); } }
   else { obj.id='h'+Date.now(); state.hocsinh.unshift(obj); }
-  persistHocSinh(); renderHocSinh(); closeModal('hs-overlay');
+  /* Lưu hỏng (bộ nhớ đầy) thì GIỮ NGUYÊN cửa sổ nhập, đừng đóng — đóng rồi là mất
+     những gì thầy cô vừa gõ mà vẫn tưởng đã lưu xong. (18/8/2026) */
+  if(persistHocSinh()===false){ renderHocSinh(); return; }
+  renderHocSinh(); closeModal('hs-overlay');
   if(el('v-dashboard')&&el('v-dashboard').classList.contains('active')) renderDashboard();
 }
 function delHs(id){ bxConfirm('Xoá nhóm này?').then(function(ok){ if(!ok)return; state.hocsinh=state.hocsinh.filter(x=>x.id!==id); persistHocSinh(); renderHocSinh(); }); }
@@ -5343,7 +5353,8 @@ function saveHl(){
   const obj={title,type:el('hl-type').value.trim()||'Tài liệu',emoji:el('hl-emoji').value.trim()||'📎',subject:el('hl-subject').value.trim(),link:el('hl-link').value.trim()};
   if(hlEditId){ const h=state.hoclieu.find(x=>x.id===hlEditId); if(h)Object.assign(h,obj); }
   else { obj.id='l'+Date.now(); state.hoclieu.unshift(obj); }
-  persistHocLieu(); renderHocLieu(); closeModal('hl-overlay');
+  if(persistHocLieu()===false){ renderHocLieu(); return; }   /* lưu hỏng thì giữ cửa sổ nhập */
+  renderHocLieu(); closeModal('hl-overlay');
   if(el('v-dashboard')&&el('v-dashboard').classList.contains('active')) renderDashboard();
 }
 function delHl(id){ bxConfirm('Xoá học liệu này?').then(function(ok){ if(!ok)return; state.hoclieu=state.hoclieu.filter(x=>x.id!==id); persistHocLieu(); renderHocLieu(); }); }
@@ -5575,7 +5586,12 @@ el('set-save').onclick=function(){
 };
 
 /* ---------- 16b) SAO LƯU / KHÔI PHỤC DỮ LIỆU (JSON) ---------- */
-const BACKUP_KEYS=['butxanh_profile','butxanh_schedule','butxanh_tkb','butxanh_tkb_exc','butxanh_mon_them','butxanh_khbd','butxanh_khbd_edits','butxanh_hocsinh','butxanh_hoclieu','butxanh_khofiles','butxanh_bank'];
+/* ⚠️ (18/8/2026 — LỖI NẶNG ĐÃ VÁ) Danh sách này TỪNG THIẾU `butxanh_lbg_weeks`, tức là
+   nút "Sao lưu dữ liệu" KHÔNG lưu Lịch báo giảng 35 tuần — mà đo thật thì phần đó chiếm
+   184/195 KB, tức 94% toàn bộ công sức cả năm của thầy cô. `butxanh_schedule` chỉ là bản
+   sao của ĐÚNG TUẦN đang mở, nên thầy cô sao lưu xong vẫn tưởng đủ, đến lúc khôi phục thì
+   mất 34/35 tuần. Khoá nào được đồng bộ lên mây (xem `KEYS` của FBX) thì cũng phải có ở đây. */
+const BACKUP_KEYS=['butxanh_profile','butxanh_schedule','butxanh_tkb','butxanh_tkb_exc','butxanh_mon_them','butxanh_lbg_weeks','butxanh_lbg_meta','butxanh_khbd','butxanh_khbd_edits','butxanh_hocsinh','butxanh_hoclieu','butxanh_khofiles','butxanh_bank'];
 function buildBackupPayload(){
   const data={}; BACKUP_KEYS.forEach(k=>{ const v=localStorage.getItem(k); if(v!==null) data[k]=v; });
   return {app:'butxanh', version:1, exportedAt:new Date().toISOString(), data};
@@ -5592,9 +5608,23 @@ function applyBackupData(payload){
   if(!obj || typeof obj!=='object') throw new Error('File không hợp lệ.');
   const keys=Object.keys(obj).filter(k=>k.indexOf('butxanh_')===0);
   if(!keys.length) throw new Error('File không chứa dữ liệu Bút Xanh.');
-  BACKUP_KEYS.forEach(k=>localStorage.removeItem(k));
+  /* (18/8/2026) CHỈ XOÁ NHỮNG KHOÁ CÓ TRONG TỆP. Trước đây xoá theo trọn BACKUP_KEYS rồi
+     ghi lại phần tệp có — nên khôi phục một tệp sao lưu CŨ (tải trước khi khoá mới được
+     thêm vào danh sách) là xoá luôn dữ liệu mới mà tệp không hề chứa. Với tệp sao lưu đầy
+     đủ thì hai cách cho kết quả như nhau; với tệp cũ thì cách này giữ được phần còn lại. */
+  keys.forEach(k=>localStorage.removeItem(k));
   keys.forEach(k=>{ const v=obj[k]; try{ localStorage.setItem(k, typeof v==='string'?v:JSON.stringify(v)); }catch(e){} });
   return keys.length;
+}
+/* Tệp sao lưu có chứa Lịch báo giảng cả năm không? Dùng để cảnh báo trước khi khôi phục. */
+function _bxSaoLuuThieuLich(payload){
+  try{
+    const obj=(payload && payload.data && typeof payload.data==='object') ? payload.data : payload;
+    if(!obj) return false;
+    const coTrongTep=Object.prototype.hasOwnProperty.call(obj,'butxanh_lbg_weeks');
+    const dangCoTrenMay=!!localStorage.getItem('butxanh_lbg_weeks');
+    return !coTrongTep && dangCoTrenMay;
+  }catch(e){ return false; }
 }
 function importBackup(input){
   const file=(input.files||[])[0]; if(!file) return; const m=el('backup-msg');
@@ -5613,7 +5643,11 @@ function importBackup(input){
           setTimeout(()=>{ try{location.reload();}catch(e){ reloadAllState(); } }, 400);
         }catch(e){ if(m) m.textContent='⚠ '+((e&&e.message)||'Không đọc được file sao lưu.'); input.value=''; }
       };
-      bxConfirm('Khôi phục sẽ THAY THẾ toàn bộ dữ liệu hiện tại bằng dữ liệu trong file. Nên sao lưu hiện tại trước. Tiếp tục?').then(function(ok){ if(!ok){ input.value=''; return; } doRestoreNow(); });
+      /* Tệp sao lưu cũ không có Lịch báo giảng cả năm → nói thẳng để thầy cô biết phần
+         lịch trên máy được giữ nguyên, khỏi tưởng khôi phục xong là mất. (18/8/2026) */
+      var loiNhac='Khôi phục sẽ THAY THẾ toàn bộ dữ liệu hiện tại bằng dữ liệu trong file. Nên sao lưu hiện tại trước. Tiếp tục?';
+      if(_bxSaoLuuThieuLich(payload)) loiNhac='File sao lưu này được tạo bằng bản Bút Xanh cũ nên KHÔNG chứa Lịch báo giảng cả năm.\n\nBút Xanh sẽ giữ nguyên Lịch báo giảng đang có trên máy, các phần khác thay bằng dữ liệu trong file. Tiếp tục?';
+      bxConfirm(loiNhac).then(function(ok){ if(!ok){ input.value=''; return; } doRestoreNow(); });
     }catch(e){ if(m) m.textContent='⚠ '+((e&&e.message)||'Không đọc được file sao lưu.'); input.value=''; }
   };
   reader.onerror=function(){ if(m) m.textContent='⚠ Không đọc được file.'; input.value=''; };

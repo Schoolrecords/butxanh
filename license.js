@@ -914,17 +914,30 @@
   /* Chốt phạm vi vào bản quyền. CHỈ ghi khi ĐÃ TRẢ PHÍ — trước đó thầy cô còn được
      đổi lựa chọn thoải mái (thầy Chung chốt 5/8/2026). */
   function ganQuyenLanDau(khoiTep){
-    var q=quyenDaChon();
+    var q=quyenDaChon(), chuaKhaiGi=false;
     if(!q){
       var pc=phanCongGVDay(); q=tinhQuyen(pc);
       if(!Object.keys(q).length){
         /* Chưa chọn, chưa khai thời khoá biểu → giữ nếp cũ: mở TRỌN khối đang có,
            để thầy cô mới cài không bị chặn oan. */
+        chuaKhaiGi=true;
         Object.keys(pc).forEach(function(k){ if(/^[1-5]$/.test(k)) q[k]='*'; });
         if(!Object.keys(q).length && khoiTep) q[khoiTep]='*';
       }
     }
     if(!Object.keys(q).length) return {};
+    /* ⚠️ (18/8/2026) KHÔNG CHỐT BẰNG DỮ LIỆU RỖNG. Phạm vi khối×môn chốt xong là KHOÁ
+       VĨNH VIỄN (luật Firebase chỉ cho ghi khi chưa có), sửa được thì phải nhờ quản trị.
+       Đầu năm học thầy cô hay trả phí và tải giáo án TRƯỚC khi kịp khai thời khoá biểu —
+       lúc ấy phân công suy ra rỗng, nếp cũ chốt luôn "trọn khối đang chọn trên màn hình".
+       Thầy cô bộ môn dạy 5 khối (Âm nhạc, Thể dục, Tin học, Mĩ thuật, Tiếng Anh) bị khoá
+       cứng vào ĐÚNG MỘT khối, mất quyền ở 4 khối còn lại dù đã trả tiền.
+       Nay: chưa khai gì thì DÙNG TẠM phạm vi đó cho lượt tải này nhưng KHÔNG ghi khoá,
+       để lần sau — khi thời khoá biểu đã có — chốt cho đúng người đúng việc. */
+    if(chuaKhaiGi){
+      try{ moiKhaiTKB(); }catch(e){}
+      return q;
+    }
     if(!paid) return q;                                 // chưa kích hoạt → dùng, chưa chốt
     var chuoi=ghiQuyen(q), ks=Object.keys(q).sort().join(',');
     try{ if(user&&db){ var u={};
@@ -936,6 +949,21 @@
       db.ref().update(u).catch(function(e){ console.warn('[BXLIC] chốt quyền chưa ghi được:', (e&&e.message)||e); }); } }catch(e){}
     if(rec){ rec.quyen=chuoi; rec.khoi=ks; }
     return q;
+  }
+  /* Mời khai thời khoá biểu — MỘT CHẠM là tới nơi. Chỉ hiện một lần mỗi phiên để
+     không làm phiền thầy cô đang tải giáo án. (18/8/2026) */
+  var _daMoiKhaiTKB=false;
+  function moiKhaiTKB(){
+    if(_daMoiKhaiTKB) return; _daMoiKhaiTKB=true;
+    try{
+      if(typeof window.BX_confirm!=='function') return;
+      window.BX_confirm({
+        title:'Thầy/cô đã lập Thời khoá biểu chưa?',
+        html:'<div style="text-align:left;font-size:14px;line-height:1.7">Bút Xanh gắn <b>lớp và môn thầy/cô dạy</b> theo Thời khoá biểu. '+
+             'Chưa lập thì phần giáo án mở ra có thể chưa đúng lớp mình.<br><br>Lập một lần, dùng cả năm — chỉ vài phút.</div>',
+        okText:'Lập ngay',cancelText:'Để sau'
+      }, function(){ try{ if(typeof window.bxOpenTKB==='function') window.bxOpenTKB(); else if(typeof window.showView==='function') window.showView('tkb'); }catch(e){} });
+    }catch(e){}
   }
   /* Câu chữ cho thầy cô đọc: "khối 3 (mọi môn) · khối 1 (Đạo đức)" */
   function moTaQuyen(q){
