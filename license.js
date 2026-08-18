@@ -32,7 +32,7 @@
     TIEN_TO_CK: 'SEVQR ',
     // Tài khoản QUẢN TRỊ bản quyền (mở được trang "⚙ Quản trị bản quyền" trong app).
     // Ghi nhiều email thì cách nhau bằng dấu phẩy.
-    EMAIL_ADMIN: 'chungsongthinh@gmail.com, xebatcheotrt@gmail.com',
+    EMAIL_ADMIN: 'chungsongthinh@gmail.com, xebatcheotrt@gmail.com, phanthuonggdth2909@gmail.com',
     SO_LAN_DOI_MAY_TOI_DA: 2,                  // đổi MÁY TÍNH (ngăn chính) tối đa / năm học
     /* (9/8/2026 — thầy Chung chốt) Một bản quyền = 1 MÁY TÍNH (soạn) + 1 ĐIỆN THOẠI (xem + tải Word) */
     SO_LAN_DOI_MAY_PHU_TOI_DA: 4,              // đổi ĐIỆN THOẠI (ngăn phụ) / năm học — nới hơn vì điện thoại đổi/mất thường hơn
