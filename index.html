@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-18 · 63';
+  var PB='2026-08-18 · 64';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1456,7 +1456,10 @@ window.bxMergeKho = function(){
           <button class="sp-lop" onclick="BX_chaoChonLop(4)"><span class="l">LỚP</span><span class="n">4</span></button>
           <button class="sp-lop" onclick="BX_chaoChonLop(5)"><span class="l">LỚP</span><span class="n">5</span></button>
         </div>
-        <div class="sp-note">Chạm một lần — Bút Xanh dựng sẵn lịch dạy cả tuần kèm giáo án, thầy cô chỉnh lại lúc nào cũng được.</div>
+        <!-- (18/8/2026) Câu cũ hứa "dựng sẵn lịch dạy cả tuần" — từ 10/8 chạm chọn lớp mở
+             LƯỚI THỜI KHOÁ BIỂU TRỐNG để thầy cô khai lịch thật, không dựng lịch mẫu nữa.
+             Đây là câu mọi giáo viên mới đều đọc đầu tiên nên phải đúng với việc app làm. -->
+        <div class="sp-note">Chạm một lần — Bút Xanh mở sẵn lưới thời khoá biểu để thầy cô khai lịch lớp mình, rồi tự dựng lịch báo giảng và giáo án cả tuần.</div>
         <div class="sp-cu">
           <div class="sp-cu-txt"><b>Nếu thầy cô đã sử dụng Bút Xanh</b>, xin bỏ qua thông báo này — hãy đăng nhập Google để lấy lại dữ liệu, hoặc vào thẳng ứng dụng.</div>
           <div class="sp-cu-nut">
@@ -3057,6 +3060,22 @@ function _applyScheduleData(sch, meta){
   state.schedule=sch;
   if(meta.week)state.week=meta.week; if(meta.year)state.year=meta.year; if(meta.gvcn)state.gvcn=meta.gvcn;
   if(meta.from)state.from=meta.from; if(meta.to)state.to=meta.to; if(meta.place)state.place=meta.place;
+  /* (18/8/2026) TỆP KHÔNG GHI "Từ ngày" → TỰ TÍNH THEO TUẦN, đừng giữ ngày của tuần cũ.
+     Thầy cô hay lấy tệp Lịch báo giảng của tổ rồi đổi số tuần và đưa lên; nếu tệp thiếu
+     dòng "Từ ngày", app giữ nguyên ngày tuần đang mở → bản in ra mang tuần mới nhưng
+     ngày tháng của tuần cũ, nộp tổ chuyên môn là sai mà không ai báo. */
+  /* Tự tính từ mốc BX_WEEK1 (Thứ Hai tuần 1 của năm học). CỐ Ý không gọi BX_weekDates:
+     hàm đó nằm trong một IIFE nên bên ngoài đọc ra undefined — đã đo thật, bản vá đầu
+     dùng nó nên không chạy. BX_WEEK1 thì có trên window. */
+  if(!meta.from && meta.week && window.BX_WEEK1){
+    try{
+      var _w=parseInt(meta.week,10)||parseInt(state.week,10)||1;
+      var _t2=new Date(window.BX_WEEK1.getTime()+(_w-1)*7*86400000);
+      var _cn=new Date(_t2.getTime()+6*86400000);
+      var _dmy=function(d){ return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear(); };
+      state.from=_dmy(_t2); state.to=_dmy(_cn);
+    }catch(e){}
+  }
   const km=String(state.klass).match(/\d+/); if(km)state.khoi=km[0];
   fillScheduleDates();
   try{ persistSchedule(); }catch(e){}
@@ -4693,6 +4712,9 @@ function _weekKhbdItems(){
   const rows=state.schedule||[], items=[];
   rows.forEach(r=>{
     if(typeof BX_laMonThem==='function' && BX_laMonThem(r&&r.mon)) return;
+    /* (18/8/2026) Bỏ luôn dòng NGHỈ LỄ: để lọt thì file Word nộp tổ có hẳn một trang
+       "giáo án" cho ngày nghỉ, tên bài là "🏖️ NGHỈ — Tết Nguyên đán". */
+    if(r&&r._nghi) return;
     const L=findBankLesson(r); items.push(L?{L,r,src:'kho'}:{L:_blankLessonFromRow(r),r,src:'mau'});
   });
   return items;
@@ -4952,7 +4974,8 @@ function renderDashReminders(){
   box.innerHTML=rem.length?rem.map(it=>rmk(it.group,it.title,it.when,it.body)).join(''):'<div class="empty-pad">Chưa có nhắc nào — thêm tiết ở Lịch báo giảng.</div>';
 }
 function renderDashStats(){
-  const sch=state.schedule||[], set=(id,v)=>{const e=el(id); if(e)e.textContent=v;};
+  /* Bỏ dòng nghỉ lễ khỏi con số "Tiết dạy" — xem chú thích ở renderThongKe. (18/8/2026) */
+  const sch=(state.schedule||[]).filter(r=>!(r&&r._nghi)), set=(id,v)=>{const e=el(id); if(e)e.textContent=v;};
   set('dash-st-tiet', sch.length);
   set('dash-st-mon', new Set(sch.map(r=>r.mon)).size);
   /* Tiết chưa có tên bài (gồm cả môn thầy cô tự thêm) cho chuỗi rỗng — để nguyên thì
@@ -5468,18 +5491,26 @@ function buildPptx(slides){
 }
 
 /* ---------- 15) THỐNG KÊ & BÁO CÁO ---------- */
-function uniqueLessons(){ const seen=new Set(), out=[]; (state.schedule||[]).forEach(r=>{ if(!r.bai)return; const k=r.mon+''+r.bai; if(seen.has(k))return; seen.add(k); out.push({mon:r.mon,bai:r.bai}); }); return out; }
+/* (18/8/2026) KHOÁ PHẢI CÓ KHỐI. Trước đây khoá chỉ gồm môn + tên bài, nên thầy cô bộ môn
+   dạy nhiều khối (Âm nhạc, Thể dục, Tin học…) mà hai khối trùng tên bài — rất thường gặp
+   với bài ôn tập, kiểm tra — bị gộp thành một, làm hụt số bài và thổi phồng tỉ lệ "đã soạn". */
+function _bxKhoiCua(x){ return String((x&&(x.lop||x.khoi))||'').replace(/\D/g,'').slice(0,1); }
+function _bxKhoaBai(x){ return _bxKhoiCua(x)+'§'+((x&&x.mon)||'')+'§'+((x&&x.bai)||''); }
+function uniqueLessons(){ const seen=new Set(), out=[]; (state.schedule||[]).forEach(r=>{ if(!r.bai)return; const k=_bxKhoaBai(r); if(seen.has(k))return; seen.add(k); out.push({mon:r.mon,bai:r.bai,lop:r.lop}); }); return out; }
 function khbdCoverage(){
-  const lessons=uniqueLessons(), have=new Set((state.khbd||[]).map(k=>k.mon+''+k.bai));
-  const done=lessons.filter(l=>have.has(l.mon+''+l.bai));
-  const todo=lessons.filter(l=>!have.has(l.mon+''+l.bai));
+  const lessons=uniqueLessons(), have=new Set((state.khbd||[]).map(k=>_bxKhoaBai(k)));
+  const done=lessons.filter(l=>have.has(_bxKhoaBai(l)));
+  const todo=lessons.filter(l=>!have.has(_bxKhoaBai(l)));
   return {total:lessons.length,done:done.length,todo,pct:lessons.length?Math.round(done.length/lessons.length*100):0};
 }
 function _tkStat(cls,n,l){ return `<div class="stat ${cls}"><div class="si"><svg class="icn ic" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div><div><div class="n">${n}</div><div class="l">${l}</div></div></div>`; }
 function _tkBars(id,pairs){ const box=el(id); if(!box)return; if(!pairs.length){ box.innerHTML='<div class="empty-pad">Chưa có dữ liệu.</div>'; return; } const max=Math.max(1,...pairs.map(p=>p[1])); box.innerHTML=pairs.map(p=>`<div class="bar-row"><div class="bl" title="${p[0]}">${p[0]}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(p[1]/max*100)}%"></div></div><div class="bv">${p[1]}</div></div>`).join(''); }
 function renderThongKe(){
   el('tk-week').textContent=state.week; el('tk-lop').textContent=state.klass;
-  const sch=state.schedule||[];
+  /* (18/8/2026) BỎ DÒNG NGHỈ khỏi thống kê: tuần có nghỉ lễ, dòng "🏖️ NGHỈ — …" vẫn
+     nằm trong lịch để in ra cho đúng biểu mẫu, nhưng đếm nó thành "tiết dạy" thì con số
+     báo cáo của thầy cô sai — tuần nghỉ Tết hoá ra vẫn dạy đủ tiết. */
+  const sch=(state.schedule||[]).filter(r=>!(r&&r._nghi));
   const cntMon={}; sch.forEach(r=>cntMon[r.mon]=(cntMon[r.mon]||0)+1);
   const mons=Object.keys(cntMon), cov=khbdCoverage();
   el('tk-stats').innerHTML=[
@@ -7639,7 +7670,12 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
   window.KHO_downloadTuan=function(){
     var rows=lessons().filter(function(L){return L.lop===ST.lop&&L.mon===ST.mon&&L._tuan===ST.tuan;})
                       .sort(function(a,b){return a._tiet-b._tiet;});
-    if(!rows.length) return;
+    /* (18/8/2026) Trước đây tuần chưa có bài thì hàm lặng lẽ thoát — thầy cô bấm mãi
+       không thấy gì, tưởng nút hỏng. Nói rõ một câu rồi thôi. */
+    if(!rows.length){
+      if(window.bxAlert) bxAlert('Tuần '+ST.tuan+' môn '+ST.mon+' lớp '+ST.lop+' chưa có giáo án trong kho.\n\nThầy/cô chọn tuần khác, hoặc dùng nút soạn giáo án ở mục Kế hoạch bài dạy.');
+      return;
+    }
     var fn='KHBD_Lop'+ST.lop+'_'+safe(ST.mon)+'_Tuan'+ST.tuan+'.docx';
     if(typeof window.dlWeekImg==='function'){ window.dlWeekImg(rows.map(function(L){return {L:L,r:rowOf(L)};}), fn); return; }
     if(typeof _wrapDocx!=='function'||typeof _lessonBodyParas!=='function') return;
@@ -8617,7 +8653,10 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
         } else if(code==='auth/unauthorized-domain'){
           bxAlert('Tên miền chưa được cho phép đăng nhập. (Mở bằng file:// sẽ không đăng nhập được — cần localhost hoặc trang web chính thức.)');
         } else {
-          bxAlert('Đăng nhập chưa được — '+((e&&e.message)||code||'lỗi không rõ')+'\n\n💡 Nếu thầy cô dùng tài khoản Google của ngành (đuôi .edu.vn), có thể đơn vị đang chặn ứng dụng ngoài — thầy cô thử lại bằng Gmail cá nhân.');
+          /* (18/8/2026) KHÔNG ném e.message (tiếng Anh, đầy chữ kỹ thuật) vào mặt thầy cô —
+             mã lỗi vẫn ghi ra Console cho người sửa app xem. */
+          try{ console.warn('[Bút Xanh] đăng nhập lỗi:', code, (e&&e.message)||''); }catch(_){}
+          bxAlert('Đăng nhập chưa được, thầy/cô thử lại sau ít phút giúp em.'+'\n\n💡 Nếu thầy cô dùng tài khoản Google của ngành (đuôi .edu.vn), có thể đơn vị đang chặn ứng dụng ngoài — thầy cô thử lại bằng Gmail cá nhân.');
         }
       });
     },
