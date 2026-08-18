@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-18 · 64';
+  var PB='2026-08-18 · 65';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -8221,6 +8221,11 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     busy=true; setStatus('syncing');
     var ts=loadTs(), upd={ updatedAt:firebase.database.ServerValue.TIMESTAMP }, byte=0;
     if(laHatGiong) upd.app='butxanh';
+    /* (18/8/2026) Đóng dấu MÁY VỪA LƯU — vài chục byte. Nhờ dấu này, lần sau thầy cô mở
+       app trên máy khác, Bút Xanh nói được "bản mới nhất vừa lưu ở máy kia" thay vì im lặng. */
+    try{
+      upd['mayCuoi']={ id:_maMayNay(), loai:(bxLaCamTay()?'đt':'pc'), ts:Date.now() };
+    }catch(e){}
     keys.forEach(function(k){
       var v=localStorage.getItem(k);
       upd['data/'+k]=(v!=null?v:null); upd['ts/'+k]=ts[k]||Date.now();
@@ -8283,6 +8288,31 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     if(lstr==null) return {str:cstr,ts:cts};
     if(cstr==null) return {str:lstr,ts:lts};
     if(lstr===cstr) return {str:lstr,ts:Math.max(lts,cts)};
+    /* ================= HAI MÁY CÙNG SỬA — GIỮ BẢN ĐẦY ĐỦ HƠN (18/8/2026) =================
+       Thầy Chung chốt: đụng độ thì app tự giữ bản đầy đủ hơn rồi báo lại một câu.
+       Chỉ áp cho hai khoá KHÔNG gộp được theo phần tử — đo thật cho thấy đây đúng là hai
+       chỗ duy nhất mất dữ liệu khi dùng hai máy tính:
+         · butxanh_tkb        — chiều sửa ở trường, tối sửa ở nhà thì bản chiều mất trắng
+         · butxanh_khbd_edits — sửa 2 bài ở trường, 1 bài ở nhà thì mất cả 2 bài ở trường
+       "Đầy đủ hơn" = nhiều tiết hơn (TKB) / nhiều bài đã tinh chỉnh hơn (giáo án). Bằng nhau
+       thì lấy bản mới hơn như cũ. Bản thua KHÔNG mất: tronVaAp gọi backupLocal trước khi
+       ghi đè, thầy cô lấy lại được ở menu tài khoản ▸ "⟲ Khôi phục bản trước". */
+    if(key==='butxanh_tkb' || key==='butxanh_khbd_edits'){
+      var _dem=function(s){
+        var v=_pj(s,null); if(!v) return 0;
+        if(key==='butxanh_tkb') return (v.slots&&v.slots.length)||0;
+        return (typeof v==='object')?Object.keys(v).length:0;
+      };
+      var nL=_dem(lstr), nC=_dem(cstr);
+      if(nL!==nC){
+        var thangMay=nL>nC;
+        try{ window.BX_ghiNhanDungDo && window.BX_ghiNhanDungDo(key, thangMay?nL:nC, thangMay?nC:nL, thangMay?lts:cts, thangMay?cts:lts, thangMay); }catch(e){}
+        return {str:(thangMay?lstr:cstr), ts:Math.max(lts,cts)};
+      }
+      try{ window.BX_ghiNhanDungDo && window.BX_ghiNhanDungDo(key, nL, nC, Math.max(lts,cts), Math.min(lts,cts), lts>=cts); }catch(e){}
+      /* bằng nhau → nếp cũ: bản mới hơn thắng */
+      return {str:(lts>=cts?lstr:cstr), ts:Math.max(lts,cts)};
+    }
     if(key==='butxanh_lbg_weeks'){
       var lm=_pj(lstr,{}), cm=_pj(cstr,{}); if(!lm||typeof lm!=='object') lm={}; if(!cm||typeof cm!=='object') cm={};
       var out={}, seen={}, lw=lts>=cts;
@@ -8411,8 +8441,83 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     if(typeof window.BX_reloadFromStorage==='function'){ try{ window.BX_reloadFromStorage(); return; }catch(e){} }
     if(reloadT) clearTimeout(reloadT); reloadT=setTimeout(function(){ try{ location.reload(); }catch(e){} }, 700);
   }
+  /* ===== BÁO CHO THẦY CÔ BIẾT VỪA CÓ ĐỤNG ĐỘ HAI MÁY (18/8/2026) =====
+     BX_mergeKey là hàm thuần, không được tự mở hộp thoại giữa lúc đang trộn. Nó chỉ
+     GHI NHẬN vào đây; sau khi đồng bộ xong mới báo, gộp một lần cho cả đợt. */
+  /* Mã máy này — dùng chung mã bền của lớp bản quyền (butxanh_devid) để hai nơi nói
+     cùng một thứ tiếng; chưa có thì tự sinh, không đồng bộ lên mây. */
+  function _maMayNay(){
+    try{
+      var id=localStorage.getItem('butxanh_devid');
+      if(!id){ id='d'+Date.now().toString(36)+Math.random().toString(36).slice(2,10); localStorage.setItem('butxanh_devid', id); }
+      return id;
+    }catch(e){ return 'khong-ro'; }
+  }
+  /* Bản mới nhất vừa lưu ở MÁY KHÁC → nói cho thầy cô biết, một lần mỗi phiên.
+     Chỉ báo khi cách nhau quá 2 phút: dưới mức đó thường là chính máy này vừa đẩy xong
+     (mốc chưa kịp về) hoặc thầy cô mở hai tab trên cùng máy. */
+  var _daBaoMayKhac=false;
+  function baoMayKhac(){
+    if(_daBaoMayKhac || !db || !user) return;
+    _daBaoMayKhac=true;
+    try{
+      db.ref('users/'+user.uid+'/mayCuoi').once('value').then(function(s){
+        var m=s&&s.val(); if(!m||!m.id) return;
+        if(m.id===_maMayNay()) return;                       // chính máy này lưu lần cuối
+        if(Date.now()-(+m.ts||0) < 120000) return;
+        var ten=(m.loai==='đt')?'điện thoại':'máy tính khác';
+        if(typeof window.BX_confirm!=='function') return;
+        window.BX_confirm({
+          title:'Lần lưu gần nhất ở máy khác',
+          html:'<div style="text-align:left;font-size:14px;line-height:1.7">Bản mới nhất của thầy/cô vừa được lưu trên <b>'+ten+'</b> lúc <b>'+_gioPhut(m.ts)+'</b>.'+
+               '<br><br>Bút Xanh đã lấy bản đó về máy này, thầy/cô soạn tiếp bình thường.'+
+               '<br><br><span style="color:#8a5a00">💡 Nên soạn cố định trên <b>một máy</b> và bấm 💾 Lưu trước khi rời máy — soạn cùng lúc hai máy dễ chồng lấn.</span></div>',
+          okText:'Đã hiểu', single:true
+        });
+      }).catch(function(){});
+    }catch(e){}
+  }
+  var _dungDo=[];
+  window.BX_ghiNhanDungDo=function(key, nGiu, nBo, tsGiu, tsBo, giuLaBanMayNay){
+    if(nGiu===nBo && nBo===0) return;
+    _dungDo.push({key:key, nGiu:nGiu, nBo:nBo, tsGiu:tsGiu, tsBo:tsBo, ngay:!!giuLaBanMayNay});
+  };
+  function _gioPhut(ms){
+    if(!ms) return '';
+    try{ var d=new Date(+ms);
+      return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+' ngày '+('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2);
+    }catch(e){ return ''; }
+  }
+  function baoDungDo(){
+    if(!_dungDo.length) return;
+    var ds=_dungDo.slice(); _dungDo=[];
+    var dong=ds.map(function(x){
+      var ten=(x.key==='butxanh_tkb')?'Thời khoá biểu':'Nội dung giáo án đã chỉnh';
+      var dv=(x.key==='butxanh_tkb')?' tiết':' bài';
+      if(x.nGiu===x.nBo) return '• <b>'+ten+'</b>: hai máy đều có '+x.nGiu+dv+' — Bút Xanh giữ bản lưu sau (lúc '+_gioPhut(x.tsGiu)+').';
+      /* Nói ĐÚNG bên nào là máy đang ngồi: bản giữ có thể là bản máy này, cũng có thể là
+         bản lấy từ máy kia về — ghi lẫn thì thầy cô hiểu ngược. */
+      var soMayNay=x.ngay?x.nGiu:x.nBo, soMayKia=x.ngay?x.nBo:x.nGiu;
+      return '• <b>'+ten+'</b>: máy này '+soMayNay+dv+', máy kia '+soMayKia+dv+' — Bút Xanh giữ bản <b>đầy đủ hơn</b> ('+
+             (x.ngay?'bản máy này':'bản của máy kia, đã lấy về')+', '+x.nGiu+dv+', lưu lúc '+_gioPhut(x.tsGiu)+').';
+    }).join('<br>');
+    try{
+      if(typeof window.BX_confirm!=='function') return;
+      window.BX_confirm({
+        title:'Thầy/cô vừa soạn trên hai máy',
+        html:'<div style="text-align:left;font-size:14px;line-height:1.7">'+dong+
+             '<br><br>Bản kia <b>không mất</b> — vào ảnh đại diện góc phải ▸ <b>⟲ Khôi phục bản trước</b> là lấy lại được.'+
+             '<br><br><span style="color:#8a5a00">💡 Nên soạn cố định trên <b>một máy</b> và bấm 💾 Lưu trước khi rời máy, để khỏi phải chọn thế này.</span></div>',
+        okText:'Đã hiểu', single:true
+      });
+    }catch(e){}
+  }
+  window.BX_baoDungDo=baoDungDo;     // phơi ra để kiểm thử tự động đo được nội dung hộp
+  window.BX_baoMayKhac=baoMayKhac;
   function ketThucDongBo(){
     seeded=true; soLanThuLai=0;
+    /* Có đụng độ thật thì báo đụng độ (đã đủ ý), không báo thêm "máy khác" nữa cho đỡ rườm. */
+    try{ if(_dungDo.length){ baoDungDo(); } else { baoMayKhac(); } }catch(e){}
     if(thuLaiT){ clearTimeout(thuLaiT); thuLaiT=null; }
     if(!PERF.msSanSang && PERF.tLogin) PERF.msSanSang=((window.performance&&performance.now)?performance.now():0)-PERF.tLogin;
     if(!tsRefDaNghe && tsRef){ tsRefDaNghe=true; tsRef.on('value', onCloudTs); PERF.soNghe=1; }
