@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-18 · 61';
+  var PB='2026-08-18 · 62';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1782,15 +1782,23 @@ window.bxMergeKho = function(){
     #v-tkb .tkb-savebar .btn{white-space:nowrap}
     @media (max-width:760px){ #v-tkb .tkb-savebar{bottom:60px} }
     /* --- Môn thầy cô tự thêm (18/8/2026): dải quản lý dưới lưới + chip gợi ý trong hộp --- */
-    .tkb-monthem{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 14px;padding:11px 12px;border:1px dashed #cfe2d5;border-radius:12px;background:#f7fcf9}
+    /* Cao tối đa ~3 hàng chip rồi cuộn: 12 môn tên dài đo được 483px, đẩy lưới xuống
+       tận 1011px — thầy cô phải cuộn mãi mới thấy bảng. (18/8/2026) */
+    .tkb-monthem{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 14px;padding:11px 12px;border:1px dashed #cfe2d5;border-radius:12px;background:#f7fcf9;max-height:132px;overflow-y:auto}
     .tkb-monthem .lbl{font-size:12.5px;font-weight:800;color:#2c6b48}
     .tkb-monthem .lbl i{font-style:normal;font-weight:600;color:#8aa093}
     .tkb-monthem .chip{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #cfe2d5;border-radius:999px;padding:5px 6px 5px 12px;font-size:13px;font-weight:700;color:#1c3d2c}
-    .tkb-monthem .chip button{border:0;background:#eef5f0;color:#5a6b60;width:20px;height:20px;border-radius:50%;font-size:14px;line-height:1;cursor:pointer;font-weight:700}
+    /* Nút bỏ môn: 26px hiển thị nhưng vùng chạm nới ra 44px bằng lớp phủ vô hình —
+       20px thì ngón tay bấm trượt sang chip bên cạnh. */
+    .tkb-monthem .chip button{position:relative;border:0;background:#eef5f0;color:#5a6b60;width:26px;height:26px;border-radius:50%;font-size:15px;line-height:1;cursor:pointer;font-weight:700}
+    .tkb-monthem .chip button::after{content:'';position:absolute;inset:-9px}
     .tkb-monthem .chip button:hover{background:#f6dede;color:#c0392b}
-    .tkb-monthem .ghi{font-size:12px;color:#8aa093;flex:1;min-width:180px}
-    .bx-mon-chips{display:flex;flex-wrap:wrap;gap:7px}
-    .bx-mon-chip{border:1px solid #cfe2d5;background:#f7fcf9;color:#22593d;border-radius:999px;padding:7px 13px;font-size:13px;font-weight:600;cursor:pointer}
+    .bx-mon-chips{display:flex;flex-wrap:wrap;gap:7px;max-height:34vh;overflow-y:auto}
+    /* Hộp "Thêm môn" neo LÊN TRÊN thay vì căn giữa: căn giữa thì bàn phím ảo bật lên
+       che mất nút "Thêm môn" (đo được nút nằm ở 533px trong khi vùng còn thấy ~450px).
+       Chỉ áp khi hộp này mở, gỡ ra ngay sau đó nên không đụng các hộp khác. */
+    .bxc-overlay.bx-neo-tren{align-items:flex-start;padding-top:14px}
+    .bx-mon-chip{border:1px solid #cfe2d5;background:#f7fcf9;color:#22593d;border-radius:999px;padding:8px 13px;font-size:13px;font-weight:600;cursor:pointer}
     .bx-mon-chip:hover{background:#e7f5ed;border-color:#9ed3b5}
     </style>
     <section class="view" id="v-tkb">
@@ -1814,7 +1822,7 @@ window.bxMergeKho = function(){
           <label style="font-size:13px;color:#5a6b60;display:inline-flex;align-items:center;gap:6px;cursor:pointer">
             <input type="checkbox" id="tkb-thu7" onchange="bxTKBtoggleThu7(this.checked)"> Có học Thứ 7
           </label>
-          <span style="font-size:12.5px;color:#8aa093;flex:1;min-width:200px">💡 Chọn môn cho từng ô. Ô để trống = tiết nghỉ. Trường có môn riêng (Kĩ năng sống, STEM…)? Chọn <b>➕ Thêm môn khác…</b> ở cuối danh sách môn.</span>
+          <span style="font-size:12.5px;color:#8aa093;flex:1;min-width:200px">💡 Chọn môn từng ô (để trống = nghỉ). Môn riêng của trường? Chọn <b>➕ Thêm môn khác…</b> cuối danh sách.</span>
         </div>
         <div id="tkb-view-grid" style="overflow-x:auto"></div>
         <div class="tkb-savebar">
@@ -3121,9 +3129,13 @@ function BX_monThem(){
     return Array.isArray(v)?v.filter(function(s){ return s&&typeof s==='string'; }):[];
   }catch(e){ return []; }
 }
+/* Khoá so khớp tên môn. `_normTxt` bỏ dấu và hạ chữ thường, nhưng "Kĩ" ra "ki" còn
+   "Kỹ" ra "ky" — hai cách viết đều đúng chính tả nên phải gộp i↔y, nếu không thầy cô
+   gõ "Kỹ năng sống" sẽ ra một môn thứ hai trùng nghĩa (đo thật 18/8/2026). */
 function _bxKhoaMonThem(s){
   var t=String(s||'').trim();
-  return (typeof _normTxt==='function')?_normTxt(t):t.toLowerCase();
+  var k=(typeof _normTxt==='function')?_normTxt(t):t.toLowerCase().replace(/[^a-z0-9]/g,'');
+  return String(k).replace(/y/g,'i');
 }
 /* Môn này là môn thầy cô tự khai (không thuộc chương trình)? */
 function BX_laMonThem(mon){
@@ -3139,11 +3151,16 @@ function _bxLaMonChinh(mon){
     return _bxKhoaMonThem(m)===k || (canon && m===canon);
   });
 }
-/* Thêm một môn. Trả {ok:true, ten} hoặc {ok:false, vi:'lý do cho thầy cô đọc'} */
-function BX_themMon(ten){
+/* Thêm một môn. Trả {ok:true, ten} hoặc {ok:false, vi:'lý do cho thầy cô đọc'}
+   tuDong=true: môn lấy từ thời khoá biểu sẵn có (không phải thầy cô đang gõ) — bỏ qua
+   giới hạn độ dài, vì tên đó đã nằm trong lịch rồi, chặn chỉ khiến nó không quản lý được. */
+function BX_themMon(ten, tuDong){
   var t=String(ten||'').replace(/\s+/g,' ').trim();
   if(!t) return {ok:false,vi:'Thầy/cô chưa nhập tên môn.'};
-  if(t.length>BX_MON_THEM_DAI_TOI_DA) return {ok:false,vi:'Tên môn dài quá '+BX_MON_THEM_DAI_TOI_DA+' chữ cái — xin viết gọn lại để vừa ô thời khoá biểu.'};
+  /* Tên chỉ gồm dấu câu/ký hiệu ("!!!", "---") cho khoá so khớp RỖNG → mọi tên kiểu này
+     bị coi là trùng nhau, sinh môn không xoá được bằng dấu ×. Bắt buộc có chữ hoặc số. */
+  if(!_bxKhoaMonThem(t)) return {ok:false,vi:'Tên môn cần có chữ hoặc số, thầy/cô nhập lại giúp em.'};
+  if(!tuDong && t.length>BX_MON_THEM_DAI_TOI_DA) return {ok:false,vi:'Tên môn dài quá '+BX_MON_THEM_DAI_TOI_DA+' kí tự — xin viết gọn lại để vừa ô thời khóa biểu.'};
   /* Trùng môn CHÍNH THỨC trong chương trình → không cần thêm */
   if(_bxLaMonChinh(t)){
     var canon=(typeof _bxCanonSubject==='function')?(_bxCanonSubject(t)||t):t;
@@ -3171,11 +3188,16 @@ function BX_boMon(ten){
    như ô trống. Trả về số môn vừa nhận. */
 function BX_nhanMonLaTuTKB(slots){
   if(!Array.isArray(slots)||!slots.length) return 0;
+  /* (18/8/2026 — đo thật) Ở CHẾ ĐỘ CHỈ XEM mọi lượt ghi đều bị chặn và BẬT HỘP thông báo.
+     Hàm này chạy mỗi lần vẽ lưới, nên chỉ mở màn Thời khoá biểu ra xem là hộp "CHẾ ĐỘ XEM"
+     đã tự nhảy ra dù thầy cô chưa đụng gì — đúng kiểu bảng tự bật mà thầy Chung đã cấm.
+     Máy chỉ xem thì thôi không ghi; ô vẫn hiện đúng tên môn nhờ monOpts tự sinh lựa chọn. */
+  try{ if(window.BX_kChan && window.BX_kChan(BX_MON_THEM_KEY)) return 0; }catch(e){}
   var them=0;
   slots.forEach(function(s){
     var m=s&&String(s.mon||'').trim(); if(!m) return;
     if(_bxLaMonChinh(m) || BX_laMonThem(m)) return;
-    var r=BX_themMon(m); if(r.ok) them++;
+    var r=BX_themMon(m,true); if(r.ok) them++;
   });
   return them;
 }
@@ -4419,7 +4441,11 @@ function renderKHBDView(){
 function renderKHBDChips(){
   const box=el('khbd-tiet-chips'); if(!box)return;
   const wk=el('khbd-week'); if(wk) wk.textContent=state.week;
-  box.innerHTML=state.schedule.map((r,idx)=>`<span class="chip" onclick="openKHBD(${idx})">${r.mon} <span class="cs">· ${r.bai.length>24?r.bai.slice(0,24)+'…':r.bai}</span></span>`).join('');
+  /* (18/8/2026) Bỏ qua môn thầy cô tự thêm — bấm vào chip là mở trình soạn giáo án,
+     mà các môn ngoài chương trình này không có (và không cần) giáo án. */
+  box.innerHTML=state.schedule.map((r,idx)=>({r,idx}))
+    .filter(({r})=>!(typeof BX_laMonThem==='function' && BX_laMonThem(r&&r.mon)))
+    .map(({r,idx})=>`<span class="chip" onclick="openKHBD(${idx})">${r.mon} <span class="cs">· ${r.bai.length>24?r.bai.slice(0,24)+'…':r.bai}</span></span>`).join('');
 }
 let khbdMon='Tất cả';
 function setKhbdMon(m){ khbdMon=m; renderKHBDList(); }
@@ -4672,7 +4698,10 @@ function buildWeekKhbdDocx(rows){
 }
 /* Bấm "Tạo KHBD Tuần" → mở cửa sổ thông báo (xem trước / lưu) */
 function openWeekKhbdModal(){
-  const rows=state.schedule||[];
+  /* (18/8/2026) Đếm trên đúng những tiết SẼ vào tệp Word: _weekKhbdItems đã bỏ môn thầy
+     cô tự thêm, nếu đếm cả lịch thì câu "X/Y tiết có trong kho" luôn thổi phồng phần
+     thiếu đúng bằng số tiết môn ngoài chương trình. */
+  const rows=(state.schedule||[]).filter(r=>!(typeof BX_laMonThem==='function' && BX_laMonThem(r&&r.mon)));
   const found=rows.filter(r=>findBankLesson(r)), miss=rows.length-found.length;
   if(!found.length){ bxAlert('Tuần '+state.week+' chưa có tiết nào khớp Kho giáo án số.\nHãy nạp thêm giáo án vào kho (mục Kho giáo án) hoặc dùng mẫu/AI để soạn từng tiết.'); return; }
   const msg=el('week-msg');
@@ -4919,7 +4948,9 @@ function renderDashStats(){
   const sch=state.schedule||[], set=(id,v)=>{const e=el(id); if(e)e.textContent=v;};
   set('dash-st-tiet', sch.length);
   set('dash-st-mon', new Set(sch.map(r=>r.mon)).size);
-  set('dash-st-bai', new Set(sch.map(r=>r.bai)).size);
+  /* Tiết chưa có tên bài (gồm cả môn thầy cô tự thêm) cho chuỗi rỗng — để nguyên thì
+     Set đếm chuỗi rỗng thành một "bài học", con số bị dôi 1. (18/8/2026) */
+  set('dash-st-bai', new Set(sch.map(r=>String(r.bai||'').trim()).filter(Boolean)).size);
   const rb=el('reminders-box');
   const n=(rb&&rb.querySelectorAll)?rb.querySelectorAll('.remind').length:0;
   set('dash-st-nhac', n);
@@ -4966,7 +4997,14 @@ function lessonPrepScore(r){
   return s;
 }
 function pickKeyLessons(n){
-  return (state.schedule||[]).map((r,i)=>({r,i,score:lessonPrepScore(r)}))
+  /* (18/8/2026) Loại tiết môn thầy cô tự thêm: các tiết này không có tên bài, lọt vào
+     đây thì lời nhắc hiện dấu ngoặc kép rỗng — Bài "" — trông như app hỏng.
+     Cũng loại luôn tiết chưa có tên bài vì cùng một lẽ. */
+  return (state.schedule||[]).filter(r=>{
+      if(typeof BX_laMonThem==='function' && BX_laMonThem(r&&r.mon)) return false;
+      return !!String((r&&r.bai)||'').trim();
+    })
+    .map((r,i)=>({r,i,score:lessonPrepScore(r)}))
     .sort((a,b)=> b.score-a.score || a.i-b.i).slice(0,n).map(x=>x.r);
 }
 function prepReason(r){
@@ -5026,7 +5064,10 @@ function weekNoteBodies(){
   const bHs=hs.length ? `${hs.length} nhóm/HS cần quan tâm — VD: ${hs[0].name}${(hs[0].notes&&hs[0].notes[0])?': '+hs[0].notes[0]:''}.`
     : 'Nhóm cần hỗ trợ thêm, HS hoàn thành tốt cần mở rộng, HS học hoà nhập.';
   // 5) Đánh giá thường xuyên — theo các môn có trong tuần
-  const mons=[...new Set(sch.map(r=>r.mon).filter(Boolean))];
+  /* Chỉ nhắc đánh giá thường xuyên cho môn CỦA CHƯƠNG TRÌNH (đánh giá theo Thông tư 27);
+     môn thầy cô tự thêm không thuộc diện này. (18/8/2026) */
+  const mons=[...new Set(sch.map(r=>r.mon).filter(Boolean)
+    .filter(m=>!(typeof BX_laMonThem==='function' && BX_laMonThem(m))))];
   const bDg=mons.length ? `Chuẩn bị câu hỏi/quan sát nhanh cuối tiết cho: ${mons.slice(0,4).join(', ')}${mons.length>4?'…':''}.`
     : 'Câu hỏi nhanh cuối tiết, quan sát năng lực/phẩm chất, minh chứng học tập.';
   return {mats:bMats, goi:bGoi, hard:bHard, hs:bHs, dg:bDg};
@@ -6564,10 +6605,16 @@ window.renderBankSchedule=function(){
   if(!rows.length){ box.innerHTML='<div class="empty-pad">Chưa có lịch báo giảng. Vào mục <b>Lịch báo giảng</b> để tải/nhập lịch tuần.</div>'; return; }
   var groups=[], map={};
   rows.forEach(function(r,idx){
+    /* (18/8/2026) Môn thầy cô tự thêm nằm ngoài chương trình, KHÔNG có giáo án — để lọt
+       vào đây thì thẻ tiết hiện "Đang cập nhật kho" kèm nút "Thêm giáo án / Dùng AI",
+       mời thầy cô soạn giáo án cho môn vốn dĩ không cần. Bỏ qua, cùng lẽ với file Word tuần. */
+    if(typeof BX_laMonThem==='function' && BX_laMonThem(r&&r.mon)) return;
     var key=(r.day||'?')+'§'+(r.date||'');
     if(map[key]==null){ map[key]=groups.length; groups.push({day:r.day||'',date:r.date||'',items:[]}); }
     groups[map[key]].items.push(idx);
   });
+  /* Cả tuần chỉ toàn môn tự thêm → nói rõ, đừng để màn hình trắng trơn */
+  if(!groups.length){ box.innerHTML='<div class="empty-pad">Tuần này trong lịch chỉ có <b>môn thầy cô tự thêm</b> — môn ngoài chương trình nên không cần kế hoạch bài dạy.</div>'; return; }
   box.innerHTML='<div class="kd-week">'+groups.map(function(g){
     return '<div class="kd-day"><div class="kd-dayhead">'+
       '<span class="kd-daypill">📅 '+_xe(g.day||'—')+'</span>'+
@@ -8176,6 +8223,22 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
       });
       return {str:JSON.stringify(out),ts:Math.max(lts,cts)};
     }
+    /* (18/8/2026) Danh sách môn thầy cô tự thêm là mảng TÊN — gộp cả hai bên, đừng để
+       bên có mốc mới hơn ăn trọn. Máy tính thêm "STEM", điện thoại thêm "Kĩ năng sống"
+       thì phải còn cả hai; nếu không, môn thêm trước bị xoá âm thầm. */
+    if(key==='butxanh_mon_them'){
+      var lmt=_pj(lstr,[]), cmt=_pj(cstr,[]);
+      if(!Array.isArray(lmt)||!Array.isArray(cmt)) return {str:(lts>=cts?lstr:cstr),ts:Math.max(lts,cts)};
+      var _kk=function(s){ return (typeof _bxKhoaMonThem==='function')?_bxKhoaMonThem(s):String(s||'').trim().toLowerCase(); };
+      var gop=[], daCo={};
+      (lts>=cts?lmt.concat(cmt):cmt.concat(lmt)).forEach(function(m){
+        if(!m||typeof m!=='string') return;
+        var k=_kk(m); if(!k||daCo[k]) return;
+        daCo[k]=1; gop.push(m);
+      });
+      var _max=(typeof BX_MON_THEM_TOI_DA!=='undefined')?BX_MON_THEM_TOI_DA:12;
+      return {str:JSON.stringify(gop.slice(0,_max)),ts:Math.max(lts,cts)};
+    }
     if(key==='butxanh_khbd'||key==='butxanh_hocsinh'||key==='butxanh_hoclieu'||key==='butxanh_bank'){
       var la=_pj(lstr,[]), ca=_pj(cstr,[]);
       if(!Array.isArray(la)||!Array.isArray(ca)) return {str:(lts>=cts?lstr:cstr),ts:Math.max(lts,cts)};
@@ -9258,9 +9321,14 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
       try{ if(typeof persistSchedule==='function') persistSchedule(); }catch(e){}
       try{ if(typeof BX_ghiDauTuGen==='function') BX_ghiDauTuGen(w); }catch(e){}   // máy tự sinh → lần sửa TKB sau còn dựng lại được
       try{ if(typeof renderFullSchedule==='function') renderFullSchedule(); }catch(e){}
-      var noko=sch.filter(function(r){return r._nokho;}).length;
+      /* (18/8/2026) Tách môn thầy cô TỰ THÊM ra khỏi câu "chưa có trong Kho": môn ngoài
+         chương trình vốn dĩ không có kho, gộp chung làm thầy cô tưởng kho giáo án thiếu bài. */
+      var laThem=function(r){ return typeof BX_laMonThem==='function' && BX_laMonThem(r&&r.mon); };
+      var mth=sch.filter(function(r){ return r._nokho && laThem(r); }).length;
+      var noko=sch.filter(function(r){ return r._nokho && !laThem(r); }).length;
       var ovf=sch.filter(function(r){return r._overflow;}).length;
       bxAlert('✓ Đã tạo Lịch báo giảng Tuần '+w+' từ Thời khoá biểu: '+sch.length+' tiết.'+
+        (mth?('\n• '+mth+' tiết môn thầy cô tự thêm — để trống tên bài cho thầy cô tự ghi.'):'')+
         (noko?('\n• '+noko+' tiết môn chưa có trong Kho — để trống tên bài cho thầy cô tự ghi.'):'')+
         (ovf?('\n• '+ovf+' ô trống: tuần này ít bài hơn số ô (tuần ôn tập/kiểm tra) hoặc đã hết bài trong Kho — mời thầy cô tự ghi. (Tiết lỡ do nghỉ ngày đã tự dồn sang tuần sau.)'):''));
     };
@@ -9322,7 +9390,11 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     var h='<option value="">'+(val?'— Bỏ trống —':'Chọn môn')+'</option>';
     SUBJECTS.forEach(function(o){ h+='<option'+(o===val?' selected':'')+'>'+_escOpt(o)+'</option>'; });
     var them=(typeof BX_monThem==='function')?BX_monThem():[];
-    if(val && SUBJECTS.indexOf(val)<0 && !them.some(function(m){ return m===val; })) them=them.concat([val]);
+    /* So khớp bằng KHOÁ CHUẨN HOÁ, không dùng === : "kĩ năng sống" và "Kĩ năng sống" là
+       một môn, so bằng === thì danh sách hiện hai dòng gần giống hệt nhau. (18/8/2026) */
+    var _kv=(typeof _bxKhoaMonThem==='function')?_bxKhoaMonThem(val):String(val||'').toLowerCase();
+    if(val && SUBJECTS.indexOf(val)<0 &&
+       !them.some(function(m){ return ((typeof _bxKhoaMonThem==='function')?_bxKhoaMonThem(m):String(m).toLowerCase())===_kv; })) them=them.concat([val]);
     if(them.length){
       h+='<optgroup label="Môn thầy cô tự thêm">';
       them.forEach(function(o){ h+='<option'+(o===val?' selected':'')+'>'+_escOpt(o)+'</option>'; });
@@ -9344,13 +9416,18 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
       }).join('')+'</div>';
   }
   window.bxTkbBoMon=function(mon){
-    var dangDung=(_work||[]).some(function(s){ return s.mon===mon; });
+    /* So bằng KHOÁ CHUẨN HOÁ như BX_boMon, không dùng === : nếu lưới đang mang biến thể
+       viết hoa/thường khác thì so === sẽ bỏ sót, môn còn nằm lại trên ô mà không còn
+       trong danh sách để bỏ bằng dấu ×. (18/8/2026) */
+    var _k=function(s){ return (typeof _bxKhoaMonThem==='function')?_bxKhoaMonThem(s):String(s||'').toLowerCase(); };
+    var km=_k(mon);
+    var dangDung=(_work||[]).some(function(s){ return _k(s.mon)===km; });
     var hoi='Bỏ môn “'+mon+'” khỏi danh sách của thầy/cô?'+
       (dangDung?'\n\nCác ô đang chọn môn này trong lưới sẽ được xoá trống.':'');
     bxConfirm(hoi,{okText:'Bỏ môn',cancelText:'Giữ lại'}).then(function(ok){
       if(!ok) return;
       BX_boMon(mon);
-      if(dangDung) _work=(_work||[]).filter(function(s){ return s.mon!==mon; });
+      if(dangDung) _work=(_work||[]).filter(function(s){ return _k(s.mon)!==km; });
       renderGrid();
     });
   };
@@ -9401,15 +9478,22 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     var goi=(typeof BX_MON_THEM_GOI_Y!=='undefined')?BX_MON_THEM_GOI_Y:[];
     var chips=goi.filter(function(g){ return !(typeof BX_laMonThem==='function' && BX_laMonThem(g)); })
       .map(function(g){ return '<button type="button" class="bx-mon-chip" data-mon="'+_escOpt(g)+'" onclick="BX_monMoiChip(this)">'+_escOpt(g)+'</button>'; }).join('');
+    /* Chữ giữ NGẮN và khối chip có giới hạn chiều cao: bản dài đo được hộp cao 419px,
+       nút "Thêm môn" nằm ở 557px nên bàn phím ảo bật lên là che mất nút. Cỡ chữ ô nhập
+       phải ≥16px, dưới mức đó iPhone tự phóng to cả trang khi thầy cô gõ. (18/8/2026) */
     var html='<div style="text-align:left">'+
-      '<div style="font-size:13.5px;color:#5a6b60;line-height:1.65;margin-bottom:12px">Môn <b>ngoài Chương trình GDPT 2018</b> của riêng thầy/cô. Bút Xanh sẽ xếp tiết vào <b>Lịch báo giảng</b>, phần <b>tên bài để thầy/cô tự ghi</b> — các môn này không có giáo án và kế hoạch dạy học.</div>'+
+      '<div style="font-size:13.5px;color:#5a6b60;line-height:1.6;margin-bottom:10px">Môn <b>ngoài chương trình</b> do thầy/cô tự đặt. Bút Xanh xếp vào <b>Lịch báo giảng</b>, tên bài thầy/cô tự ghi.</div>'+
       '<input id="bx-mon-moi" maxlength="'+((typeof BX_MON_THEM_DAI_TOI_DA!=='undefined')?BX_MON_THEM_DAI_TOI_DA:30)+'" placeholder="Tên môn, ví dụ: Kĩ năng sống" oninput="BX_monMoiNhap(this.value)" '+
-        'style="width:100%;border:1.5px solid #cfe2d5;border-radius:10px;padding:11px 12px;font-size:15px;font-weight:600;color:#1c3d2c">'+
-      (chips?('<div style="margin:12px 0 7px;font-size:12.5px;color:#8aa093">Hoặc bấm chọn nhanh:</div><div class="bx-mon-chips">'+chips+'</div>'):'')+
+        'style="width:100%;border:1.5px solid #cfe2d5;border-radius:10px;padding:11px 12px;font-size:16px;font-weight:600;color:#1c3d2c">'+
+      (chips?('<div style="margin:10px 0 6px;font-size:12.5px;color:#8aa093">Hoặc bấm chọn nhanh:</div><div class="bx-mon-chips">'+chips+'</div>'):'')+
       '</div>';
+    var _goNeo=function(){ try{ var o=document.getElementById('bxc-overlay'); if(o) o.classList.remove('bx-neo-tren'); }catch(e){} };
     BX_confirm({title:'Thêm môn của thầy/cô',html:html,okText:'Thêm môn',cancelText:'Thôi'},
-      function(){ xong(_monMoiTam); }, function(){ xong(''); });
-    setTimeout(function(){ var i=document.getElementById('bx-mon-moi'); if(i) i.focus(); },60);
+      function(){ _goNeo(); xong(_monMoiTam); }, function(){ _goNeo(); xong(''); });
+    setTimeout(function(){
+      try{ var o=document.getElementById('bxc-overlay'); if(o) o.classList.add('bx-neo-tren'); }catch(e){}
+      var i=document.getElementById('bx-mon-moi'); if(i) i.focus();
+    },60);
   }
   window.bxTkbCell=function(sel,day,buoi,tiet){
     /* Dòng "➕ Thêm môn khác…": hỏi tên rồi gán luôn vào ô vừa bấm — một mạch, thầy cô
