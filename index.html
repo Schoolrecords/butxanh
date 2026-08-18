@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-18 · 66';
+  var PB='2026-08-18 · 67';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -8830,6 +8830,41 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
      Chuyển trang (redirect) qua but-xanh.firebaseapp.com dễ mất phiên khi trình duyệt
      chặn cookie → chỉ là đường cùng, và phải được thầy cô đồng ý trước. */
   var popupBlocked=0, dangDangNhap=false;
+  /* Đang mở trong ứng dụng khác (Zalo, Messenger/Facebook, Instagram…) chứ không phải
+     trình duyệt thật? Google chặn đăng nhập trong các webview này. (18/8/2026) */
+  function laTrongUngDungKhac(){
+    try{
+      var ua=navigator.userAgent||'';
+      return /Zalo|FBAN|FBAV|FB_IAB|FBIOS|Instagram|Line\/|MicroMessenger|TikTok/i.test(ua);
+    }catch(e){ return false; }
+  }
+  var _daChiDuong=false;
+  /* Chỉ đường ra trình duyệt thật — MỘT CHẠM là chép xong địa chỉ, không bắt thầy cô
+     mò menu trình duyệt (đúng nguyên tắc lời nhắc của dự án). */
+  function chiDuongRaTrinhDuyet(){
+    if(_daChiDuong) return; _daChiDuong=true;
+    setTimeout(function(){ _daChiDuong=false; }, 20000);
+    var ten=/Zalo/i.test(navigator.userAgent||'')?'Zalo':'ứng dụng này';
+    try{
+      if(typeof window.BX_confirm!=='function'){ if(window.bxAlert) bxAlert('Thầy/cô mở butxanh.net bằng Chrome (hoặc Safari) rồi đăng nhập giúp em ạ.'); return; }
+      window.BX_confirm({
+        title:'Cần mở bằng Chrome để đăng nhập',
+        html:'<div style="text-align:left;font-size:14px;line-height:1.7">Google không cho đăng nhập khi mở trang trong <b>'+ten+'</b>.'+
+             '<br><br>Thầy/cô bấm nút dưới đây để <b>chép địa chỉ</b>, rồi mở <b>Chrome</b> (hoặc Safari) và dán vào.'+
+             '<br><br><span style="color:#8a5a00">💡 Chưa đăng nhập vẫn dùng được bình thường — chỉ là chưa lưu lên đám mây thôi ạ.</span></div>',
+        okText:'📋 Chép địa chỉ butxanh.net', cancelText:'Để sau'
+      }, function(){
+        var dc='https://butxanh.net';
+        var xong=function(){ try{ if(window.bxAlert) bxAlert('✓ Đã chép. Thầy/cô mở Chrome, chạm vào ô địa chỉ rồi dán (giữ lâu → Dán) ạ.'); }catch(e){} };
+        try{
+          if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(dc).then(xong, function(){ try{ window.prompt('Thầy/cô bôi đen rồi chép địa chỉ này ạ:', dc); }catch(e){} });
+          else { try{ window.prompt('Thầy/cô bôi đen rồi chép địa chỉ này ạ:', dc); }catch(e){} }
+        }catch(e){}
+      });
+    }catch(e){}
+  }
+  window.BX_laTrongUngDungKhac=laTrongUngDungKhac;   // để bộ kiểm thử đo được
+  window.BX_chiDuongRaTrinhDuyet=chiDuongRaTrinhDuyet;
   /* 🔴 LỖI ĐÃ VÁ (16/8/2026, thầy Chung gửi ảnh nút kẹt): cửa sổ đăng nhập Google có thể
      KHÔNG BAO GIỜ trả lời — thầy cô đóng nhầm tab, mạng 4G rớt giữa chừng, hoặc trình
      duyệt điện thoại nuốt mất cửa sổ. Khi đó signInWithPopup treo vĩnh viễn: nút đứng ở
@@ -8886,10 +8921,21 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
         ketThucDangNhap();
         console.warn('[ĐB] đăng nhập lỗi',e);
         var code=(e&&e.code)||'';
-        /* Thầy cô tự đóng cửa sổ / bấm nút hai lần — không phải lỗi, không làm phiền */
-        if(code==='auth/popup-closed-by-user'||code==='auth/cancelled-popup-request') return;
+        /* Thầy cô tự đóng cửa sổ / bấm nút hai lần — không phải lỗi, không làm phiền.
+           NGOẠI LỆ (18/8/2026): đang mở trong Zalo/Facebook thì Google TỪ CHỐI đăng nhập
+           trong webview ("disallowed_useragent"), cửa sổ đóng ngay và app im lặng — thầy cô
+           bấm mãi không được mà không hiểu vì sao. Đo thật: bấm Đăng nhập trong Zalo, chờ
+           15 giây, không một lời nào. Đây là đường vào phổ biến nhất vì link app được
+           chuyền trong nhóm Zalo của trường. */
+        if(code==='auth/popup-closed-by-user'||code==='auth/cancelled-popup-request'){
+          if(laTrongUngDungKhac()) chiDuongRaTrinhDuyet();
+          return;
+        }
         if(code==='auth/popup-blocked'||code==='auth/operation-not-supported-in-this-environment'){
           popupBlocked++;
+          /* Trong Zalo/Facebook thì KHÔNG có "biểu tượng cửa sổ bật lên bị chặn" để bấm —
+             hướng dẫn kiểu trình duyệt là vô nghĩa, phải chỉ đường ra trình duyệt thật. */
+          if(laTrongUngDungKhac()){ chiDuongRaTrinhDuyet(); return; }
           if(popupBlocked<2){
             BX_confirm({title:'Trình duyệt chặn cửa sổ đăng nhập',
               html:'Trình duyệt vừa chặn cửa sổ đăng nhập Google của Bút Xanh.<br><br>👉 Thầy cô bấm biểu tượng <b>cửa sổ bật lên bị chặn</b> (thường nằm cuối thanh địa chỉ), chọn <b>«Luôn cho phép»</b> cho trang này, rồi bấm <b>Thử lại</b>.',
