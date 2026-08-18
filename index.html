@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-18 · 65';
+  var PB='2026-08-18 · 66';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -2663,8 +2663,16 @@ function openKHBD(idx){
   const tag=el("khbd-bank-tag"); if(tag) tag.style.display="none";
   document.getElementById("khbd-overlay").classList.add("show");
   serveBankIntoModal(l); /* tra Kho giáo án số → rót sẵn nếu có */
+  /* Có bản soạn dở của đúng tiết này thì mời lấy lại — chờ kho rót xong mới hỏi,
+     kẻo hai việc chồng lên nhau. (18/8/2026) */
+  setTimeout(function(){ try{ BX_moiKhoiPhucNhap(); }catch(e){} }, 700);
 }
-function closeModal(id){ document.getElementById(id).classList.remove("show"); }
+function closeModal(id){
+  /* Đóng cửa sổ soạn giáo án: cất bản nháp NGAY, không chờ hết nhịp 3 giây và không
+     hỏi han gì — lần sau mở lại tiết đó Bút Xanh sẽ mời lấy lại. (18/8/2026) */
+  if(id==='khbd-overlay'){ try{ BX_luuNhapNgay(); }catch(e){} }
+  document.getElementById(id).classList.remove("show");
+}
 function openHelp(){ var ov=document.getElementById('help-overlay'); if(ov){ ov.classList.add('show'); var b=ov.querySelector('.hlp-body'); if(b) b.scrollTop=0; } }
 function helpGo(id){ var el=document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); }
 /* (9/8/2026) Van "máy tính hỏng" chuyển từ băng báo dưới màn hình vào Hướng dẫn.
@@ -2767,6 +2775,60 @@ function onKhbdEdit(){
   el('btn-copy').disabled=!has; el('btn-word').disabled=!has;
   if(has){ b.disabled=false; b.textContent=(state.current&&state.current.id)?'💾 Lưu thay đổi':'💾 Lưu vào kho'; }
   else{ b.disabled=true; }
+  BX_henLuuNhap();
+}
+
+/* ======================================================================
+   BẢN NHÁP GIÁO ÁN ĐANG GÕ  (18/8/2026)
+   Thầy cô gõ nội dung giáo án cả buổi, chưa kịp bấm 💾 Lưu vào kho mà
+   chuyển màn / tắt máy / hết pin là mất trắng, không hộp thoại, không
+   bản nháp nào. Nay cứ 3 giây sau lần gõ cuối là cất một bản nháp vào
+   máy; mở lại đúng tiết đó thì mời khôi phục.
+   CỐ Ý KHÔNG đồng bộ lên đám mây: nháp là việc dở dang của riêng máy
+   đang gõ, đẩy lên chỉ tổ chồng lấn với máy kia.
+   ====================================================================== */
+var BX_NHAP_KEY='butxanh_khbd_nhap', _nhapT=null;
+function _khoaNhap(l){
+  l=l||state.current||{};
+  return [(l.id||''), (l.mon||''), (l.bai||''), (l.lop||state.klass||''), (l.tuan||state.week||'')].join('§');
+}
+function BX_henLuuNhap(){
+  if(_nhapT) clearTimeout(_nhapT);
+  _nhapT=setTimeout(BX_luuNhapNgay, 3000);
+}
+function BX_luuNhapNgay(){
+  try{
+    var ta=el('khbd-text'); if(!ta) return;
+    var noi=ta.value||'';
+    if(!noi.trim()){ BX_boNhap(); return; }
+    /* Không dùng BX_luu: nháp không nằm trong danh sách đồng bộ, và ở chế độ chỉ xem
+       cũng nên cho gõ nháp (chỉ chặn lúc bấm Lưu vào kho). */
+    localStorage.setItem(BX_NHAP_KEY, JSON.stringify({ khoa:_khoaNhap(), noi:noi, ts:Date.now(),
+      mon:(state.current&&state.current.mon)||'', bai:(state.current&&state.current.bai)||'' }));
+  }catch(e){ /* bộ nhớ đầy thì thôi, không làm phiền giữa lúc đang gõ */ }
+}
+function BX_docNhap(){ try{ return JSON.parse(localStorage.getItem(BX_NHAP_KEY)||'null'); }catch(e){ return null; } }
+function BX_boNhap(){ if(_nhapT){ clearTimeout(_nhapT); _nhapT=null; } try{ localStorage.removeItem(BX_NHAP_KEY); }catch(e){} }
+/* Mở một tiết: có nháp dở của ĐÚNG tiết đó thì mời lấy lại (một chạm). */
+function BX_moiKhoiPhucNhap(){
+  try{
+    var n=BX_docNhap(); if(!n||!n.noi) return;
+    if(n.khoa!==_khoaNhap()) return;                 // nháp của tiết khác — để nguyên, đừng rót nhầm
+    var ta=el('khbd-text'); if(!ta) return;
+    if((ta.value||'').trim()===String(n.noi).trim()) return;
+    var luc=''; try{ var d=new Date(n.ts); luc=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+' ngày '+('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2); }catch(e){}
+    if(typeof window.BX_confirm!=='function') return;
+    window.BX_confirm({
+      title:'Có bản soạn dở chưa lưu',
+      html:'<div style="text-align:left;font-size:14px;line-height:1.7">Thầy/cô đang soạn tiết này lúc <b>'+luc+'</b> nhưng chưa bấm 💾 Lưu vào kho.<br><br>Bút Xanh giữ lại bản đó — mở tiếp không ạ?</div>',
+      okText:'Mở bản đang soạn', cancelText:'Bỏ, soạn lại từ đầu'
+    }, function(){
+      ta.value=n.noi; ta.classList.remove('hidden');
+      var e1=el('khbd-empty'), e2=el('khbd-loading');
+      if(e1) e1.classList.add('hidden'); if(e2) e2.classList.add('hidden');
+      try{ onKhbdEdit(); ta.focus(); }catch(e){}
+    }, function(){ BX_boNhap(); });
+  }catch(e){}
 }
 function copyKHBD(){
   navigator.clipboard.writeText(document.getElementById("khbd-text").value).then(()=>{
@@ -4431,6 +4493,7 @@ function saveCurrentKHBD(){
     var b0=el('btn-save'); if(b0){ b0.textContent='⚠ Chưa lưu được — xem thông báo'; b0.disabled=false; }
     return;
   }
+  try{ BX_boNhap(); }catch(e){}          /* đã vào kho thật → bỏ bản nháp, khỏi hỏi lại */
   const b=el('btn-save'); b.textContent='✓ Đã lưu vào kho'; b.disabled=true;
   if(el('v-khbd').classList.contains('active')) renderKHBDList();
   if(el('v-kho').classList.contains('active')) renderKho();
@@ -8595,6 +8658,87 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     if(reloadT){ clearTimeout(reloadT); reloadT=null; }
     curRef=null; pushLog=[]; syncPaused=0; busy=false;
   }
+  /* ==================================================================
+     MÁY DÙNG CHUNG Ở TRƯỜNG  (18/8/2026)
+     Máy phòng hội đồng: cô A soạn cả buổi rồi đăng xuất — đăng xuất KHÔNG
+     xoá dữ liệu trên máy. Hôm sau thầy B mượn đúng máy đó, đăng nhập tài
+     khoản mình. App thấy tài khoản B "mới tinh" nên ĐẨY THẲNG dữ liệu còn
+     sót của cô A lên tài khoản B: hồ sơ học sinh, giáo án của người này
+     chảy sang tài khoản người kia, trộn xong không gỡ ra được.
+     Nay: nhớ CHỦ MÁY (uid đã đăng nhập gần nhất, khoá cục bộ không đồng bộ);
+     người khác đăng nhập mà máy còn dữ liệu thì HỎI trước khi làm gì.
+     ================================================================== */
+  var CHU_MAY_KEY='butxanh_chu_may';
+  function docChuMay(){ try{ return JSON.parse(localStorage.getItem(CHU_MAY_KEY)||'null'); }catch(e){ return null; } }
+  function ghiChuMay(u){
+    try{ localStorage.setItem(CHU_MAY_KEY, JSON.stringify({uid:u.uid, email:u.email||'', ts:Date.now()})); }catch(e){}
+  }
+  function _coDuLieuDangKe(){
+    var co=false;
+    KEYS.forEach(function(k){
+      if(co) return;
+      if(k==='butxanh_profile'||k==='butxanh_lbg_meta') return;   // chỉ là trạng thái giao diện
+      if(!_rong(localStorage.getItem(k))) co=true;
+    });
+    return co;
+  }
+  function _moTaDuLieuMay(){
+    var mo=[];
+    function thu(fn){ try{ fn(); }catch(e){} }
+    thu(function(){ var t=JSON.parse(localStorage.getItem('butxanh_tkb')||'null'); if(t&&t.slots&&t.slots.length) mo.push(t.slots.length+' tiết Thời khoá biểu'); });
+    thu(function(){ var w=JSON.parse(localStorage.getItem('butxanh_lbg_weeks')||'null'); var n=w?Object.keys(w).length:0; if(n) mo.push(n+' tuần Lịch báo giảng'); });
+    thu(function(){ var k=JSON.parse(localStorage.getItem('butxanh_khbd')||'null'); if(k&&k.length) mo.push(k.length+' giáo án đã lưu'); });
+    thu(function(){ var h=JSON.parse(localStorage.getItem('butxanh_hocsinh')||'null'); if(h&&h.length) mo.push(h.length+' nhóm học sinh'); });
+    return mo;
+  }
+  function _anEmail(e){
+    e=String(e||''); var i=e.indexOf('@');
+    if(i<2) return e||'tài khoản khác';
+    return e.slice(0,2)+'•••'+e.slice(i);
+  }
+  /* Dọn máy cho người mới — CẤT BẢN CŨ TRƯỚC bằng đúng lưới an toàn sẵn có, để
+     người trước quay lại còn lấy được ở "⟲ Khôi phục bản trước". */
+  function donMayChoNguoiMoi(){
+    var ds=KEYS.filter(function(k){ return localStorage.getItem(k)!=null; });
+    try{ backupLocal(ds); }catch(e){}
+    ds.forEach(function(k){ try{ localStorage.removeItem(k); }catch(e){} });
+    try{ localStorage.removeItem('butxanh_sync_ts'); }catch(e){}
+  }
+  /* Trả Promise — đồng bộ chỉ được chạy SAU khi thầy cô đã trả lời. */
+  function kiemChuMay(u){
+    return new Promise(function(xong){
+      var cu=docChuMay();
+      if(!cu || !cu.uid || cu.uid===u.uid){ ghiChuMay(u); xong(); return; }   // máy của chính mình
+      if(!_coDuLieuDangKe()){ ghiChuMay(u); xong(); return; }                 // máy trống, không có gì để lẫn
+      if(typeof window.BX_confirm!=='function'){ ghiChuMay(u); xong(); return; }
+      var mo=_moTaDuLieuMay(), luc='';
+      try{ if(cu.ts){ var d=new Date(cu.ts); luc=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+' ngày '+('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2); } }catch(e){}
+      /* LƯỚI AN TOÀN: hộp không hiện được (lỗi giao diện) hoặc thầy cô để đó không trả lời
+         thì sau 90 giây vẫn phải cho đồng bộ chạy theo hướng AN TOÀN (giữ nguyên dữ liệu),
+         tuyệt đối không để app treo im lìm không đồng bộ suốt phiên. */
+      var daTraLoi=false;
+      var _xongMotLan=function(fn){ if(daTraLoi) return; daTraLoi=true; try{ fn&&fn(); }catch(e){} xong(); };
+      setTimeout(function(){ if(!daTraLoi){ ghiChuMay(u); _xongMotLan(null); } }, 90000);
+      window.BX_confirm({
+        title:'Máy này đang có dữ liệu của tài khoản khác',
+        html:'<div style="text-align:left;font-size:14px;line-height:1.7">Lần dùng gần nhất trên máy này là tài khoản <b>'+esc(_anEmail(cu.email))+'</b>'+(luc?(' (lúc '+esc(luc)+')'):'')+'.'+
+             (mo.length?('<br><br>Đang có: <b>'+esc(mo.join(' · '))+'</b>.'):'')+
+             '<br><br>Dữ liệu này có phải của thầy/cô không ạ?'+
+             '<br><br><span style="color:#8a5a00">💡 Chọn nhầm cũng không mất: bản cũ được cất lại, lấy ra ở ảnh đại diện góc phải ▸ ⟲ Khôi phục bản trước.</span></div>',
+        okText:'Đúng, của tôi — giữ lại', cancelText:'Không phải — bắt đầu mới'
+      },
+      function(){ _xongMotLan(function(){ ghiChuMay(u); }); },                 // giữ lại, đồng bộ như cũ
+      function(){                                                             // dọn máy rồi mở lại cho sạch
+        if(daTraLoi) return; daTraLoi=true;
+        donMayChoNguoiMoi(); ghiChuMay(u);
+        try{ if(window.bxAlert) bxAlert('✓ Đã dọn dữ liệu của tài khoản trước khỏi máy này. Bút Xanh đang mở lại…'); }catch(e){}
+        setTimeout(function(){ try{ location.reload(); }catch(e){} }, 1200);
+      });
+    });
+  }
+  /* phơi ra cho bộ kiểm thử tự động đo được (không dùng ở nơi khác) */
+  window.BX_kiemChuMay=kiemChuMay; window.BX_docChuMay=docChuMay;
+  window.BX_coDuLieuDangKe=_coDuLieuDangKe; window.BX_donMayChoNguoiMoi=donMayChoNguoiMoi;
   function onAuth(u){
     user=u;
     /* Vào được rồi thì dọn sạch trạng thái "đang đăng nhập" — kể cả khi cửa sổ Google
@@ -8603,7 +8747,9 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
     renderUI();
     try{ bxCapNhatCheDoXem(); }catch(e){}
 
-    if(u){ hadUser=true; ghiMocDangNhap(); xinLuuBenVung(); startSync(); startLoop(); }
+    /* Hỏi chủ máy TRƯỚC khi đồng bộ: đẩy nhầm dữ liệu người khác lên tài khoản này
+       thì không gỡ ra được nữa (kho giáo án/học sinh gộp theo id, không xoá phần tử). */
+    if(u){ hadUser=true; ghiMocDangNhap(); xinLuuBenVung(); kiemChuMay(u).then(function(){ startSync(); startLoop(); }); }
     else {
       stopSync(); stopLoop(); seeded=false; dirtyKeys={}; dirty=false; setStatus('off');
       if(hadUser && !intentionalLogout){   // phiên bị rớt ngoài ý muốn
@@ -8816,7 +8962,12 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
       }); }catch(e){}
       auth.onAuthStateChanged(onAuth);
       // Cảnh báo nếu đóng/chuyển trang khi còn thay đổi chưa kịp đẩy lên đám mây
-      window.addEventListener('beforeunload', function(e){ if(user && (busy||dirty)){ e.preventDefault(); e.returnValue=''; return ''; } });
+      /* Tắt trình duyệt / hết pin giữa lúc đang gõ giáo án: cất bản nháp ngay tại đây
+         (chạy đồng bộ, kịp trước khi trang đóng). (18/8/2026) */
+      window.addEventListener('beforeunload', function(e){
+        try{ if(typeof window.BX_luuNhapNgay==='function') window.BX_luuNhapNgay(); }catch(_){}
+        if(user && (busy||dirty)){ e.preventDefault(); e.returnValue=''; return ''; }
+      });
       renderUI();
     }catch(e){ console.warn('[ĐB] init lỗi',e); renderUI(); }
   }
