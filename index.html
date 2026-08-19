@@ -7,6 +7,51 @@
 <meta name="description" content="Soạn Giáo án, lên Lịch báo giảng, hỗ trợ bài giảng trình chiếu giúp thầy cô.">
 <meta name="theme-color" content="#1FA45C">
 <script>
+/* ===== 🔴 LƯỚI ĐỠ KHI TRANG MỚI TẢI ĐƯỢC MỘT PHẦN (19/8/2026 — PB 73) =====
+   CA THẬT thầy Chung gặp tối 19/8: máy tính kẹt vĩnh viễn ở dòng "⏳ Đang chuẩn bị lịch dạy
+   cho thầy cô…", điện thoại thì KHÔNG CÓ nút Đăng nhập để bấm.
+   ĐO ĐƯỢC (bản live, mạng chập chờn tới GitHub Pages): trang đứng ở 1.450 thẻ suốt 60 giây,
+   `document.readyState` mãi là "loading", phần cuối trang KHÔNG BAO GIỜ về. Cả app là MỘT tệp
+   1,1 MB, mà nửa sau của tệp mới là chỗ khởi động Firebase (nút Đăng nhập) và định nghĩa các
+   hàm thật của màn chào — nửa đó không về thì app đứng câm, không một lời giải thích.
+   Lưới này KHÔNG chữa được mạng chậm; nó chỉ bảo đảm app không bao giờ câm: quá 15 giây mà
+   trang chưa dựng xong thì nói thật với thầy cô và đưa ra ĐÚNG MỘT nút để bấm.
+   ⚠️ Phải đặt ở ĐẦU <head>: đo thấy parser chết ngay quanh dòng 1500, đặt sau đó là chính
+   lưới đỡ cũng không kịp chạy. Cũng vì thế khối này không dùng CSS ngoài, không đụng phần tử
+   nào của app — nó phải sống được khi mọi thứ khác chưa tồn tại. */
+(function(){
+  var HAN=15000;                       /* 15 giây: đo thật mạng tốt vào xong sau ~11 giây */
+  var hop=null, hen=null;
+  function trangXong(){ try{ return document.readyState!=='loading'; }catch(e){ return true; } }
+
+  window.BX_bao_mangCham=function(){
+    if(hop || trangXong()) return;
+    if(!document.body){ setTimeout(window.BX_bao_mangCham, 300); return; }   /* body chưa có thì đợi */
+    hop=document.createElement('div');
+    hop.id='bx-mangcham';
+    hop.style.cssText='position:fixed;left:12px;right:12px;bottom:14px;z-index:100000;max-width:420px;'+
+      'margin:0 auto;background:#fff;border:1px solid #cfe3d6;border-radius:16px;padding:15px 16px;'+
+      'box-shadow:0 14px 40px rgba(0,0,0,.22);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;'+
+      'font-size:14px;line-height:1.55;color:#22392e';
+    hop.innerHTML='<div style="font-weight:800;font-size:15px;color:#0b5133;margin-bottom:5px">🐢 Mạng đang chậm</div>'+
+      '<div>Bút Xanh mới tải được một phần nên chưa dùng được. Thầy/cô bấm <b>Tải lại</b> giúp em ạ.</div>'+
+      '<div style="font-size:12.5px;color:#6b8478;margin-top:6px">Dữ liệu của thầy/cô vẫn nguyên vẹn, không mất gì cả.</div>'+
+      '<button id="bx-mc-tai" style="margin-top:11px;width:100%;padding:13px;border:0;border-radius:11px;'+
+      'background:#0f9d58;color:#fff;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer">Tải lại</button>';
+    document.body.appendChild(hop);
+    /* MỘT CHẠM là xong — không chỉ đường "vào cài đặt trình duyệt…" như các bản trước từng làm */
+    hop.querySelector('#bx-mc-tai').onclick=function(){ try{ location.reload(); }catch(e){} };
+  };
+
+  /* Trang về kịp sau đó thì tự gỡ lời nhắc — đừng để thầy cô hoang mang khi app đã chạy được */
+  function go(){ if(hen){ clearTimeout(hen); hen=null; } if(hop){ try{ hop.remove(); }catch(e){} hop=null; } }
+  window.BX_go_mangCham=go;
+  hen=setTimeout(function(){ if(!trangXong()) window.BX_bao_mangCham(); }, HAN);
+  try{ document.addEventListener('DOMContentLoaded', go); }catch(e){}
+  try{ window.addEventListener('load', go); }catch(e){}
+})();
+</script>
+<script>
 /* ===== BẮT LỖI KỸ THUẬT (4/8/2026) =====
    Từ trước tới nay lỗi JavaScript bị nuốt im lặng: một hàm hỏng giữa chừng là nút bấm
    xong không thấy gì, thầy cô chỉ biết báo "nút bị đơ" mà không ai lần ra được vì sao.
@@ -16,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-19 · 72';
+  var PB='2026-08-19 · 73';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1495,7 +1540,17 @@ window.bxMergeKho = function(){
    hàm chưa tồn tại → "đơ" im lặng. Đặt HÀM CẦU ngay đây (đầu trang, sát màn chào): nếu bản
    thật chưa nạp thì hiện "đang chuẩn bị" và GIỮ Ý ĐỊNH, tự chạy khi sẵn sàng. Bản thật ở
    cuối trang ghi đè các cầu này (kiểm fn!==cau để biết đã có bản thật). */
+/* 🔴 VÁ 19/8/2026 (PB 73) — ĐÂY LÀ CHỖ CHẾT trong ca thầy Chung gặp tối 19/8.
+   Bản cũ đợi bản thật đúng 8 giây rồi LẶNG LẼ BỎ CUỘC, mà lớp 'dangdung' thì vẫn nằm nguyên
+   trên màn chào. Lớp đó ẩn cả hàng chọn lớp lẫn nút "Vào Bút Xanh" và chỉ chừa lại dòng
+   "⏳ Đang chuẩn bị lịch dạy cho thầy cô…" — nên sau giây thứ 8 màn chào KHÔNG CÒN NÚT NÀO
+   để bấm nữa, kể cả khi phần cuối trang về muộn (đo thật: mạng chậm thì về lúc ~10 giây).
+   Thầy cô ngồi nhìn dòng "đang chuẩn bị" vĩnh viễn — đúng ảnh chụp thầy Chung gửi.
+   Ba việc sửa: (1) chờ tới 60 giây thay vì 8, hợp với mạng thật ở trường;
+   (2) hết hạn thì GỠ 'dangdung' để nút hiện lại, và gọi lưới đỡ báo "Mạng đang chậm";
+   (3) bản thật về thì cũng gỡ 'dangdung' trước khi chạy, để không ai kẹt vì lớp này nữa. */
 (function(){
+  var LAN=600;                                        /* 600 × 100ms = 60 giây */
   ['BX_chaoChonLop','BX_dongManChao','BX_chaoDangNhap'].forEach(function(ten){
     var cau=function(){
       var fn=window[ten];
@@ -1504,8 +1559,14 @@ window.bxMergeKho = function(){
       if(sp) sp.classList.add('dangdung');            // báo đã nhận lệnh, tránh thầy cô bấm lại
       (function doi(){
         var f=window[ten];
-        if(typeof f==='function' && f!==cau){ try{ f.apply(null,args); }catch(e){ console.warn('[Màn chào]',e); } return; }
-        if(++n<80) setTimeout(doi,100);               // đợi tối đa ~8s cho phần cuối trang nạp
+        if(typeof f==='function' && f!==cau){
+          if(sp) sp.classList.remove('dangdung');     // trả nút lại cho màn chào trước khi chạy
+          try{ f.apply(null,args); }catch(e){ console.warn('[Màn chào]',e); }
+          return;
+        }
+        if(++n<LAN){ setTimeout(doi,100); return; }
+        if(sp) sp.classList.remove('dangdung');       // ĐỪNG để màn chào cụt nút mà không nói gì
+        try{ if(window.BX_bao_mangCham) window.BX_bao_mangCham(); }catch(e){}
       })();
     };
     window[ten]=cau;
