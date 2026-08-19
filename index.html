@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-19 · 70';
+  var PB='2026-08-19 · 71';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1777,7 +1777,7 @@ window.bxMergeKho = function(){
     .tkb-addtiet td{background:#fafdfb;border-bottom:none}
     /* Điện thoại: cho lưới rộng đủ để đọc trọn tên môn rồi vuốt ngang — trước đây ép vừa
        màn hình nên chữ bị cắt, dễ nhầm "Tiếng Việt" với "Tiếng Anh" (31/7/2026) */
-    @media (max-width:760px){ .tkb-grid{font-size:11px;table-layout:auto;min-width:560px} .tkb-grid td.tkb-cell{min-width:88px;padding:3px} .tkb-card{min-height:40px;padding:5px 3px} .tkb-msel{font-size:10.5px} .tkb-card.empty .tkb-msel{min-height:40px;padding:0 9px} .tkb-grid .tkb-buoi{width:58px;padding:6px 2px} .tkb-bz .nm{font-size:12.5px} .tkb-bz svg{width:24px;height:24px} .tkb-grid .tkb-tiet{width:32px} .tkb-grid .tkb-tiet .tn{width:24px;height:24px;font-size:11px} }
+    @media (max-width:760px){ .tkb-grid{font-size:11px;table-layout:auto;min-width:560px} .tkb-grid td.tkb-cell{min-width:88px;padding:3px} .tkb-card{min-height:44px;padding:5px 3px} .tkb-msel{font-size:10.5px} .tkb-card.empty .tkb-msel{min-height:44px;padding:0 9px} .tkb-grid .tkb-buoi{width:58px;padding:6px 2px} .tkb-bz .nm{font-size:12.5px} .tkb-bz svg{width:24px;height:24px} .tkb-grid .tkb-tiet{width:32px} .tkb-grid .tkb-tiet .tn{width:24px;height:24px;font-size:11px} }
     /* (10/8/2026) Thanh nút LƯU luôn DÍNH ĐÁY màn — nhiều máy độ phân giải thấp trước đây
        không thấy nút vì nó nằm dưới lưới, khuất khỏi màn. Sticky bottom giữ nút hiện sẵn dù
        chưa cuộn; nút không co chữ. Trên điện thoại né thanh điều hướng đáy. */
@@ -1947,7 +1947,7 @@ window.bxMergeKho = function(){
       <div class="page-head">
         <div><h2 class="ph-title">Học sinh cần hỗ trợ</h2><div class="ph-sub">Nhóm học sinh cần quan tâm thêm — thông tin bảo mật, dùng nội bộ <span id="hs-count" class="muted-sm"></span></div></div>
         <div class="ph-actions">
-          <button class="btn-xs" onclick="exportHocSinhDocx()">⬇ Xuất danh sách (Word)</button>
+          <button class="btn-xs" onclick="exportHocSinhDocx()">⬇ Xuất danh sách<span class="an-mobile"> (Word)</span></button>
           <button class="btn-xs solid" onclick="openHsEditor()">➕ Thêm nhóm/HS</button>
         </div>
       </div>
@@ -2031,7 +2031,7 @@ window.bxMergeKho = function(){
           <label class="fld"><span>Xưng hô</span><select id="set-xung"><option value="Cô">Cô</option><option value="Thầy">Thầy</option></select></label>
           <label class="fld"><span>Họ và tên</span><input id="set-name" value="Bút Xanh"></label>
           <label class="fld"><span>Cấp / Khối</span><input id="set-grade" value="" placeholder="Giáo viên Tiểu học — Lớp …"></label>
-          <label class="fld"><span>Trường</span><input id="set-school" value="Tiểu học Diễn Liên" placeholder="Tên trường…"></label>
+          <label class="fld"><span>Trường</span><input id="set-school" value="" placeholder="Tên trường…"></label>
           <label class="fld"><span>Năm học</span><input id="set-year" value="2026 - 2027"></label>
           <label class="fld"><span>Tổ chuyên môn</span><input id="set-team" placeholder="Tổ…"></label>
           <label class="fld"><span>Lớp giảng dạy</span><input id="set-class" placeholder="VD: 5A"></label>
@@ -9315,7 +9315,7 @@ window.BX_pvXong=function(){
   TT.quyen=chuoi; luuTT(TT);
   try{ localStorage.removeItem(KEY_HOAN); }catch(e){}
   dong(); capNhat();
-  if(window.bxAlert) bxAlert('✓ Đã lưu. Bút Xanh sẽ hiện: '+moTa(chuoi)+'.\n\nĐổi lại bất cứ lúc nào ở Cài đặt ▸ Lớp và môn tôi dạy.');
+  if(window.bxAlert) bxAlert('✓ Đã lưu. Bút Xanh sẽ hiện: '+moTa(chuoi)+'.\n\nĐổi lại bất cứ lúc nào ở Cài đặt ▸ Lớp và môn tôi dạy.',{autoClose:4000});
 };
 /* Đổi phạm vi thì hai màn phụ thuộc phải vẽ lại: KHGD môn học (đổi cả ô Lớp/Môn)
    và Kho giáo án. Bọc try riêng để một màn lỗi không kéo màn kia. */
