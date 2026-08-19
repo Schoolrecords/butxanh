@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-19 · 68';
+  var PB='2026-08-19 · 69';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -8849,7 +8849,10 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
       if(typeof window.BX_confirm!=='function'){ if(window.bxAlert) bxAlert('Thầy/cô mở butxanh.net bằng Chrome (hoặc Safari) rồi đăng nhập giúp em ạ.'); return; }
       window.BX_confirm({
         title:'Cần mở bằng Chrome để đăng nhập',
-        html:'<div style="text-align:left;font-size:14px;line-height:1.7">Google không cho đăng nhập khi mở trang trong <b>'+ten+'</b>.'+
+        /* (19/8/2026) Sửa câu chữ: KHÔNG phải lúc nào Google cũng chặn — máy cô Hoà vẫn hiện
+           được màn hình Google từ trong Zalo, hỏng là ở bước quay về. Nói "chưa đăng nhập được
+           khi mở trong Zalo" mới đúng cả hai ca, và không đổ oan cho Google. */
+        html:'<div style="text-align:left;font-size:14px;line-height:1.7">Mở trang trong <b>'+ten+'</b> thì <b>chưa đăng nhập được</b> — trình duyệt của '+ten+' không giữ được phiên đăng nhập của Google.'+
              '<br><br>Thầy/cô bấm nút dưới đây để <b>chép địa chỉ</b>, rồi mở <b>Chrome</b> (hoặc Safari) và dán vào.'+
              '<br><br><span style="color:#8a5a00">💡 Chưa đăng nhập vẫn dùng được bình thường — chỉ là chưa lưu lên đám mây thôi ạ.</span></div>',
         okText:'📋 Chép địa chỉ butxanh.net', cancelText:'Để sau'
@@ -8865,6 +8868,47 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
   }
   window.BX_laTrongUngDungKhac=laTrongUngDungKhac;   // để bộ kiểm thử đo được
   window.BX_chiDuongRaTrinhDuyet=chiDuongRaTrinhDuyet;
+
+  /* ---- (19/8/2026) ĐĂNG NHẬP KIỂU CHUYỂN TRANG cho điện thoại & trình duyệt trong ứng dụng ---- */
+  var KHOA_CT='butxanh_dn_chuyentrang';     // dấu "vừa đi Google về", để biết mà đỡ nếu hỏng
+  function nenChuyenTrang(){
+    try{
+      if(laTrongUngDungKhac()) return true;                       // Zalo, Messenger, TikTok…
+      if(typeof window.bxLaCamTay==='function' && window.bxLaCamTay()) return true;   // điện thoại, máy tính bảng
+    }catch(e){}
+    return false;
+  }
+  function danhDauChuyenTrang(){ try{ localStorage.setItem(KHOA_CT, String(Date.now())); }catch(e){} }
+  function xoaDauChuyenTrang(){ try{ localStorage.removeItem(KHOA_CT); }catch(e){} }
+  /* Có phải vừa từ Google quay về không? Quá 5 phút thì coi như dấu cũ, bỏ đi. */
+  function vuaChuyenTrangVe(){
+    try{ var t=parseInt(localStorage.getItem(KHOA_CT)||'0',10); return !!(t && (Date.now()-t)<5*60*1000); }catch(e){ return false; }
+  }
+  function dangNhapChuyenTrang(p){
+    danhDauChuyenTrang();
+    try{ var b=box&&box.querySelector('.fb-btn'); if(b) b.innerHTML='⏳ Đang mở trang Google…'; }catch(e){}
+    /* Cất bản giáo án đang gõ trước khi rời trang — chuyển trang là app tải lại từ đầu.
+       (beforeunload cũng làm việc này, nhưng gọi thẳng ở đây cho chắc.) */
+    try{ if(typeof window.BX_luuNhapNgay==='function') window.BX_luuNhapNgay(); }catch(e){}
+    try{ if(window.__bxFlush) window.__bxFlush(); }catch(e){}
+    try{ auth.signInWithRedirect(p); }
+    catch(e){
+      xoaDauChuyenTrang(); ketThucDangNhap();
+      try{ console.warn('[ĐB] không chuyển trang được', e); }catch(_){}
+      if(laTrongUngDungKhac()) chiDuongRaTrinhDuyet();
+      else bxAlert('Chưa mở được trang đăng nhập Google. Thầy/cô thử lại giúp em ạ.');
+    }
+  }
+  /* Quay về mà vẫn chưa có phiên: lần đầu mời thử lại, lần sau mới chỉ đường ra Chrome —
+     tránh doạ thầy cô khi thật ra chỉ là bấm nút Quay lại ở màn hình Google. */
+  function loChuyenTrangHong(){
+    var lan=0; try{ lan=parseInt(localStorage.getItem(KHOA_CT+'_hong')||'0',10)||0; }catch(e){}
+    lan++; try{ localStorage.setItem(KHOA_CT+'_hong', String(lan)); }catch(e){}
+    if(lan>=2 && laTrongUngDungKhac()){ chiDuongRaTrinhDuyet(); return; }
+    BX_confirm({title:'Đăng nhập chưa xong',
+      html:'Thầy/cô đã quay lại Bút Xanh nhưng <b>chưa đăng nhập được</b>.<br><br>Dữ liệu trên máy <b>vẫn nguyên vẹn</b> ạ. Thầy/cô bấm <b>Thử lại</b> nhé.',
+      okText:'Thử lại',cancelText:'Để sau'}, function(){ FBX.login(); });
+  }
   /* 🔴 LỖI ĐÃ VÁ (16/8/2026, thầy Chung gửi ảnh nút kẹt): cửa sổ đăng nhập Google có thể
      KHÔNG BAO GIỜ trả lời — thầy cô đóng nhầm tab, mạng 4G rớt giữa chừng, hoặc trình
      duyệt điện thoại nuốt mất cửa sổ. Khi đó signInWithPopup treo vĩnh viễn: nút đứng ở
@@ -8906,6 +8950,21 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
       dangDangNhap=true; tBatDau=Date.now();
       var p=new firebase.auth.GoogleAuthProvider();
       loginBusy(true);
+      /* 🔴 (19/8/2026 — thầy Chung gửi ảnh máy cô Hoà, Samsung, bấm link trong Zalo)
+         ĐIỆN THOẠI VÀ TRÌNH DUYỆT TRONG ỨNG DỤNG KHÁC ĐI LỐI CHUYỂN TRANG, KHÔNG MỞ CỬA SỔ PHỤ.
+         Đo thật trên bản live với UA Zalo + khổ điện thoại: bấm "Đăng nhập" thì app MỞ MỘT TAB
+         MỚI sang accounts.google.com và bỏ lại tab app. Xong việc ở Google, tab phụ phải "nói
+         chuyện ngược" về tab app rồi tự đóng — nhưng trong trình duyệt của Zalo (và cả khi máy
+         ít RAM thu hồi tab nền) thì KHÔNG CÒN AI để nói chuyện: tab phụ đứng ở trang trắng
+         but-xanh.firebaseapp.com vĩnh viễn, tab app treo ở "⏳ Đang đăng nhập…" 45 giây.
+         Lối chuyển trang chỉ dùng MỘT tab từ đầu tới cuối nên không dính chuyện đó — đây cũng là
+         cách Firebase khuyến nghị cho di động. Máy tính GIỮ NGUYÊN lối cửa sổ phụ (đang chạy tốt,
+         lại không phải tải lại cả app sau khi quay về). */
+      if(nenChuyenTrang()){
+        if(hetGioT){ clearTimeout(hetGioT); hetGioT=null; }   // chuyển trang thì canh giờ vô nghĩa
+        dangNhapChuyenTrang(p);
+        return;
+      }
       /* Chốt chặn cuối: cửa sổ Google im lặng quá lâu thì trả nút về trạng thái bấm được */
       hetGioT=setTimeout(function(){
         hetGioT=null;
@@ -9001,10 +9060,24 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
       try{ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(){}); }catch(e){}   // giữ đăng nhập bền
       /* Quay về sau đăng nhập kiểu chuyển trang: có lỗi thì phải nói ra,
          không nuốt im lặng — trước đây GV treo ở bước này mà không ai biết vì sao */
-      try{ auth.getRedirectResult().catch(function(e){
+      /* (19/8/2026) Điện thoại nay đăng nhập bằng lối CHUYỂN TRANG nên nhánh này là đường về
+         chính, không còn là phương án dự phòng. Ba ngả phải lo đủ:
+           - về CÓ phiên  → xoá dấu, không nói gì (onAuthStateChanged lo phần còn lại)
+           - về KHÔNG phiên mà vừa đi Google về → mời thử lại (lần 2 mới chỉ đường ra Chrome)
+           - lỗi thật     → nói bằng tiếng Việt, đừng ném chữ kỹ thuật vào mặt thầy cô */
+      try{ auth.getRedirectResult().then(function(kq){
+        if(kq && kq.user){
+          xoaDauChuyenTrang();
+          try{ localStorage.removeItem('butxanh_dn_chuyentrang_hong'); }catch(_){}
+          return;
+        }
+        if(vuaChuyenTrangVe()){ xoaDauChuyenTrang(); loChuyenTrangHong(); }
+      }).catch(function(e){
         console.warn('[ĐB] lỗi nhận phiên sau chuyển trang',e);
-        var msg=(e&&e.message)||(e&&e.code)||'';
-        if(msg) bxAlert('Đăng nhập bằng cách chuyển trang chưa thành công — '+msg+'\n\nThầy cô bấm "Đăng nhập" thử lại; nếu vẫn không được, gỡ chặn cửa sổ bật lên hoặc dùng Gmail cá nhân.');
+        var daDi=vuaChuyenTrangVe(); xoaDauChuyenTrang();
+        var code=(e&&e.code)||'';
+        if(code==='auth/unauthorized-domain'){ bxAlert('Tên miền chưa được cho phép đăng nhập. Thầy/cô mở đúng địa chỉ butxanh.net giúp em ạ.'); return; }
+        if(daDi) loChuyenTrangHong();
       }); }catch(e){}
       auth.onAuthStateChanged(onAuth);
       // Cảnh báo nếu đóng/chuyển trang khi còn thay đổi chưa kịp đẩy lên đám mây
