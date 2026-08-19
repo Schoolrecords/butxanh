@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-19 · 69';
+  var PB='2026-08-19 · 70';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -9184,20 +9184,44 @@ function daKhoa(){ try{ return !!(window.BXLIC && BXLIC.daKhoaQuyen && BXLIC.daK
 function HOTLINE(){ try{ if(window.BXLIC && BXLIC.hotline) return BXLIC.hotline(); }catch(e){} return 'nhóm Zalo Bút Xanh'; }
 
 /* Gợi ý sẵn theo thời khoá biểu đã khai, để phần lớn thầy cô chỉ việc bấm Xong.
-   Chỉ gợi ý KHỐI DẠY NHIỀU MÔN NHẤT — các khối lẻ (dạy thêm) không tự thêm vào,
-   vì phần đó nay thuộc quyền quản trị. */
+
+   🔴 LỖI ĐÃ VÁ (19/8/2026 — agent đóng vai cô Mai, GV Âm nhạc dạy 5 khối, tìm ra; đã đo lại
+   trên bản live). Trước đây hàm này LUÔN gợi ý kiểu "chủ nhiệm" và chọn khối dạy nhiều môn
+   nhất. Với thầy cô BỘ MÔN thì mọi khối đều hoà nhau (mỗi khối đúng 1 môn) nên nó chọn bừa
+   KHỐI 1 và tích sẵn "Tôi chủ nhiệm một lớp".
+   Đo thật: khai Âm nhạc ở 1A·2B·3A·4C·5B → app suy từ TKB ra ĐÚNG {1..5: Âm nhạc}, nhưng bảng
+   chọn bật lên với "chủ nhiệm · Khối 1" tô sẵn; cô chỉ cần bấm "Xong" một cái là lưu
+   `quyen:"1:*"` → phạm vi sụp còn {1:"*"}: MẤT Âm nhạc ở 4 khối, lại MỞ NHẦM mọi môn khối 1.
+   Nặng ở chỗ lựa chọn này ĐÈ lên kết quả suy từ TKB, và sau khi kích hoạt bản quyền thì
+   phạm vi bị KHOÁ VĨNH VIỄN, phải nhờ quản trị mở lại.
+
+   Nay: nhìn hình dạng thời khoá biểu để đoán thầy cô thuộc nhóm nào.
+     · Có khối nào dạy từ 3 môn trở lên  → chủ nhiệm khối đó (chủ nhiệm tiểu học luôn ≥5 môn).
+     · Không khối nào tới 3 môn, mà lại dạy TỪ 2 KHỐI trở lên, tổng cộng ≤2 môn → BỘ MÔN:
+       gợi ý sẵn kiểu "môn chuyên" kèm đúng các môn ấy.
+     · Còn lại (mới khai một khối, chưa rõ) → giữ nếp cũ: chủ nhiệm khối đang khai. */
 function goiY(){
   var tt={kieu:'cn', khoiCN:'', monChuyen:[]};
   try{
     var pc=(typeof window.BX_phanCongGVDay==='function')?window.BX_phanCongGVDay():{};
-    var chinh='', nhieuNhat=-1;
+    var chinh='', nhieuNhat=-1, soKhoi=0, monTat={};
     Object.keys(pc).forEach(function(k){
       if(!/^[1-5]$/.test(k)) return;
-      if((pc[k]||[]).length>nhieuNhat){ nhieuNhat=(pc[k]||[]).length; chinh=k; }
+      var ds=pc[k]||[]; if(!ds.length) return;
+      soKhoi++;
+      ds.forEach(function(m){ monTat[m]=1; });
+      if(ds.length>nhieuNhat){ nhieuNhat=ds.length; chinh=k; }
     });
-    if(chinh) tt.khoiCN=chinh;
+    /* Chỉ giữ môn app biết nằm ở những khối nào — môn thầy cô tự thêm (Kĩ năng sống, STEM…)
+       không có trong bảng phân phối nên không suy ra khối được, để nguyên nếp chủ nhiệm. */
+    var dsMon=Object.keys(monTat).filter(function(m){ return khoiCuaMon(m).length>0; });
+    var laBoMon = (nhieuNhat>0 && nhieuNhat<3 && soKhoi>=2
+                   && dsMon.length>0 && dsMon.length===Object.keys(monTat).length
+                   && dsMon.length<=TOI_DA_MON_CHUYEN);
+    if(laBoMon){ tt.kieu='chuyen'; tt.monChuyen=dsMon.slice(0,TOI_DA_MON_CHUYEN); }
+    else if(chinh){ tt.khoiCN=chinh; }
   }catch(e){}
-  if(!tt.khoiCN){ try{ tt.khoiCN=window.BX_khoiHienTai?window.BX_khoiHienTai():'5'; }catch(e){ tt.khoiCN='5'; } }
+  if(tt.kieu==='cn' && !tt.khoiCN){ try{ tt.khoiCN=window.BX_khoiHienTai?window.BX_khoiHienTai():'5'; }catch(e){ tt.khoiCN='5'; } }
   return tt;
 }
 
@@ -9206,11 +9230,15 @@ var TT=null;
 function o(){ var x=document.getElementById('bxpv-ov');
   if(!x){ x=document.createElement('div'); x.id='bxpv-ov';
     x.style.cssText='position:fixed;inset:0;background:rgba(15,30,25,.55);display:none;align-items:center;justify-content:center;z-index:99998;padding:16px';
-    x.addEventListener('click',function(e){ if(e.target===x) dong(); });
+    x.addEventListener('click',function(e){ if(e.target===x) dongVaHoan(); });
     document.body.appendChild(x); }
   return x; }
 function dong(){ var x=document.getElementById('bxpv-ov'); if(x) x.style.display='none'; }
-window.BX_pvDong=dong;
+/* (19/8/2026) Bấm × hoặc bấm ra ngoài = "Để sau", đừng hỏi lại mỗi lần vào Kho/KHGD/KHBD.
+   Chưa chọn thì app vẫn suy phạm vi từ thời khoá biểu (và từ hôm nay suy đúng cả cho thầy cô
+   bộ môn), nên không mất gì; thầy cô đổi lại bất cứ lúc nào ở Cài đặt ▸ Lớp và môn tôi dạy. */
+function dongVaHoan(){ try{ localStorage.setItem(KEY_HOAN,'1'); }catch(e){} dong(); }
+window.BX_pvDong=dongVaHoan;
 
 function ve(){
   var khoa=daKhoa();
@@ -9319,12 +9347,44 @@ function theSettings(){
   var d=document.getElementById('bxpv-tomtat'); if(!d) return;
   d.textContent=moTa(window.BX_quyenDaChon());
 }
-/* ---------- Bật lần đầu khi vào Kho giáo án / KHGD môn học ---------- */
+/* ---------- Bật lần đầu khi vào Kho giáo án / KHGD môn học ----------
+   🔴 LỖI ĐÃ VÁ (19/8/2026 — agent đóng vai thầy Nam và cô Thu cùng tìm ra):
+   hẹn giờ 600ms rồi bật, mà KHÔNG kiểm lại xem thầy cô còn đứng ở màn đó không.
+   Thầy cô bấm menu nhanh (hoặc app tự nhảy màn) thì bảng bật lên ĐÈ LÊN MÀN KHÁC —
+   đo thấy nó hiện trên cả màn Phiếu bài tập và chặn hết thao tác bên dưới; tệ nhất là
+   bật ngay giữa lúc đang gõ giáo án, che mất nút "Lưu vào kho / Xuất Word".
+   Nay: mỗi lần chỉ giữ MỘT hẹn giờ, và trước khi bật phải kiểm lại còn đúng màn ấy,
+   không có cửa sổ nào đang mở, và thầy cô chưa chọn phạm vi. */
+var _hgNhac=null;
+function _dangOMan(v){
+  try{ var s=document.getElementById('v-'+v); return !!(s && s.classList.contains('active')); }catch(e){ return false; }
+}
+/* Cửa sổ nào đang mở? Mỗi lớp phủ trong app dùng một lối bật riêng, phải kể đủ:
+   `.overlay.show` = hộp thoại của app (soạn giáo án, lịch nghỉ…) · `.bxlic-ov.on` = hộp bản
+   quyền · `#pw-doc.on` = khung xem phiếu bài tập. Ghi thiếu là bảng chọn lại chen ngang. */
+function _coCuaSoDangMo(){
+  try{
+    var ds=document.querySelectorAll('.overlay.show, .bxlic-ov.on, #pw-doc.on');
+    /* ⚠️ ĐỪNG dùng offsetParent để đo "đang hiện": mọi lớp phủ ở đây đều position:fixed,
+       mà phần tử fixed thì offsetParent LUÔN null → phép kiểm bao giờ cũng sai (đã vấp
+       19/8/2026, bản vá đầu tưởng chạy mà không chạy). Đo bằng khung hình thật. */
+    for(var i=0;i<ds.length;i++){ var r=ds[i].getBoundingClientRect(); if(r.width>0 && r.height>0) return true; }
+  }catch(e){}
+  return false;
+}
 function nhacLanDau(v){
+  if(_hgNhac){ clearTimeout(_hgNhac); _hgNhac=null; }     // bỏ hẹn giờ của màn trước
   if(v!=='kho' && v!=='khdh' && v!=='khbd') return;
   if(docTT()) return;                                   // đã chọn rồi
   try{ if(localStorage.getItem(KEY_HOAN)) return; }catch(e){}   // đã bấm "Để sau"
-  setTimeout(function(){ try{ window.BX_moChonPhamVi(); }catch(e){} }, 600);
+  _hgNhac=setTimeout(function(){
+    _hgNhac=null;
+    if(!_dangOMan(v)) return;              // đã đi màn khác → thôi, đừng đè lên
+    if(_coCuaSoDangMo()) return;           // đang soạn giáo án / đang mở hộp khác → đừng chen
+    if(docTT()) return;
+    try{ if(localStorage.getItem(KEY_HOAN)) return; }catch(e){}
+    try{ window.BX_moChonPhamVi(); }catch(e){}
+  }, 600);
 }
 var _pvShowView=window.showView;
 window.showView=function(v){
@@ -10454,7 +10514,23 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
 @media (prefers-reduced-motion: reduce){
   #bxZalo, #bxZalo::before{ animation:none }
 }
-@media print{ #bxZalo{ display:none } }
+/* (19/8/2026 — agent đóng vai thầy Nam tìm ra) BẢN IN Ctrl+P.
+   Trước đây cả tệp chỉ có đúng một dòng in (ẩn nút Zalo), nên thầy cô nhấn Ctrl+P ở màn
+   Lịch báo giảng là ra kèm **cột menu trái, đầu trang "Xin chào thầy/cô", nút Đăng nhập và
+   cả dải nút thao tác** — đo thật trên bản live. Lối chính vẫn là "📥 Tải LBG về máy" rồi in
+   từ Excel, nhưng nhiều thầy cô quen nhấn Ctrl+P, nên dọn cho ra tờ giấy sạch.
+   Chỉ ẩn phần VỎ app và các nút bấm — không đụng gì tới bảng biểu, nên không có chuyện
+   mất nội dung. Phiếu bài tập in bằng cửa sổ riêng, không đi qua đây. */
+@media print{
+  #bxZalo{ display:none }
+  .sidebar, .header, #mnav{ display:none !important }
+  .main{ margin:0 !important; padding:0 !important; width:auto !important; max-width:none !important }
+  .view:not(.active){ display:none !important }
+  .overlay, #bxpv-ov, .bxlic-ov{ display:none !important }
+  button, .btn, .fb-auth{ display:none !important }
+  body{ background:#fff !important }
+  *{ box-shadow:none !important }
+}
 </style>
 
 <a id="bxZalo" href="https://zalo.me/g/fazifdg2xasiajb623uj" target="_blank" rel="noopener noreferrer"
