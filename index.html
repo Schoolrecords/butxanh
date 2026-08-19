@@ -16,7 +16,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-19 · 71';
+  var PB='2026-08-19 · 72';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -326,7 +326,9 @@ tr.lesson:hover .gen-hint{display:inline}
 .modal-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}
 .modal-head h3{font-size:17px;font-weight:700}
 .modal-head .sub{font-size:12.5px;color:var(--muted);margin-top:2px}
-.close{font-size:24px;color:var(--muted);line-height:1;width:30px;height:30px}
+/* (19/8/2026) Do that tren app live: hop nut chua ro rang (~19x30) duoi nguong cham 44px.
+   Them display flex de can giua chu "x", ep vung cham that su la 44x44 khong bi flex cha bop nho. */
+.close{font-size:24px;color:var(--muted);line-height:1;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;flex:none;box-sizing:border-box}
 .modal-body{padding:20px 22px}
 .modal-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
 /* ===== HƯỚNG DẪN SỬ DỤNG (help modal) ===== */
@@ -945,11 +947,14 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 .fb-auth{position:relative}
 @media(max-width:520px){ .fb-btn .fb-name{display:none} .fb-btn{padding:7px 10px;font-size:12.5px} }
 /* Điện thoại: nút Đăng nhập gọn lại để còn chỗ hiện đủ tên thầy cô (31/7/2026) */
-@media(max-width:768px){ .header .fb-btn{padding:7px 11px;font-size:12.5px;gap:5px} .header .fb-btn svg{width:15px;height:15px} }
+/* (19/8/2026) Nút cao 32px trên điện thoại — dưới ngưỡng chạm 44px, đo thật trên app live
+   (đóng vai GVCN dùng điện thoại). Tăng đệm dọc để đủ cao, không đổi cỡ chữ/gap. */
+@media(max-width:768px){ .header .fb-btn{padding:13px 11px;font-size:12.5px;gap:5px} .header .fb-btn svg{width:15px;height:15px} }
 /* Bộ chọn Tuần (Lịch báo giảng) — bấm để mở bảng chọn, gọn không chiếm chỗ */
 .wk-picker{position:relative;margin-top:6px}
 .wk-sel{display:inline-flex;align-items:center;gap:6px}
-.wk-nav{width:30px;height:30px;border:1px solid var(--line);border-radius:8px;background:#fff;color:#3a4a42;font-size:17px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:.12s}
+/* (19/8/2026) 30x30 duoi nguong cham 44px, do that tren app live. Tang len 44x44. */
+.wk-nav{width:44px;height:44px;border:1px solid var(--line);border-radius:8px;background:#fff;color:#3a4a42;font-size:17px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:.12s}
 .wk-nav:hover{border-color:#bfe7cd;background:#f0f7f3}
 .wk-nav:disabled{opacity:.35;cursor:default;background:#fff}
 .wk-cur{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;cursor:pointer;transition:.12s}
@@ -1412,7 +1417,10 @@ window.bxMergeKho = function(){
         <b class="g">kể cả học sinh khuyết tật hòa nhập</b>.
       </p>
 
-      <p class="bxi-punch">Chỉ 1 nút chạm, thầy cô tải ngay bộ giáo án trọn tuần theo Lịch báo giảng!</p>
+      <!-- (19/8/2026) Cau cu hua "chi 1 nut cham, tai ngay" - do that: cham "Tai ca tuan"
+           khi chua dang nhap thi hien hop moi dang nhap Google truoc, khong tai thang duoc.
+           Sua lai cho dung thuc te, van giu duoc tinh chat noi bat cua tinh nang. -->
+      <p class="bxi-punch">Từ Lịch báo giảng, thầy cô mở ngay giáo án và tài liệu trọn tuần trong Kho giáo án số!</p>
       <p class="bxi-invite">Hãy đến với Bút Xanh! <span aria-hidden="true">♡</span></p>
 
       <div class="bxi-feats">
@@ -3395,7 +3403,14 @@ function showView(v){
   if(!ALLVIEWS.includes(v)) v='dashboard';
   document.querySelectorAll('.view').forEach(s=>s.classList.toggle('active', s.id==='v-'+v));
   document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('active', a.dataset.view===v));
-  if(('#'+v)!==location.hash){ try{history.replaceState(null,'','#'+v);}catch(e){} }
+  /* (19/8/2026 — vá "Quay lại thoát hẳn app") TRƯỚC dùng replaceState: đổi màn không để lại
+     nấc lịch sử, nên đi qua vài màn rồi bấm Quay lại của điện thoại/trình duyệt là THOÁT
+     THẲNG khỏi app (nặng nhất ở chế độ cài ra màn hình chính - PWA không có thanh địa chỉ
+     để "lùi" lại). Nay dùng pushState để mỗi lần đổi màn để lại một nấc, bấm Quay lại chỉ
+     lùi về màn trước đó trong app; nghe sự kiện 'hashchange' có sẵn (dòng ~3560) tự vẽ lại
+     đúng màn khi lùi/tiến. Không đổi khi hash đã khớp sẵn (vd render lại cùng màn) để khỏi
+     sinh nấc rác. */
+  if(('#'+v)!==location.hash){ try{history.pushState(null,'','#'+v);}catch(e){} }
   window.scrollTo({top:0});
   const r={dashboard:renderDashboard,tkb:window.bxRenderTKBView,lich:renderFullSchedule,khbd:renderKHBDView,kho:renderKho,nhac:renderNhac,hocsinh:renderHocSinh,hoclieu:renderHocLieu,phieu:renderPhieu,ppt:renderSlides,thongke:renderThongKe,caidat:loadSettings}[v];
   if(r) r();
@@ -6764,7 +6779,8 @@ window.showView = function(v){
   if(v==='map'||v==='khdh'){
     document.querySelectorAll('.view').forEach(function(s){ s.classList.toggle('active', s.id==='v-'+v); });
     document.querySelectorAll('.nav a').forEach(function(a){ a.classList.toggle('active', a.dataset.view===v); });
-    if(('#'+v)!==location.hash){ try{history.replaceState(null,'','#'+v);}catch(e){} }
+    /* pushState như bản vá ở showView() gốc (~dòng 3398) — giữ đồng nhất, Quay lại không thoát app */
+    if(('#'+v)!==location.hash){ try{history.pushState(null,'','#'+v);}catch(e){} }
     window.scrollTo({top:0});
     /* KHGD nạp lười theo lớp — bảo đảm dữ liệu lớp đang xem + lớp 5 (nền) đã về;
        __bxKHGDDaVe sẽ tự vẽ lại màn này khi dữ liệu tới */
