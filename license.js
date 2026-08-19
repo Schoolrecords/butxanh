@@ -37,6 +37,16 @@
     /* (9/8/2026 — thầy Chung chốt) Một bản quyền = 1 MÁY TÍNH (soạn) + 1 ĐIỆN THOẠI (xem + tải Word) */
     SO_LAN_DOI_MAY_PHU_TOI_DA: 4,              // đổi ĐIỆN THOẠI (ngăn phụ) / năm học — nới hơn vì điện thoại đổi/mất thường hơn
     SO_LAN_DOI_VAI_TOI_DA: 2,                  // đổi VAI SOẠN (máy tính ↔ điện thoại) / năm học — van dự phòng khi máy tính hỏng
+    /* (19/8/2026 — nới lượt đầu năm học) Tháng 8–9 là lúc thầy cô cài lại máy, đổi máy,
+       dọn trình duyệt dồn dập; xoá dữ liệu duyệt web cũng bị tính là máy mới. Tiêu hết 2 lượt
+       của cả năm ngay trong tháng 9 thì tới tháng 3 máy hỏng là khoá cứng, phải gọi hỗ trợ.
+       Nay trong hai tháng này có thêm một KHO LƯỢT RIÊNG (devices/luotDauNam), tiêu hết kho
+       này mới đụng tới 2 lượt của cả năm. Đặt NOI_LUOT_DAU_NAM=false là tắt hẳn, về nếp cũ.
+       Kho riêng nằm trong nhánh `devices` vì luật Firebase đã cho chủ tài khoản ghi nhánh đó —
+       thêm trường mới ở ngoài sẽ bị luật chặn, ghi hỏng mà app không hay. */
+    NOI_LUOT_DAU_NAM: true,
+    THANG_NOI_LUOT: [8, 9],                    // tháng dương lịch được nới (8 và 9)
+    SO_LAN_DOI_MAY_DAU_NAM: 3,                 // lượt đổi MÁY TÍNH riêng cho đợt đầu năm
     HOTLINE: 'Dự án Bút Xanh (qua nhóm Zalo)', // hiển thị khi hết lượt đổi máy (đổi 3/8/2026 theo lời thầy)
     /* KHOÁ THEO KHỐI LỚP (5/8/2026 — thầy Chung chốt):
        Một bản quyền chỉ tải được giáo án & KHDH của KHỐI thầy cô dạy, không lấy
@@ -480,19 +490,69 @@
     window.BXLIC_coTheDoiVai=!!((laChinh||laPhu)&&((rec.soLanDoiVai||0)<CONFIG.SO_LAN_DOI_VAI_TOI_DA));
     try{ if(window.BX_capNhatCheDoXem) window.BX_capNhatCheDoXem(); }catch(e){}
 
-    if(laChinh||laPhu){ setPaid(true, rec.ngayHetHan||hetHanFor(rec.namHoc||curNamHoc())); return; }
+    if(laChinh||laPhu){
+      /* (19/8/2026) Máy này đã hợp lệ → ĐÓNG hộp "Thiết bị mới" nếu còn mở. Trước đây hộp cứ
+         nằm đó: quản trị bấm "Reset máy" xong, máy của thầy cô đã tự vào ngăn trống và mở khoá
+         rồi mà màn hình vẫn hỏi "đang gắn với thiết bị khác" — bấm tiếp là tiêu một lượt oan. */
+      try{ closeOv('bxlic-dev'); }catch(e){}
+      setPaid(true, rec.ngayHetHan||hetHanFor(rec.namHoc||curNamHoc())); return;
+    }
 
     // Máy lạ → khoá, mời đổi máy trong đúng NGĂN của nó nếu còn lượt
     setPaid(false, 0);
     if(cam){ showDeviceMismatchPhu(CONFIG.SO_LAN_DOI_MAY_PHU_TOI_DA-(rec.soLanDoiMayPhu||0)); }
-    else { showDeviceMismatch(CONFIG.SO_LAN_DOI_MAY_TOI_DA-(rec.soLanDoiMay||0)); }
+    else { showDeviceMismatch(conLaiDoiMay()); }
   }
 
-  function showDeviceMismatch(left){
+  /* ------------------------------------------------------------------ *
+   *  LƯỢT ĐỔI MÁY — tiêu bằng transaction(), và kho lượt riêng đầu năm   *
+   * ------------------------------------------------------------------ */
+  /* (19/8/2026) TIÊU LƯỢT BẰNG transaction().
+     Nếp cũ dùng update(): đọc bộ đếm từ bản chụp `rec` trong máy rồi ghi đè số đã cộng.
+     Hai máy (hay hai thẻ, hay một cú bấm đúp) chạm trong cùng khoảng trễ mạng thì cùng đọc
+     ra một số cũ rồi cùng ghi cùng một số mới — ĐO THẬT 19/8/2026: ba lần bấm liên tiếp
+     trong 30ms, ba máy đều được gắn mà bộ đếm chỉ nhích 0→1, tức trần 2 lượt/năm bị vượt.
+     transaction() đọc–sửa–ghi NGAY TẠI MÁY CHỦ nên không ai chen vào giữa được; trả
+     committed=false khi hàm biến đổi trả undefined (kho đã đầy) → chỗ gọi biết mà từ chối. */
+  function trongDotDauNam(){
+    if(!CONFIG.NOI_LUOT_DAU_NAM) return false;
+    try{ return (CONFIG.THANG_NOI_LUOT||[]).indexOf(new Date().getMonth()+1)>=0; }catch(e){ return false; }
+  }
+  function daDungDauNam(){ var d=(rec&&rec.devices)||{}; return Number(d.luotDauNam)||0; }
+  /* Còn bao nhiêu lượt đổi MÁY TÍNH: kho cả năm + kho riêng đầu năm (nếu đang trong đợt) */
+  function conLaiDoiMay(){
+    var conNam=Math.max(0, CONFIG.SO_LAN_DOI_MAY_TOI_DA-(Number(rec&&rec.soLanDoiMay)||0));
+    var conDau=trongDotDauNam()?Math.max(0, CONFIG.SO_LAN_DOI_MAY_DAU_NAM-daDungDauNam()):0;
+    return { nam:conNam, dau:conDau, tong:conNam+conDau };
+  }
+  /* Tiêu 1 lượt ở kho `khoa` với trần `tran`. Trả Promise<true> nếu giữ được lượt. */
+  function tieuLuot(khoa, tran){
+    return db.ref('licenses/'+user.uid+'/'+khoa).transaction(function(cu){
+      var n=Number(cu)||0;
+      if(n>=tran) return;                  // undefined = HUỶ, không ghi gì
+      return n+1;
+    }).then(function(kq){ return !!(kq && kq.committed); });
+  }
+  /* Đã tiêu lượt mà ghi thiết bị hỏng (rớt mạng giữa chừng) → trả lại, đừng để mất oan */
+  function traLaiLuot(khoa){
+    try{
+      db.ref('licenses/'+user.uid+'/'+khoa).transaction(function(cu){
+        var n=Number(cu)||0; return n>0?n-1:0;
+      }).catch(function(){});     // mất mạng nốt thì thôi, đừng ném lỗi lạ ra Console
+    }catch(e){}
+  }
+
+  function showDeviceMismatch(con){
     var o=overlay('bxlic-dev');
-    var body = left>0
+    var tong=(con&&con.tong)||0, dau=(con&&con.dau)||0;
+    var loiDauNam = dau>0
+      ? '<p style="font-size:12.5px;line-height:1.55;color:#1b5e20;background:#eaf5ea;border-radius:8px;padding:8px 10px;margin:8px 0">'+
+        '🎒 Đang trong <b>đợt đầu năm học</b>: thầy/cô có thêm <b>'+dau+'</b> lượt cài lại máy, '+
+        '<b>không trừ</b> vào '+CONFIG.SO_LAN_DOI_MAY_TOI_DA+' lượt của cả năm.</p>'
+      : '';
+    var body = tong>0
       ? '<p style="font-size:14px;line-height:1.6">Bản quyền của thầy/cô đang gắn với <b>một thiết bị khác</b>. '+
-        'Thầy/cô còn <b>'+left+'</b> lượt chuyển sang máy mới trong năm học này.</p>'+
+        'Thầy/cô còn <b>'+tong+'</b> lượt chuyển sang máy mới.</p>'+ loiDauNam +
         '<p style="font-size:12.5px;color:#667;line-height:1.5">Lưu ý: xoá dữ liệu trình duyệt/cache cũng được tính là máy mới.</p>'+
         '<button class="bxlic-btn" onclick="BXLIC_switchDevice()">📲 Dùng bản quyền trên máy này</button>'+
         '<button class="bxlic-btn sec" onclick="BXLIC_close(\'bxlic-dev\')">Để sau</button>'
@@ -506,12 +566,27 @@
   }
   window.BXLIC_switchDevice=function(){
     if(!user||!db||!rec) return;
-    var used=rec.soLanDoiMay||0;
-    if(used>=CONFIG.SO_LAN_DOI_MAY_TOI_DA){ return; }
-    var upd={}; upd['licenses/'+user.uid+'/device']=dev; upd['licenses/'+user.uid+'/soLanDoiMay']=used+1;
-    upd['licenses/'+user.uid+'/devices/chinh']={id:devB, fp:fpB, ts:Date.now()};   // mã bền + vân tay bền (lưới đỡ 17/8/2026)
-    db.ref().update(upd).then(function(){ closeOv('bxlic-dev'); /* listener sẽ tự mở khoá */ })
-      .catch(function(){ if(window.bxAlert) bxAlert('Chưa đổi được máy (kiểm tra mạng).'); });
+    /* Máy này đã là ngăn chính rồi (hồ sơ vừa đổi trong lúc hộp còn mở) → đừng tiêu lượt vô ích */
+    var Dh=rec.devices||{};
+    if(Dh.chinh && Dh.chinh.id===devB){ closeOv('bxlic-dev'); return; }
+    /* Trong đợt đầu năm thì tiêu KHO RIÊNG trước, hết mới đụng 2 lượt của cả năm.
+       Chọn kho theo `rec` (có thể cũ vài giây) nhưng việc TIÊU thì nguyên tử: kho đã đầy sẽ
+       trả committed=false, lúc đó tự chuyển sang kho sau — không bao giờ tiêu nhầm hai kho. */
+    var kho = (trongDotDauNam() && daDungDauNam()<CONFIG.SO_LAN_DOI_MAY_DAU_NAM)
+      ? [{k:'devices/luotDauNam', t:CONFIG.SO_LAN_DOI_MAY_DAU_NAM}, {k:'soLanDoiMay', t:CONFIG.SO_LAN_DOI_MAY_TOI_DA}]
+      : [{k:'soLanDoiMay', t:CONFIG.SO_LAN_DOI_MAY_TOI_DA}];
+    var i=0;
+    (function thuKho(){
+      if(i>=kho.length){ showDeviceMismatch({nam:0,dau:0,tong:0}); return; }   // hết sạch lượt
+      var ch=kho[i++];
+      tieuLuot(ch.k, ch.t).then(function(duoc){
+        if(!duoc){ thuKho(); return; }                                        // kho đầy → kho sau
+        var upd={}; upd['licenses/'+user.uid+'/device']=dev;
+        upd['licenses/'+user.uid+'/devices/chinh']={id:devB, fp:fpB, ts:Date.now()};   // mã bền + vân tay bền (lưới đỡ 17/8/2026)
+        db.ref().update(upd).then(function(){ closeOv('bxlic-dev'); /* listener sẽ tự mở khoá */ })
+          .catch(function(){ traLaiLuot(ch.k); if(window.bxAlert) bxAlert('Chưa đổi được máy (kiểm tra mạng).'); });
+      }).catch(function(){ if(window.bxAlert) bxAlert('Chưa đổi được máy (kiểm tra mạng).'); });
+    })();
   };
   /* (9/8/2026 — Bước 2) Điện thoại lạ trong khi ngăn phụ đã gắn máy khác */
   function showDeviceMismatchPhu(left){
@@ -532,11 +607,14 @@
   }
   window.BXLIC_switchDevicePhu=function(){
     if(!user||!db||!rec) return;
-    var used=rec.soLanDoiMayPhu||0;
-    if(used>=CONFIG.SO_LAN_DOI_MAY_PHU_TOI_DA){ return; }
-    var upd={}; upd['licenses/'+user.uid+'/devices/phu']={id:devB, fp:fpB, ts:Date.now()}; upd['licenses/'+user.uid+'/soLanDoiMayPhu']=used+1;
-    db.ref().update(upd).then(function(){ closeOv('bxlic-dev'); /* listener sẽ tự mở khoá */ })
-      .catch(function(){ if(window.bxAlert) bxAlert('Chưa đổi được điện thoại (kiểm tra mạng).'); });
+    /* Cùng lý do với ngăn chính: tiêu lượt bằng transaction() để hai máy không đè bộ đếm.
+       Ngăn phụ KHÔNG nới đầu năm — điện thoại vốn đã 4 lượt/năm, thầy Chung chốt 9/8/2026. */
+    tieuLuot('soLanDoiMayPhu', CONFIG.SO_LAN_DOI_MAY_PHU_TOI_DA).then(function(duoc){
+      if(!duoc){ showDeviceMismatchPhu(0); return; }
+      db.ref('licenses/'+user.uid+'/devices/phu').set({id:devB, fp:fpB, ts:Date.now()})
+        .then(function(){ closeOv('bxlic-dev'); /* listener sẽ tự mở khoá */ })
+        .catch(function(){ traLaiLuot('soLanDoiMayPhu'); if(window.bxAlert) bxAlert('Chưa đổi được điện thoại (kiểm tra mạng).'); });
+    }).catch(function(){ if(window.bxAlert) bxAlert('Chưa đổi được điện thoại (kiểm tra mạng).'); });
   };
   /* (9/8/2026 — Bước 2) ĐỔI VAI SOẠN về máy này — van dự phòng khi máy tính hỏng giữa năm.
      Chỉ máy ĐÃ GẮN (chinh hoặc phu) mới đổi được; tốn 1 trong 2 lượt/năm. Chỉ đổi quyền SOẠN
@@ -551,10 +629,14 @@
     var used=rec.soLanDoiVai||0;
     if(used>=CONFIG.SO_LAN_DOI_VAI_TOI_DA){ if(window.bxAlert) bxAlert('Đã hết '+CONFIG.SO_LAN_DOI_VAI_TOI_DA+' lượt đổi vai soạn trong năm học này.\nVui lòng liên hệ '+CONFIG.HOTLINE+' để được hỗ trợ.'); return; }
     var lam=function(){
-      var upd={}; upd['licenses/'+user.uid+'/vaiSoan']=vaiMoi; upd['licenses/'+user.uid+'/soLanDoiVai']=used+1;
-      db.ref().update(upd)
-        .then(function(){ if(window.bxAlert) bxAlert('✓ Máy này giờ là máy SOẠN.\nMáy còn lại chuyển sang chế độ xem.'); })
-        .catch(function(){ if(window.bxAlert) bxAlert('Chưa đổi được vai (kiểm tra mạng).'); });
+      /* (19/8/2026) transaction() thay update(): đo thật cho thấy bấm hai lần trong 15ms thì
+         cả hai đều báo "✓ đã chuyển" mà bộ đếm chỉ nhích 1 — tiêu lẹm một lượt của cả năm. */
+      tieuLuot('soLanDoiVai', CONFIG.SO_LAN_DOI_VAI_TOI_DA).then(function(duoc){
+        if(!duoc){ if(window.bxAlert) bxAlert('Đã hết '+CONFIG.SO_LAN_DOI_VAI_TOI_DA+' lượt đổi vai soạn trong năm học này.\nVui lòng liên hệ '+CONFIG.HOTLINE+' để được hỗ trợ.'); return; }
+        db.ref('licenses/'+user.uid+'/vaiSoan').set(vaiMoi)
+          .then(function(){ if(window.bxAlert) bxAlert('✓ Máy này giờ là máy SOẠN.\nMáy còn lại chuyển sang chế độ xem.'); })
+          .catch(function(){ traLaiLuot('soLanDoiVai'); if(window.bxAlert) bxAlert('Chưa đổi được vai (kiểm tra mạng).'); });
+      }).catch(function(){ if(window.bxAlert) bxAlert('Chưa đổi được vai (kiểm tra mạng).'); });
     };
     if(window.bxConfirm) bxConfirm('Chuyển quyền SOẠN về máy này? Máy còn lại sẽ chỉ xem.\n(Còn '+(CONFIG.SO_LAN_DOI_VAI_TOI_DA-used)+' lượt đổi vai trong năm học)',{okText:'Chuyển'}).then(function(ok){ if(ok) lam(); });
     else lam();
@@ -633,7 +715,11 @@
           '<td style="white-space:nowrap">'+(ok?fmtLuc(r.kichHoatTs||r.ngayTra):'—')+'</td>'+
           '<td>'+fmtDate(r.ngayHetHan)+'</td>'+
           /* Ép SỐ hai trường client-ghi-được — chặn chèn mã vào bảng admin (phản biện 9/8) */
-          '<td>💻'+(Number(r.soLanDoiMay)||0)+'/'+CONFIG.SO_LAN_DOI_MAY_TOI_DA+' 📱'+(Number(r.soLanDoiMayPhu)||0)+'/'+CONFIG.SO_LAN_DOI_MAY_PHU_TOI_DA+(r.vaiSoan==='phu'?' 🔁soạn:ĐT':'')+'</td>'+
+          '<td>💻'+(Number(r.soLanDoiMay)||0)+'/'+CONFIG.SO_LAN_DOI_MAY_TOI_DA+
+            /* (19/8/2026) kho lượt riêng đầu năm — chỉ hiện khi thầy cô đã dùng tới */
+            ((Number(r.devices&&r.devices.luotDauNam)||0)>0
+              ? ' <span style="color:#1b5e20;font-size:11px">+'+(Number(r.devices.luotDauNam)||0)+'/'+CONFIG.SO_LAN_DOI_MAY_DAU_NAM+' đầu năm</span>' : '')+
+            ' 📱'+(Number(r.soLanDoiMayPhu)||0)+'/'+CONFIG.SO_LAN_DOI_MAY_PHU_TOI_DA+(r.vaiSoan==='phu'?' 🔁soạn:ĐT':'')+'</td>'+
           '<td><b>'+esc(r.quyen||(r.khoi?(String(r.khoi).split(/[^1-5]+/).filter(Boolean).map(function(k){return k+':*';}).join('|')):'')||'—')+'</b></td>'+
           '<td style="white-space:nowrap">'+
             '<button class="bxlic-mini" onclick="BXLIC_activate(\''+x.uid+'\')">'+(ok?'Gia hạn':'Kích hoạt')+'</button>'+
@@ -671,6 +757,7 @@
     upd['licenses/'+uid+'/soLanDoiMay']=0;
     upd['licenses/'+uid+'/soLanDoiMayPhu']=0;
     upd['licenses/'+uid+'/soLanDoiVai']=0;
+    upd['licenses/'+uid+'/devices/luotDauNam']=null;   // (19/8/2026) năm học mới → kho lượt đầu năm làm lại từ đầu
     upd['licenses/'+uid+'/daYeuCau']=false;
     upd['licenses/'+uid+'/kichHoatTs']=firebase.database.ServerValue.TIMESTAMP;
     db.ref().update(upd).then(function(){ openAdmin(); }).catch(function(e){ if(window.bxAlert) bxAlert('Lỗi kích hoạt: '+((e&&e.message)||'')); });
@@ -1051,7 +1138,9 @@
     licRef.on('value', function(snap){ applyLicense(snap.val()); },
       function(err){ /* thiếu quyền đọc → giữ trạng thái cache, không làm hỏng app */ console.warn('[BXLIC] đọc license lỗi', err&&err.message); });
     // Bổ sung thông tin nhận diện (không bắt buộc)
-    try{ db.ref('licenses/'+u.uid).update({ email:u.email||'', hoTen:u.displayName||'', maCK:maCKof(u.uid) }); }catch(e){}
+    /* .catch rỗng: mạng chập chờn thì lượt ghi phụ này hỏng cũng không sao, nhưng thiếu nó là
+       Console ném "Unhandled promise rejection" — đo thấy 19/8/2026 khi giả lập rớt mạng. */
+    try{ db.ref('licenses/'+u.uid).update({ email:u.email||'', hoTen:u.displayName||'', maCK:maCKof(u.uid) }).catch(function(){}); }catch(e){}
   }
 
   function boot(){
