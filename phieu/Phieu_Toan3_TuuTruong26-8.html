@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=794">
+<title>Phiếu ôn luyện tựu trường — Toán 3 — Ngày 26/8</title>
+<link rel="stylesheet" href="khuon.css">
+<style>
+/* Tên phiếu dài hơn "PHIẾU BÀI TẬP CUỐI TUẦN" nên phải thu cỡ chữ, kẻo gãy hai dòng
+   và đẩy nội dung tràn khỏi khổ A4 (đo thật 23/8/2026). */
+.tieu h1 { font-size: 16pt; }
+.cau { margin-bottom: 1.5mm; }
+.phan { margin: 2.4mm 0 1.6mm; }
+.dan { margin-bottom: 1.6mm; }
+.bai { margin-bottom: 2mm; }
+.nham { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3.5mm 6mm; margin-top: 2mm; font-size: 13.5pt; }
+.vach { font-family: Arial, Helvetica, sans-serif; letter-spacing: 2.4px; font-size: 15pt; }
+</style>
+</head>
+<!-- PHIẾU ÔN LUYỆN TỰU TRƯỜNG — ngày 26/8/2026, dành cho học sinh VỪA LÊN LỚP 3.
+     Vẫn ôn KIẾN THỨC LỚP 2 (KNTT) nhưng CỐ Ý CHỌN MẢNG CHƯA DÙNG Ở HAI NGÀY TRƯỚC.
+     Tra thẳng KHGD lớp 2 trong app (khgd-lop2.js) để bám đúng tên bài:
+       24/8 → Bài 19–23 (cộng trừ có nhớ), Bài 39–40 (bảng nhân 2, 5), Bài 26 (đường gấp khúc)
+       25/8 → Bài 3 (thành phần phép cộng, trừ), Bài 38 (thừa số, tích), Bài 30 (ngày – tháng),
+              Bài 25 (điểm, đoạn thẳng, ba điểm thẳng hàng), Bài 65 (biểu đồ tranh)
+       26/8 → Bài 2 (TIA SỐ. SỐ LIỀN TRƯỚC, SỐ LIỀN SAU) · Bài 7–8, 11–12 (CỘNG TRỪ QUA 10
+              TRONG PHẠM VI 20) · Bài 4 (HƠN, KÉM NHAU BAO NHIÊU) · Bài 41–42 (PHÉP CHIA;
+              SỐ BỊ CHIA, SỐ CHIA, THƯƠNG) · Bài 55 (ĐỀ-XI-MÉT, MÉT, KI-LÔ-MÉT) ·
+              Bài 56 (TIỀN VIỆT NAM) · Bài 64 (THU THẬP, PHÂN LOẠI, KIỂM ĐẾM SỐ LIỆU)
+     ⚠️ CHƯA có bảng nhân chia 3, 4, 6, 7, 8, 9 (nội dung lớp 3). Số liệu do Bút Xanh tự đặt. -->
+<body class="mon-toan">
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU ÔN LUYỆN TỰU TRƯỜNG</h1>
+      <div class="mon">MÔN TOÁN — LỚP 3</div><div class="tuan">NGÀY 26/8</div></div>
+    <div class="ngay">Ngày …… / …… / 20……<br>Ôn kiến thức lớp 2<br>Trang 1/2</div>
+  </div>
+
+  <div class="hoten">
+    <div style="flex:1"><span>Họ và tên:</span><span class="o"></span></div>
+    <div><span>Lớp:</span><span class="o hep"></span></div>
+  </div>
+
+  <div class="dan-lon"><span>🌱</span><div><b>Ngày thứ ba của tuần tựu trường.</b> Hôm nay em ôn
+    <b>cộng trừ qua 10 trong phạm vi 20</b>, <b>phép chia</b>, <b>tiền Việt Nam</b> và <b>kiểm đếm số liệu</b>.
+    <b>Phiếu không chấm điểm</b>.</div></div>
+
+  <div class="phan"><span class="so">I</span><span class="ten">Trắc nghiệm</span><span class="line"></span></div>
+  <div class="dan">Khoanh vào chữ đặt trước câu trả lời đúng:</div>
+
+  <div class="cau"><div class="de"><b>Câu 1.</b> Kết quả của phép tính 8 + 5 là:</div>
+    <div class="pa"><span><i class="k">A.</i>12</span><span><i class="k">B.</i>13</span>
+      <span><i class="k">C.</i>14</span><span><i class="k">D.</i>3</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 2.</b> Kết quả của phép tính 15 − 7 là:</div>
+    <div class="pa"><span><i class="k">A.</i>7</span><span><i class="k">B.</i>9</span>
+      <span><i class="k">C.</i>8</span><span><i class="k">D.</i>22</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 3.</b> Trong phép tính 20 : 4 = 5, số 5 gọi là:</div>
+    <div class="pa"><span><i class="k">A.</i>số bị chia</span><span><i class="k">B.</i>số chia</span>
+      <span><i class="k">C.</i>thương</span><span><i class="k">D.</i>tích</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 4.</b> Trên tia số, số liền trước của số 18 là:</div>
+    <div class="pa"><span><i class="k">A.</i>19</span><span><i class="k">B.</i>17</span>
+      <span><i class="k">C.</i>16</span><span><i class="k">D.</i>20</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 5.</b> 1 m = …… dm. Số thích hợp điền vào chỗ chấm là:</div>
+    <div class="pa"><span><i class="k">A.</i>10</span><span><i class="k">B.</i>100</span>
+      <span><i class="k">C.</i>1000</span><span><i class="k">D.</i>1</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 6.</b> 1 km = …… m. Số thích hợp điền vào chỗ chấm là:</div>
+    <div class="pa"><span><i class="k">A.</i>10</span><span><i class="k">B.</i>100</span>
+      <span><i class="k">C.</i>1000</span><span><i class="k">D.</i>10 000</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 7.</b> Một tờ tiền 10 000 đồng đổi được mấy tờ tiền 2 000 đồng?</div>
+    <div class="pa"><span><i class="k">A.</i>2 tờ</span><span><i class="k">B.</i>4 tờ</span>
+      <span><i class="k">C.</i>5 tờ</span><span><i class="k">D.</i>10 tờ</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 8.</b> An có 12 viên bi, Bình có 8 viên bi.
+    An có nhiều hơn Bình mấy viên bi?</div>
+    <div class="pa"><span><i class="k">A.</i>4 viên</span><span><i class="k">B.</i>6 viên</span>
+      <span><i class="k">C.</i>20 viên</span><span><i class="k">D.</i>3 viên</span></div></div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Tự luận</span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 1.</b> Tính nhẩm:</div>
+    <div class="nham">
+      <div>9 + 6 = ……</div><div>7 + 8 = ……</div><div>8 + 7 = ……</div>
+      <div>13 − 5 = ……</div><div>16 − 9 = ……</div><div>14 − 6 = ……</div>
+    </div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 2.</b> Viết số thích hợp vào ô trống trên tia số:</div>
+    <div class="o-lam">
+      <svg width="440" height="56" viewBox="0 0 440 56">
+        <line x1="14" y1="34" x2="430" y2="34" stroke="#1f2a24" stroke-width="1.8"/>
+        <path d="M424 28l8 6-8 6" fill="none" stroke="#1f2a24" stroke-width="1.8"/>
+        <g stroke="#1f2a24" stroke-width="1.8">
+          <line x1="30" y1="28" x2="30" y2="40"/><line x1="80" y1="28" x2="80" y2="40"/>
+          <line x1="130" y1="28" x2="130" y2="40"/><line x1="180" y1="28" x2="180" y2="40"/>
+          <line x1="230" y1="28" x2="230" y2="40"/><line x1="280" y1="28" x2="280" y2="40"/>
+          <line x1="330" y1="28" x2="330" y2="40"/><line x1="380" y1="28" x2="380" y2="40"/>
+        </g>
+        <g font-family="Times New Roman" font-size="15" text-anchor="middle" fill="#101c15">
+          <text x="30" y="22">10</text><text x="80" y="22">11</text><text x="130" y="22">12</text>
+          <text x="230" y="22">14</text><text x="330" y="22">16</text><text x="380" y="22">17</text>
+        </g>
+        <g font-family="Times New Roman" font-size="15" text-anchor="middle" fill="#8aa093">
+          <text x="180" y="22">?</text><text x="280" y="22">?</text>
+        </g>
+      </svg>
+      <div class="yc" style="font-size:13.5pt">Hai số còn thiếu là …………… và ……………</div>
+    </div>
+  </div>
+
+  <div class="chan"><span>Toán 3 · Tựu trường 26/8</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU ÔN LUYỆN TỰU TRƯỜNG</h1>
+      <div class="mon">MÔN TOÁN — LỚP 3</div><div class="tuan">NGÀY 26/8</div></div>
+    <div class="ngay">Họ và tên: ……………………<br>Lớp: ………<br>Trang 2/2</div>
+  </div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Tự luận <span style="font-weight:normal;text-transform:none">(tiếp theo)</span></span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 3.</b> Viết tiếp vào chỗ chấm cho đúng:</div>
+    <div class="yc" style="font-size:13.5pt;line-height:1.95">
+      Trong phép tính 24 : 3 = 8 thì: số 24 là ……………………, số 3 là ……………………,<br>
+      số 8 là ……………………
+    </div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 4.</b> Bảng dưới đây ghi lại việc kiểm đếm số quả các bạn mang
+    đến lớp (mỗi vạch <b>|</b> là <b>1 quả</b>):</div>
+    <table class="bl" style="margin-top:1.5mm">
+      <tr><th style="width:26%">Loại quả</th><th>Kiểm đếm</th><th style="width:20%">Số quả</th></tr>
+      <tr><td class="co">Quả cam</td><td class="vach">| | | |</td><td></td></tr>
+      <tr><td class="co">Quả táo</td><td class="vach">| | | | | |</td><td></td></tr>
+      <tr><td class="co">Quả chuối</td><td class="vach">| | |</td><td></td></tr>
+    </table>
+    <div class="yc" style="font-size:13pt">
+      a) Viết số quả mỗi loại vào cột cuối bảng.<br>
+      b) Loại quả nào có nhiều nhất? ………………………<br>
+      c) Cả ba loại có tất cả …… quả.
+    </div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 5.</b> Em có 3 tờ tiền loại 5 000 đồng.
+    Hỏi em có tất cả bao nhiêu tiền?</div>
+    <div class="giai"><div class="nhan">Bài giải</div>
+      <div class="ke hep" style="margin-left:6mm"><div class="d"></div><div class="d"></div><div class="d"></div></div>
+    </div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 6.</b> Lớp 3A có 32 học sinh, lớp 3B có 28 học sinh.
+    Hỏi lớp 3A có nhiều hơn lớp 3B bao nhiêu học sinh?</div>
+    <div class="giai"><div class="nhan">Bài giải</div>
+      <div class="ke hep" style="margin-left:6mm"><div class="d"></div><div class="d"></div><div class="d"></div></div>
+    </div>
+  </div>
+
+  <div class="chan"><span>Toán 3 · Tựu trường 26/8</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang dapan">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>ĐÁP ÁN &amp; HƯỚNG DẪN</h1>
+      <div class="mon">MÔN TOÁN — LỚP 3</div><div class="tuan">NGÀY 26/8</div></div>
+    <div class="ngay">Dành cho<br>thầy cô &amp; phụ huynh<br><b>Trang cuối</b></div>
+  </div>
+
+  <div class="muc">Đáp án</div>
+  <table class="bang-da">
+    <tr><th>Câu</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr>
+    <tr><td>Đáp án</td><td>B</td><td>C</td><td>C</td><td>B</td><td>A</td><td>C</td><td>C</td><td>A</td></tr>
+  </table>
+
+  <div class="bai"><b>Bài 1.</b> <span class="gia">15 · 15 · 15</span> ; <span class="gia">8 · 7 · 8</span>.</div>
+  <div class="bai"><b>Bài 2.</b> Hai số còn thiếu là <span class="gia">13</span> và <span class="gia">15</span>.</div>
+  <div class="bai"><b>Bài 3.</b> 24 là <span class="gia">số bị chia</span>, 3 là <span class="gia">số chia</span>,
+    8 là <span class="gia">thương</span>.</div>
+  <div class="bai"><b>Bài 4.</b> a) cam <span class="gia">4</span> quả · táo <span class="gia">6</span> quả ·
+    chuối <span class="gia">3</span> quả · b) nhiều nhất là <span class="gia">quả táo</span> ·
+    c) tất cả <span class="gia">13</span> quả.</div>
+  <div class="bai"><b>Bài 5.</b> Em có tất cả: 5 000 × 3 = <span class="gia">15 000 (đồng)</span>.</div>
+  <div class="bai"><b>Bài 6.</b> Lớp 3A nhiều hơn: 32 − 28 = <span class="gia">4 (học sinh)</span>.</div>
+
+  <div class="muc">Chỗ học sinh hay quên sau ba tháng hè</div>
+  <p>· <b>Cộng trừ QUA 10 trong phạm vi 20</b> (bài 1) là nền của cả phép tính có nhớ ở lớp 3.
+    Mẹo nhắc lại: 8 + 5 → tách 5 thành 2 và 3, lấy 8 + 2 = 10 rồi 10 + 3 = <b>13</b>.
+    Trừ thì ngược lại: 15 − 7 → 15 − 5 = 10, rồi 10 − 2 = <b>8</b>.</p>
+  <p>· <b>Tên gọi thành phần phép chia</b> (câu 3, bài 3): chia có <b>số bị chia – số chia – thương</b>.
+    Nhiều em gọi kết quả phép chia là “tích”.</p>
+  <p>· <b>Bài toán “nhiều hơn bao nhiêu”</b> (câu 8, bài 6) phải làm <b>phép trừ</b>, không phải cộng.
+    Nhắc em gạch chân từ khoá trước khi tính.</p>
+  <p>· <b>Đổi đơn vị dài</b> (câu 5, câu 6): 1 m = 10 dm nhưng 1 km = 1000 m — hai bậc nhảy khác nhau,
+    rất hay lẫn.</p>
+  <p>· <b>Đếm vạch kiểm đếm</b> (bài 4): nhắc em đếm từng vạch một, lấy bút gạch bỏ vạch đã đếm.</p>
+
+  <div class="luuy"><b>Căn cứ nội dung:</b> phiếu ôn <b>chương trình Toán lớp 2</b> — Kết nối tri thức với
+    cuộc sống, dành cho học sinh vừa lên lớp 3, dùng ngày <b>26/8</b> của tuần tựu trường.
+    <ul>
+      <li><b>Chọn mảng chưa dùng ở hai ngày trước</b>: hôm nay là <i>Bài 2 – Tia số</i>,
+        <i>Bài 7–12 – Cộng trừ qua 10 trong phạm vi 20</i>, <i>Bài 4 – Hơn, kém nhau bao nhiêu</i>,
+        <i>Bài 41–42 – Phép chia; số bị chia, số chia, thương</i>, <i>Bài 55 – Đề-xi-mét, mét, ki-lô-mét</i>,
+        <i>Bài 56 – Tiền Việt Nam</i> và <i>Bài 64 – Thu thập, kiểm đếm số liệu</i>.</li>
+      <li>Phép nhân chỉ dùng <b>bảng nhân 5</b> (bài 5) — đúng mức lớp 2.</li>
+      <li>Toàn bộ <b>số liệu do Bút Xanh tự đặt</b>, không lấy nguyên bài của sách giáo khoa.</li>
+      <li>Phiếu <b>tự chọn</b>, không chấm điểm.</li>
+    </ul>
+  </div>
+
+  <div class="chan"><span>Đáp án · Toán 3 · Tựu trường 26/8</span>
+    <span class="giua">trang đáp án — thầy cô và phụ huynh xem sau khi em làm xong</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<script src="nut-in.js"></script>
+</body>
+</html>

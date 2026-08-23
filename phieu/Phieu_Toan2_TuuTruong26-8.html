@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=794">
+<title>Phiếu ôn luyện tựu trường — Toán 2 — Ngày 26/8</title>
+<link rel="stylesheet" href="khuon.css">
+<style>
+/* Tên phiếu dài hơn "PHIẾU BÀI TẬP CUỐI TUẦN" nên phải thu cỡ chữ, kẻo gãy hai dòng
+   và đẩy nội dung tràn khỏi khổ A4 (đo thật 23/8/2026). */
+.tieu h1 { font-size: 16pt; }
+.cau { margin-bottom: 1.5mm; }
+.phan { margin: 2.4mm 0 1.6mm; }
+.dan { margin-bottom: 1.6mm; }
+.bai { margin-bottom: 2mm; }
+.nham { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3.5mm 6mm; margin-top: 2mm; font-size: 13.5pt; }
+/* lịch tháng — kẻ bằng viền, nền trắng để in đen trắng vẫn sạch */
+table.lich { border-collapse: collapse; margin: 2mm 0 1mm 4mm; }
+table.lich th, table.lich td { border: 1pt solid #6f8579; width: 13mm; height: 8mm;
+  text-align: center; font-size: 12.5pt; }
+table.lich th { font-family: Arial, Helvetica, sans-serif; font-size: 10pt; color: #0f5a34; background: #fff; }
+table.lich td.trong { border-color: #dfe8e3; }
+</style>
+</head>
+<!-- PHIẾU ÔN LUYỆN TỰU TRƯỜNG — ngày 26/8/2026, dành cho học sinh VỪA LÊN LỚP 2.
+     Vẫn ôn KIẾN THỨC LỚP 1 (KNTT) nhưng CỐ Ý CHỌN MẢNG CHƯA DÙNG Ở HAI NGÀY TRƯỚC.
+     Tra thẳng KHGD lớp 1 trong app (khgd-lop1.js) để bám đúng tên bài:
+       24/8 → Bài 21–23 (số đến 100), Bài 29–32 (cộng trừ không nhớ), Bài 34 (giờ đúng), Bài 26 (cm)
+       25/8 → Bài 5 (mấy và mấy), Bài 10–12 (cộng trừ phạm vi 10), Bài 7 + 14 (hình phẳng, hình khối),
+              Bài 35 (các ngày trong tuần)
+       26/8 → Bài 23 (BẢNG CÁC SỐ TỪ 1 ĐẾN 100, số tròn chục) · Bài 27 (THỰC HÀNH ƯỚC LƯỢNG
+              VÀ ĐO ĐỘ DÀI) · Bài 8 (THỰC HÀNH LẮP GHÉP, XẾP HÌNH) · Bài 36 (THỰC HÀNH XEM LỊCH) ·
+              cộng trừ các SỐ TRÒN CHỤC
+     ⚠️ KHÔNG có cộng trừ CÓ NHỚ, không nhân chia (nội dung lớp 2).
+     Lịch tháng 9/2026 in trong phiếu là LỊCH THẬT (1/9/2026 là thứ Ba, khai giảng 5/9 là thứ Bảy). -->
+<body class="mon-toan">
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU ÔN LUYỆN TỰU TRƯỜNG</h1>
+      <div class="mon">MÔN TOÁN — LỚP 2</div><div class="tuan">NGÀY 26/8</div></div>
+    <div class="ngay">Ngày …… / …… / 20……<br>Ôn kiến thức lớp 1<br>Trang 1/2</div>
+  </div>
+
+  <div class="hoten">
+    <div style="flex:1"><span>Họ và tên:</span><span class="o"></span></div>
+    <div><span>Lớp:</span><span class="o hep"></span></div>
+  </div>
+
+  <div class="dan-lon"><span>🌱</span><div><b>Ngày thứ ba của tuần tựu trường.</b> Hôm nay em ôn
+    <b>bảng các số đến 100</b>, <b>ước lượng độ dài</b> và <b>xem lịch</b> — sắp đến ngày khai giảng rồi đấy!
+    <b>Phiếu không chấm điểm</b>.</div></div>
+
+  <div class="phan"><span class="so">I</span><span class="ten">Trắc nghiệm</span><span class="line"></span></div>
+  <div class="dan">Khoanh vào chữ đặt trước câu trả lời đúng:</div>
+
+  <div class="cau"><div class="de"><b>Câu 1.</b> Số tròn chục <b>lớn nhất</b> có hai chữ số là:</div>
+    <div class="pa"><span><i class="k">A.</i>10</span><span><i class="k">B.</i>90</span>
+      <span><i class="k">C.</i>99</span><span><i class="k">D.</i>100</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 2.</b> Trong bảng các số từ 1 đến 100, số đứng ngay sau số 59 là:</div>
+    <div class="pa"><span><i class="k">A.</i>58</span><span><i class="k">B.</i>50</span>
+      <span><i class="k">C.</i>60</span><span><i class="k">D.</i>69</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 3.</b> Kết quả của phép tính 40 + 30 là:</div>
+    <div class="pa"><span><i class="k">A.</i>70</span><span><i class="k">B.</i>10</span>
+      <span><i class="k">C.</i>43</span><span><i class="k">D.</i>7</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 4.</b> Chiếc bút chì của em dài khoảng:</div>
+    <div class="pa"><span><i class="k">A.</i>1 cm</span><span><i class="k">B.</i>15 cm</span>
+      <span><i class="k">C.</i>15 m</span><span><i class="k">D.</i>100 cm</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 5.</b> Số 100 là số có mấy chữ số?</div>
+    <div class="pa"><span><i class="k">A.</i>1 chữ số</span><span><i class="k">B.</i>2 chữ số</span>
+      <span><i class="k">C.</i>3 chữ số</span><span><i class="k">D.</i>10 chữ số</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 6.</b> Số liền sau của số 99 là:</div>
+    <div class="pa"><span><i class="k">A.</i>98</span><span><i class="k">B.</i>90</span>
+      <span><i class="k">C.</i>100</span><span><i class="k">D.</i>109</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 7.</b> Trong các số 35, 53, 40, 50 số <b>bé nhất</b> là:</div>
+    <div class="pa"><span><i class="k">A.</i>35</span><span><i class="k">B.</i>53</span>
+      <span><i class="k">C.</i>40</span><span><i class="k">D.</i>50</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 8.</b> Tháng 9 có bao nhiêu ngày?</div>
+    <div class="pa"><span><i class="k">A.</i>28 ngày</span><span><i class="k">B.</i>29 ngày</span>
+      <span><i class="k">C.</i>30 ngày</span><span><i class="k">D.</i>31 ngày</span></div></div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Tự luận</span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 1.</b> Tính nhẩm:</div>
+    <div class="nham">
+      <div>30 + 20 = ……</div><div>50 + 40 = ……</div><div>20 + 70 = ……</div>
+      <div>70 − 30 = ……</div><div>90 − 60 = ……</div><div>100 − 50 = ……</div>
+    </div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 2.</b> Số?</div>
+    <div class="yc" style="font-size:13.5pt;line-height:2">
+      a) 10 ; 20 ; 30 ; …… ; …… ; 60 &nbsp;&nbsp;&nbsp; b) 61 ; 62 ; …… ; …… ; 65 ; 66<br>
+      c) Số liền trước của 40 là …… &nbsp;·&nbsp; số liền sau của 40 là ……
+    </div>
+  </div>
+
+  <div class="chan"><span>Toán 2 · Tựu trường 26/8</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU ÔN LUYỆN TỰU TRƯỜNG</h1>
+      <div class="mon">MÔN TOÁN — LỚP 2</div><div class="tuan">NGÀY 26/8</div></div>
+    <div class="ngay">Họ và tên: ……………………<br>Lớp: ………<br>Trang 2/2</div>
+  </div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Tự luận <span style="font-weight:normal;text-transform:none">(tiếp theo)</span></span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 3.</b> Xem tờ lịch tháng 9 rồi trả lời:</div>
+    <table class="lich">
+      <tr><th>Hai</th><th>Ba</th><th>Tư</th><th>Năm</th><th>Sáu</th><th>Bảy</th><th>CN</th></tr>
+      <tr><td class="trong"></td><td>1</td><td>2</td><td>3</td><td>4</td><td><b>5</b></td><td>6</td></tr>
+      <tr><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td></tr>
+      <tr><td>14</td><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td><td>20</td></tr>
+      <tr><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td><td>27</td></tr>
+      <tr><td>28</td><td>29</td><td>30</td><td class="trong"></td><td class="trong"></td><td class="trong"></td><td class="trong"></td></tr>
+    </table>
+    <div class="yc" style="font-size:13pt;line-height:1.9">
+      a) Ngày <b>khai giảng 5 tháng 9</b> là thứ ………………<br>
+      b) Ngày 1 tháng 9 là thứ ………………<br>
+      c) Tháng 9 có …… ngày chủ nhật.
+    </div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 4.</b> Viết tên đơn vị đo (<b>cm</b> hoặc <b>m</b>) vào chỗ chấm cho hợp lí:</div>
+    <div class="yc" style="font-size:13.5pt;line-height:1.95">
+      a) Chiếc thước kẻ của em dài khoảng 20 …… &nbsp;&nbsp; b) Cửa lớp học cao khoảng 2 ……<br>
+      c) Quyển vở dài khoảng 24 …… &nbsp;&nbsp; d) Sân trường dài khoảng 30 ……
+    </div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 5.</b> Hình bên được ghép từ mấy hình tam giác?</div>
+    <div class="o-lam" style="display:flex;align-items:center;gap:8mm">
+      <svg width="120" height="120" viewBox="0 0 100 100">
+        <rect x="8" y="8" width="84" height="84" fill="#fff" stroke="#1f2a24" stroke-width="2.6"/>
+        <path d="M8 8L92 92M92 8L8 92" fill="none" stroke="#1f2a24" stroke-width="2.6"/>
+      </svg>
+      <div style="font-size:14pt">Trả lời: hình được ghép từ …… hình tam giác.</div>
+    </div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 6.</b> Thư viện có 30 quyển truyện. Cô thủ thư mua thêm 20 quyển
+    truyện nữa. Hỏi thư viện có tất cả bao nhiêu quyển truyện?</div>
+    <div class="giai"><div class="nhan">Bài giải</div>
+      <div class="ke hep" style="margin-left:6mm"><div class="d"></div><div class="d"></div><div class="d"></div></div>
+    </div>
+  </div>
+
+  <div class="chan"><span>Toán 2 · Tựu trường 26/8</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang dapan">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>ĐÁP ÁN &amp; HƯỚNG DẪN</h1>
+      <div class="mon">MÔN TOÁN — LỚP 2</div><div class="tuan">NGÀY 26/8</div></div>
+    <div class="ngay">Dành cho<br>thầy cô &amp; phụ huynh<br><b>Trang cuối</b></div>
+  </div>
+
+  <div class="muc">Đáp án</div>
+  <table class="bang-da">
+    <tr><th>Câu</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr>
+    <tr><td>Đáp án</td><td>B</td><td>C</td><td>A</td><td>B</td><td>C</td><td>C</td><td>A</td><td>C</td></tr>
+  </table>
+
+  <div class="bai"><b>Bài 1.</b> <span class="gia">50 · 90 · 90</span> ; <span class="gia">40 · 30 · 50</span>.</div>
+  <div class="bai"><b>Bài 2.</b> a) <span class="gia">40 ; 50</span> · b) <span class="gia">63 ; 64</span> ·
+    c) liền trước <span class="gia">39</span>, liền sau <span class="gia">41</span>.</div>
+  <div class="bai"><b>Bài 3.</b> a) ngày 5/9 là <span class="gia">thứ Bảy</span> ·
+    b) ngày 1/9 là <span class="gia">thứ Ba</span> · c) tháng 9 có <span class="gia">4</span> ngày chủ nhật
+    (các ngày 6, 13, 20, 27).</div>
+  <div class="bai"><b>Bài 4.</b> a) <span class="gia">cm</span> · b) <span class="gia">m</span> ·
+    c) <span class="gia">cm</span> · d) <span class="gia">m</span>.</div>
+  <div class="bai"><b>Bài 5.</b> Hình được ghép từ <span class="gia">4</span> hình tam giác.</div>
+  <div class="bai"><b>Bài 6.</b> Thư viện có tất cả: 30 + 20 = <span class="gia">50 (quyển truyện)</span>.</div>
+
+  <div class="muc">Chỗ học sinh hay quên sau ba tháng hè</div>
+  <p>· <b>Cộng trừ số tròn chục vẫn đặt tính dài dòng</b> (bài 1). Mẹo nhẩm: che chữ số 0 đi,
+    lấy 3 chục + 2 chục = 5 chục, viết lại thành 50.</p>
+  <p>· <b>Số liền sau của 99</b> (câu 6): nhiều em trả lời 90 hoặc 100 rồi lại phân vân.
+    Nhắc em: đếm tiếp 97, 98, 99, <b>100</b> — 100 là số duy nhất có ba chữ số các em đã học ở lớp 1.</p>
+  <p>· <b>Ước lượng độ dài</b> (câu 4, bài 4) — chỗ này rất hay sai vì chỉ học thuộc mà không hình dung.
+    Nên cho em <b>lấy thước ra đo thật</b> quyển vở, chiếc bút; đo xong sẽ nhớ rất lâu.</p>
+  <p>· <b>Xem lịch</b> (bài 3): nhắc em dò theo <b>cột</b> để biết thứ, theo <b>hàng</b> để biết tuần.
+    Đây cũng là dịp cho em tự tìm ngày khai giảng của trường mình trên tờ lịch ở nhà.</p>
+
+  <div class="luuy"><b>Căn cứ nội dung:</b> phiếu ôn <b>chương trình Toán lớp 1</b> — Kết nối tri thức với
+    cuộc sống, dành cho học sinh vừa lên lớp 2, dùng ngày <b>26/8</b> của tuần tựu trường.
+    <ul>
+      <li><b>Chọn mảng chưa dùng ở hai ngày trước</b>: hôm nay là <i>Bài 23 – Bảng các số từ 1 đến 100</i>,
+        <i>Bài 27 – Thực hành ước lượng và đo độ dài</i>, <i>Bài 8 – Thực hành lắp ghép, xếp hình</i>,
+        <i>Bài 36 – Thực hành xem lịch</i> và cộng trừ <b>số tròn chục</b>.</li>
+      <li>Vẫn giữ ranh giới cũ: <b>không có cộng trừ có nhớ</b>, không có nhân chia (nội dung lớp 2).</li>
+      <li><b>Lịch tháng 9/2026 in trong phiếu là lịch thật</b> — ngày 1/9 là thứ Ba, khai giảng 5/9
+        là thứ Bảy, nên thầy cô dùng luôn để dặn dò học sinh.</li>
+      <li>Phiếu <b>tự chọn</b>, không chấm điểm.</li>
+    </ul>
+  </div>
+
+  <div class="chan"><span>Đáp án · Toán 2 · Tựu trường 26/8</span>
+    <span class="giua">trang đáp án — thầy cô và phụ huynh xem sau khi em làm xong</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<script src="nut-in.js"></script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=794">
+<title>Phiếu ôn luyện tựu trường — Toán 5 — Ngày 26/8</title>
+<link rel="stylesheet" href="khuon.css">
+<style>
+/* Tên phiếu dài hơn "PHIẾU BÀI TẬP CUỐI TUẦN" nên phải thu cỡ chữ, kẻo gãy hai dòng
+   và đẩy nội dung tràn khỏi khổ A4 (đo thật 23/8/2026). */
+.tieu h1 { font-size: 16pt; }
+.cau { margin-bottom: 1.4mm; }
+.phan { margin: 2.4mm 0 1.6mm; }
+.dan { margin-bottom: 1.6mm; }
+.bai { margin-bottom: 2mm; }
+.nham { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3.5mm 8mm; margin-top: 2mm; font-size: 13.5pt; }
+.dien { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3.5mm 8mm; margin-top: 2mm; font-size: 13.5pt; }
+</style>
+</head>
+<!-- PHIẾU ÔN LUYỆN TỰU TRƯỜNG — ngày 26/8/2026, dành cho học sinh VỪA LÊN LỚP 5.
+     Vẫn ôn KIẾN THỨC LỚP 4 (KNTT) nhưng CỐ Ý CHỌN MẢNG CHƯA DÙNG Ở HAI NGÀY TRƯỚC.
+     Tra thẳng KHGD lớp 4 trong app (khgd-lop4.js) để bám đúng tên bài:
+       24/8 → Bài 12 (số lớp triệu) · Bài 38–44 (bốn phép tính) · phân số cộng trừ nhân chia ·
+              Bài 25 (tổng – hiệu) · Bài 46 (trung bình cộng) · Bài 18 (đơn vị diện tích) · góc
+       25/8 → Bài 13 (làm tròn) · Bài 19 (giây, thế kỉ) · Bài 50 (biểu đồ cột) · Bài 31 (hình bình
+              hành, hình thoi) · Bài 57–58 (quy đồng, so sánh phân số) · tìm phân số của một số
+       26/8 → Bài 3 (SỐ CHẴN, SỐ LẺ) · Bài 15 (DÃY SỐ TỰ NHIÊN) · Bài 4 (BIỂU THỨC CHỨA CHỮ) ·
+              Bài 24, 40, 42 (TÍNH CHẤT GIAO HOÁN, KẾT HỢP, PHÂN PHỐI) · Bài 41 (NHÂN, CHIA VỚI
+              10, 100, 1000) · Bài 27, 29 (HAI ĐƯỜNG THẲNG VUÔNG GÓC, SONG SONG) ·
+              Bài 47 (BÀI TOÁN LIÊN QUAN ĐẾN RÚT VỀ ĐƠN VỊ)
+     ⚠️ CHƯA có SỐ THẬP PHÂN (lớp 5, tuần 4 mới học). Số liệu do Bút Xanh tự đặt. -->
+<body class="mon-toan">
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU ÔN LUYỆN TỰU TRƯỜNG</h1>
+      <div class="mon">MÔN TOÁN — LỚP 5</div><div class="tuan">NGÀY 26/8</div></div>
+    <div class="ngay">Ngày …… / …… / 20……<br>Ôn kiến thức lớp 4<br>Trang 1/2</div>
+  </div>
+
+  <div class="hoten">
+    <div style="flex:1"><span>Họ và tên:</span><span class="o"></span></div>
+    <div><span>Lớp:</span><span class="o hep"></span></div>
+  </div>
+
+  <div class="dan-lon"><span>🌱</span><div><b>Ngày thứ ba của tuần tựu trường.</b> Hôm nay em ôn
+    <b>biểu thức chứa chữ</b>, <b>tính nhanh</b>, <b>hai đường thẳng vuông góc – song song</b> và
+    <b>bài toán rút về đơn vị</b>. <b>Phiếu không chấm điểm</b>.</div></div>
+
+  <div class="phan"><span class="so">I</span><span class="ten">Trắc nghiệm</span><span class="line"></span></div>
+  <div class="dan">Khoanh vào chữ đặt trước câu trả lời đúng:</div>
+
+  <div class="cau"><div class="de"><b>Câu 1.</b> Số chẵn <b>lớn nhất</b> có ba chữ số là:</div>
+    <div class="pa"><span><i class="k">A.</i>999</span><span><i class="k">B.</i>998</span>
+      <span><i class="k">C.</i>990</span><span><i class="k">D.</i>888</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 2.</b> Trong dãy số tự nhiên, số liền sau của 999 là:</div>
+    <div class="pa"><span><i class="k">A.</i>998</span><span><i class="k">B.</i>1000</span>
+      <span><i class="k">C.</i>9910</span><span><i class="k">D.</i>1001</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 3.</b> Với <i>a</i> = 25, giá trị của biểu thức <i>a</i> + 15 là:</div>
+    <div class="pa"><span><i class="k">A.</i>30</span><span><i class="k">B.</i>40</span>
+      <span><i class="k">C.</i>2515</span><span><i class="k">D.</i>10</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 4.</b> Kết quả của phép tính 45 × 100 là:</div>
+    <div class="pa"><span><i class="k">A.</i>450</span><span><i class="k">B.</i>4500</span>
+      <span><i class="k">C.</i>45 000</span><span><i class="k">D.</i>145</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 5.</b> Kết quả của phép tính 3 200 : 10 là:</div>
+    <div class="pa"><span><i class="k">A.</i>32</span><span><i class="k">B.</i>320</span>
+      <span><i class="k">C.</i>3 190</span><span><i class="k">D.</i>32 000</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 6.</b> Đẳng thức <i>a</i> × <i>b</i> = <i>b</i> × <i>a</i>
+    thể hiện tính chất nào của phép nhân?</div>
+    <div class="pa hai dai"><span><i class="k">A.</i>tính chất giao hoán</span>
+      <span><i class="k">B.</i>tính chất kết hợp</span>
+      <span><i class="k">C.</i>tính chất phân phối</span>
+      <span><i class="k">D.</i>nhân với số 1</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 7.</b> Hai đường thẳng cắt nhau tạo thành bốn góc vuông
+    được gọi là:</div>
+    <div class="pa hai dai"><span><i class="k">A.</i>hai đường thẳng vuông góc</span>
+      <span><i class="k">B.</i>hai đường thẳng song song</span>
+      <span><i class="k">C.</i>hai đường gấp khúc</span>
+      <span><i class="k">D.</i>hai đoạn thẳng bằng nhau</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 8.</b> Hai đường thẳng song song thì:</div>
+    <div class="pa hai dai"><span><i class="k">A.</i>không bao giờ cắt nhau</span>
+      <span><i class="k">B.</i>luôn cắt nhau tại một điểm</span>
+      <span><i class="k">C.</i>tạo thành bốn góc vuông</span>
+      <span><i class="k">D.</i>có độ dài bằng nhau</span></div></div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Tự luận</span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 1.</b> Tính bằng cách thuận tiện nhất:</div>
+    <div class="nham">
+      <div>a) 138 + 79 + 62 = ……………</div>
+      <div>b) 4 × 27 × 25 = ……………</div>
+      <div>c) 45 × 6 + 45 × 4 = ……………</div>
+      <div>d) 96 × 8 − 96 × 6 = ……………</div>
+    </div>
+  </div>
+
+  <div class="chan"><span>Toán 5 · Tựu trường 26/8</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU ÔN LUYỆN TỰU TRƯỜNG</h1>
+      <div class="mon">MÔN TOÁN — LỚP 5</div><div class="tuan">NGÀY 26/8</div></div>
+    <div class="ngay">Họ và tên: ……………………<br>Lớp: ………<br>Trang 2/2</div>
+  </div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Tự luận <span style="font-weight:normal;text-transform:none">(tiếp theo)</span></span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 2.</b> Tính giá trị của biểu thức với <i>m</i> = 6 và <i>n</i> = 4:</div>
+    <div class="nham">
+      <div>a) <i>m</i> + <i>n</i> = ……………</div>
+      <div>b) <i>m</i> × <i>n</i> = ……………</div>
+      <div>c) <i>m</i> − <i>n</i> = ……………</div>
+      <div>d) (<i>m</i> + <i>n</i>) × 2 = ……………</div>
+    </div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 3.</b> Số?</div>
+    <div class="dien">
+      <div>a) 27 × 1 000 = ……………</div>
+      <div>b) 5 600 : 100 = ……………</div>
+      <div>c) Số chẵn liền sau 48 là ……</div>
+      <div>d) Số lẻ liền trước 71 là ……</div>
+    </div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 4.</b> Cho hình chữ nhật ABCD như hình vẽ. Viết tiếp vào chỗ chấm:</div>
+    <div class="o-lam" style="display:flex;align-items:center;gap:10mm">
+      <svg width="170" height="112" viewBox="0 0 170 112">
+        <rect x="24" y="20" width="120" height="72" fill="#fff" stroke="#1f2a24" stroke-width="2.4"/>
+        <path d="M24 34h14v-14" fill="none" stroke="#1f2a24" stroke-width="1.5"/>
+        <g font-family="Times New Roman" font-size="16" fill="#101c15">
+          <text x="12" y="17">A</text><text x="148" y="17">B</text>
+          <text x="148" y="106">C</text><text x="12" y="106">D</text>
+        </g>
+      </svg>
+      <div class="yc" style="font-size:13pt;padding-left:0">
+        a) Cạnh AB <b>vuông góc</b> với cạnh …… và cạnh ……<br>
+        b) Cạnh AB <b>song song</b> với cạnh ……<br>
+        c) Cạnh AD song song với cạnh ……
+      </div>
+    </div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 5.</b> Mua 5 quyển vở hết 40 000 đồng.
+    Hỏi mua 8 quyển vở như thế hết bao nhiêu tiền?</div>
+    <div class="giai"><div class="nhan">Bài giải</div>
+      <div class="ke hep" style="margin-left:6mm"><div class="d"></div><div class="d"></div><div class="d"></div><div class="d"></div></div>
+    </div>
+  </div>
+
+  <div class="chan"><span>Toán 5 · Tựu trường 26/8</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang dapan">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>ĐÁP ÁN &amp; HƯỚNG DẪN</h1>
+      <div class="mon">MÔN TOÁN — LỚP 5</div><div class="tuan">NGÀY 26/8</div></div>
+    <div class="ngay">Dành cho<br>thầy cô &amp; phụ huynh<br><b>Trang cuối</b></div>
+  </div>
+
+  <div class="muc">Đáp án</div>
+  <table class="bang-da">
+    <tr><th>Câu</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr>
+    <tr><td>Đáp án</td><td>B</td><td>B</td><td>B</td><td>B</td><td>B</td><td>A</td><td>A</td><td>A</td></tr>
+  </table>
+
+  <div class="bai"><b>Bài 1.</b> a) (138 + 62) + 79 = 200 + 79 = <span class="gia">279</span> ·
+    b) (4 × 25) × 27 = 100 × 27 = <span class="gia">2 700</span> ·
+    c) 45 × (6 + 4) = 45 × 10 = <span class="gia">450</span> ·
+    d) 96 × (8 − 6) = 96 × 2 = <span class="gia">192</span>.</div>
+  <div class="bai"><b>Bài 2.</b> a) <span class="gia">10</span> · b) <span class="gia">24</span> ·
+    c) <span class="gia">2</span> · d) <span class="gia">20</span>.</div>
+  <div class="bai"><b>Bài 3.</b> a) <span class="gia">27 000</span> · b) <span class="gia">56</span> ·
+    c) <span class="gia">50</span> · d) <span class="gia">69</span>.</div>
+  <div class="bai"><b>Bài 4.</b> a) AB vuông góc với <span class="gia">AD</span> và <span class="gia">BC</span> ·
+    b) AB song song với <span class="gia">DC</span> · c) AD song song với <span class="gia">BC</span>.</div>
+  <div class="bai"><b>Bài 5.</b> Giá tiền một quyển vở: 40 000 : 5 = 8 000 (đồng).
+    Mua 8 quyển hết: 8 000 × 8 = <span class="gia">64 000 (đồng)</span>.</div>
+
+  <div class="muc">Chỗ học sinh hay quên sau ba tháng hè</div>
+  <p>· <b>Tính thuận tiện mà vẫn tính lần lượt</b> (bài 1). Nhắc lại ba mẹo: ghép hai số cộng lại
+    <b>tròn trăm</b> (138 + 62); ghép hai số nhân lại <b>tròn trăm</b> (4 × 25);
+    và <b>đặt thừa số chung ra ngoài</b> (45 × 6 + 45 × 4 = 45 × 10).</p>
+  <p>· <b>Biểu thức chứa chữ</b> (câu 3, bài 2): nhiều em viết 2515 vì ghép số vào chữ.
+    Nhắc em <b>thay chữ bằng số rồi mới tính</b>.</p>
+  <p>· <b>Nhân, chia với 10, 100, 1 000</b> (câu 4, 5, bài 3): nhân thì <b>thêm</b> chữ số 0,
+    chia thì <b>bớt</b> chữ số 0 — đếm đúng số chữ số 0.</p>
+  <p>· <b>Vuông góc – song song</b> (bài 4): trong hình chữ nhật, hai cạnh <b>kề nhau</b> thì vuông góc,
+    hai cạnh <b>đối diện</b> thì song song. Nên cho em dùng ê ke kiểm tra lại.</p>
+  <p>· <b>Bài toán rút về đơn vị</b> (bài 5): <b>bước 1 tìm giá trị một phần</b> (một quyển vở),
+    bước 2 mới nhân lên. Em nào lấy 40 000 × 8 là bỏ mất bước một.</p>
+
+  <div class="luuy"><b>Căn cứ nội dung:</b> phiếu ôn <b>chương trình Toán lớp 4</b> — Kết nối tri thức với
+    cuộc sống, dành cho học sinh vừa lên lớp 5, dùng ngày <b>26/8</b> của tuần tựu trường.
+    <ul>
+      <li><b>Chọn mảng chưa dùng ở hai ngày trước</b>: hôm nay là <i>Bài 3 – Số chẵn, số lẻ</i>,
+        <i>Bài 15 – Dãy số tự nhiên</i>, <i>Bài 4 – Biểu thức chứa chữ</i>, <i>Bài 24, 40, 42 – các
+        tính chất của phép cộng và phép nhân</i>, <i>Bài 41 – Nhân, chia với 10, 100, 1 000</i>,
+        <i>Bài 27, 29 – Hai đường thẳng vuông góc, song song</i> và <i>Bài 47 – Bài toán rút về đơn vị</i>.</li>
+      <li>Vẫn giữ ranh giới cũ: <b>chưa có số thập phân</b> (lớp 5, tuần 4 mới học).</li>
+      <li>Toàn bộ <b>số liệu do Bút Xanh tự đặt</b>, đã tự giải lại để lấy đáp án.</li>
+      <li>Phiếu <b>tự chọn</b>, không chấm điểm.</li>
+    </ul>
+  </div>
+
+  <div class="chan"><span>Đáp án · Toán 5 · Tựu trường 26/8</span>
+    <span class="giua">trang đáp án — thầy cô và phụ huynh xem sau khi em làm xong</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<script src="nut-in.js"></script>
+</body>
+</html>

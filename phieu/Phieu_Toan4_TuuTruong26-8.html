@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=794">
+<title>Phiếu ôn luyện tựu trường — Toán 4 — Ngày 26/8</title>
+<link rel="stylesheet" href="khuon.css">
+<style>
+/* Tên phiếu dài hơn "PHIẾU BÀI TẬP CUỐI TUẦN" nên phải thu cỡ chữ, kẻo gãy hai dòng
+   và đẩy nội dung tràn khỏi khổ A4 (đo thật 23/8/2026). */
+.tieu h1 { font-size: 16pt; }
+.cau { margin-bottom: 1.5mm; }
+.phan { margin: 2.4mm 0 1.6mm; }
+.dan { margin-bottom: 1.6mm; }
+.bai { margin-bottom: 2mm; }
+.dat { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; margin-top: 2mm; padding-left: 4mm; }
+.dat .o { border: 1pt solid #dfe8e3; border-radius: 2mm; height: 22mm; padding: 2mm 2.5mm; font-size: 13pt; }
+.dien { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3.5mm 8mm; margin-top: 2mm; font-size: 13.5pt; }
+.lamai { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3.5mm 6mm; margin-top: 2mm; font-size: 13.5pt; }
+/* ba góc để nhận biết góc vuông – góc không vuông */
+.gocs { display: flex; gap: 12mm; margin: 2mm 0 0 6mm; }
+.gocs .g { text-align: center; font-size: 12.5pt; }
+.gocs .g svg { width: 32mm; height: 26mm; }
+</style>
+</head>
+<!-- PHIẾU ÔN LUYỆN TỰU TRƯỜNG — ngày 26/8/2026, dành cho học sinh VỪA LÊN LỚP 4.
+     Vẫn ôn KIẾN THỨC LỚP 3 (KNTT) nhưng CỐ Ý CHỌN MẢNG CHƯA DÙNG Ở HAI NGÀY TRƯỚC.
+     Tra thẳng KHGD lớp 3 trong app (khgd-lop3.js) để bám đúng tên bài:
+       24/8 → nhân chia số có nhiều chữ số cho số một chữ số · chu vi, diện tích · làm tròn số ·
+              tìm thành phần · gấp, giảm một số lần · một phần mấy
+       25/8 → xem đồng hồ, tháng – năm · tiền Việt Nam · biểu thức · Bài 16 (trung điểm) ·
+              Bài 17 (hình tròn) · Bài 21 (khối lập phương) · chắc chắn – có thể – không thể
+       26/8 → Bài 47 (LÀM QUEN VỚI CHỮ SỐ LA MÃ) · Bài 25 (PHÉP CHIA HẾT, PHÉP CHIA CÓ DƯ) ·
+              Bài 10–12 (BẢNG NHÂN CHIA 7, 8, 9) · Bài 28 (BÀI TOÁN GIẢI BẰNG HAI BƯỚC TÍNH) ·
+              Bài 18 (GÓC, GÓC VUÔNG, GÓC KHÔNG VUÔNG) · Bài 30 (MI-LI-MÉT) ·
+              Bài 60 (SO SÁNH CÁC SỐ TRONG PHẠM VI 100 000)
+     ⚠️ CHƯA có nhân/chia cho số có HAI chữ số (nội dung lớp 4). Số liệu do Bút Xanh tự đặt. -->
+<body class="mon-toan">
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU ÔN LUYỆN TỰU TRƯỜNG</h1>
+      <div class="mon">MÔN TOÁN — LỚP 4</div><div class="tuan">NGÀY 26/8</div></div>
+    <div class="ngay">Ngày …… / …… / 20……<br>Ôn kiến thức lớp 3<br>Trang 1/2</div>
+  </div>
+
+  <div class="hoten">
+    <div style="flex:1"><span>Họ và tên:</span><span class="o"></span></div>
+    <div><span>Lớp:</span><span class="o hep"></span></div>
+  </div>
+
+  <div class="dan-lon"><span>🌱</span><div><b>Ngày thứ ba của tuần tựu trường.</b> Hôm nay em ôn
+    <b>chữ số La Mã</b>, <b>phép chia có dư</b>, <b>góc vuông</b> và <b>bài toán hai bước tính</b>.
+    <b>Phiếu không chấm điểm</b>.</div></div>
+
+  <div class="phan"><span class="so">I</span><span class="ten">Trắc nghiệm</span><span class="line"></span></div>
+  <div class="dan">Khoanh vào chữ đặt trước câu trả lời đúng:</div>
+
+  <div class="cau"><div class="de"><b>Câu 1.</b> Chữ số La Mã <b>VIII</b> viết theo cách thông thường là:</div>
+    <div class="pa"><span><i class="k">A.</i>6</span><span><i class="k">B.</i>7</span>
+      <span><i class="k">C.</i>8</span><span><i class="k">D.</i>13</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 2.</b> Số 12 viết bằng chữ số La Mã là:</div>
+    <div class="pa"><span><i class="k">A.</i>XII</span><span><i class="k">B.</i>IIX</span>
+      <span><i class="k">C.</i>XX</span><span><i class="k">D.</i>VII</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 3.</b> Kết quả của phép tính 56 : 7 là:</div>
+    <div class="pa"><span><i class="k">A.</i>6</span><span><i class="k">B.</i>7</span>
+      <span><i class="k">C.</i>8</span><span><i class="k">D.</i>9</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 4.</b> Kết quả của phép tính 9 × 7 là:</div>
+    <div class="pa"><span><i class="k">A.</i>56</span><span><i class="k">B.</i>63</span>
+      <span><i class="k">C.</i>72</span><span><i class="k">D.</i>16</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 5.</b> Trong phép chia 17 : 5, số dư là:</div>
+    <div class="pa"><span><i class="k">A.</i>1</span><span><i class="k">B.</i>2</span>
+      <span><i class="k">C.</i>3</span><span><i class="k">D.</i>0</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 6.</b> 1 cm = …… mm. Số thích hợp điền vào chỗ chấm là:</div>
+    <div class="pa"><span><i class="k">A.</i>10</span><span><i class="k">B.</i>100</span>
+      <span><i class="k">C.</i>1000</span><span><i class="k">D.</i>1</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 7.</b> So sánh hai số 45 678 và 45 687, ta có:</div>
+    <div class="pa hai dai"><span><i class="k">A.</i>45 678 &lt; 45 687</span>
+      <span><i class="k">B.</i>45 678 &gt; 45 687</span>
+      <span><i class="k">C.</i>45 678 = 45 687</span>
+      <span><i class="k">D.</i>không so sánh được</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 8.</b> Hình chữ nhật có mấy góc vuông?</div>
+    <div class="pa"><span><i class="k">A.</i>1 góc</span><span><i class="k">B.</i>2 góc</span>
+      <span><i class="k">C.</i>3 góc</span><span><i class="k">D.</i>4 góc</span></div></div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Tự luận</span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 1.</b> Đặt tính rồi tính:</div>
+    <div class="dat">
+      <div class="o">a) 236 × 3</div>
+      <div class="o">b) 84 : 4</div>
+      <div class="o">c) 75 : 6</div>
+      <div class="o">d) 96 : 7</div>
+    </div>
+  </div>
+
+  <div class="chan"><span>Toán 4 · Tựu trường 26/8</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU ÔN LUYỆN TỰU TRƯỜNG</h1>
+      <div class="mon">MÔN TOÁN — LỚP 4</div><div class="tuan">NGÀY 26/8</div></div>
+    <div class="ngay">Họ và tên: ……………………<br>Lớp: ………<br>Trang 2/2</div>
+  </div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Tự luận <span style="font-weight:normal;text-transform:none">(tiếp theo)</span></span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 2.</b> Viết số thích hợp vào chỗ chấm:</div>
+    <div class="lamai">
+      <div>a) 4 = ……………</div><div>b) 9 = ……………</div><div>c) 20 = ……………</div>
+      <div>d) VI = ……………</div><div>e) XI = ……………</div><div>g) XV = ……………</div>
+    </div>
+    <div class="dan" style="margin-top:1.6mm">(ba ý đầu viết bằng <b>chữ số La Mã</b>, ba ý sau viết
+      bằng <b>chữ số thông thường</b>)</div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 3.</b> Số?</div>
+    <div class="dien">
+      <div>a) 5 cm = …… mm</div>
+      <div>b) 1 dm = …… mm</div>
+      <div>c) 30 mm = …… cm</div>
+      <div>d) 8 cm 5 mm = …… mm</div>
+    </div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 4.</b> Quan sát ba góc dưới đây rồi viết <b>góc vuông</b>
+    hoặc <b>góc không vuông</b> vào chỗ chấm:</div>
+    <div class="gocs">
+      <div class="g">
+        <svg viewBox="0 0 120 100">
+          <path d="M20 85V15M20 85h85" fill="none" stroke="#1f2a24" stroke-width="2.6" stroke-linecap="round"/>
+          <circle cx="20" cy="85" r="2.6" fill="#1f2a24"/>
+        </svg>
+        <div>Góc A: ……………</div>
+      </div>
+      <div class="g">
+        <svg viewBox="0 0 120 100">
+          <path d="M20 85L95 85M20 85L80 25" fill="none" stroke="#1f2a24" stroke-width="2.6" stroke-linecap="round"/>
+          <circle cx="20" cy="85" r="2.6" fill="#1f2a24"/>
+        </svg>
+        <div>Góc B: ……………</div>
+      </div>
+      <div class="g">
+        <svg viewBox="0 0 120 100">
+          <path d="M60 85L115 85M60 85L12 40" fill="none" stroke="#1f2a24" stroke-width="2.6" stroke-linecap="round"/>
+          <circle cx="60" cy="85" r="2.6" fill="#1f2a24"/>
+        </svg>
+        <div>Góc C: ……………</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 5.</b> Một cửa hàng có 5 thùng vở, mỗi thùng có 8 quyển.
+    Cửa hàng đã bán 15 quyển vở. Hỏi cửa hàng còn lại bao nhiêu quyển vở?</div>
+    <div class="giai"><div class="nhan">Bài giải</div>
+      <div class="ke hep" style="margin-left:6mm"><div class="d"></div><div class="d"></div><div class="d"></div><div class="d"></div></div>
+    </div>
+  </div>
+
+  <div class="chan"><span>Toán 4 · Tựu trường 26/8</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang dapan">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>ĐÁP ÁN &amp; HƯỚNG DẪN</h1>
+      <div class="mon">MÔN TOÁN — LỚP 4</div><div class="tuan">NGÀY 26/8</div></div>
+    <div class="ngay">Dành cho<br>thầy cô &amp; phụ huynh<br><b>Trang cuối</b></div>
+  </div>
+
+  <div class="muc">Đáp án</div>
+  <table class="bang-da">
+    <tr><th>Câu</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr>
+    <tr><td>Đáp án</td><td>C</td><td>A</td><td>C</td><td>B</td><td>B</td><td>A</td><td>A</td><td>D</td></tr>
+  </table>
+
+  <div class="bai"><b>Bài 1.</b> a) <span class="gia">708</span> · b) <span class="gia">21</span> ·
+    c) <span class="gia">12 dư 3</span> · d) <span class="gia">13 dư 5</span>.</div>
+  <div class="bai"><b>Bài 2.</b> a) <span class="gia">IV</span> · b) <span class="gia">IX</span> ·
+    c) <span class="gia">XX</span> · d) <span class="gia">6</span> · e) <span class="gia">11</span> ·
+    g) <span class="gia">15</span>.</div>
+  <div class="bai"><b>Bài 3.</b> a) <span class="gia">50</span> mm · b) <span class="gia">100</span> mm ·
+    c) <span class="gia">3</span> cm · d) <span class="gia">85</span> mm.</div>
+  <div class="bai"><b>Bài 4.</b> Góc A: <span class="gia">góc vuông</span> ·
+    Góc B: <span class="gia">góc không vuông</span> · Góc C: <span class="gia">góc không vuông</span>.</div>
+  <div class="bai"><b>Bài 5.</b> Số vở cửa hàng có: 8 × 5 = 40 (quyển).
+    Số vở còn lại: 40 − 15 = <span class="gia">25 (quyển vở)</span>.</div>
+
+  <div class="muc">Chỗ học sinh hay quên sau ba tháng hè</div>
+  <p>· <b>Chữ số La Mã viết ngược</b> (câu 2, bài 2): quy tắc là chữ số nhỏ đứng <b>trước</b> thì trừ đi
+    (IV = 4, IX = 9), đứng <b>sau</b> thì cộng vào (VI = 6, XI = 11). Em nào viết IIX là đang đoán.</p>
+  <p>· <b>Phép chia có dư</b> (câu 5, bài 1 ý c, d): nhắc em <b>số dư luôn phải bé hơn số chia</b>.
+    Chia xong nên thử lại: 6 × 12 + 3 = 75 ✓.</p>
+  <p>· <b>Bài toán hai bước tính</b> (bài 5): nhiều em làm một phép rồi dừng. Nhắc em đọc lại câu hỏi
+    sau khi tính bước một — “đã tìm được cái đề hỏi chưa?”</p>
+  <p>· <b>Nhận biết góc vuông bằng mắt</b> (bài 4): góc B trông “gần vuông” nên rất dễ nhầm.
+    Cách chắc chắn là <b>áp ê ke hoặc góc quyển vở</b> vào đỉnh góc để kiểm tra.</p>
+  <p>· <b>So sánh số có nhiều chữ số</b> (câu 7): so từ trái sang phải, gặp chữ số khác nhau đầu tiên
+    thì kết luận — 45 6<b>7</b>8 và 45 6<b>8</b>7 khác nhau ở hàng chục.</p>
+
+  <div class="luuy"><b>Căn cứ nội dung:</b> phiếu ôn <b>chương trình Toán lớp 3</b> — Kết nối tri thức với
+    cuộc sống, dành cho học sinh vừa lên lớp 4, dùng ngày <b>26/8</b> của tuần tựu trường.
+    <ul>
+      <li><b>Chọn mảng chưa dùng ở hai ngày trước</b>: hôm nay là <i>Bài 47 – Chữ số La Mã</i>,
+        <i>Bài 25 – Phép chia hết, phép chia có dư</i>, <i>Bài 10–12 – Bảng nhân chia 7, 8, 9</i>,
+        <i>Bài 28 – Bài toán giải bằng hai bước tính</i>, <i>Bài 18 – Góc vuông, góc không vuông</i>,
+        <i>Bài 30 – Mi-li-mét</i> và <i>Bài 60 – So sánh số trong phạm vi 100 000</i>.</li>
+      <li>Vẫn giữ ranh giới cũ: <b>chưa nhân chia cho số có hai chữ số</b> (nội dung lớp 4).</li>
+      <li>Ba hình góc <b>do Bút Xanh tự vẽ</b>; góc vuông có kí hiệu ô vuông nhỏ ở đỉnh đúng như SGK.</li>
+      <li>Phiếu <b>tự chọn</b>, không chấm điểm.</li>
+    </ul>
+  </div>
+
+  <div class="chan"><span>Đáp án · Toán 4 · Tựu trường 26/8</span>
+    <span class="giua">trang đáp án — thầy cô và phụ huynh xem sau khi em làm xong</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<script src="nut-in.js"></script>
+</body>
+</html>

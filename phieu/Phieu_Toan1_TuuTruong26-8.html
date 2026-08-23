@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=794">
+<title>Phiếu ôn luyện tựu trường — Toán 1 — Ngày 26/8</title>
+<link rel="stylesheet" href="khuon.css">
+<style>
+/* Tên phiếu dài hơn "PHIẾU BÀI TẬP CUỐI TUẦN" nên phải thu cỡ chữ, kẻo gãy hai dòng
+   và đẩy nội dung tràn khỏi khổ A4 (đo thật 23/8/2026). */
+.tieu h1 { font-size: 16pt; }
+/* hai hàng hình xếp thẳng cột để nối 1 – 1, nhìn ra ngay nhóm nào thừa */
+.ghep { border: 1pt solid #dfe8e3; border-radius: 3mm; padding: 3mm 4mm; margin-top: 2mm; }
+.ghep .h { display: flex; gap: 8mm; align-items: center; margin-bottom: 3mm; }
+.ghep .h:last-child { margin-bottom: 0; }
+.ghep .ten { flex: 0 0 10mm; font-size: 13pt; color: #55665c; }
+.to-nho { display: flex; gap: 10mm; align-items: flex-end; border: 1pt solid #dfe8e3;
+  border-radius: 3mm; padding: 3mm 6mm; margin-top: 2mm; }
+.khoi { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4mm; margin-top: 2mm; }
+.khoi .o { border: 1.2pt solid #cfd8d2; border-radius: 2mm; height: 32mm;
+  display: flex; align-items: center; justify-content: center; }
+.day-hinh { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3mm; margin-top: 2mm; }
+.day-hinh .o { border: 1pt solid #dfe8e3; border-radius: 2.5mm; height: 27mm;
+  display: flex; align-items: center; justify-content: center; }
+</style>
+</head>
+<!-- ===== PHIẾU ÔN LUYỆN TỰU TRƯỜNG · BÚT XANH — TOÁN 1, NGÀY 26/8/2026 =====
+     ⚠️ Học sinh lớp 1 CHƯA HỌC BUỔI NÀO → phiếu LÀM QUEN – SẴN SÀNG VÀO LỚP 1.
+     Bám các bài đầu chương trình Toán 1 (tra khgd-lop1.js), CHỌN VIỆC KHÁC HAI NGÀY TRƯỚC:
+       24/8 → đếm 1–5 · nhiều hơn – ít hơn · nối nhóm với số · tô nét số 1–5 · khoanh hình vuông
+       25/8 → vị trí trái – giữa – phải · đếm 6–10 · dài hơn – ngắn hơn · quy luật dãy hình ·
+              tô nét số 6–10
+       26/8 → Bài 3 (NHIỀU HƠN, ÍT HƠN, BẰNG NHAU — nối 1 với 1) · TO HƠN – NHỎ HƠN ·
+              Bài 7 (khoanh HÌNH TAM GIÁC) · Bài 14 (KHỐI LẬP PHƯƠNG, KHỐI HỘP CHỮ NHẬT) ·
+              đếm và viết số 0 · đếm ngược 5 → 1
+     ⚠️ KHÔNG có phép cộng, phép trừ, không có dấu >, <, = (sẽ học trong năm học).
+     ⚠️ Yêu cầu nào cũng có dấu 🔊 để người lớn đọc hộ. Hình do Bút Xanh tự vẽ. -->
+<body class="mon-toan lop1">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <g id="h-tao">
+    <path class="hv-tr mv-do" d="M50 32c-6-6-16-8-24-3-9 6-11 20-6 33 5 12 14 22 21 20 3-1 6-2 9-2s6 1 9 2c7 2 16-8 21-20 5-13 3-27-6-33-8-5-18-3-24 3z"/>
+    <path class="hv-n" style="stroke-width:4.4" d="M50 32V18"/>
+    <path style="fill:none;stroke:#C98A52;stroke-width:2.4;stroke-linecap:round" d="M50 32V18"/>
+    <path class="hv-tr mv-xanhl" d="M50 22c2-8 10-12 16-10 1 7-5 13-16 10z"/>
+  </g>
+  <g id="h-ca">
+    <path class="hv-tr mv-cam" d="M18 50c8-13 22-20 34-20s24 7 30 20c-6 13-18 20-30 20s-26-7-34-20z"/>
+    <path class="hv-tr mv-vang" d="M82 50l15-14v28z"/>
+    <path class="hv-tr mv-vang" d="M48 31c3-8 10-12 15-9 1 6-4 11-15 9z"/>
+    <path class="hv-tr mv-vang" d="M48 69c3 8 10 12 15 9 1-6-4-11-15-9z"/>
+    <circle class="hv-den" cx="33" cy="45" r="3"/>
+    <path class="hv-n2" d="M27 36c-5 8-5 20 0 28"/>
+  </g>
+  <g id="h-hoa">
+    <path class="hv-n" style="stroke-width:4.6" d="M50 58v34"/>
+    <path style="fill:none;stroke:#6FC98B;stroke-width:2.6;stroke-linecap:round" d="M50 58v34"/>
+    <path class="hv-tr mv-xanhl" d="M50 76c6-9 16-9 19-4-4 8-14 10-19 4z"/>
+    <ellipse class="hv-tr mv-hong" cx="50" cy="26" rx="11" ry="18"/>
+    <ellipse class="hv-tr mv-hong" cx="50" cy="26" rx="11" ry="18" transform="rotate(72 50 52)"/>
+    <ellipse class="hv-tr mv-hong" cx="50" cy="26" rx="11" ry="18" transform="rotate(144 50 52)"/>
+    <ellipse class="hv-tr mv-hong" cx="50" cy="26" rx="11" ry="18" transform="rotate(216 50 52)"/>
+    <ellipse class="hv-tr mv-hong" cx="50" cy="26" rx="11" ry="18" transform="rotate(288 50 52)"/>
+    <circle class="hv-tr mv-vang" cx="50" cy="52" r="10"/>
+  </g>
+  <g id="h-sao">
+    <path class="hv-tr mv-vang" d="M50 8l12.4 25.1 27.7 4-20 19.6 4.7 27.6L50 71.2 25.2 84.3l4.7-27.6-20-19.6 27.7-4z"/>
+  </g>
+  <g id="h-vuong"><rect class="hv-tr mv-xanhd" x="14" y="14" width="72" height="72" rx="3"/></g>
+  <g id="h-tamgiac"><path class="hv-tr mv-xanhl" d="M50 12l38 68H12z"/></g>
+  <g id="h-tron"><circle class="hv-tr mv-tim" cx="50" cy="50" r="37"/></g>
+  <!-- HAI HÌNH KHỐI vẽ kiểu ba chiều: mặt trước, mặt trên, mặt bên — để các em nhìn ra là VẬT
+       cầm được, khác với hình vuông, hình chữ nhật vẽ phẳng trên giấy. -->
+  <g id="k-lapphuong">
+    <path class="hv-tr mv-go" d="M20 35h50v50H20z"/>
+    <path class="hv-tr mv-vang" d="M20 35l20-17h50L70 35z"/>
+    <path class="hv-tr mv-cam" d="M70 35l20-17v50L70 85z"/>
+  </g>
+  <!-- Hai khối dùng CHUNG một bộ màu: nếu tô khác màu, trẻ sẽ phân loại bằng MÀU
+       chứ không nhìn hình dạng (phát hiện khi phóng to ảnh 23/8/2026). -->
+  <g id="k-hopcn">
+    <path class="hv-tr mv-go" d="M10 42h70v40H10z"/>
+    <path class="hv-tr mv-vang" d="M10 42l16-15h70L80 42z"/>
+    <path class="hv-tr mv-cam" d="M80 42l16-15v40L80 82z"/>
+  </g>
+</defs></svg>
+
+<!-- ==================== TRANG 1 ==================== -->
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU ÔN LUYỆN TỰU TRƯỜNG</h1>
+      <div class="mon">MÔN TOÁN — LỚP 1</div><div class="tuan">NGÀY 26/8</div></div>
+    <div class="ngay">Ngày …… / …… / 20……<br>Sẵn sàng vào lớp 1<br>Trang 1/2</div>
+  </div>
+
+  <div class="hoten">
+    <div style="flex:1"><span>Họ và tên:</span><span class="o"></span></div>
+    <div><span>Lớp:</span><span class="o hep"></span></div>
+  </div>
+
+  <div class="dan-lon"><span>🔊</span><span><b>Nhờ người lớn đọc giúp em các yêu cầu.</b>
+    Hôm nay em tập <b>nối một với một</b> để xem hai nhóm có bằng nhau không, và làm quen với
+    <b>hình khối</b>.</span></div>
+
+  <div class="bai">
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 1.</span><span>Nối mỗi con cá với một bông hoa.</span></div>
+    <div class="o-lam">
+      <div class="ghep">
+        <div class="h"><span class="ten">Cá</span>
+          <svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-ca"/></svg>
+          <svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-ca"/></svg>
+          <svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-ca"/></svg>
+          <svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-ca"/></svg>
+        </div>
+        <div class="h"><span class="ten">Hoa</span>
+          <svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-hoa"/></svg>
+          <svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-hoa"/></svg>
+          <svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-hoa"/></svg>
+          <svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-hoa"/></svg>
+        </div>
+      </div>
+      <div class="yc" style="font-size:14pt;margin-top:1.5mm">Số cá và số hoa có <b>bằng nhau</b> không?
+        …………………</div>
+    </div>
+  </div>
+
+  <div class="bai">
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 2.</span><span>Khoanh vào bông hoa <b>to hơn</b>.</span></div>
+    <div class="o-lam">
+      <div class="to-nho">
+        <svg width="90" height="90" viewBox="0 0 100 100"><use href="#h-hoa"/></svg>
+        <svg width="52" height="52" viewBox="0 0 100 100"><use href="#h-hoa"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="bai">
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 3.</span><span>Khoanh vào các <b>hình tam giác</b>.</span></div>
+    <div class="o-lam">
+      <div class="day-hinh">
+        <div class="o"><svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-tamgiac"/></svg></div>
+        <div class="o"><svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-tron"/></svg></div>
+        <div class="o"><svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-vuong"/></svg></div>
+        <div class="o"><svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-tamgiac"/></svg></div>
+        <div class="o"><svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-tron"/></svg></div>
+        <div class="o"><svg width="46" height="46" viewBox="0 0 100 100"><use href="#h-tamgiac"/></svg></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chan"><span>Toán 1 · Tựu trường 26/8</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<!-- ==================== TRANG 2 ==================== -->
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU ÔN LUYỆN TỰU TRƯỜNG</h1>
+      <div class="mon">MÔN TOÁN — LỚP 1</div><div class="tuan">NGÀY 26/8</div></div>
+    <div class="ngay">Họ và tên: ……………………<br>Lớp: ………<br>Trang 2/2</div>
+  </div>
+
+  <div class="bai">
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 4.</span><span>Khoanh vào các <b>khối lập phương</b>.</span></div>
+    <div class="o-lam">
+      <div class="khoi">
+        <div class="o"><svg width="76" height="76" viewBox="0 0 110 100"><use href="#k-lapphuong"/></svg></div>
+        <div class="o"><svg width="84" height="76" viewBox="0 0 110 100"><use href="#k-hopcn"/></svg></div>
+        <div class="o"><svg width="76" height="76" viewBox="0 0 110 100"><use href="#k-lapphuong"/></svg></div>
+        <div class="o"><svg width="84" height="76" viewBox="0 0 110 100"><use href="#k-hopcn"/></svg></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bai">
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 5.</span><span>Đếm rồi viết số vào ô trống.</span></div>
+    <div class="o-lam">
+      <div class="dem">
+        <div class="hinh">
+          <svg width="48" height="48" viewBox="0 0 100 100"><use href="#h-tao"/></svg>
+          <svg width="48" height="48" viewBox="0 0 100 100"><use href="#h-tao"/></svg>
+          <svg width="48" height="48" viewBox="0 0 100 100"><use href="#h-tao"/></svg>
+          <svg width="48" height="48" viewBox="0 0 100 100"><use href="#h-tao"/></svg>
+          <svg width="48" height="48" viewBox="0 0 100 100"><use href="#h-tao"/></svg>
+          <svg width="48" height="48" viewBox="0 0 100 100"><use href="#h-tao"/></svg>
+        </div>
+        <div class="oso"></div>
+      </div>
+      <div class="dem">
+        <div class="hinh"><span style="font-size:11.5pt;color:#8aa093;font-style:italic">(không có hình nào)</span></div>
+        <div class="oso"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bai">
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 6.</span><span>Tô theo nét chấm rồi viết tiếp số còn thiếu.</span></div>
+    <div class="o-lam">
+      <div class="viet">
+        <div class="o"><svg viewBox="0 0 60 90"><text class="hv-cham" x="30" y="72" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="80" stroke-width="2.4">5</text></svg></div>
+        <div class="o"><svg viewBox="0 0 60 90"><text class="hv-cham" x="30" y="72" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="80" stroke-width="2.4">4</text></svg></div>
+        <div class="o"><svg viewBox="0 0 60 90"><text class="hv-cham" x="30" y="72" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="80" stroke-width="2.4">3</text></svg></div>
+        <div class="o"><svg viewBox="0 0 60 90"><text class="hv-cham" x="30" y="72" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="80" stroke-width="2.4">2</text></svg></div>
+        <div class="o"></div>
+        <div class="o"><svg viewBox="0 0 60 90"><text class="hv-cham" x="30" y="72" text-anchor="middle"
+          font-family="Times New Roman, serif" font-size="80" stroke-width="2.4">0</text></svg></div>
+      </div>
+      <div class="yc" style="font-size:13pt;color:#55665c;margin-top:1mm">(đếm ngược: 5 – 4 – 3 – 2 – … – 0)</div>
+    </div>
+  </div>
+
+  <div class="chan"><span>Toán 1 · Tựu trường 26/8</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<!-- ==================== TRANG 3: DÀNH CHO NGƯỜI LỚN ==================== -->
+<section class="trang dapan">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>ĐÁP ÁN &amp; HƯỚNG DẪN</h1>
+      <div class="mon">MÔN TOÁN — LỚP 1</div><div class="tuan">NGÀY 26/8</div></div>
+    <div class="ngay">Dành cho<br>thầy cô &amp; phụ huynh<br><b>Trang cuối</b></div>
+  </div>
+
+  <div class="muc">Đáp án</div>
+  <div class="bai"><b>Bài 1.</b> Nối được hết, không thừa con nào — số cá và số hoa
+    <span class="gia">bằng nhau</span> (đều là 4).</div>
+  <div class="bai"><b>Bài 2.</b> Khoanh vào <span class="gia">bông hoa bên trái</span> — bông to hơn.</div>
+  <div class="bai"><b>Bài 3.</b> Khoanh vào <span class="gia">ba hình tam giác</span>
+    (hình thứ nhất, thứ tư và thứ sáu).</div>
+  <div class="bai"><b>Bài 4.</b> Khoanh vào <span class="gia">hai khối lập phương</span>
+    (hình thứ nhất và thứ ba) — hai khối còn lại là <b>khối hộp chữ nhật</b>.</div>
+  <div class="bai"><b>Bài 5.</b> Quả táo: <span class="gia">6</span> · ô không có hình nào:
+    <span class="gia">0</span>.</div>
+  <div class="bai"><b>Bài 6.</b> Tô kín nét chấm; số còn thiếu ở ô trống là <span class="gia">1</span>
+    (dãy đếm ngược 5 – 4 – 3 – 2 – <b>1</b> – 0).</div>
+
+  <div class="muc">Người lớn giúp em thế nào</div>
+  <p>· <b>Đọc hộ mọi chỗ có dấu 🔊.</b> Các em chưa biết chữ — người lớn đọc yêu cầu, em chỉ nối,
+    khoanh, đếm, tô.</p>
+  <p>· <b>Bài 1 là bài quan trọng nhất hôm nay.</b> Nối <b>một con cá với một bông hoa</b> là cách
+    trẻ hiểu “bằng nhau” mà không cần đếm. Nếu nối hết mà không thừa thì hai nhóm bằng nhau —
+    đây chính là nền của phép so sánh sau này.</p>
+  <p>· <b>Bài 4 — hình khối.</b> Cho em cầm vật thật để đối chiếu: <b>viên xúc xắc, hộp phấn</b> là
+    khối lập phương (sáu mặt vuông bằng nhau); <b>hộp bánh, viên gạch</b> là khối hộp chữ nhật.</p>
+  <p>· <b>Số 0</b> (bài 5): nhắc em <b>“không có cái nào thì viết số 0”</b> — nhiều trẻ để trống ô.</p>
+  <p>· <b>Làm khoảng 10 – 15 phút là đủ</b>, có thể chia hai lần trong ngày.</p>
+
+  <div class="luuy"><b>Vì sao phiếu lớp 1 khác các lớp khác:</b> ngày 26/8 vẫn là tuần tựu trường,
+    học sinh lớp 1 <b>chưa học buổi nào</b> nên không có kiến thức cũ để ôn — phiếu soạn theo hướng
+    <b>làm quen – sẵn sàng vào lớp 1</b>.
+    <ul>
+      <li><b>Chọn việc khác hai ngày trước</b>: hôm nay là <i>Bài 3 – Nhiều hơn, ít hơn, bằng nhau</i>
+        (nối 1 với 1), so sánh <b>to hơn – nhỏ hơn</b>, khoanh <b>hình tam giác</b>,
+        <i>Bài 14 – Khối lập phương, khối hộp chữ nhật</i>, số <b>0</b> và đếm ngược.</li>
+      <li><b>Không có phép cộng, phép trừ, không có dấu &gt;, &lt;, =</b> — sẽ học trong năm học.</li>
+      <li>Hai hình khối <b>do Bút Xanh tự vẽ</b> kiểu ba chiều để trẻ nhận ra là <b>vật cầm được</b>,
+        khác hình phẳng vẽ trên giấy.</li>
+      <li>Phiếu <b>tự chọn</b>, không chấm điểm.</li>
+    </ul>
+  </div>
+
+  <div class="chan"><span>Đáp án · Toán 1 · Tựu trường 26/8</span>
+    <span class="giua">trang đáp án — thầy cô và phụ huynh xem sau khi em làm xong</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<script src="nut-in.js"></script>
+</body>
+</html>
