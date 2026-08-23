@@ -3859,14 +3859,15 @@ var BX_PHIEU_CO={
    👉 THÊM NGÀY MỚI: chép 10 tệp vào web/phieu/ đúng khuôn tên, thêm một dòng vào
       BX_PHIEU_TT_NGAY và thêm mã ngày vào 10 ô của BX_PHIEU_TT. Không đụng gì khác. */
 var BX_PHIEU_TT_NGAY=[
-  {ma:'24-8', ten:'24/8', thu:'Thứ Hai'}
+  {ma:'24-8', ten:'24/8', thu:'Thứ Hai'},
+  {ma:'25-8', ten:'25/8', thu:'Thứ Ba'}
 ];
 var BX_PHIEU_TT={
-  'L1|Toán':['24-8'], 'L1|Tiếng Việt':['24-8'],
-  'L2|Toán':['24-8'], 'L2|Tiếng Việt':['24-8'],
-  'L3|Toán':['24-8'], 'L3|Tiếng Việt':['24-8'],
-  'L4|Toán':['24-8'], 'L4|Tiếng Việt':['24-8'],
-  'L5|Toán':['24-8'], 'L5|Tiếng Việt':['24-8']
+  'L1|Toán':['24-8','25-8'], 'L1|Tiếng Việt':['24-8','25-8'],
+  'L2|Toán':['24-8','25-8'], 'L2|Tiếng Việt':['24-8','25-8'],
+  'L3|Toán':['24-8','25-8'], 'L3|Tiếng Việt':['24-8','25-8'],
+  'L4|Toán':['24-8','25-8'], 'L4|Tiếng Việt':['24-8','25-8'],
+  'L5|Toán':['24-8','25-8'], 'L5|Tiếng Việt':['24-8','25-8']
 };
 function BX_phieuTTCo(lop,mon,ma){
   var ds=BX_PHIEU_TT[BX_phieuKey(lop,mon)]||[];

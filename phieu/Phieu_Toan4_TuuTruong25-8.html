@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=794">
+<title>Phiếu ôn luyện tựu trường — Toán 4 — Ngày 25/8</title>
+<link rel="stylesheet" href="khuon.css">
+<style>
+/* Tên phiếu dài hơn "PHIẾU BÀI TẬP CUỐI TUẦN" nên phải thu cỡ chữ, kẻo gãy hai dòng
+   và đẩy nội dung tràn khỏi khổ A4 (đo thật 23/8/2026). */
+.tieu h1 { font-size: 16pt; }
+.cau { margin-bottom: 1.5mm; }
+.phan { margin: 2.4mm 0 1.6mm; }
+.dan { margin-bottom: 1.6mm; }
+.bai { margin-bottom: 2mm; }
+.nham { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3.5mm 8mm; margin-top: 2mm; font-size: 13.5pt; }
+.dien { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3.5mm 8mm; margin-top: 2mm; font-size: 13.5pt; }
+/* hai mặt đồng hồ để đọc giờ — vẽ bằng SVG, không phụ thuộc tranh sách giáo khoa */
+.dhs { display: flex; gap: 14mm; margin: 2mm 0 0 6mm; align-items: flex-start; }
+.dhs .m { text-align: center; font-size: 12.5pt; }
+.dhs .m svg { width: 34mm; height: 34mm; }
+.kim-g { stroke: #1f2a24; stroke-width: 4.6; stroke-linecap: round; }
+.kim-p { stroke: #1f2a24; stroke-width: 3; stroke-linecap: round; }
+.vach { stroke: #1f2a24; stroke-width: 2; stroke-linecap: round; }
+</style>
+</head>
+<!-- PHIẾU ÔN LUYỆN TỰU TRƯỜNG — ngày 25/8/2026, dành cho học sinh VỪA LÊN LỚP 4.
+     Vẫn ôn KIẾN THỨC LỚP 3 (KNTT) nhưng CỐ Ý CHỌN MẢNG KHÁC HẲN NGÀY 24/8:
+       24/8 → số đến 100 000 · bốn phép tính · tìm x · chu vi, diện tích · làm tròn số
+       25/8 → XEM ĐỒNG HỒ (giờ kém, phút, giây) · tháng – năm · TIỀN VIỆT NAM ·
+              biểu thức có dấu ngoặc · trung điểm · hình tròn (tâm, bán kính, đường kính) ·
+              khối lập phương – khối hộp chữ nhật · khả năng xảy ra của một sự kiện
+     ⚠️ CHƯA có nhân/chia cho số có HAI chữ số (nội dung lớp 4). Số liệu do Bút Xanh tự đặt. -->
+<body class="mon-toan">
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU ÔN LUYỆN TỰU TRƯỜNG</h1>
+      <div class="mon">MÔN TOÁN — LỚP 4</div><div class="tuan">NGÀY 25/8</div></div>
+    <div class="ngay">Ngày …… / …… / 20……<br>Ôn kiến thức lớp 3<br>Trang 1/2</div>
+  </div>
+
+  <div class="hoten">
+    <div style="flex:1"><span>Họ và tên:</span><span class="o"></span></div>
+    <div><span>Lớp:</span><span class="o hep"></span></div>
+  </div>
+
+  <div class="dan-lon"><span>🌱</span><div><b>Ngày thứ hai của tuần tựu trường.</b> Hôm nay em ôn
+    <b>xem đồng hồ</b>, <b>tiền Việt Nam</b>, <b>biểu thức có dấu ngoặc</b> và <b>hình học</b> —
+    khác hẳn phiếu hôm qua. <b>Phiếu không chấm điểm</b>.</div></div>
+
+  <div class="phan"><span class="so">I</span><span class="ten">Trắc nghiệm</span><span class="line"></span></div>
+  <div class="dan">Khoanh vào chữ đặt trước câu trả lời đúng:</div>
+
+  <div class="cau"><div class="de"><b>Câu 1.</b> 8 giờ 45 phút còn được đọc là:</div>
+    <div class="pa hai dai"><span><i class="k">A.</i>9 giờ kém 15 phút</span>
+      <span><i class="k">B.</i>8 giờ kém 15 phút</span>
+      <span><i class="k">C.</i>9 giờ 15 phút</span>
+      <span><i class="k">D.</i>8 giờ kém 45 phút</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 2.</b> Trong hình tròn, đoạn thẳng nối tâm với một điểm
+    trên đường tròn gọi là:</div>
+    <div class="pa"><span><i class="k">A.</i>đường kính</span><span><i class="k">B.</i>bán kính</span>
+      <span><i class="k">C.</i>tâm</span><span><i class="k">D.</i>cạnh</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 3.</b> Trong một hình tròn, đường kính dài gấp mấy lần bán kính?</div>
+    <div class="pa"><span><i class="k">A.</i>2 lần</span><span><i class="k">B.</i>3 lần</span>
+      <span><i class="k">C.</i>4 lần</span><span><i class="k">D.</i>bằng nhau</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 4.</b> Giá trị của biểu thức (25 + 15) × 2 là:</div>
+    <div class="pa"><span><i class="k">A.</i>55</span><span><i class="k">B.</i>80</span>
+      <span><i class="k">C.</i>70</span><span><i class="k">D.</i>40</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 5.</b> Khối lập phương có mấy mặt?</div>
+    <div class="pa"><span><i class="k">A.</i>4 mặt</span><span><i class="k">B.</i>5 mặt</span>
+      <span><i class="k">C.</i>6 mặt</span><span><i class="k">D.</i>8 mặt</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 6.</b> M là trung điểm của đoạn thẳng AB dài 12 cm.
+    Độ dài đoạn thẳng AM là:</div>
+    <div class="pa"><span><i class="k">A.</i>4 cm</span><span><i class="k">B.</i>6 cm</span>
+      <span><i class="k">C.</i>12 cm</span><span><i class="k">D.</i>24 cm</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 7.</b> Một tờ tiền 20 000 đồng đổi được mấy tờ tiền 5 000 đồng?</div>
+    <div class="pa"><span><i class="k">A.</i>2 tờ</span><span><i class="k">B.</i>3 tờ</span>
+      <span><i class="k">C.</i>4 tờ</span><span><i class="k">D.</i>5 tờ</span></div></div>
+
+  <div class="cau"><div class="de"><b>Câu 8.</b> Trong hộp chỉ có 5 quả bóng màu đỏ. Lấy ra một quả
+    bất kì, ta nói:</div>
+    <div class="pa hai dai"><span><i class="k">A.</i>chắc chắn lấy được bóng đỏ</span>
+      <span><i class="k">B.</i>có thể lấy được bóng xanh</span>
+      <span><i class="k">C.</i>không thể lấy được bóng đỏ</span>
+      <span><i class="k">D.</i>chắc chắn lấy được bóng xanh</span></div></div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Tự luận</span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 1.</b> Tính giá trị của biểu thức:</div>
+    <div class="nham">
+      <div>a) 45 + 15 × 2 = ……………</div>
+      <div>b) (72 − 32) : 4 = ……………</div>
+      <div>c) 100 − 25 × 3 = ……………</div>
+      <div>d) (18 + 12) × 3 = ……………</div>
+    </div>
+  </div>
+
+  <div class="chan"><span>Toán 4 · Tựu trường 25/8</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU ÔN LUYỆN TỰU TRƯỜNG</h1>
+      <div class="mon">MÔN TOÁN — LỚP 4</div><div class="tuan">NGÀY 25/8</div></div>
+    <div class="ngay">Họ và tên: ……………………<br>Lớp: ………<br>Trang 2/2</div>
+  </div>
+
+  <div class="phan"><span class="so">II</span><span class="ten">Tự luận <span style="font-weight:normal;text-transform:none">(tiếp theo)</span></span><span class="line"></span></div>
+
+  <div class="bai"><div class="de"><b>Bài 2.</b> Mỗi đồng hồ dưới đây chỉ mấy giờ? Viết <b>hai cách đọc</b>
+    cho đồng hồ thứ hai.</div>
+    <div class="dhs">
+      <div class="m">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="44" fill="#fff" stroke="#1f2a24" stroke-width="2.6"/>
+          <line class="vach" x1="50" y1="8" x2="50" y2="16"/><line class="vach" x1="92" y1="50" x2="84" y2="50"/>
+          <line class="vach" x1="50" y1="92" x2="50" y2="84"/><line class="vach" x1="8" y1="50" x2="16" y2="50"/>
+          <line class="vach" x1="71" y1="13.6" x2="67" y2="20.5"/><line class="vach" x1="86.4" y1="29" x2="79.5" y2="33"/>
+          <line class="vach" x1="86.4" y1="71" x2="79.5" y2="67"/><line class="vach" x1="71" y1="86.4" x2="67" y2="79.5"/>
+          <line class="vach" x1="29" y1="86.4" x2="33" y2="79.5"/><line class="vach" x1="13.6" y1="71" x2="20.5" y2="67"/>
+          <line class="vach" x1="13.6" y1="29" x2="20.5" y2="33"/><line class="vach" x1="29" y1="13.6" x2="33" y2="20.5"/>
+          <line class="kim-g" x1="50" y1="50" x2="31.2" y2="56.8"/>
+          <line class="kim-p" x1="50" y1="50" x2="74.2" y2="64"/>
+          <circle cx="50" cy="50" r="3" fill="#1f2a24"/>
+        </svg>
+        <div>Đồng hồ A: …………………</div>
+      </div>
+      <div class="m">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="44" fill="#fff" stroke="#1f2a24" stroke-width="2.6"/>
+          <line class="vach" x1="50" y1="8" x2="50" y2="16"/><line class="vach" x1="92" y1="50" x2="84" y2="50"/>
+          <line class="vach" x1="50" y1="92" x2="50" y2="84"/><line class="vach" x1="8" y1="50" x2="16" y2="50"/>
+          <line class="vach" x1="71" y1="13.6" x2="67" y2="20.5"/><line class="vach" x1="86.4" y1="29" x2="79.5" y2="33"/>
+          <line class="vach" x1="86.4" y1="71" x2="79.5" y2="67"/><line class="vach" x1="71" y1="86.4" x2="67" y2="79.5"/>
+          <line class="vach" x1="29" y1="86.4" x2="33" y2="79.5"/><line class="vach" x1="13.6" y1="71" x2="20.5" y2="67"/>
+          <line class="vach" x1="13.6" y1="29" x2="20.5" y2="33"/><line class="vach" x1="29" y1="13.6" x2="33" y2="20.5"/>
+          <line class="kim-g" x1="50" y1="50" x2="37.8" y2="34.1"/>
+          <line class="kim-p" x1="50" y1="50" x2="22" y2="50"/>
+          <circle cx="50" cy="50" r="3" fill="#1f2a24"/>
+        </svg>
+        <div>Đồng hồ B: …………………</div>
+      </div>
+    </div>
+    <div class="ke hep" style="margin-left:6mm;margin-top:1mm"><div class="d"></div></div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 3.</b> Số?</div>
+    <div class="dien">
+      <div>a) 1 giờ = …… phút</div>
+      <div>b) 1 phút = …… giây</div>
+      <div>c) 1 giờ 30 phút = …… phút</div>
+      <div>d) 2 ngày = …… giờ</div>
+    </div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 4.</b> Mẹ cho Nam 20 000 đồng. Nam mua một quyển vở hết
+    8 500 đồng và một chiếc bút hết 4 000 đồng. Hỏi Nam còn lại bao nhiêu tiền?</div>
+    <div class="giai"><div class="nhan">Bài giải</div>
+      <div class="ke hep" style="margin-left:6mm"><div class="d"></div><div class="d"></div><div class="d"></div></div>
+    </div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 5.</b> Viết tiếp vào chỗ chấm:</div>
+    <div class="yc" style="font-size:13.5pt;line-height:1.95">
+      a) Hình tròn tâm O có bán kính 3 cm thì đường kính dài …… cm.<br>
+      b) Khối hộp chữ nhật có …… mặt, …… đỉnh và …… cạnh.
+    </div>
+  </div>
+
+  <div class="bai"><div class="de"><b>Bài 6.</b> Trong một chiếc hộp có 3 quả bóng đỏ và 2 quả bóng xanh.
+    Lấy ra một quả bóng bất kì. Điền <b>chắc chắn</b>, <b>có thể</b> hoặc <b>không thể</b> vào chỗ chấm:</div>
+    <div class="yc" style="font-size:13.5pt;line-height:1.95">
+      a) Em …………………… lấy được quả bóng màu đỏ.<br>
+      b) Em …………………… lấy được quả bóng màu vàng.<br>
+      c) Em …………………… lấy được quả bóng màu đỏ hoặc màu xanh.
+    </div>
+  </div>
+
+  <div class="chan"><span>Toán 4 · Tựu trường 25/8</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<section class="trang dapan">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>ĐÁP ÁN &amp; HƯỚNG DẪN</h1>
+      <div class="mon">MÔN TOÁN — LỚP 4</div><div class="tuan">NGÀY 25/8</div></div>
+    <div class="ngay">Dành cho<br>thầy cô &amp; phụ huynh<br><b>Trang cuối</b></div>
+  </div>
+
+  <div class="muc">Đáp án</div>
+  <table class="bang-da">
+    <tr><th>Câu</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr>
+    <tr><td>Đáp án</td><td>A</td><td>B</td><td>A</td><td>B</td><td>C</td><td>B</td><td>C</td><td>A</td></tr>
+  </table>
+
+  <div class="bai"><b>Bài 1.</b> a) <span class="gia">75</span> · b) <span class="gia">10</span> ·
+    c) <span class="gia">25</span> · d) <span class="gia">90</span>.</div>
+  <div class="bai"><b>Bài 2.</b> Đồng hồ A: <span class="gia">8 giờ 20 phút</span> ·
+    Đồng hồ B: <span class="gia">10 giờ 45 phút</span>, đọc cách khác là
+    <span class="gia">11 giờ kém 15 phút</span>.</div>
+  <div class="bai"><b>Bài 3.</b> a) <span class="gia">60</span> · b) <span class="gia">60</span> ·
+    c) <span class="gia">90</span> · d) <span class="gia">48</span>.</div>
+  <div class="bai"><b>Bài 4.</b> Số tiền Nam đã mua: 8 500 + 4 000 = 12 500 (đồng).
+    Nam còn lại: 20 000 − 12 500 = <span class="gia">7 500 (đồng)</span>.</div>
+  <div class="bai"><b>Bài 5.</b> a) <span class="gia">6</span> cm ·
+    b) <span class="gia">6</span> mặt, <span class="gia">8</span> đỉnh, <span class="gia">12</span> cạnh.</div>
+  <div class="bai"><b>Bài 6.</b> a) <span class="gia">có thể</span> · b) <span class="gia">không thể</span> ·
+    c) <span class="gia">chắc chắn</span>.</div>
+
+  <div class="muc">Chỗ học sinh hay quên sau ba tháng hè</div>
+  <p>· <b>Đọc giờ hơn – giờ kém</b> (câu 1, bài 2). Quy tắc: quá nửa giờ thì đọc theo <b>giờ tiếp theo</b>
+    và nói “kém”. 8 giờ 45 phút → còn 15 phút nữa đến 9 giờ → <b>9 giờ kém 15</b>. Em nào chọn B là
+    đang lấy chính giờ hiện tại.</p>
+  <p>· <b>Biểu thức có dấu ngoặc</b> (bài 1, câu 4): <b>trong ngoặc làm trước</b>; không có ngoặc thì
+    nhân chia trước, cộng trừ sau. Ý c) 100 − 25 × 3 = 100 − 75 = 25, nhiều em làm 75 × 3.</p>
+  <p>· <b>Lẫn bán kính với đường kính</b> (câu 2, 3, bài 5): bán kính nối <b>tâm</b> với một điểm trên
+    đường tròn; đường kính đi <b>qua tâm</b>, nối hai điểm trên đường tròn và <b>dài gấp đôi</b> bán kính.</p>
+  <p>· <b>Bài toán tiền phải làm hai bước</b> (bài 4): cộng tiền đã mua trước rồi mới trừ. Nhiều em
+    trừ thẳng một lần rồi quên chiếc bút.</p>
+
+  <div class="luuy"><b>Căn cứ nội dung:</b> phiếu ôn <b>chương trình Toán lớp 3</b> — Kết nối tri thức với
+    cuộc sống, dành cho học sinh vừa lên lớp 4, dùng ngày <b>25/8</b> của tuần tựu trường.
+    <ul>
+      <li><b>Cố ý chọn mảng khác phiếu ngày 24/8</b>: hôm qua ôn bốn phép tính, tìm <i>x</i>,
+        chu vi – diện tích, làm tròn số; hôm nay ôn <b>xem đồng hồ, đơn vị thời gian, tiền Việt Nam,
+        biểu thức có ngoặc, trung điểm, hình tròn, hình khối và khả năng xảy ra</b>.</li>
+      <li>Vẫn giữ ranh giới cũ: <b>chưa nhân chia cho số có hai chữ số</b> (nội dung lớp 4).</li>
+      <li>Hai mặt đồng hồ <b>do Bút Xanh tự vẽ</b> bằng SVG, in đen trắng vẫn rõ kim.</li>
+      <li>Phiếu <b>tự chọn</b>, không chấm điểm.</li>
+    </ul>
+  </div>
+
+  <div class="chan"><span>Đáp án · Toán 4 · Tựu trường 25/8</span>
+    <span class="giua">trang đáp án — thầy cô và phụ huynh xem sau khi em làm xong</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<script src="nut-in.js"></script>
+</body>
+</html>
