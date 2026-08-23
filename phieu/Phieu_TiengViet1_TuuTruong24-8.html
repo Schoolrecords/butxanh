@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=794">
+<title>Phiếu ôn luyện tựu trường — Tiếng Việt 1 — Ngày 24/8</title>
+<link rel="stylesheet" href="khuon.css">
+<style>
+/* Tên phiếu dài hơn "PHIẾU BÀI TẬP CUỐI TUẦN" nên phải thu cỡ chữ, kẻo gãy hai dòng
+   và đẩy nội dung tràn khỏi khổ A4 (đo thật 23/8/2026). */
+.tieu h1 { font-size: 16pt; }
+/* Vài chỗ riêng của phiếu lớp 1, phần còn lại lấy từ khuon.css */
+.tu-the { display: flex; gap: 6mm; margin-top: 2mm; }
+.tu-the .k { flex: 1; border: 1pt solid #dfe8e3; border-radius: 3mm; padding: 2mm;
+  display: flex; align-items: center; justify-content: center; }
+.tu-the .k svg { width: 100%; height: 50mm; }
+.day-hinh { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3mm; margin-top: 2mm; }
+.day-hinh .o { border: 1pt solid #dfe8e3; border-radius: 2.5mm; height: 29mm;
+  display: flex; align-items: center; justify-content: center; }
+.day-hinh .o svg { width: 92%; height: 92%; }
+.noi .cot.trai .item > svg { margin: 0 auto; }
+</style>
+</head>
+<!-- ===== PHIẾU ÔN LUYỆN TỰU TRƯỜNG · BÚT XANH — TIẾNG VIỆT 1, NGÀY 24/8/2026 =====
+     ⚠️ KHÁC HẲN CÁC LỚP 2–5: học sinh lớp 1 CHƯA HỌC BUỔI NÀO nên không có gì để "ôn lại".
+     Phiếu này là phiếu LÀM QUEN – SẴN SÀNG VÀO LỚP 1: nhận biết đồ dùng học tập, tô nét cơ bản,
+     tư thế ngồi viết, cách cầm bút.
+     ⚠️ TUYỆT ĐỐI KHÔNG CÓ CHỮ GHI ÂM NÀO (a, b, c…) — bài "A a" phải sang tuần học đầu tiên mới học;
+     đưa vào đây là dạy trước chương trình. Việc của các em chỉ là NHÌN · TÔ · NỐI · KHOANH.
+     ⚠️ Học sinh chưa đọc được chữ → yêu cầu nào cũng có dấu 🔊 để người lớn đọc hộ.
+     Hình do Bút Xanh tự vẽ, KHÔNG lấy từ sách giáo khoa. -->
+<body class="mon-tv lop1">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <!-- ---------- đồ dùng học tập ---------- -->
+  <g id="h-but">
+    <path class="hv-tr mv-den" d="M50 9 L54.5 21 H45.5 Z"/>
+    <path class="hv-tr mv-go" d="M45.5 21 H54.5 L61 34 H39 Z"/>
+    <rect class="hv-tr mv-vang" x="39" y="34" width="22" height="40"/>
+    <path class="hv-n2" d="M46 34v40M54 34v40"/>
+    <rect class="hv-tr mv-bac" x="39" y="74" width="22" height="8"/>
+    <path class="hv-tr mv-hong" d="M39 82h22v6a4 4 0 0 1-4 4H43a4 4 0 0 1-4-4z"/>
+  </g>
+  <g id="h-thuoc">
+    <rect class="hv-tr mv-xanhd" x="6" y="38" width="88" height="24" rx="2"/>
+    <path class="hv-n2" d="M14 38v10M22 38v6M30 38v6M38 38v6M46 38v10M54 38v6M62 38v6M70 38v6M78 38v10M86 38v6"/>
+  </g>
+  <g id="h-vo">
+    <rect class="hv-tr mv-xanhl" x="20" y="10" width="60" height="80" rx="2"/>
+    <path class="hv-n" d="M31 10v80"/>
+    <path class="hv-n2" d="M25 10v80"/>
+    <rect class="hv-tr" x="39" y="24" width="34" height="20" rx="2"/>
+    <path class="hv-n2" d="M44 32h24M44 38h16"/>
+    <path class="hv-n2" d="M39 58h34M39 66h34M39 74h24"/>
+  </g>
+  <g id="h-sach">
+    <path class="hv-tr mv-giay" d="M50 28C41 21 26 18 10 21v56c16-3 31 0 40 7z"/>
+    <path class="hv-tr mv-giay" d="M50 28c9-7 24-10 40-7v56c-16-3-31 0-40 7z"/>
+    <path class="hv-n2" d="M50 28v63M18 34c8-1 17 0 24 4M18 46c8-1 17 0 24 4M18 58c8-1 17 0 24 4M58 38c8-4 17-5 24-4M58 50c8-4 17-5 24-4M58 62c8-4 17-5 24-4"/>
+  </g>
+  <g id="h-cap">
+    <path class="hv-n" d="M40 42c0-14 20-14 20 0"/>
+    <rect class="hv-tr mv-do" x="12" y="40" width="76" height="50" rx="7"/>
+    <path class="hv-tr mv-do2" d="M12 60V48c0-5 4-8 9-8h58c5 0 9 3 9 8v12z"/>
+    <rect class="hv-tr mv-vang" x="30" y="55" width="12" height="10" rx="2"/>
+    <rect class="hv-tr mv-vang" x="58" y="55" width="12" height="10" rx="2"/>
+    <rect class="hv-tr mv-do2" x="26" y="70" width="48" height="16" rx="3"/>
+  </g>
+  <!-- Bản cặp TRẮNG cho bài "tô màu": tô sẵn màu rồi thì các em hết việc để làm
+       (quy tắc đã ghi trong khuon.css, 17/8/2026). -->
+  <g id="h-cap-tr">
+    <path class="hv-n" d="M40 42c0-14 20-14 20 0"/>
+    <rect class="hv-tr" x="12" y="40" width="76" height="50" rx="7"/>
+    <path class="hv-tr" d="M12 60V48c0-5 4-8 9-8h58c5 0 9 3 9 8v12z"/>
+    <rect class="hv-tr" x="30" y="55" width="12" height="10" rx="2"/>
+    <rect class="hv-tr" x="58" y="55" width="12" height="10" rx="2"/>
+    <rect class="hv-tr" x="26" y="70" width="48" height="16" rx="3"/>
+  </g>
+  <g id="h-tay">
+    <path class="hv-tr mv-hong2" d="M20 40l8-8h56l-8 8z"/>
+    <path class="hv-tr mv-hong2" d="M76 40l8-8v20l-8 8z"/>
+    <rect class="hv-tr mv-hong" x="20" y="40" width="56" height="28" rx="3"/>
+    <rect class="hv-tr" x="38" y="40" width="20" height="28"/>
+    <path class="hv-n2" d="M42 46l12 6M42 56l12 6"/>
+  </g>
+  <!-- ---------- đồ CHƠI: để các em phân biệt với đồ dùng học tập ---------- -->
+  <g id="h-bong">
+    <circle class="hv-tr" cx="50" cy="50" r="36"/>
+    <path class="hv-tr mv-den" d="M50 30l16 12-6 19H40l-6-19z"/>
+    <path class="hv-n2" d="M50 30V14M66 42l17-6M60 61l11 16M40 61L29 77M34 42L17 36"/>
+  </g>
+  <g id="h-oto">
+    <path class="hv-tr mv-xanhd" d="M12 66V54c0-3 2-5 5-5h8l9-12c1-2 3-3 5-3h20c2 0 4 1 5 3l7 12h11c3 0 5 2 5 5v12z"/>
+    <path class="hv-n2" d="M25 49h50M50 37v12"/>
+    <circle class="hv-tr mv-den" cx="31" cy="68" r="9"/>
+    <circle class="hv-tr mv-den" cx="71" cy="68" r="9"/>
+    <circle class="hv-tr2 mv-bac" cx="31" cy="68" r="3.4"/>
+    <circle class="hv-tr2 mv-bac" cx="71" cy="68" r="3.4"/>
+  </g>
+  <g id="h-gau">
+    <circle class="hv-tr mv-nau" cx="30" cy="24" r="9"/>
+    <circle class="hv-tr mv-nau" cx="70" cy="24" r="9"/>
+    <circle class="hv-tr mv-nau" cx="24" cy="70" r="9"/>
+    <circle class="hv-tr mv-nau" cx="76" cy="70" r="9"/>
+    <circle class="hv-tr mv-nau" cx="37" cy="88" r="9"/>
+    <circle class="hv-tr mv-nau" cx="63" cy="88" r="9"/>
+    <ellipse class="hv-tr mv-nau" cx="50" cy="72" rx="20" ry="17"/>
+    <ellipse class="hv-tr2 mv-go" cx="50" cy="74" rx="11" ry="9"/>
+    <circle class="hv-tr mv-nau" cx="50" cy="36" r="20"/>
+    <ellipse class="hv-tr2 mv-go" cx="50" cy="43" rx="10" ry="7"/>
+    <circle class="hv-den" cx="43" cy="33" r="2.3"/>
+    <circle class="hv-den" cx="57" cy="33" r="2.3"/>
+    <ellipse class="hv-den" cx="50" cy="40" rx="4" ry="3"/>
+    <path class="hv-n2" d="M50 43v3M50 46c-2 2-5 2-6 0M50 46c2 2 5 2 6 0"/>
+  </g>
+  <!-- ---------- bạn nhỏ ngồi viết: vẽ hai lần (viền đen dày + ruột màu mảnh) ---------- -->
+  <g id="dau-be">
+    <circle class="hv-tr mv-da" cx="100" cy="34" r="13"/>
+    <path class="hv-tr mv-toc" d="M87 33c0-9 6-16 14-16s14 7 13 16c-3-5-8-8-13-8-6 0-11 3-14 8z"/>
+    <path class="hv-tr2 mv-da" d="M112 33c3 0 4 2 4 4s-1 4-4 4"/>
+    <circle class="hv-den" cx="91" cy="33" r="2.1"/>
+    <path class="hv-n2" d="M87 37c-1 1-1 2 1 2"/>
+    <path class="hv-n2" d="M89 42c2 1.6 4 1.6 6 0"/>
+  </g>
+  <g id="than-thang">
+    <path class="hv-tr mv-xanhd" d="M94 60c0-7 3-11 8-12 6-1 10 3 11 9l6 33-24 3z"/>
+    <path class="hv-tr mv-da" d="M99 46h9v8h-9z"/>
+    <use href="#dau-be"/>
+  </g>
+  <g id="than-cong">
+    <path class="hv-tr mv-xanhd" d="M76 74c-3-11 6-17 13-12 13 9 24 16 30 26l-24 5c-8-4-15-11-19-19z"/>
+    <path class="hv-tr mv-da" d="M80 56l8 5-5 8-8-5z"/>
+    <g transform="translate(-26 16) rotate(-28 100 34)"><use href="#dau-be"/></g>
+  </g>
+  <g id="ban-ghe">
+    <rect class="hv-tr mv-go" x="4" y="62" width="74" height="6" rx="1.5"/>
+    <path class="hv-n" style="stroke-width:6" d="M12 68v44M70 68v44"/>
+    <path style="fill:none;stroke:#E8B77E;stroke-width:3.2;stroke-linecap:round" d="M12 68v44M70 68v44"/>
+    <path class="hv-tr" d="M38 62l6-6h28l-6 6z"/>
+    <path class="hv-n2" d="M58 56v6"/>
+    <rect class="hv-tr mv-go" x="88" y="86" width="44" height="6" rx="1.5"/>
+    <path class="hv-n" style="stroke-width:6" d="M94 92v20M126 92v20"/>
+    <path style="fill:none;stroke:#E8B77E;stroke-width:3.2;stroke-linecap:round" d="M94 92v20M126 92v20"/>
+    <rect class="hv-tr mv-go" x="124" y="42" width="7" height="46" rx="2"/>
+    <rect class="hv-tr mv-go" x="110" y="50" width="21" height="8" rx="2.5"/>
+  </g>
+  <g id="h-ngoi-dung">
+    <use href="#ban-ghe"/>
+    <path class="hv-n" style="stroke-width:8" d="M104 86H86"/>
+    <path style="fill:none;stroke:#3F6B9E;stroke-width:5;stroke-linecap:round" d="M104 86H86"/>
+    <path class="hv-n" style="stroke-width:8" d="M86 86v24h-9"/>
+    <path style="fill:none;stroke:#FFD6B0;stroke-width:5;stroke-linecap:round;stroke-linejoin:round" d="M86 86v22"/>
+    <path style="fill:none;stroke:#3A4750;stroke-width:5;stroke-linecap:round;stroke-linejoin:round" d="M86 110h-9"/>
+    <use href="#than-thang"/>
+    <path class="hv-n" style="stroke-width:7" d="M97 62 87 70 72 58"/>
+    <path style="fill:none;stroke:#FFD6B0;stroke-width:4;stroke-linecap:round;stroke-linejoin:round" d="M97 62 87 70 72 58"/>
+    <circle class="hv-tr2 mv-da" cx="70" cy="57" r="4.5"/>
+    <path class="hv-n" style="stroke-width:4.6" d="M76 48 66 61"/>
+    <path style="fill:none;stroke:#FFC93C;stroke-width:2.4;stroke-linecap:round" d="M76 48 66 61"/>
+  </g>
+  <g id="h-ngoi-sai">
+    <use href="#ban-ghe"/>
+    <path class="hv-n" style="stroke-width:8" d="M104 86H86"/>
+    <path style="fill:none;stroke:#3F6B9E;stroke-width:5;stroke-linecap:round" d="M104 86H86"/>
+    <path class="hv-n" style="stroke-width:8" d="M86 86v24h-9"/>
+    <path style="fill:none;stroke:#FFD6B0;stroke-width:5;stroke-linecap:round;stroke-linejoin:round" d="M86 86v22"/>
+    <path style="fill:none;stroke:#3A4750;stroke-width:5;stroke-linecap:round;stroke-linejoin:round" d="M86 110h-9"/>
+    <use href="#than-cong"/>
+    <path class="hv-n" style="stroke-width:7" d="M86 68 72 74 56 58"/>
+    <path style="fill:none;stroke:#FFD6B0;stroke-width:4;stroke-linecap:round;stroke-linejoin:round" d="M86 68 72 74 56 58"/>
+    <circle class="hv-tr2 mv-da" cx="54" cy="57" r="4.5"/>
+    <path class="hv-n" style="stroke-width:4.6" d="M60 48 50 61"/>
+    <path style="fill:none;stroke:#FFC93C;stroke-width:2.4;stroke-linecap:round" d="M60 48 50 61"/>
+  </g>
+</defs></svg>
+
+<!-- ==================== TRANG 1 ==================== -->
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU ÔN LUYỆN TỰU TRƯỜNG</h1>
+      <div class="mon">MÔN TIẾNG VIỆT — LỚP 1</div><div class="tuan">NGÀY 24/8</div></div>
+    <div class="ngay">Ngày …… / …… / 20……<br>Sẵn sàng vào lớp 1<br>Trang 1/2</div>
+  </div>
+
+  <div class="hoten">
+    <div style="flex:1"><span>Họ và tên:</span><span class="o"></span></div>
+    <div><span>Lớp:</span><span class="o hep"></span></div>
+  </div>
+
+  <div class="dan-lon"><span>🔊</span><span><b>Nhờ người lớn đọc giúp em các yêu cầu.</b>
+    Hôm nay em mới tựu trường, chưa học chữ nào cả. Phiếu này chỉ để em <b>làm quen với việc học</b>:
+    nhìn hình, khoanh, nối và tô nét.</span></div>
+
+  <div class="bai">
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 1.</span><span>Khoanh vào <b>đồ dùng học tập</b>.</span></div>
+    <div class="o-lam">
+      <div class="day-hinh">
+        <div class="o"><svg viewBox="0 0 100 100"><use href="#h-but"/></svg></div>
+        <div class="o"><svg viewBox="0 0 100 100"><use href="#h-gau"/></svg></div>
+        <div class="o"><svg viewBox="0 0 100 100"><use href="#h-vo"/></svg></div>
+        <div class="o"><svg viewBox="0 0 100 100"><use href="#h-bong"/></svg></div>
+        <div class="o"><svg viewBox="0 0 100 100"><use href="#h-thuoc"/></svg></div>
+        <div class="o"><svg viewBox="0 0 100 100"><use href="#h-oto"/></svg></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bai">
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 2.</span><span>Tô theo nét chấm các nét cơ bản.</span></div>
+    <div class="o-lam">
+      <div class="tap">
+        <div>
+          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M20 6v48"/></svg></div>
+          <div class="ten">nét thẳng đứng</div>
+        </div>
+        <div>
+          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M5 30h30"/></svg></div>
+          <div class="ten">nét ngang</div>
+        </div>
+        <div>
+          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M9 54L31 6"/></svg></div>
+          <div class="ten">nét xiên phải</div>
+        </div>
+        <div>
+          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M31 54L9 6"/></svg></div>
+          <div class="ten">nét xiên trái</div>
+        </div>
+        <div>
+          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M12 8v34c0 6 5 9 10 9s10-3 10-9"/></svg></div>
+          <div class="ten">nét móc xuôi</div>
+        </div>
+      </div>
+      <div class="tap" style="margin-top:3mm">
+        <div>
+          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M8 20c0-6 5-9 10-9s10 3 10 9v32"/></svg></div>
+          <div class="ten">nét móc ngược</div>
+        </div>
+        <div>
+          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M28 12a15 18 0 100 36"/></svg></div>
+          <div class="ten">nét cong trái</div>
+        </div>
+        <div>
+          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M12 12a15 18 0 0 1 0 36"/></svg></div>
+          <div class="ten">nét cong phải</div>
+        </div>
+        <div>
+          <div class="o"><svg viewBox="0 0 40 60"><circle class="hv-cham" cx="20" cy="30" r="13"/></svg></div>
+          <div class="ten">nét cong kín</div>
+        </div>
+        <div>
+          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M24 54V20c0-9-10-11-10-3 0 5 4 6 10 3"/></svg></div>
+          <div class="ten">nét khuyết trên</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chan"><span>Tiếng Việt 1 · Tựu trường 24/8</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<!-- ==================== TRANG 2 ==================== -->
+<section class="trang">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>PHIẾU ÔN LUYỆN TỰU TRƯỜNG</h1>
+      <div class="mon">MÔN TIẾNG VIỆT — LỚP 1</div><div class="tuan">NGÀY 24/8</div></div>
+    <div class="ngay">Họ và tên: ……………………<br>Lớp: ………<br>Trang 2/2</div>
+  </div>
+
+  <div class="bai">
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 3.</span><span>Khoanh vào bạn ngồi viết <b>đúng</b> tư thế.</span></div>
+    <div class="o-lam">
+      <div class="tu-the">
+        <div class="k"><svg viewBox="0 0 140 118"><use href="#h-ngoi-sai"/></svg></div>
+        <div class="k"><svg viewBox="0 0 140 118"><use href="#h-ngoi-dung"/></svg></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bai">
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 4.</span><span>Nối đồ dùng học tập với chiếc cặp sách.</span></div>
+    <div class="o-lam">
+      <div class="noi">
+        <div class="cot trai">
+          <div class="item">
+            <svg width="58" height="58" viewBox="0 0 100 100"><use href="#h-sach"/></svg>
+            <span class="cham"></span>
+          </div>
+          <div class="item">
+            <svg width="58" height="58" viewBox="0 0 100 100"><use href="#h-tay"/></svg>
+            <span class="cham"></span>
+          </div>
+          <div class="item">
+            <svg width="58" height="58" viewBox="0 0 100 100"><use href="#h-but"/></svg>
+            <span class="cham"></span>
+          </div>
+        </div>
+        <div class="cot phai">
+          <div class="item" style="min-height:56mm">
+            <span class="cham"></span>
+            <svg width="104" height="104" viewBox="0 0 100 100"><use href="#h-cap"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bai">
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 5.</span><span>Tô màu chiếc cặp sách của em.</span></div>
+    <div class="o-lam">
+      <div class="hang">
+        <div class="k" style="min-height:60mm"><svg width="230" height="200" viewBox="8 30 84 66"><use href="#h-cap-tr"/></svg></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chan"><span>Tiếng Việt 1 · Tựu trường 24/8</span>
+    <span class="giua">phiếu tự chọn — không chấm điểm, không bắt buộc nộp</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<!-- ==================== TRANG 3: DÀNH CHO NGƯỜI LỚN ==================== -->
+<section class="trang dapan">
+  <div class="chim" aria-hidden="true"><div class="cx">
+    <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
+
+  <div class="dau">
+    <div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div>
+    <div class="tieu"><h1>ĐÁP ÁN &amp; HƯỚNG DẪN</h1>
+      <div class="mon">MÔN TIẾNG VIỆT — LỚP 1</div><div class="tuan">NGÀY 24/8</div></div>
+    <div class="ngay">Dành cho<br>thầy cô &amp; phụ huynh<br><b>Trang cuối</b></div>
+  </div>
+
+  <div class="muc">Đáp án</div>
+  <div class="bai"><b>Bài 1.</b> Khoanh vào <span class="gia">bút chì, quyển vở, thước kẻ</span>.
+    Ba hình còn lại (<i>gấu bông, quả bóng, ô tô</i>) là <b>đồ chơi</b>.</div>
+  <div class="bai"><b>Bài 2.</b> Tô kín mười nét chấm. Không yêu cầu tô thật đều — chỉ cần em
+    <span class="gia">đi bút đúng chiều</span>: nét đứng và nét xiên kéo <b>từ trên xuống</b>,
+    nét ngang kéo <b>từ trái sang phải</b>.</div>
+  <div class="bai"><b>Bài 3.</b> Khoanh vào <span class="gia">bạn ở ô bên phải</span> — lưng thẳng,
+    đầu hơi cúi, không gí sát vở. Bạn bên trái ngồi <b>cong lưng, cúi sát vở</b> là tư thế sai.</div>
+  <div class="bai"><b>Bài 4.</b> Nối <span class="gia">cả ba đồ dùng</span> (quyển sách, cục tẩy, bút chì)
+    với chiếc cặp — thứ nào cũng cho vào cặp đi học được.</div>
+  <div class="bai"><b>Bài 5.</b> Tô màu tự do, không có đáp án đúng – sai.</div>
+
+  <div class="muc">Người lớn giúp em thế nào</div>
+  <p>· <b>Đọc hộ mọi chỗ có dấu 🔊.</b> Hôm nay các em chưa biết chữ — người lớn đọc yêu cầu,
+    em chỉ nhìn hình rồi khoanh, nối, tô.</p>
+  <p>· <b>Sửa cách cầm bút ngay từ hôm nay</b> (bài 2). Cầm bút bằng <b>ba ngón</b>: ngón cái, ngón trỏ
+    và đốt giữa ngón giữa đỡ phía dưới; bút nghiêng về phía vai phải. Sửa muộn rất khó chữa.</p>
+  <p>· <b>Bài 3 nên cho em ngồi thử.</b> Chỉ cho em thấy khoảng cách mắt – vở khoảng một gang tay,
+    hai chân đặt xuống sàn, hai tay đặt lên bàn.</p>
+  <p>· <b>Làm khoảng 10 – 15 phút là đủ.</b> Tay các em còn yếu, tô lâu sẽ mỏi. Xong nên khen em
+    một câu cụ thể: <i>“Con tô nét cong đẹp lắm!”</i></p>
+
+  <div class="luuy"><b>Vì sao phiếu lớp 1 khác các lớp khác:</b> ngày 24/8 mới là ngày tựu trường,
+    học sinh lớp 1 <b>chưa học buổi nào</b> nên không có kiến thức cũ để ôn. Phiếu vì thế được soạn
+    theo hướng <b>làm quen – sẵn sàng vào lớp 1</b>.
+    <ul>
+      <li><b>Cố ý không có một chữ ghi âm nào</b> (a, b, c…): bài “A a” phải sang tuần học đầu tiên
+        mới học — đưa vào đây là dạy trước chương trình.</li>
+      <li>Nội dung bám đúng những gì tiết học đầu tiên sẽ dạy: <b>đồ dùng học tập, nét cơ bản,
+        tư thế ngồi, cách cầm bút</b>.</li>
+      <li>Chữ cỡ <b>14pt</b>, ô rộng, hình nét dày cho tay trẻ còn vụng; hình <b>do Bút Xanh tự vẽ</b>,
+        in đen trắng vẫn rõ.</li>
+      <li>Phiếu <b>tự chọn</b>, không chấm điểm.</li>
+    </ul>
+  </div>
+
+  <div class="chan"><span>Đáp án · Tiếng Việt 1 · Tựu trường 24/8</span>
+    <span class="giua">trang đáp án — thầy cô và phụ huynh xem sau khi em làm xong</span>
+    <span class="b">© 2026 Nhóm Bút Xanh · butxanh.net</span></div>
+</section>
+
+<script src="nut-in.js"></script>
+</body>
+</html>

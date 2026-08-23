@@ -3849,6 +3849,39 @@ var BX_PHIEU_CO={
   'L4|Toán':[1,2,3,4,5], 'L4|Tiếng Việt':[1,2,3,4,5],
   'L5|Toán':[1,2,3,4,5], 'L5|Tiếng Việt':[1,2,3,4,5]
 };
+/* ===== PHIẾU ÔN LUYỆN TỰU TRƯỜNG (23/8/2026 — thầy Chung đặt) =====
+   Khác phiếu cuối tuần ở chỗ xếp theo NGÀY chứ không theo tuần: những ngày tựu trường trước
+   khai giảng, học sinh đến trường nhưng chưa vào chương trình mới.
+   Nội dung là ÔN LẠI LỚP DƯỚI: lớp 2 ôn lớp 1 · lớp 3 ôn lớp 2 · … · lớp 5 ôn lớp 4.
+   Riêng LỚP 1 chưa học buổi nào nên phiếu là "làm quen – sẵn sàng vào lớp 1".
+   Tên tệp theo khuôn:  web/phieu/Phieu_<Toan|TiengViet><lớp>_TuuTruong<ngày>-<tháng>.html
+   vd: web/phieu/Phieu_Toan3_TuuTruong24-8.html
+   👉 THÊM NGÀY MỚI: chép 10 tệp vào web/phieu/ đúng khuôn tên, thêm một dòng vào
+      BX_PHIEU_TT_NGAY và thêm mã ngày vào 10 ô của BX_PHIEU_TT. Không đụng gì khác. */
+var BX_PHIEU_TT_NGAY=[
+  {ma:'24-8', ten:'24/8', thu:'Thứ Hai'}
+];
+var BX_PHIEU_TT={
+  'L1|Toán':['24-8'], 'L1|Tiếng Việt':['24-8'],
+  'L2|Toán':['24-8'], 'L2|Tiếng Việt':['24-8'],
+  'L3|Toán':['24-8'], 'L3|Tiếng Việt':['24-8'],
+  'L4|Toán':['24-8'], 'L4|Tiếng Việt':['24-8'],
+  'L5|Toán':['24-8'], 'L5|Tiếng Việt':['24-8']
+};
+function BX_phieuTTCo(lop,mon,ma){
+  var ds=BX_PHIEU_TT[BX_phieuKey(lop,mon)]||[];
+  return ds.indexOf(String(ma))>=0;
+}
+function BX_phieuTTTep(lop,mon,ma){
+  var mm=BX_PHIEU_MA[mon]||''; if(!mm) return '';
+  return BX_PHIEU_THUMUC+'Phieu_'+mm+String(lop)+'_TuuTruong'+String(ma)+'.html';
+}
+/* Nhãn phụ trên ô: nói rõ phiếu ôn kiến thức lớp nào — đây là thứ thầy cô cần biết ngay,
+   vì phiếu tựu trường KHÔNG ôn chương trình lớp đang học. */
+function BX_phieuTTPhu(lop){
+  var l=parseInt(lop,10);
+  return (l>1) ? ('ôn lớp '+(l-1)) : 'làm quen';
+}
 /* lop/mon: bộ lọc trên thanh; tuan: tuần đang mở ở panel chi tiết (mặc định tuần hiện tại) */
 var _phieuSel={lop:null, mon:'', tuan:0};
 function BX_phieuKey(lop,mon){ return 'L'+lop+'|'+mon; }
@@ -4054,6 +4087,54 @@ window.BX_phieuMo=function(lop,mon,w){
   if(trongApp){ BX_phieuXem(url, mon+' '+lop+' · Tuần '+w); return; }
   BX_moLink(url,'phiếu bài tập');
 };
+/* MỞ PHIẾU ÔN LUYỆN TỰU TRƯỜNG — cùng lối mở với phiếu tuần (lớp phủ trên điện thoại,
+   thẻ mới trên máy tính), chỉ khác đường dẫn tệp và tên hiện trên thanh. */
+window.BX_phieuTTMo=function(lop,mon,ma){
+  var ng=null;
+  for(var i=0;i<BX_PHIEU_TT_NGAY.length;i++) if(BX_PHIEU_TT_NGAY[i].ma===String(ma)) ng=BX_PHIEU_TT_NGAY[i];
+  var ten=ng?ng.ten:String(ma).replace('-','/');
+  if(!BX_phieuTTCo(lop,mon,ma)){
+    if(typeof bxAlert==='function') bxAlert('📄 Ngày '+ten+' môn '+mon+' lớp '+lop+' chưa có phiếu ôn luyện.\n\nPhiếu sẽ được bổ sung dần — thầy cô quay lại sau nhé.');
+    return;
+  }
+  var url=BX_phieuTTTep(lop,mon,ma); if(!url) return;
+  var trongApp=false;
+  try{
+    trongApp=(typeof window.bxLaCamTay==='function') ? window.bxLaCamTay()
+        : (/Android|iPhone|iPod|iPad|IEMobile|Opera Mini|Mobile|Tablet/i.test(navigator.userAgent||'')
+           && !/Windows NT/i.test(navigator.userAgent||''));
+    if(!trongApp && window.matchMedia){
+      if(matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches) trongApp=true;
+    }
+    if(!trongApp && navigator.standalone) trongApp=true;
+  }catch(e){}
+  if(trongApp){ BX_phieuXem(url, mon+' '+lop+' · Tựu trường '+ten); return; }
+  BX_moLink(url,'phiếu ôn luyện tựu trường');
+};
+/* Dải "Ôn luyện tựu trường" đặt NGAY TRÊN lưới 35 tuần. Chỉ dựng khi lớp+môn đang chọn
+   thật sự có phiếu tựu trường — hết mùa tựu trường, xoá mã ngày trong BX_PHIEU_TT là dải
+   tự biến mất, không phải sửa giao diện. */
+function BX_phieuTTKhoi(lop,mon){
+  var co=BX_PHIEU_TT_NGAY.filter(function(n){ return BX_phieuTTCo(lop,mon,n.ma); });
+  if(!co.length) return '';
+  var m=BX_PHIEU_META[mon]||{ic:'📘',c:'#1FA45C'};
+  var q=function(s){ return "'"+String(s).replace(/'/g,"\\'")+"'"; };
+  var o=co.map(function(n){
+    return '<div class="pw-wk co" onclick="BX_phieuTTMo('+q(lop)+','+q(mon)+','+q(n.ma)+')"'+
+      ' title="Mở phiếu ôn luyện tựu trường ngày '+n.ten+'">'+
+      '<div class="pw-wk-lb">'+(n.thu||'Tựu trường')+'</div>'+
+      '<div class="pw-wk-n">'+n.ten+'</div>'+
+      '<div class="pw-wk-d">'+BX_phieuTTPhu(lop)+'</div>'+
+      '</div>';
+  }).join('');
+  return '<div class="pw-panel" style="--mc:'+m.c+';margin-bottom:14px">'+
+    '<div class="pw-ph"><span class="pw-ph-t">🎒 Ôn luyện tựu trường · '+mon+' · Lớp '+lop+'</span>'+
+      '<span class="pw-ph-dem">'+(parseInt(lop,10)>1
+        ? ('ôn lại kiến thức <b>lớp '+(parseInt(lop,10)-1)+'</b>')
+        : 'làm quen – <b>sẵn sàng vào lớp 1</b>')+'</span>'+
+    '</div>'+
+    '<div class="pw-weeks">'+o+'</div></div>';
+}
 function BX_phieuStyleOnce(){
   if(el('pw-style')) return;
   var s=document.createElement('style'); s.id='pw-style';
@@ -4187,7 +4268,7 @@ function renderPhieu(){
     '</div>'+
     '<div class="pw-weeks">'+g+'</div></div>';
 
-  body.innerHTML=bar+khung+
+  body.innerHTML=bar+BX_phieuTTKhoi(lop,mon)+khung+
     '<div class="pw-note"><span>ℹ️</span><span>Phiếu để thầy cô <b>tự chọn</b> giao cho học sinh ôn luyện cuối tuần — '+
       'không chấm điểm, không bắt buộc nộp. Mở phiếu ra bấm <b>Ctrl + P</b> là in được ngay hoặc lưu thành PDF.</span></div>';
 }
