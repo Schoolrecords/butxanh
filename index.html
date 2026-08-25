@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-25 · 81';
+  var PB='2026-08-25 · 82';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -2131,7 +2131,7 @@ window.bxMergeKho = function(){
             <option value="never">Luôn ẩn Mục IV</option>
           </select>
         </label>
-        <div class="muted-sm" style="margin-top:8px">💡 Khai báo nhóm HS cần hỗ trợ / khuyết tật hòa nhập ở menu <b>“Học sinh cần hỗ trợ”</b> để Mục IV tự điền nội dung của lớp mình.</div>
+        <div class="muted-sm" style="margin-top:8px">💡 Khai báo nhóm HS cần hỗ trợ / khuyết tật hòa nhập ở menu <b>“Học sinh cần hỗ trợ”</b> để Mục IV tự điền nội dung của lớp mình. Bật thêm nút <b>🧩 Tích hợp giáo dục HSKT</b> (màn Kế hoạch bài dạy) thì Mục I có thêm <b>mục tiêu riêng</b> cho HS hòa nhập của lớp.</div>
       </div>
       <div class="card set-card">
         <div class="card-head"><h3>Sao lưu &amp; Khôi phục dữ liệu</h3></div>
@@ -3000,6 +3000,37 @@ function bxSectionIV(L){
   return {show:items.length>0, items:items, note:kt.length>0};
 }
 var _BX_KT_NOTE='Ghi chú: HS khuyết tật học hòa nhập được đánh giá theo Kế hoạch giáo dục cá nhân (KHGDCN) — TT 03/2018/TT-BGDĐT, TT 27/2020/TT-BGDĐT.';
+/* ===== Mục I — mục tiêu riêng cho HS khuyết tật học hòa nhập (25/8/2026, đề xuất GV) =====
+   Chỉ sinh khi GV BẬT nút "Tích hợp giáo dục HSKT" — GV không có HSKT thì không bật,
+   giáo án giữ nguyên. Cá nhân hóa theo nhóm "Khuyết tật học hòa nhập" GV đã khai ở menu
+   "Học sinh cần hỗ trợ" (lọc theo môn cùng luật với Mục IV: khai môn khác thì bỏ, bỏ
+   trống môn = áp dụng mọi môn); bật mà chưa khai báo → một dòng chung.
+   Câu chữ theo TT 03/2018/TT-BGDĐT + TT 27/2020: đạt yêu cầu ở mức phù hợp khả năng,
+   đánh giá theo KHGDCN. Dòng đầu là tiêu đề con (in đậm ở nơi gọi); dùng dấu "*)" chứ
+   KHÔNG đánh số tiếp 4./5. — số mục trong yccd mỗi bản ghi kho một khác, đánh số sẽ trùng. */
+function bxYccdHsktLines(L){
+  try{ if(!window.BX_intgState||!window.BX_intgState().hskt) return []; }catch(e){ return []; }
+  var nm=_bxNorm(L&&L.mon), kt=[];
+  ((typeof state!=='undefined'&&state&&state.hocsinh)||[]).forEach(function(g){
+    if(!g||g.type!=='hoa-nhap') return;           /* = hsIsKT(g), viết thẳng vì hàm ấy nằm khối script khác */
+    var gs=_bxNorm(g.subject); if(gs&&gs!==nm) return;
+    kt.push(g);
+  });
+  var out=['*) Mục tiêu riêng cho học sinh khuyết tật học hòa nhập:'];
+  var duoi='thực hiện được yêu cầu cốt lõi của bài ở mức độ phù hợp với khả năng, với sự hỗ trợ của giáo viên và các bạn; được đánh giá theo Kế hoạch giáo dục cá nhân (KHGDCN).';
+  if(!kt.length){ out.push('- Học sinh khuyết tật học hòa nhập '+duoi); return out; }
+  kt.forEach(function(g){
+    var ten=((g.name||'').trim())||'Học sinh khuyết tật học hòa nhập', meta=[];
+    if(g.count) meta.push(g.count+' HS');
+    var dl=(typeof hsDisabilityLabel==='function')?hsDisabilityLabel(g.disability):'';
+    if(dl) meta.push(dl);
+    var sl=(typeof hsSeverityLabel==='function')?hsSeverityLabel(g.severity):'';
+    if(sl) meta.push('mức '+sl.toLowerCase());
+    out.push('- '+ten+(meta.length?(' ('+meta.join(', ')+')'):'')+': '+duoi);
+  });
+  return out;
+}
+window.bxYccdHsktLines=bxYccdHsktLines;
 /* ----- Dựng KHBD .docx trực tiếp từ 1 giáo án trong kho (mục III = bảng) ----- */
 function _lessonBodyParas(L,row){
   row=row||{};
@@ -3013,6 +3044,7 @@ function _lessonBodyParas(L,row){
   P.push(_docP(''));
   P.push(_docP('I. YÊU CẦU CẦN ĐẠT',{bold:true}));
   (L.yccd||'(Thầy cô đối chiếu SGK/SGV)').split('\n').forEach(l=>P.push(_docP(l, _isYccdHead(l)?{bold:true}:undefined)));
+  bxYccdHsktLines(L).forEach((l,i)=>P.push(_docP(l, i?undefined:{bold:true})));
   P.push(_docP(''));
   P.push(_docP('II. ĐỒ DÙNG DẠY HỌC',{bold:true}));
   (L.dodung||'…').split('\n').forEach(l=>P.push(_docP(l)));
@@ -4855,7 +4887,9 @@ function bankLessonToText(L,row){
   ln.push(_baiTitle(L.bai));
   if(ngay) ln.push('Ngày dạy: '+ngay);
   ln.push('');
-  ln.push('I. YÊU CẦU CẦN ĐẠT'); ln.push(L.yccd||'(Thầy cô đối chiếu SGK/SGV)'); ln.push('');
+  ln.push('I. YÊU CẦU CẦN ĐẠT'); ln.push(L.yccd||'(Thầy cô đối chiếu SGK/SGV)');
+  if(typeof bxYccdHsktLines==='function') bxYccdHsktLines(L).forEach(s=>ln.push(s));
+  ln.push('');
   ln.push('II. ĐỒ DÙNG DẠY HỌC'); ln.push(L.dodung||'…'); ln.push('');
   ln.push('III. CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU');
   if(Array.isArray(L.hoatdong)) ln.push('(Khi xuất Word sẽ trình bày dạng bảng 2 cột: Hoạt động của GV | Hoạt động của HS)');
@@ -4991,6 +5025,10 @@ function lessonPreviewHtml(L,row){
   h+='<div class="a4-bai">'+esc(_baiTitle(L.bai))+'</div>';
   if(ngay) h+='<div class="a4-meta">Ngày dạy: '+esc(ngay)+'</div>';
   h+='<h2>I. YÊU CẦU CẦN ĐẠT</h2><div class="ln">'+nlYccd(L.yccd||'(Thầy cô đối chiếu SGK/SGV)')+'</div>';
+  /* Mục tiêu riêng HSKT — phải khớp với bản Word tải về (_lessonBodyParas), xem trước
+     một đằng tải một nẻo là GV mất tin vào màn xem trước (phản biện 25/8/2026). */
+  const ktI=(typeof bxYccdHsktLines==='function')?bxYccdHsktLines(L):[];
+  if(ktI.length) h+='<div class="ln">'+ktI.map((s,i)=>{const e2=esc(s);return i?e2:('<b>'+e2+'</b>');}).join('<br>')+'</div>';
   h+='<h2>II. ĐỒ DÙNG DẠY HỌC</h2><div class="ln">'+nl(L.dodung||'…')+'</div>';
   h+='<h2>III. CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU</h2>';
   if(Array.isArray(L.hoatdong)){
@@ -5406,7 +5444,7 @@ function renderHocSinh(){
     box.innerHTML='<div class="card" style="text-align:center;padding:34px 22px;max-width:680px;margin:0 auto">'+
       '<div style="font-size:46px;line-height:1;margin-bottom:6px">🧩</div>'+
       '<h3 style="margin:0 0 8px">Lớp chưa khai báo học sinh cần hỗ trợ</h3>'+
-      '<p style="margin:0 auto 8px;max-width:548px;color:#42514a">Đây là <b>tính năng tùy chọn</b>. Nếu lớp có HS cần quan tâm thêm (đọc chậm, cần củng cố, khuyết tật học hòa nhập…), hãy thêm vào đây — Bút Xanh sẽ tự đưa phần <b>điều chỉnh phù hợp</b> vào <b>Mục IV</b> của giáo án theo đúng môn.</p>'+
+      '<p style="margin:0 auto 8px;max-width:548px;color:#42514a">Đây là <b>tính năng tùy chọn</b>. Nếu lớp có HS cần quan tâm thêm (đọc chậm, cần củng cố, khuyết tật học hòa nhập…), hãy thêm vào đây — Bút Xanh sẽ tự đưa phần <b>điều chỉnh phù hợp</b> vào <b>Mục IV</b> của giáo án theo đúng môn; với HS khuyết tật hòa nhập, bật nút <b>🧩 Tích hợp giáo dục HSKT</b> thì Mục I có thêm <b>mục tiêu riêng</b> cho từng em.</p>'+
       '<p style="margin:0 auto 16px;max-width:548px;font-size:13px;color:#7a8a82">Lớp không có đối tượng này? Cứ để trống — <b>Mục IV sẽ tự ẩn</b> khỏi giáo án (có thể đổi ở Cài đặt → Mục IV).</p>'+
       '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">'+
         '<button class="btn" onclick="openHsEditor()">➕ Thêm nhóm/HS</button>'+
@@ -6505,7 +6543,10 @@ var BX_HSKT_RULE={
   gdtc:   'Điều chỉnh bài tập/cường độ theo thể trạng; chuẩn bị phương án thay thế an toàn.',
   tin:    'Hỗ trợ thao tác chuột/bàn phím, làm mẫu chậm; giảm yêu cầu sản phẩm.',
   anh:    'Giảm lượng từ cần nhớ; ưu tiên nghe – nói đơn giản, dùng hình ảnh hỗ trợ.',
-  other:  'Điều chỉnh yêu cầu cần đạt phù hợp; tăng hỗ trợ trực quan, làm mẫu, đánh giá theo sự tiến bộ.'
+  /* (25/8/2026) Câu cũ "Điều chỉnh yêu cầu cần đạt phù hợp…" trùng nghĩa với mục tiêu
+     riêng HSKT mới chèn ở Mục I (bxYccdHsktLines) — đổi thành câu thuần CÁCH TỔ CHỨC
+     hoạt động, để Mục I lo mục tiêu, khối tích hợp lo cách dạy. */
+  other:  'Giao nhiệm vụ vừa sức, chia nhỏ từng bước, có bạn hỗ trợ; tăng trực quan, làm mẫu chậm; động viên kịp thời sự tiến bộ.'
 };
 /* ============================================================================
    TÍCH HỢP QPAN · HỮU NGHỊ VIỆT – LÀO · KĨ NĂNG SỐNG   (25/8/2026)
@@ -7022,7 +7063,7 @@ var BX_INTG_DEFS=[
   {k:'kns',     label:'Tích hợp Kĩ năng sống',          icon:'🌱', hint:'Kĩ năng sống theo CT GDPT 2018 và TT 04/2014'},
   {k:'vietlao', label:'Tích hợp hữu nghị Việt – Lào',   icon:'🤝', hint:'Nội dung giáo dục địa phương — trường vùng biên giới Việt – Lào'},
   {k:'local',   label:'Tích hợp giáo dục địa phương',   icon:'🏞️', hint:'Liên hệ cảnh vật, di tích, nghề, con người ở địa phương'},
-  {k:'hskt',    label:'Tích hợp giáo dục HSKT',         icon:'🧩', hint:'Điều chỉnh cho học sinh khuyết tật học hoà nhập'},
+  {k:'hskt',    label:'Tích hợp giáo dục HSKT',         icon:'🧩', hint:'Thêm mục tiêu riêng cho học sinh khuyết tật học hoà nhập vào Mục I và điều chỉnh hoạt động dạy học — khai báo HS ở menu "Học sinh cần hỗ trợ" để cá nhân hoá theo lớp mình'},
   {k:'gioihan', label:'Tối đa 2 nội dung mỗi bài',      icon:'⚖️', hint:'Theo tập huấn Sở GD&ĐT Nghệ An 20/8/2026: mỗi bài 1–2 hoạt động có tích hợp, ưu tiên GDĐP, Năng lực số, Quốc phòng – An ninh'},
   {k:'dinhchinh',label:'Đính chính nội dung SGK',       icon:'📌', hint:'In phần điều chỉnh, bổ sung SGK theo tài liệu tập huấn (hiện có Lịch sử và Địa lí 5 — bài Biển, đảo Việt Nam)'}
 ];
@@ -8407,6 +8448,8 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
     H.push('<div class="doc-bai">'+esc(_baiTitle(L.bai))+'</div>');
     if(ngay) H.push('<div class="doc-meta" style="font-size:13.5px">Ngày dạy: '+esc(ngay)+'</div>');
     H.push('<h4>I. YÊU CẦU CẦN ĐẠT</h4>'+yccdPara(L.yccd||'(Thầy cô đối chiếu SGK/SGV)'));
+    var ktI=(typeof window.bxYccdHsktLines==='function')?window.bxYccdHsktLines(L):[];
+    if(ktI.length) H.push('<p>'+ktI.map(function(s,i){ var e2=esc(s); return i?e2:('<b>'+e2+'</b>'); }).join('<br>')+'</p>');
     H.push('<h4>II. ĐỒ DÙNG DẠY HỌC</h4>'+para(L.dodung||'…'));
     H.push('<h4>III. CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU</h4>');
     if(Array.isArray(L.hoatdong)){
