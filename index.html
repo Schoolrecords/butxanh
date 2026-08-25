@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-25 · 82';
+  var PB='2026-08-25 · 83';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -3302,8 +3302,14 @@ var BX_MON_THEM_TOI_DA=12, BX_MON_THEM_DAI_TOI_DA=30;
    danh sách tự thêm — hỏng cả giáo án tuần. Danh sách này phải trùng SUBJ_ORDER. */
 var _BX_MON_CHINH=['Tiếng Việt','Toán','Khoa học','Lịch sử & Địa lí','Tự nhiên và Xã hội',
   'Đạo đức','Tin học','Công nghệ','HĐTN','Âm nhạc','Mĩ thuật','GDTC','Tiếng Anh'];
-/* Gợi ý bấm một chạm trong hộp "Thêm môn khác" — thầy cô vẫn tự gõ được tên riêng */
-var BX_MON_THEM_GOI_Y=['Kĩ năng sống','STEM','Giáo dục địa phương','Tự học có hướng dẫn',
+/* Gợi ý bấm một chạm trong hộp "Thêm môn khác" — thầy cô vẫn tự gõ được tên riêng.
+   (25/8/2026) "Giáo dục AI" đặt ĐẦU danh sách — thầy Chung chốt phương án sau khi cân
+   nhắc bẫy bản quyền: chuyên đề 12 tiết/năm (QĐ 2422 + CV 5588) xếp trong dạy học
+   2 buổi/ngày, GV cần ô này trong TKB; đi đường môn tự thêm để chuẩn hoá chính tả tên.
+   🛑 CHỈ ở đây (môn tự thêm) — TUYỆT ĐỐI KHÔNG đưa "Giáo dục AI" vào MON_KHOI hoặc
+   MON_CHUYEN: quyền chủ nhiệm "k:*" sẽ bao trùm bộ AI (hết bán riêng), còn vào
+   MON_CHUYEN thì GV tự khai được, một bản quyền mở nhầm cả 5 khối. */
+var BX_MON_THEM_GOI_Y=['Giáo dục AI','Kĩ năng sống','STEM','Giáo dục địa phương','Tự học có hướng dẫn',
   'Hoạt động thư viện','Tiếng Anh tăng cường','Câu lạc bộ','Ôn tập – tăng cường'];
 function BX_monThem(){
   try{
