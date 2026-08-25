@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-25 · 75';
+  var PB='2026-08-25 · 76';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -6406,7 +6406,9 @@ function BX_weekReport(rows){
 var BX_SAFE_NOTE='Nội dung AI dùng ở mức trải nghiệm/nhận biết, giáo viên kiểm soát; không yêu cầu học sinh dùng tài khoản cá nhân hoặc cung cấp thông tin cá nhân.';
 /* qpan/kns bật sẵn (nội dung mọi trường đều phải có); vietlao tắt sẵn vì là nội dung
    giáo dục địa phương, chỉ trường vùng biên giới Việt – Lào mới cần. */
-var BX_INTG_DEF={digital:true, ai:false, local:false, hskt:false, qpan:true, vietlao:false, kns:true};
+/* gioihan: tối đa 2 nội dung lồng ghép mỗi bài (hướng dẫn Sở GD&ĐT Nghệ An 20/8/2026).
+   dinhchinh: in phần đính chính, bổ sung nội dung SGK theo tài liệu tập huấn. */
+var BX_INTG_DEF={digital:true, ai:false, local:false, hskt:false, qpan:true, vietlao:false, kns:true, gioihan:true, dinhchinh:true};
 function BX_intgState(){ try{ var v=JSON.parse(localStorage.getItem('butxanh_intg_toggles')||'null'); return (v&&typeof v==='object'&&!Array.isArray(v))?Object.assign({},BX_INTG_DEF,v):Object.assign({},BX_INTG_DEF); }catch(e){ return Object.assign({},BX_INTG_DEF); } }
 /* Phải đưa ra window: buildKHGDMonDocx nằm ở khối script khác, gọi tên trần sẽ ra
    undefined và bản Word cứ in căn cứ pháp lí như thể mọi công tắc đều đang bật. */
@@ -6772,6 +6774,62 @@ function BX_intg3(mon, ten, lop, st, tenHep){
   return out;
 }
 window.BX_intg3=BX_intg3;
+
+/* ============================================================================
+   GIỚI HẠN SỐ NỘI DUNG LỒNG GHÉP MỖI BÀI  (25/8/2026)
+   Tài liệu tập huấn Lịch sử và Địa lí của Sở GD&ĐT Nghệ An ngày 20/8/2026, phần
+   thực hành xây dựng Kế hoạch bài dạy, hướng dẫn rõ: "Xây dựng 1–2 hoạt động có
+   tích hợp (ưu tiên chọn 1 trong 3 nội dung GDĐP, NLS, ANQP)".
+   → App chỉ để TỐI ĐA 2 nội dung lồng ghép cho một bài. Thứ tự ưu tiên khi phải
+   cắt bớt bám đúng ba nội dung Sở nêu, rồi mới đến phần còn lại:
+       QPAN → Năng lực số/AI → Giáo dục địa phương → Việt–Lào → Kĩ năng sống.
+   Thầy cô tắt được giới hạn này bằng công tắc "Tối đa 2 nội dung/bài".
+   ⚠ Phần ĐÍNH CHÍNH SGK và điều chỉnh cho HS khuyết tật KHÔNG bị tính vào giới
+   hạn — chúng không phải "nội dung tích hợp" mà là điều chỉnh nội dung dạy học. */
+var BX_INTG_UUTIEN=['QPAN','NLS','GDĐP','VN-LÀO','KNS'];
+var BX_INTG_TRAN=2;
+function BX_gioiHanBat(){ var s=BX_intgState(); return s.gioihan!==false; }
+/* ds = [[mã, nội dung], …] · daCo = số nội dung lồng ghép ĐÃ có sẵn trong dòng đó */
+function BX_capNoiDung(ds, daCo){
+  if(!BX_gioiHanBat()) return ds;
+  var con=BX_INTG_TRAN-(daCo||0); if(con<=0) return [];
+  var sap=ds.slice().sort(function(a,b){
+    var ia=BX_INTG_UUTIEN.indexOf(a[0]), ib=BX_INTG_UUTIEN.indexOf(b[0]);
+    return (ia<0?9:ia)-(ib<0?9:ib);
+  });
+  return sap.slice(0, con);
+}
+window.BX_capNoiDung=BX_capNoiDung;
+
+/* ============================================================================
+   ĐÍNH CHÍNH / BỔ SUNG NỘI DUNG SÁCH GIÁO KHOA
+   Nguồn: tài liệu tập huấn Lịch sử và Địa lí, Sở GD&ĐT Nghệ An, 20/8/2026 —
+   mục "Cập nhật một số nội dung để đảm bảo tính khoa học, chính xác".
+   Cả ba chỗ đều nằm trong bài "Biển, đảo Việt Nam" (Lịch sử và Địa lí 5).
+   Đây là ĐIỀU CHỈNH NỘI DUNG, không phải nội dung tích hợp → luôn hiện, không bị
+   giới hạn 2 nội dung cắt mất. */
+var BX_DINHCHINH_SGK=[
+  { lop:'5', mon:/lich su|dia l/, bai:/bien, dao viet nam|bien dao viet nam/,
+    ds:[
+      'SGK tr.5 — sửa thành: "Vùng biển nước ta bao gồm một phần Biển Đông, Vịnh Bắc Bộ, Vịnh Thái Lan, tiếp giáp với vùng biển của nhiều quốc gia."',
+      'SGK tr.17 — sửa thành: "Thế kỉ XVII, các chúa Nguyễn… đồng thời thực thi chủ quyền đối với quần đảo Hoàng Sa và quần đảo Trường Sa một cách liên tục, lâu dài và hiệu quả."',
+      'SGK tr.18 — bổ sung: "Từ năm 1954 đến năm 1975, chính quyền Sài Gòn tiếp tục quản lí, thực thi chủ quyền đối với hai quần đảo như: cử quân đồn trú, dựng bia chủ quyền và ban hành các sắc lệnh hành chính sáp nhập quần đảo Hoàng Sa vào tỉnh Quảng Nam (nay thuộc thành phố Đà Nẵng) và quần đảo Trường Sa vào tỉnh Phước Tuy (nay thuộc Thành phố Hồ Chí Minh)."'
+    ] }
+];
+/* Trả mảng [[ 'ĐÍNH CHÍNH', nội dung ], …] cho một bài; rỗng nếu bài đó không có. */
+function BX_dinhChinh(lop, mon, ten){
+  if(!BX_intgState().dinhchinh) return [];
+  var L=String(lop||''), m=BX_kd(mon), t=BX_kd(ten), out=[];
+  BX_DINHCHINH_SGK.forEach(function(x){
+    if(x.lop!==L) return;
+    if(!x.mon.test(m)) return;
+    if(!x.bai.test(t)) return;
+    x.ds.forEach(function(s){ out.push(['ĐÍNH CHÍNH', s]); });
+  });
+  return out;
+}
+window.BX_dinhChinh=BX_dinhChinh;
+
 /* Phần tích hợp BỔ SUNG cho một dòng KHDH môn học (cột "Nội dung điều chỉnh, bổ sung").
    ⚠ KHÔNG ghi vào dữ liệu và KHÔNG đụng cột nào khác: chỉ sinh lúc dựng bản Word / vẽ
    bảng, nên Lịch báo giảng (đọc cột 4 và cột 6) và bản trường của giáo viên đều không
@@ -6783,7 +6841,13 @@ window.BX_khgdIntgAdd=function(lop, mon, r){
   if(!String(r[5]==null?'':r[5]).trim()) return [];
   var ten=[r[1],r[2],r[4]].map(function(x){return String(x==null?'':x);}).join(' ');
   var tenHep=[r[2],r[4]].map(function(x){return String(x==null?'':x);}).join(' ');
-  return BX_intg3(mon, ten, lop, null, tenHep);
+  /* Cột 7 sẵn có của dòng này ĐÃ là một nội dung lồng ghép (thường là Năng lực số/AI,
+     có nơi là nhãn "Tích hợp GD quốc phòng an ninh" do người soạn ghi) — phải tính vào
+     giới hạn 2, nếu không bản kế hoạch lại dày đặc đúng thứ Sở dặn tránh. */
+  var goc=String(r[7]==null?'':r[7]).trim(), daCo=goc?1:0;
+  var them=BX_capNoiDung(BX_intg3(mon, ten, lop, null, tenHep), daCo);
+  /* Đính chính SGK đứng riêng, luôn hiện, không bị giới hạn cắt mất. */
+  return BX_dinhChinh(lop, mon, tenHep).concat(them);
 };
 /* Môn nào ĐANG có ít nhất một dòng sinh được nội dung tích hợp mới → cột 7 phải hiện,
    kể cả khi dữ liệu gốc của môn đó bỏ trống cột 7 (nếu không, BX_visibleCols ẩn cột
@@ -6793,51 +6857,62 @@ window.BX_khgdCoIntg=function(lop, mon, DATA){
   return false;
 };
 
+/* Gom theo NHÓM nội dung rồi mới cắt còn tối đa 2 (hướng dẫn Sở GD&ĐT Nghệ An 20/8/2026).
+   Nhóm HSKT và phần đính chính SGK không tính vào giới hạn — không phải nội dung tích hợp. */
 function BX_intgLines(ig, L, row){
-  var s=BX_intgState(), out=[], sk=BX_subjKey(L&&L.mon);
-  // 1) NĂNG LỰC SỐ — ưu tiên dữ liệu KHDH đã duyệt; chưa có → sinh theo môn
+  var s=BX_intgState(), sk=BX_subjKey(L&&L.mon);
+  var _mon=(L&&L.mon)||(row&&row.mon)||'';
+  var _ten=(L&&(L.bai||L.ten))||(row&&row.bai)||'';
+  var _lop=String((L&&(L.khoi||L.lop))||(row&&row.khoi)||(typeof state!=='undefined'&&state.khoi)||'5').replace(/\D/g,'')||'5';
+
+  /* Gom theo NHÓM nội dung rồi mới cắt còn tối đa 2 nhóm — tài liệu tập huấn Lịch sử và
+     Địa lí của Sở GD&ĐT Nghệ An 20/8/2026: "1–2 hoạt động có tích hợp, ưu tiên chọn 1
+     trong 3 nội dung GDĐP, NLS, ANQP". Phần HSKT và đính chính SGK KHÔNG tính vào giới
+     hạn: đó là điều chỉnh dạy học/nội dung, không phải nội dung tích hợp. */
+  var nhom=[];                       /* [ [mã, [dòng…]], … ] — thứ tự này cũng là thứ tự in */
+  var nls=[];
+  // 1) NĂNG LỰC SỐ (kể cả AI) — ưu tiên dữ liệu KHDH đã duyệt; chưa có → sinh theo môn
   if(s.digital){
     if(ig && ig.digital_level>0){
-      if(ig.suggested_yccd) out.push(['yccd','• (YCCD) '+ig.suggested_yccd]);
-      if(ig.suggested_dodung) out.push(['dodung','• (Đồ dùng) '+ig.suggested_dodung]);
-      if(ig.suggested_activity) out.push(['hoatdong','• (Hoạt động) '+ig.suggested_activity]);
-      if(ig.digital_domain) out.push(['meta','• Miền NLS: '+ig.digital_domain+(ig.digital_competency?(' — '+ig.digital_competency):'')+' (mức '+ig.digital_level+')']);
+      if(ig.suggested_yccd) nls.push(['yccd','• (YCCD) '+ig.suggested_yccd]);
+      if(ig.suggested_dodung) nls.push(['dodung','• (Đồ dùng) '+ig.suggested_dodung]);
+      if(ig.suggested_activity) nls.push(['hoatdong','• (Hoạt động) '+ig.suggested_activity]);
+      if(ig.digital_domain) nls.push(['meta','• Miền NLS: '+ig.digital_domain+(ig.digital_competency?(' — '+ig.digital_competency):'')+' (mức '+ig.digital_level+')']);
     } else {
       var rn=BX_NLS_RULE[sk]||BX_NLS_RULE.other;
       /* (25/8/2026) Trước đây ghi cứng "lớp 5: Cơ bản" nên giáo án lớp 1–4 cũng in chữ "lớp 5" —
          thầy Chung phát hiện khi xem bản mẫu Lịch sử và Địa lí lớp 4. Khung năng lực số
          (TT 02/2025): lớp 1–3 là Cơ bản 1, lớp 4–5 là Cơ bản 2. */
-      var _lopNLS=String((L&&(L.khoi||L.lop))||(row&&row.khoi)||(typeof state!=='undefined'&&state.khoi)||'5').replace(/\D/g,'')||'5';
-      var _cb=(['1','2','3'].indexOf(_lopNLS)>=0)?'Cơ bản 1':'Cơ bản 2';
-      out.push(['hoatdong','• (Hoạt động NLS) '+rn.act]);
-      out.push(['meta','• Miền NLS: '+rn.domain+' (mức '+rn.level+' — lớp '+_lopNLS+': '+_cb+') · gợi ý, GV điều chỉnh']);
+      var _cb=(['1','2','3'].indexOf(_lop)>=0)?'Cơ bản 1':'Cơ bản 2';
+      nls.push(['hoatdong','• (Hoạt động NLS) '+rn.act]);
+      nls.push(['meta','• Miền NLS: '+rn.domain+' (mức '+rn.level+' — lớp '+_lop+': '+_cb+') · gợi ý, GV điều chỉnh']);
     }
   }
-  // 2) AI — ưu tiên dữ liệu duyệt; chưa có → chỉ sinh cho môn phù hợp, kèm lưu ý an toàn
+  // 2) AI — thuộc cùng nhóm Năng lực số, không tính thành nội dung thứ hai
   if(s.ai){
     if(ig && ig.ai_level>0 && ig.ai_content){
-      out.push(['hoatdong','• (AI mức '+ig.ai_level+') '+ig.ai_content]);
-      out.push(['safe','⚠ '+(ig.safety_note||BX_SAFE_NOTE)]);
+      nls.push(['hoatdong','• (AI mức '+ig.ai_level+') '+ig.ai_content]);
+      nls.push(['safe','⚠ '+(ig.safety_note||BX_SAFE_NOTE)]);
     } else if(BX_AI_RULE[sk]){
-      out.push(['hoatdong','• (AI mức 1 — gợi ý) '+BX_AI_RULE[sk]]);
-      out.push(['safe','⚠ '+BX_SAFE_NOTE]);
+      nls.push(['hoatdong','• (AI mức 1 — gợi ý) '+BX_AI_RULE[sk]]);
+      nls.push(['safe','⚠ '+BX_SAFE_NOTE]);
     }
   }
+  if(nls.length) nhom.push(['NLS', nls]);
   // 3) GIÁO DỤC ĐỊA PHƯƠNG
-  if(s.local){
-    out.push(['hoatdong','• (GD địa phương) '+(BX_LOCAL_RULE[sk]||BX_LOCAL_RULE.other)]);
-  }
-  // 4) GIÁO DỤC HSKT (học sinh khuyết tật học hoà nhập)
-  if(s.hskt){
-    out.push(['hoatdong','• (HSKT) '+(BX_HSKT_RULE[sk]||BX_HSKT_RULE.other)]);
-  }
-  // 5) QPAN · VIỆT–LÀO · KĨ NĂNG SỐNG — chỉ chèn khi tiết có địa chỉ phù hợp
-  var _mon=(L&&L.mon)||(row&&row.mon)||'';
-  var _ten=(L&&(L.bai||L.ten))||(row&&row.bai)||'';
-  var _lop=(L&&(L.khoi||L.lop))||(row&&row.khoi)||(typeof state!=='undefined'&&state.khoi)||'5';
+  if(s.local) nhom.push(['GDĐP', [['hoatdong','• (GD địa phương) '+(BX_LOCAL_RULE[sk]||BX_LOCAL_RULE.other)]]]);
+  // 4) QPAN · VIỆT–LÀO · KĨ NĂNG SỐNG — chỉ chèn khi tiết có địa chỉ phù hợp
   BX_intg3(_mon,_ten,_lop,s).forEach(function(p){
-    out.push(['hoatdong','• ('+p[0]+') '+p[1]]);
+    nhom.push([p[0], [['hoatdong','• ('+p[0]+') '+p[1]]]]);
   });
+
+  var chon=BX_capNoiDung(nhom, 0), giu={};
+  chon.forEach(function(n){ giu[n[0]]=1; });
+  var out=[];
+  BX_dinhChinh(_lop,_mon,_ten).forEach(function(p){ out.push(['hoatdong','• (ĐÍNH CHÍNH SGK) '+p[1]]); });
+  nhom.forEach(function(n){ if(giu[n[0]]) n[1].forEach(function(d){ out.push(d); }); });
+  // 5) GIÁO DỤC HSKT — điều chỉnh cho HS khuyết tật học hoà nhập, luôn giữ nếu thầy cô bật
+  if(s.hskt) out.push(['hoatdong','• (HSKT) '+(BX_HSKT_RULE[sk]||BX_HSKT_RULE.other)]);
   return out;
 }
 /* WRAP _lessonBodyParas (Word): chèn phần tích hợp vào cuối, gắn nhãn theo mục. */
@@ -6935,7 +7010,9 @@ var BX_INTG_DEFS=[
   {k:'kns',     label:'Tích hợp Kĩ năng sống',          icon:'🌱', hint:'Kĩ năng sống theo CT GDPT 2018 và TT 04/2014'},
   {k:'vietlao', label:'Tích hợp hữu nghị Việt – Lào',   icon:'🤝', hint:'Nội dung giáo dục địa phương — trường vùng biên giới Việt – Lào'},
   {k:'local',   label:'Tích hợp giáo dục địa phương',   icon:'🏞️', hint:'Liên hệ cảnh vật, di tích, nghề, con người ở địa phương'},
-  {k:'hskt',    label:'Tích hợp giáo dục HSKT',         icon:'🧩', hint:'Điều chỉnh cho học sinh khuyết tật học hoà nhập'}
+  {k:'hskt',    label:'Tích hợp giáo dục HSKT',         icon:'🧩', hint:'Điều chỉnh cho học sinh khuyết tật học hoà nhập'},
+  {k:'gioihan', label:'Tối đa 2 nội dung mỗi bài',      icon:'⚖️', hint:'Theo tập huấn Sở GD&ĐT Nghệ An 20/8/2026: mỗi bài 1–2 hoạt động có tích hợp, ưu tiên GDĐP, Năng lực số, Quốc phòng – An ninh'},
+  {k:'dinhchinh',label:'Đính chính nội dung SGK',       icon:'📌', hint:'In phần điều chỉnh, bổ sung SGK theo tài liệu tập huấn (hiện có Lịch sử và Địa lí 5 — bài Biển, đảo Việt Nam)'}
 ];
 function BX_intgBarHtml(){
   var s=BX_intgState();
@@ -7423,6 +7500,7 @@ function buildKHGDMonDocx(){
   if(_ts.qpan) QW.push(['QPAN','Giáo dục quốc phòng và an ninh (TT 08/2024/TT-BGDĐT)','Lồng ghép trong Tiếng Việt, Tự nhiên và Xã hội, Đạo đức, Lịch sử và Địa lí, Âm nhạc, Mĩ thuật, Hoạt động trải nghiệm; không làm thay đổi thời lượng và cấu trúc bài dạy.']);
   if(_ts.vietlao) QW.push(['VN-LÀO','Giáo dục truyền thống hữu nghị Việt Nam – Lào','Nội dung giáo dục địa phương theo kế hoạch giáo dục của nhà trường; lồng ghép ở những bài có chỗ bám tự nhiên.']);
   if(_ts.kns) QW.push(['KNS','Giáo dục kĩ năng sống (CT GDPT 2018; TT 04/2014/TT-BGDĐT)','Rèn kĩ năng tự phục vụ, giao tiếp, hợp tác, quản lí cảm xúc, ứng phó và tự bảo vệ ngay trong tiến trình bài dạy.']);
+  if(_ts.dinhchinh) QW.push(['ĐÍNH CHÍNH','Điều chỉnh, bổ sung nội dung sách giáo khoa','Nội dung sách giáo khoa được cập nhật cho chính xác, khoa học theo tài liệu tập huấn của cơ quan quản lí; không phải nội dung tích hợp.']);
   var QWW=[1600,4200,8600];
   var qrows=QW.map(function(row,ri){return '<w:tr>'+row.map(function(c,ci){return bxTc(c,QWW[ci],{color:ri===0?NAVY:null,b:ri===0,jc:ci===0?'center':'left',sz:18});}).join('')+'</w:tr>';});
   var qwTbl='<w:tbl><w:tblPr><w:tblW w:w="14400" w:type="dxa"/><w:jc w:val="center"/>'+bxBorders(false)+'<w:tblLayout w:type="fixed"/></w:tblPr>'+
@@ -7490,6 +7568,8 @@ function buildKHGDMonDocx(){
     (_ts.qpan?bxPara('Nội dung giáo dục quốc phòng và an ninh chỉ ghi ở những bài có địa chỉ lồng ghép phù hợp, trong các môn học và hoạt động giáo dục được Thông tư 08/2024/TT-BGDĐT quy định đối với cấp tiểu học; lồng ghép ngắn gọn, truyền cảm, dễ hiểu, phù hợp tâm lí lứa tuổi và không làm ảnh hưởng đến thời lượng, cấu trúc bài dạy.',{i:true,jc:'both',sz:18,sp:120}):'')+
     (_ts.kns?bxPara('Nội dung giáo dục kĩ năng sống được rèn ngay trong tiến trình bài dạy, gắn với phẩm chất chủ yếu và năng lực chung của Chương trình giáo dục phổ thông 2018.',{i:true,jc:'both',sz:18,sp:120}):'')+
     (_ts.vietlao?bxPara('Nội dung giáo dục truyền thống hữu nghị Việt Nam – Lào là nội dung giáo dục địa phương, thực hiện theo kế hoạch giáo dục của nhà trường và hướng dẫn của cấp có thẩm quyền.',{i:true,jc:'both',sz:18,sp:120}):'')+
+    (_ts.gioihan?bxPara('Mỗi bài học chỉ bố trí 1 – 2 hoạt động có tích hợp, ưu tiên các nội dung giáo dục địa phương, năng lực số, quốc phòng và an ninh; bảo đảm không làm ảnh hưởng đến thời lượng và cấu trúc bài dạy.',{i:true,jc:'both',sz:18,sp:120}):'')+
+    (_ts.dinhchinh?bxPara('Phần “ĐÍNH CHÍNH SGK” là nội dung điều chỉnh, bổ sung sách giáo khoa theo tài liệu tập huấn của cơ quan quản lí giáo dục, không tính là nội dung tích hợp.',{i:true,jc:'both',sz:18,sp:120}):'')+
     mucIV+
     signTbl;
 
