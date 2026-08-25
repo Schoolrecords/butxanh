@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-25 · 76';
+  var PB='2026-08-25 · 77';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -6885,7 +6885,10 @@ function BX_intgLines(ig, L, row){
          (TT 02/2025): lớp 1–3 là Cơ bản 1, lớp 4–5 là Cơ bản 2. */
       var _cb=(['1','2','3'].indexOf(_lop)>=0)?'Cơ bản 1':'Cơ bản 2';
       nls.push(['hoatdong','• (Hoạt động NLS) '+rn.act]);
-      nls.push(['meta','• Miền NLS: '+rn.domain+' (mức '+rn.level+' — lớp '+_lop+': '+_cb+') · gợi ý, GV điều chỉnh']);
+      /* Không ghi thêm "gợi ý, GV điều chỉnh" — cùng lí do đã bỏ đoạn ghi chú cuối giáo án:
+         đó là lời app nói với giáo viên, không phải nội dung dạy học, và chữ "gợi ý" dễ bị
+         hiểu là thầy cô chưa quyết khi tổ chuyên môn đọc hồ sơ. */
+      nls.push(['meta','• Miền NLS: '+rn.domain+' (mức '+rn.level+' — lớp '+_lop+': '+_cb+')']);
     }
   }
   // 2) AI — thuộc cùng nhóm Năng lực số, không tính thành nội dung thứ hai
@@ -6894,7 +6897,7 @@ function BX_intgLines(ig, L, row){
       nls.push(['hoatdong','• (AI mức '+ig.ai_level+') '+ig.ai_content]);
       nls.push(['safe','⚠ '+(ig.safety_note||BX_SAFE_NOTE)]);
     } else if(BX_AI_RULE[sk]){
-      nls.push(['hoatdong','• (AI mức 1 — gợi ý) '+BX_AI_RULE[sk]]);
+      nls.push(['hoatdong','• (AI mức 1) '+BX_AI_RULE[sk]]);
       nls.push(['safe','⚠ '+BX_SAFE_NOTE]);
     }
   }
@@ -6923,7 +6926,15 @@ window._lessonBodyParas = function(L,row){
   var lines=BX_intgLines(ig, L, row); if(!lines.length) return xml;
   var add = _docP('NỘI DUNG TÍCH HỢP, LỒNG GHÉP',{bold:true});
   lines.forEach(function(p){ add += _docP(p[1]); });
-  add += _docP('Ghi chú: Nội dung lồng ghép gợi ý theo KHDH môn học và lựa chọn của giáo viên — Năng lực số/AI (TT 02/2025, CV 3456), quốc phòng và an ninh (TT 08/2024/TT-BGDĐT), giáo dục địa phương, kĩ năng sống (TT 04/2014). Lồng ghép tự nhiên trong tiến trình bài dạy, không làm thay đổi thời lượng và cấu trúc bài; thầy cô xem xét điều chỉnh phù hợp đối tượng HS và điều kiện lớp học.',{italic:true});
+  /* (25/8/2026) ĐÃ BỎ đoạn ghi chú căn cứ pháp lí ở cuối giáo án — thầy Chung quyết.
+     Lí do: mẫu Kế hoạch bài dạy (Phụ lục 4 CV 2345, đúng bản Sở chiếu trong tập huấn
+     20/8/2026) chỉ có 4 mục — Yêu cầu cần đạt · Đồ dùng dạy học · Các hoạt động dạy học
+     chủ yếu · Điều chỉnh sau bài dạy — không có chỗ viện dẫn thông tư. Căn cứ pháp lí
+     thuộc về KHDH môn học (mục I + bảng quy ước mã) và đã có đủ ở đó. Thêm nữa, câu
+     "…thầy cô xem xét điều chỉnh…" là lời app nói với giáo viên, đặt trong giáo án nộp
+     tổ chuyên môn thì lạc lõng, lại lặp y hệt hàng trăm lần suốt năm học; chữ "gợi ý"
+     còn dễ bị hiểu là giáo viên chưa quyết. Mã trong ngoặc — (QPAN), (Hoạt động NLS)… —
+     đã đủ cho biết nội dung thuộc diện nào. ⚠️ ĐỪNG THÊM LẠI. */
   return xml+add;
 };
 /* WRAP bankLessonToText (xem trên màn hình): phụ lục tích hợp có nhãn mục. */
@@ -6932,7 +6943,8 @@ window.bankLessonToText = function(L,row){
   var base=_bxBL2T(L,row);
   var ig=BX_integrationFor(L,row);
   var lines=BX_intgLines(ig, L, row); if(!lines.length) return base;
-  var add=['','— NỘI DUNG TÍCH HỢP, LỒNG GHÉP (NLS · AI · GD địa phương · HSKT · QPAN · Việt–Lào · Kĩ năng sống) — chèn vào đúng mục khi xuất Word —'];
+  /* Dòng tiêu đề này CHỈ hiện khi xem trên màn hình, không đi vào file Word. */
+  var add=['','— NỘI DUNG TÍCH HỢP, LỒNG GHÉP —'];
   lines.forEach(function(p){ add.push('   '+p[1]); });
   return base+'\n'+add.join('\n');
 };
