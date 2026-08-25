@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-19 · 73';
+  var PB='2026-08-25 · 74';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -6404,9 +6404,25 @@ function BX_weekReport(rows){
  * 9) TÍCH HỢP NLS/AI — bộ lọc + chèn ĐÚNG CHỖ (an toàn)
  * ----------------------------------------------------------- */
 var BX_SAFE_NOTE='Nội dung AI dùng ở mức trải nghiệm/nhận biết, giáo viên kiểm soát; không yêu cầu học sinh dùng tài khoản cá nhân hoặc cung cấp thông tin cá nhân.';
-var BX_INTG_DEF={digital:true, ai:false, local:false, hskt:false};
+/* qpan/kns bật sẵn (nội dung mọi trường đều phải có); vietlao tắt sẵn vì là nội dung
+   giáo dục địa phương, chỉ trường vùng biên giới Việt – Lào mới cần. */
+var BX_INTG_DEF={digital:true, ai:false, local:false, hskt:false, qpan:true, vietlao:false, kns:true};
 function BX_intgState(){ try{ var v=JSON.parse(localStorage.getItem('butxanh_intg_toggles')||'null'); return (v&&typeof v==='object'&&!Array.isArray(v))?Object.assign({},BX_INTG_DEF,v):Object.assign({},BX_INTG_DEF); }catch(e){ return Object.assign({},BX_INTG_DEF); } }
-window.BX_toggleIntg=function(k,btn){ var s=BX_intgState(); s[k]=!s[k]; try{localStorage.setItem('butxanh_intg_toggles',JSON.stringify(s));}catch(e){} if(btn)btn.classList.toggle('on',s[k]); if(typeof renderBankSchedule==='function')renderBankSchedule(); };
+/* Phải đưa ra window: buildKHGDMonDocx nằm ở khối script khác, gọi tên trần sẽ ra
+   undefined và bản Word cứ in căn cứ pháp lí như thể mọi công tắc đều đang bật. */
+window.BX_intgState=BX_intgState;
+window.BX_toggleIntg=function(k,btn){
+  var s=BX_intgState(); s[k]=!s[k];
+  try{localStorage.setItem('butxanh_intg_toggles',JSON.stringify(s));}catch(e){}
+  /* Cùng một công tắc hiện ở HAI màn (Kế hoạch bài dạy và KHDH môn học) — đổi ở màn
+     nào cũng phải sáng/tắt cả hai, nếu không thầy cô tưởng bật hụt. */
+  try{
+    var ds=document.querySelectorAll('.intg-tg[data-k="'+k+'"]');
+    for(var i=0;i<ds.length;i++) ds[i].classList.toggle('on',s[k]);
+  }catch(e){ if(btn)btn.classList.toggle('on',s[k]); }
+  if(typeof renderBankSchedule==='function')renderBankSchedule();
+  if(typeof window.renderKHDH==='function')window.renderKHDH();
+};
 function BX_integrationFor(L,row){
   var cp = (row&&(row.cpid||row.curriculum_period_id)) || BX_cpidOfBank(L);
   var ig = cp?BX_intgByCpid(cp):null;
@@ -6489,6 +6505,266 @@ var BX_HSKT_RULE={
   anh:    'Giảm lượng từ cần nhớ; ưu tiên nghe – nói đơn giản, dùng hình ảnh hỗ trợ.',
   other:  'Điều chỉnh yêu cầu cần đạt phù hợp; tăng hỗ trợ trực quan, làm mẫu, đánh giá theo sự tiến bộ.'
 };
+/* ============================================================================
+   TÍCH HỢP QPAN · HỮU NGHỊ VIỆT – LÀO · KĨ NĂNG SỐNG   (25/8/2026)
+   ----------------------------------------------------------------------------
+   Vì sao thêm: KHDH và giáo án của app trước đây mới có địa chỉ Năng lực số/AI;
+   giáo viên phản ánh còn thiếu ba nội dung lồng ghép bắt buộc/thường quy.
+
+   CĂN CỨ
+   · QPAN — Thông tư 08/2024/TT-BGDĐT ngày 15/5/2024 "Hướng dẫn lồng ghép nội
+     dung giáo dục quốc phòng và an ninh trong trường tiểu học, trường trung học
+     cơ sở và trường phổ thông có nhiều cấp học" (hiệu lực 01/7/2024, THAY THẾ
+     Thông tư 01/2017/TT-BGDĐT); Công văn 5307/BGDĐT-GDQPAN ngày 05/9/2025;
+     Công văn 2707/SGD&ĐT-GDTrH ngày 17/9/2025 của Sở GD&ĐT Nghệ An.
+     ⚠ Ở TIỂU HỌC, Thông tư 08/2024 chỉ nêu đích danh 6 môn/hoạt động: Tiếng Việt ·
+     Tự nhiên và Xã hội · Đạo đức · Lịch sử và Địa lí · Nghệ thuật (Âm nhạc, Mĩ
+     thuật) · Hoạt động trải nghiệm. KHÔNG gán cho Toán, Tin học, Tiếng Anh,
+     Công nghệ, Khoa học, GDTC — gán thêm là sai văn bản.
+   · Việt – Lào — nội dung giáo dục địa phương (Nghệ An có đường biên giới với
+     Lào dài nhất cả nước) và kế hoạch giáo dục của nhà trường. Đây KHÔNG phải
+     nội dung bắt buộc toàn quốc → công tắc MẶC ĐỊNH TẮT, trường nào cần mới bật.
+   · Kĩ năng sống — Chương trình GDPT 2018 (phẩm chất chủ yếu, năng lực chung) và
+     Thông tư 04/2014/TT-BGDĐT về giáo dục kĩ năng sống.
+
+   NGUYÊN TẮC CHUNG (giống cách đã làm với Năng lực số): chỉ ghi ở tiết CÓ ĐỊA
+   CHỈ phù hợp, không rải đều mọi tiết để lấp chỗ trống — Thông tư 08/2024 yêu
+   cầu lồng ghép "không làm ảnh hưởng đến thời lượng và cấu trúc bài dạy".
+   ========================================================================== */
+/* Bỏ dấu + thường hoá để quy tắc bắt được cả tên bài viết có dấu lẫn không dấu. */
+function BX_kd(s){
+  return String(s==null?'':s).toLowerCase()
+    .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g,'a').replace(/[èéẹẻẽêềếệểễ]/g,'e')
+    .replace(/[ìíịỉĩ]/g,'i').replace(/[òóọỏõôồốộổỗơờớợởỡ]/g,'o')
+    .replace(/[ùúụủũưừứựửữ]/g,'u').replace(/[ỳýỵỷỹ]/g,'y').replace(/đ/g,'d');
+}
+/* Mã môn tiểu học CHI TIẾT — tách "Tự nhiên và Xã hội" khỏi "Khoa học" (BX_subjKey
+   gộp chung hai môn này, dùng cho QPAN sẽ sai danh mục môn của Thông tư 08/2024). */
+function BX_monTH(mon){
+  var m=BX_kd(mon);
+  if(/tu nhien|tnxh/.test(m)) return 'tnxh';
+  if(/khoa h/.test(m)) return 'khoahoc';
+  if(/lich su|dia l/.test(m)) return 'lsdl';
+  if(/tieng viet/.test(m)) return 'tv';
+  if(/dao duc/.test(m)) return 'daoduc';
+  if(/am nhac/.test(m)) return 'amnhac';
+  if(/mi thuat|my thuat/.test(m)) return 'mythuat';
+  if(/hdtn|trai nghiem/.test(m)) return 'hdtn';
+  if(/toan/.test(m)) return 'toan';
+  if(/tin h/.test(m)) return 'tin';
+  if(/cong nghe/.test(m)) return 'congnghe';
+  if(/the chat|gdtc|the duc/.test(m)) return 'gdtc';
+  if(/anh|english/.test(m)) return 'anh';
+  return 'other';
+}
+/* Chất liệu QPAN theo LỚP — lấy đúng nội dung từng khối trong Thông tư 08/2024. */
+var BX_QPAN_LOP={
+  '1':{cl:'hình ảnh chú bộ đội Quân đội nhân dân, chú công an Công an nhân dân và di tích lịch sử ở địa phương',
+       yc:'yêu quê hương, yêu hoà bình, yêu Tổ quốc Việt Nam xã hội chủ nghĩa'},
+  '2':{cl:'tinh thần đoàn kết toàn dân tộc và sự hi sinh của các chiến sĩ cách mạng',
+       yc:'biết ơn người có công với cách mạng; kính trọng cán bộ, chiến sĩ đang làm nhiệm vụ bảo vệ Tổ quốc'},
+  '3':{cl:'truyền thống chống giặc ngoại xâm, gương dũng cảm của thiếu niên, nhi đồng và Bà mẹ Việt Nam anh hùng',
+       yc:'tự hào về truyền thống dân tộc; rèn tính kỉ luật, tinh thần đoàn kết'},
+  '4':{cl:'bản đồ hành chính Việt Nam và chủ quyền của Việt Nam đối với quần đảo Hoàng Sa, Trường Sa',
+       yc:'nhận biết chủ quyền lãnh thổ; có ý thức chấp hành pháp luật, nhất là pháp luật giao thông'},
+  '5':{cl:'chủ quyền, quyền chủ quyền biển, đảo Việt Nam và gương dũng cảm cứu hộ, cứu nạn của cán bộ, chiến sĩ',
+       yc:'ý thức bảo vệ chủ quyền biển, đảo; trách nhiệm công dân trong xây dựng và bảo vệ Tổ quốc'}
+};
+function BX_qpanLop(lop){ return BX_QPAN_LOP[String(lop)]||BX_QPAN_LOP['5']; }
+/* Quy tắc QPAN theo môn: [regex trên tên bài (đã bỏ dấu), nội dung].
+   {CL} = chất liệu theo lớp · {YC} = yêu cầu cần đạt theo lớp. */
+var BX_QPAN_RULE={
+  tv:[
+    [/bac ho|ho chi minh/, 'Kể chuyện Bác Hồ với bộ đội, công an; giáo dục lòng biết ơn và niềm tự hào dân tộc.'],
+    [/bo doi|chien si|quan doi|cong an|bien phong|hai quan|canh sat/, 'Giới thiệu {CL}; HS nói lời cảm ơn các chú bộ đội, chú công an.'],
+    [/bien|dao|hoang sa|truong sa|hai dao|bien gioi/, 'Liên hệ {CL}; HS nêu được biển, đảo là một phần lãnh thổ thiêng liêng của Tổ quốc.'],
+    [/anh hung|liet si|thuong binh|cach mang|khang chien|lich su|truyen thong/, 'Kể về tấm gương anh hùng, liệt sĩ; giáo dục {YC}.'],
+    [/hoa binh|doan ket|thieu nhi the gioi/, 'Giáo dục lòng yêu hoà bình, tinh thần đoàn kết; liên hệ {CL}.'],
+    [/que huong|dat nuoc|to quoc|viet nam|non song|thu do|ha noi/, 'Bồi dưỡng tình yêu quê hương, đất nước; giới thiệu {CL}.']
+  ],
+  tnxh:[
+    [/an toan|giao thong|ngo doc|thien tai|phong chay|chay no|duoi nuoc/, 'Liên hệ công việc giữ gìn an ninh, trật tự, cứu hộ – cứu nạn của bộ đội, công an; nhắc HS chấp hành quy định an toàn.'],
+    [/cong dong|lang xom|xa phuong|noi em song|truong hoc|co quan|di tich/, 'Giới thiệu {CL}; kể việc làm của các chú bộ đội, công an giúp dân ở địa phương.'],
+    [/to quoc|viet nam|ban do|dat nuoc|que huong/, 'Giới thiệu {CL}; giáo dục {YC}.']
+  ],
+  daoduc:[
+    [/que huong|dat nuoc|to quoc|quoc hieu|quoc ki|quoc ca|quoc khanh/, 'Giáo dục {YC}; giới thiệu {CL} khi nói về Tổ quốc Việt Nam.'],
+    [/biet on|nho on|den on|thuong binh|liet si|anh hung|nguoi co cong/, 'Giáo dục lòng biết ơn anh hùng, liệt sĩ, người có công với cách mạng; liên hệ {CL}.'],
+    [/quy dinh|phap luat|noi quy|ki luat|trat tu|nơi cong cong|noi cong cong/, 'Giáo dục ý thức chấp hành nội quy, pháp luật — nền nếp đầu tiên của người công dân giữ gìn an ninh, trật tự.'],
+    [/doan ket|hop tac|giup do|yeu thuong|hoa binh/, 'Giáo dục tinh thần đoàn kết, yêu hoà bình; liên hệ {CL}.']
+  ],
+  lsdl:[
+    [/ban do|luoc do|vi tri|lanh tho|bien gioi|dia gioi/, 'Sử dụng bản đồ hành chính Việt Nam để HS chỉ ra lãnh thổ, vùng biển, quần đảo Hoàng Sa và Trường Sa của Việt Nam.'],
+    [/bien|dao|hoang sa|truong sa|ven bien|thuy san|hai san/, 'Khẳng định chủ quyền, quyền chủ quyền của Việt Nam đối với biển, đảo; liên hệ việc khai thác thuỷ, hải sản gắn với nhiệm vụ quốc phòng, an ninh.'],
+    [/khoi nghia|khang chien|chien dich|chien thang|chong|xam luoc|giai phong|cach mang|anh hung|nha nuoc|trieu/, 'Giáo dục truyền thống dựng nước và giữ nước, tinh thần chống giặc ngoại xâm của dân tộc; liên hệ {CL}.'],
+    [/dan cu|dan toc|thanh pho|vung|dong bang|mien nui|tay nguyen|nam bo|trung bo|bac bo/, 'Liên hệ vai trò của mỗi vùng đối với quốc phòng, an ninh; giáo dục {YC}.']
+  ],
+  amnhac:[
+    [/bien|dao|hoang sa|truong sa/, 'Cho HS nghe/hát bài hát về biển, đảo quê hương; qua đó giới thiệu {CL}.'],
+    [/bo doi|chien si|quan doi|cong an|chu bo doi|hanh khuc|doi ca|quoc ca/, 'Cho HS nghe/hát bài hát về chú bộ đội, về Đội; giáo dục {YC}.'],
+    [/que huong|dat nuoc|to quoc|viet nam|hoa binh|bac ho/, 'Chọn bài hát ca ngợi quê hương, đất nước, hoà bình; liên hệ {CL}.']
+  ],
+  mythuat:[
+    [/bo doi|chien si|quan doi|cong an|bien dao|bien|dao/, 'Hướng dẫn HS vẽ/tạo hình về chú bộ đội, về biển đảo quê hương; giới thiệu {CL}.'],
+    [/que huong|dat nuoc|le hoi|di tich|truyen thong|dan toc|trang phuc/, 'Cho HS thể hiện hình ảnh quê hương, di tích lịch sử địa phương; giáo dục {YC}.'],
+    [/biet on|nguoi than|thay co|ngay le/, 'Gợi ý HS làm sản phẩm tặng chú bộ đội, gia đình thương binh, liệt sĩ nhân ngày lễ.']
+  ],
+  hdtn:[
+    [/truyen thong|ngay 22|quan doi|bo doi|chu bo doi|cong an|den on|biet on|thuong binh|liet si/, 'Tổ chức hoạt động tìm hiểu, thăm hỏi, tri ân gia đình thương binh, liệt sĩ, đơn vị bộ đội, công an trên địa bàn; giới thiệu {CL}.'],
+    [/que huong|cong dong|dia phuong|di tich|canh quan|moi truong/, 'Tổ chức tham quan di tích lịch sử, nhà truyền thống ở địa phương hoặc xem tư liệu thay thế; giáo dục {YC}.'],
+    [/an toan|giao thong|ki luat|noi quy|phong tranh/, 'Rèn nền nếp, kỉ luật, chấp hành pháp luật giao thông — yêu cầu cơ bản của giáo dục quốc phòng và an ninh ở tiểu học.'],
+    [/hoa binh|doan ket|ban be|the gioi/, 'Giáo dục lòng yêu hoà bình, tình đoàn kết; liên hệ {CL}.']
+  ]
+};
+/* Việt – Lào: RẤT chọn lọc, chỉ những bài thật sự có chỗ bám. */
+var BX_VLAO_RULE={
+  tv:[
+    [/tinh ban|ban be|nguoi ban|ban moi|ket ban/, 'Từ tình bạn trong bài, liên hệ tình hữu nghị đặc biệt Việt Nam – Lào; kể cho HS nghe về các bạn nhỏ nước bạn Lào.'],
+    [/hoa binh|doan ket|thieu nhi the gioi|nuoc ban|lang gieng|the gioi/, 'Giới thiệu Lào là nước láng giềng anh em; giáo dục tình đoàn kết, hữu nghị Việt Nam – Lào.'],
+    [/bien gioi|mien nui|vung cao|ban lang/, 'Liên hệ đời sống đồng bào vùng biên giới Việt – Lào; tình cảm gắn bó hai bên biên giới.']
+  ],
+  daoduc:[
+    [/doan ket|hop tac|yeu thuong|giup do|ton trong|khac biet|hoa binh/, 'Liên hệ tình đoàn kết, giúp đỡ lẫn nhau giữa hai dân tộc Việt Nam – Lào như những người anh em.'],
+    [/que huong|dat nuoc|to quoc/, 'Giới thiệu quan hệ hữu nghị vĩ đại, đoàn kết đặc biệt Việt Nam – Lào; HS biết yêu quý bạn bè nước bạn.']
+  ],
+  lsdl:[
+    [/ban do|vi tri|lanh tho|bien gioi|lang gieng|khu vuc|dong nam a/, 'Chỉ trên bản đồ đường biên giới Việt Nam – Lào; giới thiệu quan hệ hữu nghị đặc biệt giữa hai nước.'],
+    [/khang chien|cach mang|chien dich|lien minh|doan ket/, 'Kể về liên minh chiến đấu Việt Nam – Lào trong kháng chiến; giáo dục lòng biết ơn và tình hữu nghị hai nước.'],
+    [/mien nui|dan toc|vung|tay bac|bac trung bo|truong son/, 'Liên hệ dãy Trường Sơn – biên giới tự nhiên gắn bó hai nước Việt – Lào.']
+  ],
+  tnxh:[
+    [/cong dong|lang xom|noi em song|dat nuoc|viet nam|le hoi/, 'Giới thiệu Lào là nước láng giềng của Việt Nam; HS nhận biết lá cờ, tên nước bạn Lào.']
+  ],
+  amnhac:[
+    [/hoa binh|doan ket|ban be|dan ca|nuoc ngoai|thieu nhi/, 'Cho HS nghe một làn điệu dân ca Lào hoặc bài hát về tình hữu nghị Việt – Lào.']
+  ],
+  mythuat:[
+    [/le hoi|trang phuc|dan toc|van hoa|hoa van/, 'Giới thiệu nét hoa văn, trang phục truyền thống của nước bạn Lào để HS so sánh, cảm nhận.']
+  ],
+  hdtn:[
+    [/hoa binh|doan ket|ban be|cong dong|giao luu|the gioi|van hoa/, 'Tổ chức hoạt động tìm hiểu đất nước, con người Lào; giáo dục tình hữu nghị đặc biệt Việt Nam – Lào.']
+  ]
+};
+/* Kĩ năng sống: bám nhóm kĩ năng của Chương trình GDPT 2018 và Thông tư 04/2014. */
+var BX_KNS_RULE={
+  tv:[
+    [/noi va nghe|ke chuyen|trao doi|thao luan/, 'KN giao tiếp: nói rõ ràng, biết lắng nghe, chờ đến lượt và tôn trọng ý kiến của bạn.'],
+    [/viet doan|viet bai|viet thu|tin nhan/, 'KN trình bày suy nghĩ, bày tỏ cảm xúc của bản thân bằng lời lẽ phù hợp.'],
+    [/doc mo rong|doc/, 'KN tự học: chọn sách phù hợp, kiên trì đọc và rút ra điều bổ ích cho bản thân.'],
+    [/gia dinh|ban be|thay co|cong dong/, 'KN ứng xử: thể hiện sự quan tâm, lễ phép, biết nói lời cảm ơn và xin lỗi đúng lúc.']
+  ],
+  daoduc:[
+    [/cam xuc|tuc gian|buon|lo lang|so hai|kiem soat/, 'KN quản lí cảm xúc: nhận diện cảm xúc của mình và tìm cách bình tĩnh trở lại.'],
+    [/an toan|nguy hiem|phong tranh|xam hai|nguoi la|goi giup/, 'KN tự bảo vệ: nhận biết tình huống nguy hiểm, biết từ chối và gọi người lớn giúp đỡ.'],
+    [/thoi gian|dung gio|ke hoach|hoc tap/, 'KN quản lí thời gian: lập và thực hiện thời gian biểu hằng ngày của bản thân.'],
+    [/that tha|nhan loi|trung thuc|sua loi/, 'KN tự nhận thức: dám nhận lỗi và sửa lỗi; chịu trách nhiệm về việc mình làm.'],
+    [/giup do|chia se|cam thong|yeu thuong|ton trong|doan ket|hop tac/, 'KN hợp tác và chia sẻ: biết cảm thông, giúp đỡ bạn và làm việc cùng nhau.'],
+    [/tiet kiem|tien|do dung|tai san|cua cong|lao dong/, 'KN chi tiêu và giữ gìn: dùng đồ dùng, tiền bạc hợp lí, giữ gìn của công.'],
+    [/tu giac|tu phuc vu|ve sinh|gon gang|giu sach/, 'KN tự phục vụ: tự làm lấy việc của mình, giữ gìn vệ sinh cá nhân và nơi ở.']
+  ],
+  tnxh:[
+    [/an toan|nguy hiem|ngo doc|dien|lua|duoi nuoc|giao thong|thien tai/, 'KN ứng phó: nhận biết nguy cơ, xử lí bước đầu và báo ngay cho người lớn.'],
+    [/co the|giac quan|ve sinh|benh|dinh duong|an uong|giac ngu/, 'KN tự chăm sóc bản thân: giữ vệ sinh, ăn uống, nghỉ ngơi điều độ.'],
+    [/gia dinh|ho hang|truong hoc|lop hoc|cong dong|ban be/, 'KN giao tiếp và hợp tác trong gia đình, lớp học, cộng đồng.'],
+    [/moi truong|cay|con vat|thien nhien|rac/, 'KN sống thân thiện với môi trường: việc nhỏ vừa sức để giữ sạch nơi mình sống.']
+  ],
+  khoahoc:[
+    [/an toan|dien|lua|hoa chat|chat doc|nong|bong/, 'KN an toàn khi thực hành: làm đúng hướng dẫn, không tự ý thử nghiệm nguy hiểm.'],
+    [/dinh duong|thuc an|nuoc uong|benh|suc khoe|ve sinh/, 'KN chăm sóc sức khoẻ bản thân và phòng tránh bệnh tật.'],
+    [/thi nghiem|thuc hanh|quan sat|tim hieu/, 'KN quan sát – ghi chép trung thực và làm việc nhóm khi thực hành.'],
+    [/moi truong|tai nguyen|nang luong|o nhiem/, 'KN sử dụng tiết kiệm tài nguyên, năng lượng trong sinh hoạt hằng ngày.']
+  ],
+  hdtn:[
+    [/ban than|hinh anh cua em|kham pha|tu hao|so thich/, 'KN tự nhận thức: nhận ra điểm mạnh, điểm cần cố gắng của bản thân.'],
+    [/ban be|giao luu|cong dong|chia se|hop tac|nhom/, 'KN giao tiếp – hợp tác: làm việc nhóm, chia sẻ và giải quyết bất đồng ôn hoà.'],
+    [/an toan|phong tranh|ung pho|nguy hiem|giao thong/, 'KN ứng phó với tình huống nguy hiểm và tìm kiếm sự trợ giúp.'],
+    [/nghe|lao dong|san pham|viec nha|tu phuc vu/, 'KN lao động tự phục vụ và bước đầu tìm hiểu nghề nghiệp.'],
+    [/chi tieu|tien|tiet kiem|ke hoach|thoi gian/, 'KN lập kế hoạch và quản lí chi tiêu, thời gian ở mức đơn giản.'],
+    [/cam xuc|cang thang|kho khan|buon|gian/, 'KN quản lí cảm xúc và vượt qua khó khăn trong học tập, sinh hoạt.'],
+    [/so ket|sinh hoat lop|tong ket|thi dua/, 'KN tự đánh giá và đánh giá bạn một cách khách quan, thiện chí.']
+  ],
+  gdtc:[
+    [/an toan|khoi dong|tu the|chan thuong/, 'KN bảo đảm an toàn khi vận động: khởi động kĩ, tập đúng sức, biết dừng khi mệt.'],
+    [/tro choi|doi hinh|thi dau|van dong/, 'KN hợp tác và tuân thủ luật chơi; thắng không kiêu, thua không nản.'],
+    [/boi|nuoc/, 'KN phòng tránh đuối nước — kĩ năng sống thiết yếu với học sinh tiểu học.']
+  ],
+  congnghe:[
+    [/an toan|dien|thiet bi|su dung|dun nau|dao|keo/, 'KN sử dụng an toàn đồ dùng, thiết bị trong gia đình; biết gọi người lớn khi có sự cố.'],
+    [/lam|thuc hanh|lap ghep|trong|cham soc/, 'KN lao động tự phục vụ: làm việc cẩn thận, kiên trì hoàn thành sản phẩm.']
+  ],
+  daoduc_default:null,
+  toan:[
+    [/tien viet nam|mua|ban/, 'KN chi tiêu hợp lí: tính toán khi mua bán, biết tiết kiệm.'],
+    [/thoi gian|dong ho|lich|ngay|gio/, 'KN quản lí thời gian: xem giờ, sắp xếp công việc trong ngày.']
+  ],
+  tin:[
+    [/an toan|bao mat|thong tin ca nhan|quy tac/, 'KN tự bảo vệ trên môi trường số: giữ kín thông tin cá nhân, báo người lớn khi gặp điều bất thường.']
+  ],
+  lsdl:[
+    [/thien tai|bao|lu|phong tranh/, 'KN ứng phó với thiên tai thường gặp ở địa phương.'],
+    [/dan cu|dan toc|van hoa|le hoi/, 'KN tôn trọng sự khác biệt về văn hoá, phong tục giữa các vùng miền, dân tộc.']
+  ],
+  amnhac:[
+    [/bieu dien|trinh bay|van dung|nhom/, 'KN tự tin biểu diễn trước tập thể và phối hợp cùng nhóm.']
+  ],
+  mythuat:[
+    [/trung bay|thao luan|van dung|nhom/, 'KN trình bày ý tưởng, nhận xét sản phẩm của bạn một cách tôn trọng.']
+  ],
+  anh:[
+    [/greeting|friend|family|school|unit|lesson/, 'KN giao tiếp: mạnh dạn chào hỏi, giới thiệu bản thân bằng câu đơn giản.']
+  ]
+};
+/* Tìm nội dung khớp trong một bảng quy tắc; trả '' nếu không có địa chỉ phù hợp. */
+function BX_ruleHit(bang, monKey, ten, lop){
+  var qt=bang[monKey]; if(!qt||!qt.length) return '';
+  var t=BX_kd(ten); if(!t) return '';
+  for(var i=0;i<qt.length;i++){
+    if(qt[i][0].test(t)){
+      var g=BX_qpanLop(lop);
+      return String(qt[i][1]).replace('{CL}',g.cl).replace('{YC}',g.yc);
+    }
+  }
+  return '';
+}
+/* Ba dòng tích hợp cho MỘT tiết — dùng chung cho KHDH môn học và giáo án Word.
+   Trả mảng [[mã, nội dung], …]; rỗng nghĩa là tiết này không có địa chỉ phù hợp. */
+function BX_intg3(mon, ten, lop, st){
+  var s=st||BX_intgState(), mk=BX_monTH(mon), out=[];
+  if(s.qpan && BX_QPAN_RULE[mk]){
+    var a=BX_ruleHit(BX_QPAN_RULE, mk, ten, lop);
+    if(a) out.push(['QPAN', a]);
+  }
+  if(s.vietlao && BX_VLAO_RULE[mk]){
+    var b=BX_ruleHit(BX_VLAO_RULE, mk, ten, lop);
+    if(b) out.push(['VN-LÀO', b]);
+  }
+  if(s.kns && BX_KNS_RULE[mk]){
+    var c=BX_ruleHit(BX_KNS_RULE, mk, ten, lop);
+    if(c) out.push(['KNS', c]);
+  }
+  return out;
+}
+window.BX_intg3=BX_intg3;
+/* Phần tích hợp BỔ SUNG cho một dòng KHDH môn học (cột "Nội dung điều chỉnh, bổ sung").
+   ⚠ KHÔNG ghi vào dữ liệu và KHÔNG đụng cột nào khác: chỉ sinh lúc dựng bản Word / vẽ
+   bảng, nên Lịch báo giảng (đọc cột 4 và cột 6) và bản trường của giáo viên đều không
+   ảnh hưởng. Chỉ ghi ở TIẾT ĐẦU của bài — nơi có cột Thời lượng — đúng nguyên tắc
+   "địa chỉ tích hợp", không rải đều cho kín chỗ.
+   r = [tuần, chủ đề, tên bài, hoạt động, nội dung, thời lượng, tiết KH, tích hợp] */
+window.BX_khgdIntgAdd=function(lop, mon, r){
+  if(!r) return [];
+  if(!String(r[5]==null?'':r[5]).trim()) return [];
+  var ten=[r[1],r[2],r[4]].map(function(x){return String(x==null?'':x);}).join(' ');
+  return BX_intg3(mon, ten, lop);
+};
+/* Môn nào ĐANG có ít nhất một dòng sinh được nội dung tích hợp mới → cột 7 phải hiện,
+   kể cả khi dữ liệu gốc của môn đó bỏ trống cột 7 (nếu không, BX_visibleCols ẩn cột
+   và thầy cô mất trắng phần lồng ghép vừa bật). */
+window.BX_khgdCoIntg=function(lop, mon, DATA){
+  for(var i=0;i<(DATA||[]).length;i++){ if(window.BX_khgdIntgAdd(lop,mon,DATA[i]).length) return true; }
+  return false;
+};
+
 function BX_intgLines(ig, L, row){
   var s=BX_intgState(), out=[], sk=BX_subjKey(L&&L.mon);
   // 1) NĂNG LỰC SỐ — ưu tiên dữ liệu KHDH đã duyệt; chưa có → sinh theo môn
@@ -6522,6 +6798,13 @@ function BX_intgLines(ig, L, row){
   if(s.hskt){
     out.push(['hoatdong','• (HSKT) '+(BX_HSKT_RULE[sk]||BX_HSKT_RULE.other)]);
   }
+  // 5) QPAN · VIỆT–LÀO · KĨ NĂNG SỐNG — chỉ chèn khi tiết có địa chỉ phù hợp
+  var _mon=(L&&L.mon)||(row&&row.mon)||'';
+  var _ten=(L&&(L.bai||L.ten))||(row&&row.bai)||'';
+  var _lop=(L&&(L.khoi||L.lop))||(row&&row.khoi)||(typeof state!=='undefined'&&state.khoi)||'5';
+  BX_intg3(_mon,_ten,_lop,s).forEach(function(p){
+    out.push(['hoatdong','• ('+p[0]+') '+p[1]]);
+  });
   return out;
 }
 /* WRAP _lessonBodyParas (Word): chèn phần tích hợp vào cuối, gắn nhãn theo mục. */
@@ -6530,9 +6813,9 @@ window._lessonBodyParas = function(L,row){
   var xml=_bxLBPOrig(L,row);
   var ig=BX_integrationFor(L,row);
   var lines=BX_intgLines(ig, L, row); if(!lines.length) return xml;
-  var add = _docP('TÍCH HỢP (NLS / AI / GD ĐỊA PHƯƠNG / HSKT)',{bold:true});
+  var add = _docP('NỘI DUNG TÍCH HỢP, LỒNG GHÉP',{bold:true});
   lines.forEach(function(p){ add += _docP(p[1]); });
-  add += _docP('Ghi chú: Nội dung tích hợp gợi ý theo KHDH môn học & lựa chọn của giáo viên; thầy cô xem xét điều chỉnh phù hợp đối tượng HS và điều kiện lớp học.',{italic:true});
+  add += _docP('Ghi chú: Nội dung lồng ghép gợi ý theo KHDH môn học và lựa chọn của giáo viên — Năng lực số/AI (TT 02/2025, CV 3456), quốc phòng và an ninh (TT 08/2024/TT-BGDĐT), giáo dục địa phương, kĩ năng sống (TT 04/2014). Lồng ghép tự nhiên trong tiến trình bài dạy, không làm thay đổi thời lượng và cấu trúc bài; thầy cô xem xét điều chỉnh phù hợp đối tượng HS và điều kiện lớp học.',{italic:true});
   return xml+add;
 };
 /* WRAP bankLessonToText (xem trên màn hình): phụ lục tích hợp có nhãn mục. */
@@ -6541,7 +6824,7 @@ window.bankLessonToText = function(L,row){
   var base=_bxBL2T(L,row);
   var ig=BX_integrationFor(L,row);
   var lines=BX_intgLines(ig, L, row); if(!lines.length) return base;
-  var add=['','— TÍCH HỢP (NLS / AI / GD địa phương / HSKT) — chèn vào đúng mục khi xuất Word —'];
+  var add=['','— NỘI DUNG TÍCH HỢP, LỒNG GHÉP (NLS · AI · GD địa phương · HSKT · QPAN · Việt–Lào · Kĩ năng sống) — chèn vào đúng mục khi xuất Word —'];
   lines.forEach(function(p){ add.push('   '+p[1]); });
   return base+'\n'+add.join('\n');
 };
@@ -6612,25 +6895,38 @@ function BX_injectViews(){
     '<div id="bx-khdh-table" style="overflow:auto"></div></div></section>';
   main.insertAdjacentHTML('beforeend', mapHtml+khdhHtml);
 }
+var BX_INTG_DEFS=[
+  {k:'digital', label:'Tích hợp Năng lực số',          icon:'💡', hint:'Khung năng lực số — TT 02/2025, CV 3456'},
+  {k:'ai',      label:'Tích hợp AI',                    icon:'🤖', hint:'AI ở mức nhận biết/trải nghiệm, giáo viên kiểm soát'},
+  {k:'qpan',    label:'Tích hợp Quốc phòng – An ninh',  icon:'🇻🇳', hint:'Lồng ghép GDQPAN theo Thông tư 08/2024/TT-BGDĐT'},
+  {k:'kns',     label:'Tích hợp Kĩ năng sống',          icon:'🌱', hint:'Kĩ năng sống theo CT GDPT 2018 và TT 04/2014'},
+  {k:'vietlao', label:'Tích hợp hữu nghị Việt – Lào',   icon:'🤝', hint:'Nội dung giáo dục địa phương — trường vùng biên giới Việt – Lào'},
+  {k:'local',   label:'Tích hợp giáo dục địa phương',   icon:'🏞️', hint:'Liên hệ cảnh vật, di tích, nghề, con người ở địa phương'},
+  {k:'hskt',    label:'Tích hợp giáo dục HSKT',         icon:'🧩', hint:'Điều chỉnh cho học sinh khuyết tật học hoà nhập'}
+];
+function BX_intgBarHtml(){
+  var s=BX_intgState();
+  return BX_INTG_DEFS.map(function(d){
+    return '<button type="button" data-k="'+d.k+'" class="intg-tg'+(s[d.k]?' on':'')+'" onclick="BX_toggleIntg(\''+d.k+'\',this)" title="'+_xe(d.hint)+' — chỉ chèn ở tiết có địa chỉ lồng ghép phù hợp">'+
+      '<span class="intg-ck"></span><span class="intg-ic">'+d.icon+'</span>'+d.label+'</button>';
+  }).join('');
+}
 function BX_injectIntgFilter(){
   var v=el('v-khbd'); if(!v||el('bx-intg-toggles')) return;
   var head=v.querySelector('.page-head');
-  var s=BX_intgState();
-  var defs=[
-    {k:'digital', label:'Tích hợp Năng lực số',          icon:'💡'},
-    {k:'ai',      label:'Tích hợp AI',                    icon:'🤖'},
-    {k:'local',   label:'Tích hợp giáo dục địa phương',   icon:'🏞️'},
-    {k:'hskt',    label:'Tích hợp giáo dục HSKT',         icon:'🧩'}
-  ];
   var bar=document.createElement('div'); bar.id='bx-intg-toggles'; bar.className='intg-row';
-  bar.innerHTML=defs.map(function(d){
-    return '<button type="button" class="intg-tg'+(s[d.k]?' on':'')+'" onclick="BX_toggleIntg(\''+d.k+'\',this)" title="Bấm để bật/tắt — chỉ chèn khi tiết có địa chỉ tích hợp trong KHDH">'+
-      '<span class="intg-ck"></span><span class="intg-ic">'+d.icon+'</span>'+d.label+'</button>';
-  }).join('');
+  bar.innerHTML=BX_intgBarHtml();
   if(head&&head.nextSibling) v.insertBefore(bar, head.nextSibling);
   else if(head) v.appendChild(bar);
   else v.insertBefore(bar, v.firstChild);
 }
+/* Cũng đặt hàng công tắc ở màn KHDH môn học: giáo viên xem kế hoạch môn là thấy ngay
+   nội dung lồng ghép, không phải sang màn khác mới bật được. */
+function BX_injectIntgFilterKHDH(){
+  var box=document.getElementById('bx-intg-toggles-khdh'); if(!box||box.innerHTML) return;
+  box.className='intg-row'; box.innerHTML=BX_intgBarHtml();
+}
+window.BX_injectIntgFilterKHDH=BX_injectIntgFilterKHDH;
 
 /* ----- Render: Bản đồ chương trình (bức tranh tổng thể cho GV) ----- */
 var BX_MAP_PAL=['#cfe8d4','#cfe0f5','#f7e3c4','#e6d6f2','#cdeaf0','#f7d6dc','#dde7c4','#f0dfb6','#d4e9e2','#e9d8c3','#d8e4f7','#ede0cf'];
@@ -7009,7 +7305,12 @@ function buildKHGDMonDocx(){
      và không đụng BX_visibleCols (hàm đó dùng chung với bảng trên màn hình). */
   var ALLCOLS=[700,1800,1300,1450,3300,750,950,3150,1000], totalW=14400;
   var ALLHEAD=['Tuần, tháng','Chủ đề/ Mạch nội dung','Tên bài','Tên hoạt động','Nội dung hoạt động','Thời lượng (tiết)','Tiết theo KH môn học','Nội dung điều chỉnh, bổ sung (nếu có)','Ghi chú'];
-  var VIS=window.BX_visibleCols(DATA).slice(); VIS.push(8); var NC=VIS.length;
+  var VIS=window.BX_visibleCols(DATA).slice();
+  /* (25/8/2026) Môn có dữ liệu cột 7 rỗng nhưng đang bật QPAN/Việt–Lào/Kĩ năng sống thì
+     vẫn phải mở cột, kẻo phần lồng ghép vừa sinh ra không có chỗ hiện. */
+  if(VIS.indexOf(7)<0 && window.BX_khgdCoIntg && window.BX_khgdCoIntg(LOP,SUBJ,DATA)) VIS.push(7);
+  VIS.sort(function(a,b){return a-b;});
+  VIS.push(8); var NC=VIS.length;
   /* phân bổ lại bề rộng để bảng vẫn đầy 14400 sau khi bỏ cột rỗng */
   var rawSum=VIS.reduce(function(a,c){return a+ALLCOLS[c];},0);
   var COLS=VIS.map(function(c){return Math.round(ALLCOLS[c]*totalW/rawSum);});
@@ -7039,6 +7340,14 @@ function buildKHGDMonDocx(){
   for(var i=0;i<DATA.length;i++){
     var r=DATA[i], tuan=r[0],chude=r[1],bai=r[2],hd=r[3],nd=r[4],tl=r[5],tiet=r[6],tich=r[7];
     var _v=window.BX_khgdVal; if(_v){ nd=_v(LOP,SUBJ,i,4,nd); tl=_v(LOP,SUBJ,i,5,tl); tiet=_v(LOP,SUBJ,i,6,tiet); tich=_v(LOP,SUBJ,i,7,tich); } /* bản trường, theo lớp + môn */
+    /* Nối phần QPAN / Việt–Lào / Kĩ năng sống vào SAU nội dung Năng lực số đã có. */
+    if(window.BX_khgdIntgAdd){
+      var _th=window.BX_khgdIntgAdd(LOP,SUBJ,r);
+      if(_th.length){
+        var _s=_th.map(function(p){return p[0]+': '+p[1];}).join('\n');
+        tich=String(tich==null?'':tich).trim(); tich=tich?(tich+'\n'+_s):_s;
+      }
+    }
     var hk=(parseInt(tuan,10)<=18)?'HỌC KÌ I':'HỌC KÌ II';
     if(hk!==prevHK){ prevHK=hk; prevChu='';prevTuan='';prevBai='';
       rows.push('<w:tr>'+bxTc(hk,totalW,{span:NC,color:NAVY,b:true,jc:'center',sz:20,bb:'solid'})+'</w:tr>'); }
@@ -7074,6 +7383,13 @@ function buildKHGDMonDocx(){
    ['NLS-GQVĐ','Miền 5 – Giải quyết vấn đề','Xác định nhu cầu thông tin, chọn giải pháp/công cụ số phù hợp, xử lí khi tra cứu chưa đạt.'],
    ['AI-NB','Miền 6 – Ứng dụng trí tuệ nhân tạo','Nhận biết/trải nghiệm AI do giáo viên kiểm soát; không tạo tài khoản AI; không để AI làm thay.'],
   ];
+  /* (25/8/2026) Ba mã lồng ghép mới — chỉ in dòng quy ước của nội dung ĐANG BẬT. */
+  /* Gọi QUA window: hàm gốc ở khối script khác — gọi tên trần là rơi vào giá trị mặc
+     định, in cả căn cứ của nội dung thầy cô đã tắt (vấp 25/8/2026). */
+  var _ts=(window.BX_intgState?window.BX_intgState():{digital:true,qpan:true,kns:true,vietlao:false});
+  if(_ts.qpan) QW.push(['QPAN','Giáo dục quốc phòng và an ninh (TT 08/2024/TT-BGDĐT)','Lồng ghép trong Tiếng Việt, Tự nhiên và Xã hội, Đạo đức, Lịch sử và Địa lí, Âm nhạc, Mĩ thuật, Hoạt động trải nghiệm; không làm thay đổi thời lượng và cấu trúc bài dạy.']);
+  if(_ts.vietlao) QW.push(['VN-LÀO','Giáo dục truyền thống hữu nghị Việt Nam – Lào','Nội dung giáo dục địa phương theo kế hoạch giáo dục của nhà trường; lồng ghép ở những bài có chỗ bám tự nhiên.']);
+  if(_ts.kns) QW.push(['KNS','Giáo dục kĩ năng sống (CT GDPT 2018; TT 04/2014/TT-BGDĐT)','Rèn kĩ năng tự phục vụ, giao tiếp, hợp tác, quản lí cảm xúc, ứng phó và tự bảo vệ ngay trong tiến trình bài dạy.']);
   var QWW=[1600,4200,8600];
   var qrows=QW.map(function(row,ri){return '<w:tr>'+row.map(function(c,ci){return bxTc(c,QWW[ci],{color:ri===0?NAVY:null,b:ri===0,jc:ci===0?'center':'left',sz:18});}).join('')+'</w:tr>';});
   var qwTbl='<w:tbl><w:tblPr><w:tblW w:w="14400" w:type="dxa"/><w:jc w:val="center"/>'+bxBorders(false)+'<w:tblLayout w:type="fixed"/></w:tblPr>'+
@@ -7099,6 +7415,9 @@ function buildKHGDMonDocx(){
     bxPara('- Sách giáo khoa môn '+SUBJ+' lớp '+LOP+' đang sử dụng tại nhà trường và các sách giáo khoa khác có trong danh mục được Bộ Giáo dục và Đào tạo phê duyệt.',{jc:'both',sz:20})+
     bxPara('- Công văn số 2345/BGDĐT-GDTH ngày 07/6/2021 của Bộ Giáo dục và Đào tạo về việc hướng dẫn xây dựng kế hoạch giáo dục của nhà trường cấp tiểu học.',{jc:'both',sz:20})+
     bxPara('- Thông tư số 02/2025/TT-BGDĐT ngày 24/01/2025 quy định Khung năng lực số cho người học và Công văn số 3456/BGDĐT-GDPT ngày 27/6/2025 về hướng dẫn triển khai Khung năng lực số cho học sinh phổ thông.',{jc:'both',sz:20})+
+    (_ts.qpan?bxPara('- Thông tư số 08/2024/TT-BGDĐT ngày 15/5/2024 của Bộ trưởng Bộ Giáo dục và Đào tạo hướng dẫn lồng ghép nội dung giáo dục quốc phòng và an ninh trong trường tiểu học, trường trung học cơ sở và trường phổ thông có nhiều cấp học; văn bản hướng dẫn thực hiện nhiệm vụ giáo dục quốc phòng và an ninh năm học của cấp có thẩm quyền.',{jc:'both',sz:20}):'')+
+    (_ts.kns?bxPara('- Thông tư số 04/2014/TT-BGDĐT ngày 28/02/2014 của Bộ trưởng Bộ Giáo dục và Đào tạo ban hành Quy định quản lí hoạt động giáo dục kĩ năng sống và hoạt động giáo dục ngoài giờ chính khoá.',{jc:'both',sz:20}):'')+
+    (_ts.vietlao?bxPara('- Tài liệu giáo dục địa phương và kế hoạch của nhà trường về giáo dục truyền thống hữu nghị Việt Nam – Lào (ghi bổ sung số, ngày văn bản của cấp có thẩm quyền): ……………………………………',{jc:'both',sz:20}):'')+
     bxPara('- Kế hoạch thời gian năm học '+nam+' và hướng dẫn thực hiện nhiệm vụ năm học của các cấp có thẩm quyền.',{jc:'both',sz:20})+
     bxPara('- Kế hoạch giáo dục của Trường Tiểu học '+truong+' năm học '+nam+'.',{jc:'both',sz:20,sp:120});
   var mucII=
@@ -7119,7 +7438,10 @@ function buildKHGDMonDocx(){
     bxPara('KẾ HOẠCH DẠY HỌC MÔN HỌC',{b:true,jc:'center',sz:28,color:NAVY})+
     bxPara('MÔN '+SUBJ.toUpperCase()+' – LỚP '+LOP,{b:true,jc:'center',sz:26,color:NAVY})+
     bxPara('NĂM HỌC '+nam,{b:true,jc:'center',sz:24,sp:60,color:NAVY})+
-    bxPara('(Lập theo Phụ lục 2 Công văn 2345/BGDĐT-GDTH; tích hợp Năng lực số/AI theo Thông tư 02/2025/TT-BGDĐT và Công văn 3456/BGDĐT-GDPT)',{i:true,jc:'center',sz:18,sp:160})+
+    bxPara('(Lập theo Phụ lục 2 Công văn 2345/BGDĐT-GDTH; lồng ghép Năng lực số/AI theo Thông tư 02/2025/TT-BGDĐT và Công văn 3456/BGDĐT-GDPT'+
+      (_ts.qpan?'; giáo dục quốc phòng và an ninh theo Thông tư 08/2024/TT-BGDĐT':'')+
+      (_ts.kns?'; giáo dục kĩ năng sống theo Thông tư 04/2014/TT-BGDĐT':'')+
+      (_ts.vietlao?'; giáo dục truyền thống hữu nghị Việt Nam – Lào theo nội dung giáo dục địa phương':'')+')',{i:true,jc:'center',sz:18,sp:160})+
     mucI+mucII+
     bxPara('III. KẾ HOẠCH DẠY HỌC MÔN '+SUBJ.toUpperCase(),{b:true,jc:'left',sz:22,sp:120,color:NAVY});
   /* Mức năng lực số theo Khung NLS: lớp 1–3 là Cơ bản 1, lớp 4–5 là Cơ bản 2.
@@ -7129,9 +7451,12 @@ function buildKHGDMonDocx(){
     : '“Cơ bản 2” (lớp 4–5: nhiệm vụ quen thuộc, tự chủ một phần và có hướng dẫn khi cần thiết)';
   var after=
     bxPara('',{})+
-    bxPara('QUY ƯỚC MÃ TÍCH HỢP NĂNG LỰC SỐ / AI',{b:true,jc:'left',sz:20,sp:80,color:NAVY})+qwTbl+
+    bxPara('QUY ƯỚC MÃ NỘI DUNG TÍCH HỢP, LỒNG GHÉP',{b:true,jc:'left',sz:20,sp:80,color:NAVY})+qwTbl+
     bxPara('',{})+
     bxPara('Ghi chú: Nội dung tích hợp Năng lực số/AI là gợi ý ở mức '+mucCB+'; giáo viên chọn lọc, lồng ghép tự nhiên theo yêu cầu cần đạt của bài, bảo đảm không làm thay đổi hay gây quá tải Chương trình giáo dục phổ thông 2018. AI chỉ ở mức nhận biết/trải nghiệm do giáo viên kiểm soát.',{i:true,jc:'both',sz:18,sp:200})+
+    (_ts.qpan?bxPara('Nội dung giáo dục quốc phòng và an ninh chỉ ghi ở những bài có địa chỉ lồng ghép phù hợp, trong các môn học và hoạt động giáo dục được Thông tư 08/2024/TT-BGDĐT quy định đối với cấp tiểu học; lồng ghép ngắn gọn, truyền cảm, dễ hiểu, phù hợp tâm lí lứa tuổi và không làm ảnh hưởng đến thời lượng, cấu trúc bài dạy.',{i:true,jc:'both',sz:18,sp:120}):'')+
+    (_ts.kns?bxPara('Nội dung giáo dục kĩ năng sống được rèn ngay trong tiến trình bài dạy, gắn với phẩm chất chủ yếu và năng lực chung của Chương trình giáo dục phổ thông 2018.',{i:true,jc:'both',sz:18,sp:120}):'')+
+    (_ts.vietlao?bxPara('Nội dung giáo dục truyền thống hữu nghị Việt Nam – Lào là nội dung giáo dục địa phương, thực hiện theo kế hoạch giáo dục của nhà trường và hướng dẫn của cấp có thẩm quyền.',{i:true,jc:'both',sz:18,sp:120}):'')+
     mucIV+
     signTbl;
 
@@ -7340,21 +7665,35 @@ function rowMatch(r){
   if(FK.q){ var hay=(r[2]+' '+r[3]+' '+r[4]+' '+r[1]).toLowerCase(); if(hay.indexOf(FK.q)<0) return false; }
   return true;
 }
-function editableCell(i,col,cls){
-  var v=esc(val(i,col));
+/* add = khối tích hợp sinh động (QPAN/Việt–Lào/KNS). Nó nằm NGOÀI vùng contenteditable
+   để thầy cô sửa ô không vô tình lưu luôn phần app tự sinh vào bản trường. */
+function editableCell(i,col,cls,add){
+  var v=esc(val(i,col)); add=add||'';
   if(EDIT && ECOLS[col]){
     var ed=isEdited(i,col)?' khgd-ce-edited':'';
     var extra=(col===7 && rowEdited(i))?'<div class="khgd-edited">✎ trường đã chỉnh · <a href="#" onclick="return BX_khgdResetRow('+i+')">↺ khôi phục dòng</a></div>':'';
-    return '<td class="'+(cls||'')+'"><div contenteditable="true" data-i="'+i+'" data-c="'+col+'" class="khgd-ce'+ed+'" onblur="BX_khgdSaveCell(this)" spellcheck="false">'+v+'</div>'+extra+'</td>';
+    return '<td class="'+(cls||'')+'"><div contenteditable="true" data-i="'+i+'" data-c="'+col+'" class="khgd-ce'+ed+'" onblur="BX_khgdSaveCell(this)" spellcheck="false">'+v+'</div>'+add+extra+'</td>';
   }
   var mk=isEdited(i,col)?' class="'+(cls?cls+' ':'')+'khgd-cell-edited"':(cls?' class="'+cls+'"':'');
-  return '<td'+mk+'>'+v+'</td>';
+  return '<td'+mk+'>'+v+add+'</td>';
+}
+/* HTML của phần lồng ghép QPAN / Việt – Lào / Kĩ năng sống cho một dòng KHDH. */
+function khgdIntgHtml(r){
+  if(!window.BX_khgdIntgAdd) return '';
+  var ds=window.BX_khgdIntgAdd(curLop(), cur(), r); if(!ds.length) return '';
+  return ds.map(function(p){
+    return '<div class="khgd-th"><b>'+esc(p[0])+':</b> '+esc(p[1])+'</div>';
+  }).join('');
 }
 function tableHtml(forPrint){
   var D=data();
   var ALLW=[5,15,12,12,22,6,7,21];
   var ALLHEAD=['Tuần','Chủ đề/Mạch nội dung','Tên bài','Tên hoạt động / Phân môn','Nội dung/Tên bài học','Thời lượng','Tiết KH','Nội dung điều chỉnh, bổ sung / tích hợp'];
-  var VIS=(window.BX_visibleCols?window.BX_visibleCols(D):[0,1,2,3,4,5,6,7]), NC=VIS.length;
+  var VIS=(window.BX_visibleCols?window.BX_visibleCols(D):[0,1,2,3,4,5,6,7]).slice();
+  /* Môn có cột 7 rỗng nhưng đang bật QPAN/Việt–Lào/KNS thì vẫn phải mở cột (vá cùng
+     lúc với bản Word — nếu không, thầy cô bật công tắc mà màn hình không đổi gì). */
+  if(VIS.indexOf(7)<0 && window.BX_khgdCoIntg && window.BX_khgdCoIntg(curLop(),cur(),D)){ VIS.push(7); VIS.sort(function(a,b){return a-b;}); }
+  var NC=VIS.length;
   var wsum=VIS.reduce(function(a,c){return a+ALLW[c];},0);
   var COLW=VIS.map(function(c){return (ALLW[c]/wsum*100).toFixed(1)+'%';});
   var HEAD=VIS.map(function(c){return ALLHEAD[c];});
@@ -7378,7 +7717,7 @@ function tableHtml(forPrint){
       4:(forPrint?'<td>'+esc(val(i,4))+'</td>':editableCell(i,4)),
       5:(forPrint?'<td class="c">'+esc(val(i,5))+'</td>':editableCell(i,5,'c')),
       6:(forPrint?'<td class="c">'+esc(val(i,6))+'</td>':editableCell(i,6,'c')),
-      7:(forPrint?'<td>'+esc(val(i,7))+'</td>':editableCell(i,7))
+      7:(forPrint?'<td>'+esc(val(i,7))+khgdIntgHtml(r)+'</td>':editableCell(i,7,null,khgdIntgHtml(r)))
     };
     out+='<tr'+trcls+'>'+VIS.map(function(c){return cells[c];}).join('')+'</tr>';
   }
@@ -7405,7 +7744,17 @@ window.renderKHDH=function(){
   var D=data(), tiet=0; D.forEach(function(r){ tiet+=BX_rowPeriods(r); });
   var L=window.BX_khgdEdit[curLop()], s=L&&L[cur()], ne=s?Object.keys(s).length:0;
   var info=document.getElementById('khdh-info');
-  if(info) info.innerHTML='Môn <b>'+esc(cur())+'</b> · Lớp <b>'+esc(curLop())+'</b> · <b>'+D.length+'</b> dòng / ~'+tiet+' tiết · bám SGK + tích hợp NLS/AI (TT02·CV3456)'+(ne?(' · <b style="color:'+NAVY+'">'+ne+' dòng trường đã chỉnh</b>'):'');
+  /* Đếm địa chỉ lồng ghép mới đang hiện — để thầy cô biết bật công tắc có tác dụng gì. */
+  var dQ=0,dV=0,dK=0;
+  if(window.BX_khgdIntgAdd) D.forEach(function(r){
+    window.BX_khgdIntgAdd(curLop(),cur(),r).forEach(function(p){
+      if(p[0]==='QPAN')dQ++; else if(p[0]==='VN-LÀO')dV++; else dK++;
+    });
+  });
+  var them=[]; if(dQ)them.push(dQ+' QPAN'); if(dV)them.push(dV+' Việt–Lào'); if(dK)them.push(dK+' KNS');
+  if(info) info.innerHTML='Môn <b>'+esc(cur())+'</b> · Lớp <b>'+esc(curLop())+'</b> · <b>'+D.length+'</b> dòng / ~'+tiet+' tiết · bám SGK + lồng ghép NLS/AI (TT02·CV3456)'+
+    (them.length?(' · <b style="color:#1f7d49">+'+them.join(' · ')+'</b>'):'')+
+    (ne?(' · <b style="color:'+NAVY+'">'+ne+' dòng trường đã chỉnh</b>'):'');
 };
 window.BX_khgdToggleEdit=function(){
   EDIT=!EDIT;
@@ -7426,11 +7775,18 @@ function styleOnce(){
     '#v-khdh .khgd-tbl td.chu{color:'+NAVY+';font-weight:700}'+
     '#v-khdh .khgd-tbl tr.wend>td{border-bottom:1.5px solid #4a5568}'+
     '#v-khdh .khgd-tbl tr.band>td{background:#eef5ee;color:'+NAVY+';font-weight:700;text-align:center;border:1px solid #9bb39b}'+
+    /* Trên điện thoại bảng 8 cột co lại còn ~70px/cột nên chữ rơi mỗi dòng một tiếng —
+       khối lồng ghép càng khó đọc. Khung bảng vốn đã cuộn ngang (khgd-wrap), nên chỉ cần
+       đặt bề rộng tối thiểu là chữ trở lại bình thường, thầy cô vuốt ngang để xem. */
+    '@media(max-width:760px){ #v-khdh .khgd-tbl{min-width:880px} }'+
     '#v-khdh .khgd-ce{min-height:18px;outline:none;border-radius:4px;padding:2px 4px;background:#fffdf2;box-shadow:0 0 0 1px #ffe08a inset}'+
     '#v-khdh .khgd-ce:focus{box-shadow:0 0 0 2px #f0b429 inset}'+
     '#v-khdh .khgd-ce-edited{background:#eef5ff;box-shadow:0 0 0 1px #9cc1f0 inset}'+
     '#v-khdh .khgd-cell-edited{background:#eef5ff}'+
     '#v-khdh .khgd-edited{font-size:11px;color:'+NAVY+';margin-top:3px}'+
+    /* Khối lồng ghép QPAN/Việt–Lào/KNS: app tự sinh, tách hẳn khỏi phần thầy cô gõ tay. */
+    '#v-khdh .khgd-th{font-size:11.5px;line-height:1.45;color:#3f5a49;background:#f2f9f4;border-left:2px solid #7fc79b;border-radius:0 5px 5px 0;padding:4px 7px;margin-top:5px}'+
+    '#v-khdh .khgd-th b{color:#1f7d49}'+
     '#v-khdh .khdh-bar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}'+
     '#v-khdh .khdh-filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}'+
     '#v-khdh .khdh-filters select,#v-khdh .khdh-filters input{padding:7px 10px;border:1px solid #d6e2da;border-radius:8px}';
@@ -7481,9 +7837,12 @@ function rebuild(){
     '</div>'+
     ghiChu+
     '<div id="khdh-edit-hint" style="display:none;margin:6px 0;padding:8px 10px;background:#fff8e6;border:1px solid #f0d089;border-radius:8px;font-size:13px;color:#7a5b12">✏️ <b>Đang chỉnh sửa theo kế hoạch riêng của trường.</b> Bấm vào ô để sửa (Phân môn, Nội dung/Tên bài, Thời lượng, Tiết KH, Nội dung điều chỉnh). Bản sửa lưu riêng theo từng môn — KHÔNG đè gốc, theo vào file khi <b>Tải KHDH về máy</b>.</div>'+
+    '<div style="font-size:12.5px;color:#5b6b61;margin:2px 0 6px">Nội dung lồng ghép — bấm để bật/tắt, kế hoạch và giáo án Word đổi theo ngay:</div>'+
+    '<div id="bx-intg-toggles-khdh"></div>'+
     '<div id="khdh-info" style="font-size:13px;color:#5b6b61;margin-bottom:6px"></div>'+
     '<div class="khgd-wrap"><div id="khdh-table"></div></div>'+
   '</div>';
+  if(window.BX_injectIntgFilterKHDH) window.BX_injectIntgFilterKHDH();
   renderKHDH();
 }
 function init(){ rebuild(); }
