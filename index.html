@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-25 · 74';
+  var PB='2026-08-25 · 75';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -6577,8 +6577,8 @@ var BX_QPAN_RULE={
   tv:[
     [/bac ho|ho chi minh/, 'Kể chuyện Bác Hồ với bộ đội, công an; giáo dục lòng biết ơn và niềm tự hào dân tộc.'],
     [/bo doi|chien si|quan doi|cong an|bien phong|hai quan|canh sat/, 'Giới thiệu {CL}; HS nói lời cảm ơn các chú bộ đội, chú công an.'],
-    [/bien|dao|hoang sa|truong sa|hai dao|bien gioi/, 'Liên hệ {CL}; HS nêu được biển, đảo là một phần lãnh thổ thiêng liêng của Tổ quốc.'],
-    [/anh hung|liet si|thuong binh|cach mang|khang chien|lich su|truyen thong/, 'Kể về tấm gương anh hùng, liệt sĩ; giáo dục {YC}.'],
+    [/biển|đảo|hoàng sa|trường sa|biên giới/, 'Liên hệ {CL}; HS nêu được biển, đảo là một phần lãnh thổ thiêng liêng của Tổ quốc.', 'dau'],
+    [/anh hung|liet si|thuong binh|cach mang|khang chien|lich su|truyen thong/, 'Kể về tấm gương anh hùng, liệt sĩ; giáo dục lòng biết ơn người có công với cách mạng và niềm tự hào về truyền thống dân tộc.'],
     [/hoa binh|doan ket|thieu nhi the gioi/, 'Giáo dục lòng yêu hoà bình, tinh thần đoàn kết; liên hệ {CL}.'],
     [/que huong|dat nuoc|to quoc|viet nam|non song|thu do|ha noi/, 'Bồi dưỡng tình yêu quê hương, đất nước; giới thiệu {CL}.']
   ],
@@ -6594,18 +6594,22 @@ var BX_QPAN_RULE={
     [/doan ket|hop tac|giup do|yeu thuong|hoa binh/, 'Giáo dục tinh thần đoàn kết, yêu hoà bình; liên hệ {CL}.']
   ],
   lsdl:[
-    [/ban do|luoc do|vi tri|lanh tho|bien gioi|dia gioi/, 'Sử dụng bản đồ hành chính Việt Nam để HS chỉ ra lãnh thổ, vùng biển, quần đảo Hoàng Sa và Trường Sa của Việt Nam.'],
-    [/bien|dao|hoang sa|truong sa|ven bien|thuy san|hai san/, 'Khẳng định chủ quyền, quyền chủ quyền của Việt Nam đối với biển, đảo; liên hệ việc khai thác thuỷ, hải sản gắn với nhiệm vụ quốc phòng, an ninh.'],
-    [/khoi nghia|khang chien|chien dich|chien thang|chong|xam luoc|giai phong|cach mang|anh hung|nha nuoc|trieu/, 'Giáo dục truyền thống dựng nước và giữ nước, tinh thần chống giặc ngoại xâm của dân tộc; liên hệ {CL}.'],
-    [/dan cu|dan toc|thanh pho|vung|dong bang|mien nui|tay nguyen|nam bo|trung bo|bac bo/, 'Liên hệ vai trò của mỗi vùng đối với quốc phòng, an ninh; giáo dục {YC}.']
+    [/bản đồ|lược đồ|vị trí|lãnh thổ|biên giới|địa giới/, 'Sử dụng bản đồ hành chính Việt Nam để HS chỉ ra lãnh thổ, vùng biển, quần đảo Hoàng Sa và Trường Sa của Việt Nam.', 'dau'],
+    [/biển|đảo|hoàng sa|trường sa|ven biển|thuỷ sản|thủy sản|hải sản/, 'Khẳng định chủ quyền, quyền chủ quyền của Việt Nam đối với biển, đảo; liên hệ việc khai thác thuỷ, hải sản gắn với nhiệm vụ quốc phòng, an ninh.', 'dau'],
+    /* Bài lịch sử KHÔNG chèn {CL} (chất liệu theo lớp): "Chiến dịch Điện Biên Phủ" mà nối
+       thêm câu về biển đảo, hay "Thăng Long – Hà Nội" nối câu về pháp luật giao thông thì
+       lệch hẳn ngữ cảnh bài. Nội dung dưới đây tự đủ, đúng chủ đề Thông tư 08/2024 nêu cho
+       tiểu học: truyền thống giữ nước và lòng biết ơn anh hùng, liệt sĩ. */
+    [/khoi nghia|khang chien|chien dich|chien thang|chong|xam luoc|giai phong|cach mang|anh hung|nha nuoc|trieu|thang long|kinh do|dinh do/, 'Giáo dục truyền thống dựng nước và giữ nước, tinh thần chống giặc ngoại xâm của dân tộc; bồi dưỡng niềm tự hào dân tộc và lòng biết ơn các anh hùng, liệt sĩ đã hi sinh bảo vệ Tổ quốc.'],
+    [/dân cư|dân tộc|thành phố|vùng|đồng bằng|miền núi|tây nguyên|nam bộ|trung bộ|bắc bộ|ven biển/, 'Liên hệ vai trò của mỗi vùng đối với quốc phòng, an ninh; giáo dục {YC}.', 'dau']
   ],
   amnhac:[
-    [/bien|dao|hoang sa|truong sa/, 'Cho HS nghe/hát bài hát về biển, đảo quê hương; qua đó giới thiệu {CL}.'],
+    [/biển|đảo|hoàng sa|trường sa/, 'Cho HS nghe/hát bài hát về biển, đảo quê hương; qua đó giới thiệu {CL}.', 'dau'],
     [/bo doi|chien si|quan doi|cong an|chu bo doi|hanh khuc|doi ca|quoc ca/, 'Cho HS nghe/hát bài hát về chú bộ đội, về Đội; giáo dục {YC}.'],
     [/que huong|dat nuoc|to quoc|viet nam|hoa binh|bac ho/, 'Chọn bài hát ca ngợi quê hương, đất nước, hoà bình; liên hệ {CL}.']
   ],
   mythuat:[
-    [/bo doi|chien si|quan doi|cong an|bien dao|bien|dao/, 'Hướng dẫn HS vẽ/tạo hình về chú bộ đội, về biển đảo quê hương; giới thiệu {CL}.'],
+    [/bộ đội|chiến sĩ|quân đội|công an|biển|đảo/, 'Hướng dẫn HS vẽ/tạo hình về chú bộ đội, về biển đảo quê hương; giới thiệu {CL}.', 'dau'],
     [/que huong|dat nuoc|le hoi|di tich|truyen thong|dan toc|trang phuc/, 'Cho HS thể hiện hình ảnh quê hương, di tích lịch sử địa phương; giáo dục {YC}.'],
     [/biet on|nguoi than|thay co|ngay le/, 'Gợi ý HS làm sản phẩm tặng chú bộ đội, gia đình thương binh, liệt sĩ nhân ngày lễ.']
   ],
@@ -6616,33 +6620,46 @@ var BX_QPAN_RULE={
     [/hoa binh|doan ket|ban be|the gioi/, 'Giáo dục lòng yêu hoà bình, tình đoàn kết; liên hệ {CL}.']
   ]
 };
-/* Việt – Lào: RẤT chọn lọc, chỉ những bài thật sự có chỗ bám. */
+/* Việt – Lào: RẤT chọn lọc, chỉ những bài thật sự có chỗ bám.
+   ⚠ Bài học rút ra 25/8/2026 khi rà bản Lịch sử và Địa lí: quy tắc rộng kiểu /vùng/,
+   /cách mạng/, /đoàn kết/ gắn Việt – Lào vào cả "Thiên nhiên vùng Nam Bộ" (vùng này
+   giáp Cam-pu-chia, KHÔNG giáp Lào) trong khi bài đúng nhất là "Nước Cộng hoà Dân chủ
+   Nhân dân Lào" lại bị bỏ sót. Nay: bài nào NHẮC TÊN LÀO thì chắc chắn có; còn lại chỉ
+   nhận các mốc thật sự gắn hai nước (biên giới, Trường Sơn, Đông Nam Á, Điện Biên Phủ). */
+/* Quy tắc "Lào" soi trên chữ CÒN DẤU: bỏ dấu thì "Lào" trùng lao động, gian lao, công lao —
+   bài "Lao động ở địa phương em" sẽ bị gắn hữu nghị Việt – Lào. */
+var BX_VLAO_CHUNG=[/(^|[^a-zà-ỹ])lào([^a-zà-ỹ]|$)/, 'Bài trực tiếp về nước bạn Lào: giới thiệu quan hệ hữu nghị vĩ đại, đoàn kết đặc biệt và hợp tác toàn diện Việt Nam – Lào; HS nêu được Lào là nước láng giềng anh em của Việt Nam.', 'dau'];
 var BX_VLAO_RULE={
   tv:[
-    [/tinh ban|ban be|nguoi ban|ban moi|ket ban/, 'Từ tình bạn trong bài, liên hệ tình hữu nghị đặc biệt Việt Nam – Lào; kể cho HS nghe về các bạn nhỏ nước bạn Lào.'],
-    [/hoa binh|doan ket|thieu nhi the gioi|nuoc ban|lang gieng|the gioi/, 'Giới thiệu Lào là nước láng giềng anh em; giáo dục tình đoàn kết, hữu nghị Việt Nam – Lào.'],
-    [/bien gioi|mien nui|vung cao|ban lang/, 'Liên hệ đời sống đồng bào vùng biên giới Việt – Lào; tình cảm gắn bó hai bên biên giới.']
+    BX_VLAO_CHUNG,
+    [/nuoc ban|huu nghi|thieu nhi the gioi/, 'Giới thiệu Lào là nước láng giềng anh em; giáo dục tình đoàn kết, hữu nghị Việt Nam – Lào.'],
+    [/biên giới|vùng biên/, 'Liên hệ đời sống đồng bào hai bên biên giới Việt – Lào; tình cảm gắn bó của nhân dân vùng biên.', 'dau']
   ],
   daoduc:[
-    [/doan ket|hop tac|yeu thuong|giup do|ton trong|khac biet|hoa binh/, 'Liên hệ tình đoàn kết, giúp đỡ lẫn nhau giữa hai dân tộc Việt Nam – Lào như những người anh em.'],
-    [/que huong|dat nuoc|to quoc/, 'Giới thiệu quan hệ hữu nghị vĩ đại, đoàn kết đặc biệt Việt Nam – Lào; HS biết yêu quý bạn bè nước bạn.']
+    BX_VLAO_CHUNG,
+    [/hoa binh|nuoc ban|huu nghi/, 'Liên hệ tình đoàn kết, giúp đỡ lẫn nhau giữa hai dân tộc Việt Nam – Lào như những người anh em.']
   ],
   lsdl:[
-    [/ban do|vi tri|lanh tho|bien gioi|lang gieng|khu vuc|dong nam a/, 'Chỉ trên bản đồ đường biên giới Việt Nam – Lào; giới thiệu quan hệ hữu nghị đặc biệt giữa hai nước.'],
-    [/khang chien|cach mang|chien dich|lien minh|doan ket/, 'Kể về liên minh chiến đấu Việt Nam – Lào trong kháng chiến; giáo dục lòng biết ơn và tình hữu nghị hai nước.'],
-    [/mien nui|dan toc|vung|tay bac|bac trung bo|truong son/, 'Liên hệ dãy Trường Sơn – biên giới tự nhiên gắn bó hai nước Việt – Lào.']
+    BX_VLAO_CHUNG,
+    [/dong nam a|asean|nuoc lang gieng|cac nuoc trong khu vuc/, 'Giới thiệu Lào là nước láng giềng cùng khu vực Đông Nam Á; quan hệ hữu nghị đặc biệt Việt Nam – Lào.'],
+    [/bien gioi|truong son|tay bac|bac trung bo|trung du va mien nui bac bo/, 'Chỉ trên bản đồ đường biên giới Việt Nam – Lào và dãy Trường Sơn – biên giới tự nhiên gắn bó hai nước.'],
+    [/dien bien phu|thuong lao|lien minh chien dau|quan tinh nguyen/, 'Kể về liên minh chiến đấu Việt Nam – Lào trong kháng chiến; giáo dục lòng biết ơn và tình hữu nghị hai nước.']
   ],
   tnxh:[
-    [/cong dong|lang xom|noi em song|dat nuoc|viet nam|le hoi/, 'Giới thiệu Lào là nước láng giềng của Việt Nam; HS nhận biết lá cờ, tên nước bạn Lào.']
+    BX_VLAO_CHUNG,
+    [/nuoc lang gieng|ban do viet nam/, 'Giới thiệu Lào là nước láng giềng của Việt Nam; HS nhận biết lá cờ, tên nước bạn Lào.']
   ],
   amnhac:[
-    [/hoa binh|doan ket|ban be|dan ca|nuoc ngoai|thieu nhi/, 'Cho HS nghe một làn điệu dân ca Lào hoặc bài hát về tình hữu nghị Việt – Lào.']
+    BX_VLAO_CHUNG,
+    [/hoa binh|thieu nhi the gioi|huu nghi/, 'Cho HS nghe một làn điệu dân ca Lào hoặc bài hát về tình hữu nghị Việt – Lào.']
   ],
   mythuat:[
-    [/le hoi|trang phuc|dan toc|van hoa|hoa van/, 'Giới thiệu nét hoa văn, trang phục truyền thống của nước bạn Lào để HS so sánh, cảm nhận.']
+    BX_VLAO_CHUNG,
+    [/nuoc ban|huu nghi/, 'Giới thiệu nét hoa văn, trang phục truyền thống của nước bạn Lào để HS so sánh, cảm nhận.']
   ],
   hdtn:[
-    [/hoa binh|doan ket|ban be|cong dong|giao luu|the gioi|van hoa/, 'Tổ chức hoạt động tìm hiểu đất nước, con người Lào; giáo dục tình hữu nghị đặc biệt Việt Nam – Lào.']
+    BX_VLAO_CHUNG,
+    [/hoa binh|thieu nhi the gioi|huu nghi|nuoc ban|giao luu quoc te/, 'Tổ chức hoạt động tìm hiểu đất nước, con người Lào; giáo dục tình hữu nghị đặc biệt Việt Nam – Lào.']
   ]
 };
 /* Kĩ năng sống: bám nhóm kĩ năng của Chương trình GDPT 2018 và Thông tư 04/2014. */
@@ -6714,12 +6731,18 @@ var BX_KNS_RULE={
     [/greeting|friend|family|school|unit|lesson/, 'KN giao tiếp: mạnh dạn chào hỏi, giới thiệu bản thân bằng câu đơn giản.']
   ]
 };
-/* Tìm nội dung khớp trong một bảng quy tắc; trả '' nếu không có địa chỉ phù hợp. */
+/* Tìm nội dung khớp trong một bảng quy tắc; trả '' nếu không có địa chỉ phù hợp.
+   Quy tắc có phần tử thứ 3 = 'dau' thì soi trên chuỗi CÒN DẤU.
+   ⚠ Vì sao cần: bỏ dấu làm "biển" và "biên" thành một. "Chiến dịch Điện Biên Phủ" bị nhận
+   là bài về BIỂN ĐẢO, giáo án in ra "khai thác thuỷ, hải sản gắn với quốc phòng" — sai
+   hẳn ngữ cảnh (đo được 25/8/2026 khi dựng bản mẫu Lịch sử và Địa lí lớp 5). Tương tự
+   "đảo" với "dao" (dân tộc Dao, dạo chơi), "Lào" với "lao động". */
 function BX_ruleHit(bang, monKey, ten, lop){
   var qt=bang[monKey]; if(!qt||!qt.length) return '';
+  var td=String(ten==null?'':ten).toLowerCase();
   var t=BX_kd(ten); if(!t) return '';
   for(var i=0;i<qt.length;i++){
-    if(qt[i][0].test(t)){
+    if(qt[i][0].test(qt[i][2]==='dau'?td:t)){
       var g=BX_qpanLop(lop);
       return String(qt[i][1]).replace('{CL}',g.cl).replace('{YC}',g.yc);
     }
@@ -6728,14 +6751,18 @@ function BX_ruleHit(bang, monKey, ten, lop){
 }
 /* Ba dòng tích hợp cho MỘT tiết — dùng chung cho KHDH môn học và giáo án Word.
    Trả mảng [[mã, nội dung], …]; rỗng nghĩa là tiết này không có địa chỉ phù hợp. */
-function BX_intg3(mon, ten, lop, st){
+/* tenHep = CHỈ tên bài (không kèm tên chủ đề). Việt – Lào dùng bản hẹp này: chủ đề vốn
+   trải dài nhiều bài, để nó tham gia thì "Ôn tập giữa học kì I" nằm trong chủ đề vùng
+   Bắc Trung Bộ cũng bị gắn hữu nghị Việt – Lào (đo được 25/8/2026). QPAN và kĩ năng sống
+   vẫn dùng tên rộng vì có môn — Mĩ thuật, HĐTN — tên bài chỉ ghi "Chủ đề n". */
+function BX_intg3(mon, ten, lop, st, tenHep){
   var s=st||BX_intgState(), mk=BX_monTH(mon), out=[];
   if(s.qpan && BX_QPAN_RULE[mk]){
     var a=BX_ruleHit(BX_QPAN_RULE, mk, ten, lop);
     if(a) out.push(['QPAN', a]);
   }
   if(s.vietlao && BX_VLAO_RULE[mk]){
-    var b=BX_ruleHit(BX_VLAO_RULE, mk, ten, lop);
+    var b=BX_ruleHit(BX_VLAO_RULE, mk, (tenHep==null?ten:tenHep), lop);
     if(b) out.push(['VN-LÀO', b]);
   }
   if(s.kns && BX_KNS_RULE[mk]){
@@ -6755,7 +6782,8 @@ window.BX_khgdIntgAdd=function(lop, mon, r){
   if(!r) return [];
   if(!String(r[5]==null?'':r[5]).trim()) return [];
   var ten=[r[1],r[2],r[4]].map(function(x){return String(x==null?'':x);}).join(' ');
-  return BX_intg3(mon, ten, lop);
+  var tenHep=[r[2],r[4]].map(function(x){return String(x==null?'':x);}).join(' ');
+  return BX_intg3(mon, ten, lop, null, tenHep);
 };
 /* Môn nào ĐANG có ít nhất một dòng sinh được nội dung tích hợp mới → cột 7 phải hiện,
    kể cả khi dữ liệu gốc của môn đó bỏ trống cột 7 (nếu không, BX_visibleCols ẩn cột
@@ -6776,8 +6804,13 @@ function BX_intgLines(ig, L, row){
       if(ig.digital_domain) out.push(['meta','• Miền NLS: '+ig.digital_domain+(ig.digital_competency?(' — '+ig.digital_competency):'')+' (mức '+ig.digital_level+')']);
     } else {
       var rn=BX_NLS_RULE[sk]||BX_NLS_RULE.other;
+      /* (25/8/2026) Trước đây ghi cứng "lớp 5: Cơ bản" nên giáo án lớp 1–4 cũng in chữ "lớp 5" —
+         thầy Chung phát hiện khi xem bản mẫu Lịch sử và Địa lí lớp 4. Khung năng lực số
+         (TT 02/2025): lớp 1–3 là Cơ bản 1, lớp 4–5 là Cơ bản 2. */
+      var _lopNLS=String((L&&(L.khoi||L.lop))||(row&&row.khoi)||(typeof state!=='undefined'&&state.khoi)||'5').replace(/\D/g,'')||'5';
+      var _cb=(['1','2','3'].indexOf(_lopNLS)>=0)?'Cơ bản 1':'Cơ bản 2';
       out.push(['hoatdong','• (Hoạt động NLS) '+rn.act]);
-      out.push(['meta','• Miền NLS: '+rn.domain+' (mức '+rn.level+' — lớp 5: Cơ bản) · gợi ý, GV điều chỉnh']);
+      out.push(['meta','• Miền NLS: '+rn.domain+' (mức '+rn.level+' — lớp '+_lopNLS+': '+_cb+') · gợi ý, GV điều chỉnh']);
     }
   }
   // 2) AI — ưu tiên dữ liệu duyệt; chưa có → chỉ sinh cho môn phù hợp, kèm lưu ý an toàn
