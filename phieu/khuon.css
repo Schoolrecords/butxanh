@@ -127,6 +127,19 @@ table.bl td.co { font-weight: bold; background: #fff; }
 .tap .o:before { content: ""; position: absolute; left: 2mm; right: 2mm; top: 50%; border-top: .8pt dashed #dfe6e2; }
 .tap .o svg { height: 25mm; position: relative; }
 .tap .ten { text-align: center; font-size: 9.5pt; color: #8aa093; margin-top: 1mm; }
+/* ===== Ô TẬP VIẾT CHỮ HOA THEO MẪU CHỮ VIẾT (lớp 1 – 2) =====
+   Nền kẻ ô li như vở Tập viết; chữ vẽ bằng nét SVG theo mẫu chữ viết hoa của Bộ GD&ĐT
+   (KHÔNG dùng font in — chữ in hoa "A" và chữ viết hoa "A" là hai kiểu chữ khác nhau,
+   học sinh lớp 1 – 2 tập viết theo mẫu chữ VIẾT).                                        */
+.tapviet { display: grid; grid-template-columns: repeat(5, 1fr); gap: 2.5mm; margin-top: 2mm; }
+.tapviet .o { border: 1.2pt solid #cfd8d2; border-radius: 2mm; height: 26mm; overflow: hidden;
+  background: #fff; display: flex; align-items: center; justify-content: center; }
+.tapviet.sau { grid-template-columns: repeat(6, 1fr); }
+.tapviet .o.rong2 { grid-column: span 2; }
+.tapviet .o.rong3 { grid-column: span 3; }
+.tapviet.cao .o { height: 32mm; }   /* hàng có chữ mang nét khuyết dưới (g, y) */
+.tapviet .o svg { width: 100%; height: 100%; display: block; }
+
 .viet { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3mm; margin-top: 2mm; }
 .viet .o { border: 1.2pt solid #cfd8d2; border-radius: 2mm; height: 26mm; display: flex;
   align-items: center; justify-content: center; }

@@ -21,6 +21,29 @@
      Bài đọc do Bút Xanh tự viết theo chủ điểm, KHÔNG chép của sách giáo khoa. -->
 <body class="mon-tv">
 
+<!-- MẪU CHỮ VIẾT do Bút Xanh dựng bằng nét SVG theo mẫu chữ viết của Bộ GD&ĐT.
+     KHÔNG dùng font chữ in: chữ in hoa "A" và chữ viết hoa "A" là hai kiểu chữ khác nhau,
+     lớp 1 – 2 tập viết theo mẫu chữ VIẾT. Nét vẽ sẵn nên máy nào in cũng ra đúng hình. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <pattern id="luoi-oli" x="0" y="-4" width="15" height="15" patternUnits="userSpaceOnUse">
+    <path d="M15 0V15M0 15H15" fill="none" stroke="#dce8f6" stroke-width=".7"/>
+  </pattern>
+  <g id="o-li" aria-hidden="true">
+    <rect x="-300" y="-200" width="3000" height="600" fill="url(#luoi-oli)"/>
+    <path d="M-300 56H2700" stroke="#c2d8ee" stroke-width=".9" fill="none"/>
+    <path d="M-300 86H2700" stroke="#8fb6de" stroke-width="1.1" fill="none"/></g>
+  <g id="cv-D" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 22 C 20 13 28 9 31 17 C 28 36 25 60 22 78 C 21 84 25 88 29 85 C 32 82 29 78 23 80"/>
+    <path d="M31 17 C 52 11 74 25 73 46 C 72 67 50 87 25 84"/></g>
+  <g id="cv-u" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 85 C 7 74 11 62 13 56 C 13 66 13 76 16 81 C 20 87 27 85 29 76 C 30 69 31 61 32 56 C 32 66 32 76 35 81 C 39 87 45 85 47 78"/></g>
+  <g id="cv-n" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 85 C 3 73 5 61 7 57 C 11 53 19 55 21 64 C 22 71 22 77 23 81 C 24 86 29 87 32 81"/></g>
+  <g id="cv-g" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M31 62 C 29 57 25 54 20 55 C 12 56 8 65 9 73 C 10 82 16 88 22 86 C 27 84 30 79 31 73"/>
+    <path d="M31 56 C 30 76 29 96 27 108 C 25 120 16 126 9 121 C 3 117 5 108 14 106"/></g>
+</defs></svg>
+
 <section class="trang">
   <div class="chim" aria-hidden="true"><div class="cx">
     <div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div>
@@ -108,16 +131,17 @@
     </table>
   </div>
 
-  <div class="bai"><div class="de"><b>Bài 4.</b> Tập viết chữ hoa <b>D</b> — tô theo nét chấm rồi viết tiếp:</div>
-    <div class="o-viet">
-      <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="60" text-anchor="middle"
-        font-family="Times New Roman, serif" font-size="58" stroke-width="2.2">D</text></svg></div>
-      <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="60" text-anchor="middle"
-        font-family="Times New Roman, serif" font-size="58" stroke-width="2.2">D</text></svg></div>
-      <div class="o"></div>
-      <div class="o"><svg viewBox="0 0 110 80"><text class="hv-cham" x="55" y="60" text-anchor="middle"
-        font-family="Times New Roman, serif" font-size="46" stroke-width="2">Dung</text></svg></div>
-      <div class="o"></div>
+  <div class="bai"><div class="de"><b>Bài 4.</b> Tập viết chữ hoa <b>D</b> rồi viết tên riêng <b>Dung</b> — tô chữ mờ rồi viết tiếp:</div>
+    <div class="tapviet">
+      <div class="o"><svg viewBox="0 -6 92 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#35566f"><use href="#cv-D" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 92 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-D" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+      <div class="o"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+      <div class="o"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+    </div>
+    <div class="tapviet cao">
+      <div class="o rong2"><svg viewBox="0 -6 222 134" preserveAspectRatio="xMinYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-D" x="6"/><use href="#cv-u" x="86"/><use href="#cv-n" x="138"/><use href="#cv-g" x="176"/></g></svg></div>
+      <div class="o rong3"><svg viewBox="0 -6 100 134" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
     </div>
   </div>
 
@@ -162,7 +186,7 @@
   <div class="bai"><b>Bài 3.</b> Chỉ <b>sự vật</b>: <span class="gia">cô giáo · viên phấn · quyển vở</span>.
     Chỉ <b>hoạt động</b>: <span class="gia">viết bảng · đỡ dậy · kể chuyện</span>.</div>
   <div class="bai"><b>Bài 4.</b> Tô rồi viết chữ hoa <span class="gia">D</span> và tên riêng
-    <span class="gia">Dung</span>.</div>
+    <span class="gia">Dung</span>. <i>(Chữ mẫu trong ô là <b>mẫu chữ viết hoa</b> — nhắc học sinh viết theo nét chữ viết, không viết chữ in hoa.)</i></div>
   <div class="bai"><b>Bài 5.</b> Thời gian biểu mở. Yêu cầu: <b>mỗi mốc giờ ghi một việc cụ thể</b>,
     viết thành cụm từ ngắn gọn. Ví dụ: 18 giờ — ăn cơm tối cùng gia đình · 19 giờ — học bài ·
     20 giờ — xem hoạt hình, chuẩn bị sách vở · 21 giờ — đánh răng, đi ngủ.</div>

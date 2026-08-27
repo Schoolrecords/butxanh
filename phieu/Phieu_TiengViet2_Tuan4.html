@@ -23,6 +23,28 @@
      Bài đọc do Bút Xanh tự viết theo chủ điểm, KHÔNG chép của sách giáo khoa. -->
 <body class="mon-tv">
 
+<!-- MẪU CHỮ VIẾT do Bút Xanh dựng bằng nét SVG theo mẫu chữ viết của Bộ GD&ĐT.
+     KHÔNG dùng font chữ in: chữ in hoa "A" và chữ viết hoa "A" là hai kiểu chữ khác nhau,
+     lớp 1 – 2 tập viết theo mẫu chữ VIẾT. Nét vẽ sẵn nên máy nào in cũng ra đúng hình. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <pattern id="luoi-oli" x="0" y="-4" width="15" height="15" patternUnits="userSpaceOnUse">
+    <path d="M15 0V15M0 15H15" fill="none" stroke="#dce8f6" stroke-width=".7"/>
+  </pattern>
+  <g id="o-li" aria-hidden="true">
+    <rect x="-300" y="-200" width="3000" height="600" fill="url(#luoi-oli)"/>
+    <path d="M-300 56H2700" stroke="#c2d8ee" stroke-width=".9" fill="none"/>
+    <path d="M-300 86H2700" stroke="#8fb6de" stroke-width="1.1" fill="none"/></g>
+  <g id="cv-C" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M70 26 C 66 17 60 12 52 14 C 47 15 45 20 49 21 C 53 22 54 17 50 16 C 42 14 30 20 24 34 C 16 50 19 70 31 80 C 41 88 57 85 68 73"/></g>
+  <g id="cv-a" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M31 62 C 29 57 25 54 20 55 C 12 56 8 65 9 73 C 10 82 16 88 22 86 C 27 84 30 79 31 73"/>
+    <path d="M31 56 C 30 66 30 76 30 80 C 30 84 33 87 38 83"/></g>
+  <g id="cv-u" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 85 C 7 74 11 62 13 56 C 13 66 13 76 16 81 C 20 87 27 85 29 76 C 30 69 31 61 32 56 C 32 66 32 76 35 81 C 39 87 45 85 47 78"/></g>
+  <path id="d-mu" d="M0 0 L 8 -8 L 16 0" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path id="d-huyen" d="M0 0 L 7 5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+</defs></svg>
+
 <!-- Tranh do Bút Xanh tự vẽ, không lấy từ sách giáo khoa (bản quyền NXB Giáo dục Việt Nam). -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
   <!-- Bạn nhỏ đá bóng trên sân, có khung thành phía sau -->
@@ -147,16 +169,17 @@
     <div class="ke hep" style="margin-left:6mm"><div class="d"></div><div class="d"></div></div>
   </div>
 
-  <div class="bai"><div class="de"><b>Bài 4.</b> Tập viết chữ hoa <b>C</b> — tô theo nét chấm rồi viết tiếp:</div>
-    <div class="o-viet">
-      <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="60" text-anchor="middle"
-        font-family="Times New Roman, serif" font-size="58" stroke-width="2.2">C</text></svg></div>
-      <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="60" text-anchor="middle"
-        font-family="Times New Roman, serif" font-size="58" stroke-width="2.2">C</text></svg></div>
-      <div class="o"></div>
-      <div class="o"><svg viewBox="0 0 110 80"><text class="hv-cham" x="55" y="60" text-anchor="middle"
-        font-family="Times New Roman, serif" font-size="48" stroke-width="2">Cầu</text></svg></div>
-      <div class="o"></div>
+  <div class="bai"><div class="de"><b>Bài 4.</b> Tập viết chữ hoa <b>C</b> rồi viết tiếng <b>Cầu</b> — tô chữ mờ rồi viết tiếp:</div>
+    <div class="tapviet">
+      <div class="o"><svg viewBox="0 -6 86 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#35566f"><use href="#cv-C" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 86 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-C" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+      <div class="o"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+      <div class="o"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+    </div>
+    <div class="tapviet">
+      <div class="o rong2"><svg viewBox="0 -6 180 106" preserveAspectRatio="xMinYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-C" x="6"/><use href="#cv-a" x="80"/><use href="#cv-u" x="122"/><use href="#d-mu" x="92" y="48"/><use href="#d-huyen" x="91" y="37"/></g></svg></div>
+      <div class="o rong3"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
     </div>
   </div>
 
@@ -200,7 +223,7 @@
   <div class="bai"><b>Bài 3.</b> Câu mở. Ví dụ: <i>“Em đá cầu cùng các bạn ở sân trường.”</i>
     Câu phải có đủ <b>Ai</b> + <b>làm gì</b>, đầu câu viết hoa, cuối câu có dấu chấm.</div>
   <div class="bai"><b>Bài 4.</b> Tô rồi viết chữ hoa <span class="gia">C</span> và tiếng
-    <span class="gia">Cầu</span>.</div>
+    <span class="gia">Cầu</span>. <i>(Chữ mẫu trong ô là <b>mẫu chữ viết hoa</b> — nhắc học sinh viết theo nét chữ viết, không viết chữ in hoa.)</i></div>
   <div class="bai"><b>Bài 5.</b> Đoạn mở. Đủ ý là được: <i>chơi trò gì · chơi ở đâu, với ai · cảm nghĩ</i>.
     Ví dụ: <i>“Chiều thứ Bảy, em chơi nhảy dây cùng các bạn ở sân nhà văn hoá. Em nhảy được hai mươi
     cái liền. Em thấy rất vui và hơi mỏi chân.”</i></div>

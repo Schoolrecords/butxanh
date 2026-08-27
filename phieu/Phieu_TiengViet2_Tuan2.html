@@ -25,6 +25,25 @@
      Bài đọc do Bút Xanh tự viết theo chủ điểm, KHÔNG chép của sách giáo khoa. -->
 <body class="mon-tv">
 
+<!-- MẪU CHỮ VIẾT do Bút Xanh dựng bằng nét SVG theo mẫu chữ viết của Bộ GD&ĐT.
+     KHÔNG dùng font chữ in: chữ in hoa "A" và chữ viết hoa "A" là hai kiểu chữ khác nhau,
+     lớp 1 – 2 tập viết theo mẫu chữ VIẾT. Nét vẽ sẵn nên máy nào in cũng ra đúng hình. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <pattern id="luoi-oli" x="0" y="-4" width="15" height="15" patternUnits="userSpaceOnUse">
+    <path d="M15 0V15M0 15H15" fill="none" stroke="#dce8f6" stroke-width=".7"/>
+  </pattern>
+  <g id="o-li" aria-hidden="true">
+    <rect x="-300" y="-200" width="3000" height="600" fill="url(#luoi-oli)"/>
+    <path d="M-300 56H2700" stroke="#c2d8ee" stroke-width=".9" fill="none"/>
+    <path d="M-300 86H2700" stroke="#8fb6de" stroke-width="1.1" fill="none"/></g>
+  <g id="cv-A" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M67 11 C 60 24 52 40 45 57 C 40 70 33 85 22 85 C 13 85 8 78 8 69 C 8 61 12 56 18 55"/>
+    <path d="M67 11 C 69 30 70 55 70 72 C 70 80 74 85 80 85 C 86 85 90 79 91 71"/>
+    <path d="M37 49 C 45 45 55 46 63 47 C 70 48 75 47 78 45"/></g>
+  <path id="d-trang-hoa" d="M0 0 C 2 9 20 9 22 0" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path id="d-mu-hoa" d="M0 0 L 11 -11 L 22 0" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+</defs></svg>
+
 <!-- Tranh do Bút Xanh tự vẽ, không lấy từ sách giáo khoa (bản quyền NXB Giáo dục Việt Nam). -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
   <!-- hai anh em quét sân, có cái chổi và đống lá -->
@@ -148,16 +167,14 @@
     <div class="ke hep" style="margin-left:6mm"><div class="d"></div><div class="d"></div></div>
   </div>
 
-  <div class="bai"><div class="de"><b>Bài 4.</b> Tập viết chữ hoa <b>Ă</b>, <b>Â</b> — tô theo nét chấm rồi viết tiếp:</div>
-    <div class="o-viet">
-      <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="60" text-anchor="middle"
-        font-family="Times New Roman, serif" font-size="58" stroke-width="2.2">Ă</text></svg></div>
-      <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="60" text-anchor="middle"
-        font-family="Times New Roman, serif" font-size="58" stroke-width="2.2">Ă</text></svg></div>
-      <div class="o"></div>
-      <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="60" text-anchor="middle"
-        font-family="Times New Roman, serif" font-size="58" stroke-width="2.2">Â</text></svg></div>
-      <div class="o"></div>
+  <div class="bai"><div class="de"><b>Bài 4.</b> Tập viết chữ hoa <b>Ă</b>, <b>Â</b> — tô chữ mờ rồi viết tiếp:</div>
+    <div class="tapviet sau">
+      <div class="o"><svg viewBox="0 -18 104 118" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#35566f"><use href="#cv-A" x="6"/><use href="#d-trang-hoa" x="62" y="-4"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -18 104 118" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-A" x="6"/><use href="#d-trang-hoa" x="62" y="-4"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -18 100 118" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+      <div class="o"><svg viewBox="0 -18 104 118" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#35566f"><use href="#cv-A" x="6"/><use href="#d-mu-hoa" x="62" y="-2"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -18 104 118" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-A" x="6"/><use href="#d-mu-hoa" x="62" y="-2"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -18 100 118" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
     </div>
   </div>
 
@@ -200,7 +217,7 @@
     Từ chỉ <b>hoạt động</b>: <span class="gia">quét sân · hót rác · cười</span>.</div>
   <div class="bai"><b>Bài 3.</b> Câu mở. Ví dụ: <i>“Em quét nhà giúp mẹ.”</i> · <i>“Em rửa bát cùng chị.”</i>
     Câu phải có đủ <b>Ai</b> + <b>làm gì</b>, đầu câu viết hoa, cuối câu có dấu chấm.</div>
-  <div class="bai"><b>Bài 4.</b> Tô rồi viết chữ hoa <span class="gia">Ă</span> và <span class="gia">Â</span>.
+  <div class="bai"><b>Bài 4.</b> Tô rồi viết chữ hoa <span class="gia">Ă</span> và <span class="gia">Â</span>. <i>(Chữ mẫu trong ô là <b>mẫu chữ viết hoa</b> — nhắc học sinh viết theo nét chữ viết, không viết chữ in hoa.)</i>
     Hai chữ này viết như chữ A, chỉ khác phần dấu ở trên: Ă có dấu cong (như cái võng), Â có dấu mũ.</div>
   <div class="bai"><b>Bài 5.</b> Đoạn mở. Đủ ý là được: <i>việc đã làm · làm cùng ai · cảm nghĩ</i>.
     Ví dụ: <i>“Chủ nhật vừa rồi, em giúp mẹ nhặt rau. Em ngồi cùng mẹ ở hiên nhà. Em thấy rất vui
