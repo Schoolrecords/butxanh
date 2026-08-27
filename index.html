@@ -3901,12 +3901,17 @@ var BX_PHIEU_TT_NGAY=[
   {ma:'25-8', ten:'25/8', thu:'Thứ Ba'},
   {ma:'26-8', ten:'26/8', thu:'Thứ Tư'}
 ];
+/* ẨN TỪ 27/8/2026 (thầy Chung): mùa tựu trường đã xong, phiếu đã làm tròn việc nên
+   dải "Ôn luyện tựu trường" không hiện nữa. 30 tệp vẫn nằm nguyên trong web/phieu/ và
+   vẫn mở được bằng đường dẫn trực tiếp — chỉ là app không bày ra.
+   ĐỂ BẬT LẠI (mùa tựu trường sau): điền lại mã ngày vào đúng ô, ví dụ
+   'L1|Toán':['24-8','25-8','26-8'] — không phải sửa gì khác.                              */
 var BX_PHIEU_TT={
-  'L1|Toán':['24-8','25-8','26-8'], 'L1|Tiếng Việt':['24-8','25-8','26-8'],
-  'L2|Toán':['24-8','25-8','26-8'], 'L2|Tiếng Việt':['24-8','25-8','26-8'],
-  'L3|Toán':['24-8','25-8','26-8'], 'L3|Tiếng Việt':['24-8','25-8','26-8'],
-  'L4|Toán':['24-8','25-8','26-8'], 'L4|Tiếng Việt':['24-8','25-8','26-8'],
-  'L5|Toán':['24-8','25-8','26-8'], 'L5|Tiếng Việt':['24-8','25-8','26-8']
+  'L1|Toán':[], 'L1|Tiếng Việt':[],
+  'L2|Toán':[], 'L2|Tiếng Việt':[],
+  'L3|Toán':[], 'L3|Tiếng Việt':[],
+  'L4|Toán':[], 'L4|Tiếng Việt':[],
+  'L5|Toán':[], 'L5|Tiếng Việt':[]
 };
 function BX_phieuTTCo(lop,mon,ma){
   var ds=BX_PHIEU_TT[BX_phieuKey(lop,mon)]||[];

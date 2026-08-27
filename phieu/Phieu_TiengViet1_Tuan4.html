@@ -21,6 +21,21 @@
 .noi .cot.trai .item > svg { margin: 0 auto; }
 .noi .cot.phai .item { justify-content: center; font-size: 25pt; font-weight: bold; }
 </style>
+<style>
+/* Ô tập viết theo mẫu chữ viết — nền kẻ ô li như vở Tập viết */
+.tapviet { display: grid; grid-template-columns: repeat(5, 1fr); gap: 2.5mm; margin-top: 2mm; }
+.tapviet.sau { grid-template-columns: repeat(6, 1fr); }
+.tapviet.bay { grid-template-columns: repeat(7, 1fr); }
+.tapviet.tam { grid-template-columns: repeat(8, 1fr); }
+.tapviet .o { border: 1.2pt solid #cfd8d2; border-radius: 2mm; height: 26mm; overflow: hidden;
+  background: #fff; display: flex; align-items: center; justify-content: center; }
+.tapviet .o.rong2 { grid-column: span 2; }
+.tapviet .o.rong3 { grid-column: span 3; }
+.tapviet.cao .o { height: 32mm; }   /* hàng có chữ mang nét khuyết dưới (g, y) */
+.tapviet.thap .o { height: 21mm; }  /* hàng nhiều ô nhỏ: chữ cái rời, nét cơ bản */
+.tapviet .o svg { width: 100%; height: 100%; display: block; }
+.tapviet .ten { grid-column: span 1; text-align: center; font-size: 8.5pt; color: #8aa093; margin-top: -1mm; }
+</style>
 </head>
 <!-- ===== PHIẾU BÀI TẬP CUỐI TUẦN · BÚT XANH — TIẾNG VIỆT 1, TUẦN 4 =====
      Bám kế hoạch giáo dục của app (khgd-lop1.js), tuần 4 — phần HỌC ÂM:
@@ -33,6 +48,31 @@
      vì các em rất hay đọc tách thành "c-h", "k-h".
      Yêu cầu nào cũng có dấu 🔊 để người lớn đọc hộ. -->
 <body class="mon-tv lop1">
+
+<!-- MẪU CHỮ VIẾT do Bút Xanh dựng bằng nét SVG theo mẫu chữ viết của Bộ GD&ĐT.
+     KHÔNG dùng font chữ in: chữ in hoa "A" và chữ viết hoa "A" là hai kiểu chữ khác nhau,
+     lớp 1 – 2 tập viết theo mẫu chữ VIẾT. Nét vẽ sẵn nên máy nào in cũng ra đúng hình. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <pattern id="luoi-oli" x="0" y="-4" width="15" height="15" patternUnits="userSpaceOnUse">
+    <path d="M15 0V15M0 15H15" fill="none" stroke="#dce8f6" stroke-width=".7"/>
+  </pattern>
+  <g id="o-li" aria-hidden="true">
+    <rect x="-300" y="-200" width="3000" height="600" fill="url(#luoi-oli)"/>
+    <path d="M-300 56H2700" stroke="#c2d8ee" stroke-width=".9" fill="none"/>
+    <path d="M-300 86H2700" stroke="#8fb6de" stroke-width="1.1" fill="none"/></g>
+  <g id="cv-i" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 84 C 5 76 9 62 12 56 C 13 63 14 73 15 79 C 16 84 20 87 24 82"/><circle cx="13" cy="47" r="1.9" fill="currentColor" stroke="none"/></g>
+  <g id="cv-k" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 36 C 12 22 18 11 24 11 C 29 11 29 20 24 30 C 20 42 16 66 15 78 C 14 84 15 87 18 86"/><path d="M38 56 C 31 63 25 69 19 73 C 25 72 29 75 28 79 C 27 83 21 83 20 79 C 19 76 21 73 24 73 C 28 76 32 82 36 85 C 40 88 44 85 45 80"/></g>
+  <g id="cv-h" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 36 C 12 22 18 11 24 11 C 29 11 29 20 24 30 C 20 42 17 62 16 78 C 15 84 16 87 18 86"/><path d="M16 72 C 18 61 23 55 29 55 C 35 55 37 62 36 70 C 35 76 35 80 36 82 C 37 86 41 87 45 82"/></g>
+  <g id="cv-l" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 36 C 12 22 18 11 24 11 C 29 11 29 20 24 30 C 20 42 16 66 15 78 C 14 84 18 88 23 83"/></g>
+  <g id="cv-u" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 85 C 7 74 11 62 13 56 C 13 66 13 76 16 81 C 20 87 27 85 29 76 C 30 69 31 61 32 56 C 32 66 32 76 35 81 C 39 87 45 85 47 78"/></g>
+  <g id="cv-c" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M33 62 C 30 57 26 55 21 55 C 12 55 7 63 7 71 C 7 79 12 87 20 87 C 25 87 30 84 33 79"/></g>
+  <path id="d-rau" d="M0 9 C 4 2 10 0 12 4 C 13 8 11 10 8 10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <g id="cv-i2" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 84 C 5 76 9 62 12 56 C 13 63 14 73 15 79 C 16 84 20 87 24 82"/></g>
+  <g id="cv-o" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 55 C 12 55 7 63 7 71 C 7 79 12 87 20 87 C 28 87 33 79 33 71 C 33 63 28 55 20 55Z"/></g>
+  <path id="d-hoi" d="M0 5 C 1 -1 8 -1 8 4 C 8 9 4 10 2 13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path id="d-sac" d="M0 8 L 8 0" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path id="d-mu" d="M0 0 L 8 -8 L 16 0" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+</defs></svg>
 
 <!-- Hình do Bút Xanh tự vẽ, KHÔNG lấy từ sách giáo khoa (bản quyền NXB Giáo dục Việt Nam). -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -132,26 +172,28 @@
     Nhớ đọc <b>ch</b>, <b>kh</b> liền một hơi, đừng tách rời nhé.</span></div>
 
   <div class="bai">
-    <div class="de"><span class="loa">🔊</span><span class="n">Bài 1.</span><span>Tô theo nét chấm các chữ mới học.</span></div>
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 1.</span><span>Tô các chữ <b>i, k, h, l, u, ư</b> và <b>ch, kh</b> theo chữ mờ rồi viết lại:</span></div>
     <div class="o-lam">
-      <div class="chu-to">
-        <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="62" text-anchor="middle"
-          font-family="Times New Roman, serif" font-size="62" stroke-width="2.4">i</text></svg></div>
-        <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="62" text-anchor="middle"
-          font-family="Times New Roman, serif" font-size="62" stroke-width="2.4">k</text></svg></div>
-        <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="62" text-anchor="middle"
-          font-family="Times New Roman, serif" font-size="62" stroke-width="2.4">h</text></svg></div>
-        <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="62" text-anchor="middle"
-          font-family="Times New Roman, serif" font-size="62" stroke-width="2.4">l</text></svg></div>
-        <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="62" text-anchor="middle"
-          font-family="Times New Roman, serif" font-size="62" stroke-width="2.4">u</text></svg></div>
-        <div class="o"><svg viewBox="0 0 60 80"><text class="hv-cham" x="30" y="62" text-anchor="middle"
-          font-family="Times New Roman, serif" font-size="62" stroke-width="2.4">ư</text></svg></div>
-        <div class="o"><svg viewBox="0 0 90 80"><text class="hv-cham" x="45" y="62" text-anchor="middle"
-          font-family="Times New Roman, serif" font-size="58" stroke-width="2.2">ch</text></svg></div>
-        <div class="o"><svg viewBox="0 0 90 80"><text class="hv-cham" x="45" y="62" text-anchor="middle"
-          font-family="Times New Roman, serif" font-size="58" stroke-width="2.2">kh</text></svg></div>
-      </div>
+    <div class="tapviet tam thap">
+      <div class="o"><svg viewBox="0 -6 40 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-i" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 62 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-k" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 64 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-h" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 44 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-l" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 64 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-u" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 64 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-u" x="6"/><use href="#d-rau" x="50" y="44"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 104 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-c" x="6"/><use href="#cv-h" x="46"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 114 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-k" x="6"/><use href="#cv-h" x="56"/></g></svg></div>
+    </div>
+    <div class="tapviet tam thap">
+      <div class="o"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+      <div class="o"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+      <div class="o"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+      <div class="o"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+      <div class="o"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+      <div class="o"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+      <div class="o"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+      <div class="o"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+    </div>
     </div>
   </div>
 
@@ -228,17 +270,18 @@
   </div>
 
   <div class="bai">
-    <div class="de"><span class="loa">🔊</span><span class="n">Bài 6.</span><span>Tô theo nét chấm rồi viết tiếp.</span></div>
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 6.</span><span>Tô tiếng theo chữ mờ rồi viết lại vào ô dưới:</span></div>
     <div class="o-lam">
-      <div class="chu-to">
-        <div class="o"><svg viewBox="0 0 110 80"><text class="hv-cham" x="55" y="62" text-anchor="middle"
-          font-family="Times New Roman, serif" font-size="54" stroke-width="2.2">khỉ</text></svg></div>
-        <div class="o"><svg viewBox="0 0 110 80"><text class="hv-cham" x="55" y="62" text-anchor="middle"
-          font-family="Times New Roman, serif" font-size="54" stroke-width="2.2">chó</text></svg></div>
-        <div class="o"><svg viewBox="0 0 110 80"><text class="hv-cham" x="55" y="62" text-anchor="middle"
-          font-family="Times New Roman, serif" font-size="54" stroke-width="2.2">hổ</text></svg></div>
-        <div class="o"></div>
-      </div>
+    <div class="tapviet sau">
+      <div class="o rong2"><svg viewBox="0 -6 142 106" preserveAspectRatio="xMinYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-k" x="6"/><use href="#cv-h" x="56"/><use href="#cv-i2" x="108"/><use href="#d-hoi" x="118" y="40"/></g></svg></div>
+      <div class="o rong2"><svg viewBox="0 -6 144 106" preserveAspectRatio="xMinYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-c" x="6"/><use href="#cv-h" x="46"/><use href="#cv-o" x="98"/><use href="#d-sac" x="114" y="42"/></g></svg></div>
+      <div class="o rong2"><svg viewBox="0 -6 104 106" preserveAspectRatio="xMinYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-h" x="6"/><use href="#cv-o" x="58"/><use href="#d-mu" x="70" y="46"/><use href="#d-hoi" x="72" y="30"/></g></svg></div>
+    </div>
+    <div class="tapviet sau">
+      <div class="o rong2"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+      <div class="o rong2"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+      <div class="o rong2"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+    </div>
     </div>
   </div>
 

@@ -22,6 +22,21 @@
 /* bài nối: hình nằm GIỮA ô, chấm nối vẫn bám mép — nhìn cân, không lệch hẳn về một bên */
 .noi .cot.trai .item > svg { margin: 0 auto; }
 </style>
+<style>
+/* Ô tập viết theo mẫu chữ viết — nền kẻ ô li như vở Tập viết */
+.tapviet { display: grid; grid-template-columns: repeat(5, 1fr); gap: 2.5mm; margin-top: 2mm; }
+.tapviet.sau { grid-template-columns: repeat(6, 1fr); }
+.tapviet.bay { grid-template-columns: repeat(7, 1fr); }
+.tapviet.tam { grid-template-columns: repeat(8, 1fr); }
+.tapviet .o { border: 1.2pt solid #cfd8d2; border-radius: 2mm; height: 26mm; overflow: hidden;
+  background: #fff; display: flex; align-items: center; justify-content: center; }
+.tapviet .o.rong2 { grid-column: span 2; }
+.tapviet .o.rong3 { grid-column: span 3; }
+.tapviet.cao .o { height: 32mm; }   /* hàng có chữ mang nét khuyết dưới (g, y) */
+.tapviet.thap .o { height: 21mm; }  /* hàng nhiều ô nhỏ: chữ cái rời, nét cơ bản */
+.tapviet .o svg { width: 100%; height: 100%; display: block; }
+.tapviet .ten { grid-column: span 1; text-align: center; font-size: 8.5pt; color: #8aa093; margin-top: -1mm; }
+</style>
 </head>
 <!-- ===== PHIẾU BÀI TẬP CUỐI TUẦN · BÚT XANH — TIẾNG VIỆT 1, TUẦN 1 =====
      Bám chương trình KNTT tuần 1 = phần LÀM QUEN: trường lớp – đồ dùng học tập · tư thế đọc viết ·
@@ -30,6 +45,36 @@
      ⚠️ Học sinh chưa đọc được chữ → mọi yêu cầu có dấu 🔊 để người lớn đọc hộ; việc của các em là
      TÔ · NỐI · KHOANH · ĐẾM. Giữ nguyên tắc chung: không khoanh sẵn đáp án, không tô nền đậm. -->
 <body class="mon-tv lop1">
+
+<!-- MẪU CHỮ VIẾT do Bút Xanh dựng bằng nét SVG theo mẫu chữ viết của Bộ GD&ĐT.
+     KHÔNG dùng font chữ in: chữ in hoa "A" và chữ viết hoa "A" là hai kiểu chữ khác nhau,
+     lớp 1 – 2 tập viết theo mẫu chữ VIẾT. Nét vẽ sẵn nên máy nào in cũng ra đúng hình. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <pattern id="luoi-oli" x="0" y="-4" width="15" height="15" patternUnits="userSpaceOnUse">
+    <path d="M15 0V15M0 15H15" fill="none" stroke="#dce8f6" stroke-width=".7"/>
+  </pattern>
+  <g id="o-li" aria-hidden="true">
+    <rect x="-300" y="-200" width="3000" height="600" fill="url(#luoi-oli)"/>
+    <path d="M-300 56H2700" stroke="#c2d8ee" stroke-width=".9" fill="none"/>
+    <path d="M-300 86H2700" stroke="#8fb6de" stroke-width="1.1" fill="none"/></g>
+  <g id="nc-ngang" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 71 H 38"/></g>
+  <g id="nc-so" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 56 V 86"/></g>
+  <g id="nc-xien-phai" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 86 L 26 56"/></g>
+  <g id="nc-xien-trai" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M26 86 L 6 56"/></g>
+  <g id="nc-moc-xuoi" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 56 C 8 68 8 78 9 81 C 10 86 15 88 20 82"/></g>
+  <g id="nc-moc-nguoc" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 66 C 7 59 12 54 17 56 C 21 58 21 66 21 74 C 21 80 21 84 22 86"/></g>
+  <g id="nc-moc-2dau" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 64 C 6 57 11 53 15 57 C 18 60 18 67 18 74 C 18 80 18 83 19 85 C 20 88 25 88 28 83"/></g>
+  <g id="nc-cong-trai" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M31 60 C 26 55 17 55 12 62 C 6 70 7 80 13 85 C 19 90 27 88 31 83"/></g>
+  <g id="nc-cong-phai" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 60 C 14 55 23 55 28 62 C 34 70 33 80 27 85 C 21 90 13 88 9 83"/></g>
+  <g id="nc-cong-kin" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 55 C 12 55 7 63 7 71 C 7 79 12 87 20 87 C 28 87 33 79 33 71 C 33 63 28 55 20 55Z"/></g>
+  <g id="nc-khuyet-tren" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 36 C 12 22 18 11 24 11 C 29 11 29 20 24 30 C 20 42 16 66 15 78 C 14 84 18 88 23 83"/></g>
+  <g id="nc-khuyet-duoi" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 56 C 9 70 8 96 6 108 C 4 120 13 126 20 121 C 26 117 24 108 15 106"/></g>
+  <g id="cv-s1" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 40 C 13 36 18 30 21 26 C 21 46 21 68 21 86"/></g>
+  <g id="cv-s2" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 40 C 9 30 17 24 25 27 C 34 30 35 41 27 50 C 20 58 12 70 7 86 C 16 86 26 86 33 86"/></g>
+  <g id="cv-s3" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 36 C 11 28 21 24 28 28 C 35 32 32 43 22 46 C 32 46 38 55 34 65 C 30 76 16 80 7 74"/></g>
+  <g id="cv-s4" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M27 86 C 27 66 27 44 27 26 C 21 40 13 55 5 68 C 15 68 26 68 36 68"/></g>
+  <g id="cv-s5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M31 27 C 25 27 18 27 12 27 C 11 36 10 45 9 53 C 16 47 27 48 31 57 C 36 68 29 80 18 80 C 13 80 9 78 6 74"/></g>
+</defs></svg>
 
 <!-- ==================================================================
      BỘ HÌNH VẼ — dựng lại toàn bộ ngày 17/8/2026 (thầy Chung: "chất lượng hình ảnh tệ quá,
@@ -231,72 +276,46 @@
     nào, nên phiếu chỉ có tô, nối, khoanh.</span></div>
 
   <div class="bai">
-    <div class="de"><span class="loa">🔊</span><span class="n">Bài 1.</span><span>Tô theo nét chấm các nét cơ bản.</span></div>
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 1.</span><span>Tô các <b>nét cơ bản</b> theo chữ mờ:</span></div>
     <div class="o-lam">
-      <div class="tap">
-        <div>
-          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M20 6v48"/></svg></div>
-          <div class="ten">nét thẳng đứng</div>
-        </div>
-        <div>
-          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M5 30h30"/></svg></div>
-          <div class="ten">nét ngang</div>
-        </div>
-        <div>
-          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M9 54L31 6"/></svg></div>
-          <div class="ten">nét xiên phải</div>
-        </div>
-        <div>
-          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M31 54L9 6"/></svg></div>
-          <div class="ten">nét xiên trái</div>
-        </div>
-        <div>
-          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M12 8v34c0 6 5 9 10 9s10-3 10-9"/></svg></div>
-          <div class="ten">nét móc xuôi</div>
-        </div>
-      </div>
-      <div class="tap" style="margin-top:3mm">
-        <div>
-          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M8 20c0-6 5-9 10-9s10 3 10 9v32"/></svg></div>
-          <div class="ten">nét móc ngược</div>
-        </div>
-        <div>
-          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M28 12a15 18 0 100 36"/></svg></div>
-          <div class="ten">nét cong trái</div>
-        </div>
-        <div>
-          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M12 12a15 18 0 0 1 0 36"/></svg></div>
-          <div class="ten">nét cong phải</div>
-        </div>
-        <div>
-          <div class="o"><svg viewBox="0 0 40 60"><circle class="hv-cham" cx="20" cy="30" r="13"/></svg></div>
-          <div class="ten">nét cong kín</div>
-        </div>
-        <div>
-          <!-- nét khuyết trên: vòng khuyết ở phía trên rồi kéo thẳng xuống (nét của chữ h, l, b) -->
-          <div class="o"><svg viewBox="0 0 40 60"><path class="hv-cham" d="M24 54V20c0-9-10-11-10-3 0 5 4 6 10 3"/></svg></div>
-          <div class="ten">nét khuyết trên</div>
-        </div>
-      </div>
+    <div class="tapviet sau thap">
+      <div class="o"><svg viewBox="0 -6 56 126" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#nc-ngang" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 42 126" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#nc-so" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 46 126" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#nc-xien-phai" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 46 126" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#nc-xien-trai" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 46 126" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#nc-moc-xuoi" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 46 126" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#nc-moc-nguoc" x="6"/></g></svg></div>
+    </div>
+    <div class="tapviet sau ten-net"><div class="ten">nét ngang</div><div class="ten">nét sổ thẳng</div><div class="ten">nét xiên phải</div><div class="ten">nét xiên trái</div><div class="ten">nét móc xuôi</div><div class="ten">nét móc ngược</div></div>
+    <div class="tapviet sau thap">
+      <div class="o"><svg viewBox="0 -6 46 126" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#nc-moc-2dau" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 52 126" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#nc-cong-trai" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 52 126" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#nc-cong-phai" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 52 126" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#nc-cong-kin" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 48 126" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#nc-khuyet-tren" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 48 126" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#nc-khuyet-duoi" x="6"/></g></svg></div>
+    </div>
+    <div class="tapviet sau ten-net"><div class="ten">nét móc hai đầu</div><div class="ten">nét cong trái</div><div class="ten">nét cong phải</div><div class="ten">nét cong kín</div><div class="ten">nét khuyết trên</div><div class="ten">nét khuyết dưới</div></div>
     </div>
   </div>
 
   <div class="bai">
-    <div class="de"><span class="loa">🔊</span><span class="n">Bài 2.</span><span>Tô theo nét chấm các chữ số.</span></div>
+    <div class="de"><span class="loa">🔊</span><span class="n">Bài 2.</span><span>Tô các <b>chữ số</b> theo chữ mờ rồi viết lại vào ô trống:</span></div>
     <div class="o-lam">
-      <div class="tap sau">
-        <div class="o"><svg viewBox="0 0 60 90"><text class="hv-cham" x="30" y="72" text-anchor="middle"
-          font-family="Times New Roman, serif" font-size="80" stroke-width="2.4">1</text></svg></div>
-        <div class="o"><svg viewBox="0 0 60 90"><text class="hv-cham" x="30" y="72" text-anchor="middle"
-          font-family="Times New Roman, serif" font-size="80" stroke-width="2.4">2</text></svg></div>
-        <div class="o"><svg viewBox="0 0 60 90"><text class="hv-cham" x="30" y="72" text-anchor="middle"
-          font-family="Times New Roman, serif" font-size="80" stroke-width="2.4">3</text></svg></div>
-        <div class="o"><svg viewBox="0 0 60 90"><text class="hv-cham" x="30" y="72" text-anchor="middle"
-          font-family="Times New Roman, serif" font-size="80" stroke-width="2.4">4</text></svg></div>
-        <div class="o"><svg viewBox="0 0 60 90"><text class="hv-cham" x="30" y="72" text-anchor="middle"
-          font-family="Times New Roman, serif" font-size="80" stroke-width="2.4">5</text></svg></div>
-        <div class="o"></div>
-      </div>
+    <div class="tapviet thap">
+      <div class="o"><svg viewBox="0 -6 46 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-s1" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 52 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-s2" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 52 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-s3" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 54 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-s4" x="6"/></g></svg></div>
+      <div class="o"><svg viewBox="0 -6 52 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><g color="#aebfd0"><use href="#cv-s5" x="6"/></g></svg></div>
+    </div>
+    <div class="tapviet thap">
+      <div class="o"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+      <div class="o"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+      <div class="o"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+      <div class="o"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+      <div class="o"><svg viewBox="0 -6 100 106" preserveAspectRatio="xMidYMid meet"><use href="#o-li"/><circle cx="50" cy="56" r="2" fill="#b9c9d8"/></svg></div>
+    </div>
     </div>
   </div>
 
