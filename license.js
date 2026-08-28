@@ -73,6 +73,16 @@
   function fmtLuc(ms){ if(!ms) return '—'; try{ var d=new Date(ms);
     return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+' '+('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear();
   }catch(e){ return '—'; } }
+  /* (28/8/2026) Cột "Vào lần cuối" — giờ ngày + khoảng cách để quét mắt cả bảng cho nhanh.
+     ÉP SỐ vì lanCuoi là trường MÁY NGƯỜI DÙNG ghi được (cùng lệ với hai trường ép số ở
+     bảng quản trị): có ép thì không ai chèn được thẻ HTML vào bảng của quản trị. */
+  function fmtLanCuoi(ms){
+    ms=Number(ms)||0; if(!ms) return '<span style="color:#889">—</span>';
+    var ngay=Math.floor((Date.now()-ms)/86400000);
+    var nhan=(ngay<=0?'hôm nay':(ngay===1?'hôm qua':ngay+' ngày trước'));
+    var mau=(ngay<=7?'#0b8043':(ngay<=30?'#8a6d0b':'#b00020'));
+    return fmtLuc(ms)+'<br><span style="font-size:11px;font-weight:700;color:'+mau+'">'+nhan+'</span>';
+  }
   /* Bỏ dấu để tìm kiếm không phân biệt hoa thường/dấu ("hoa" ra "Hoà") */
   function bodau(s){ try{ return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d'); }catch(e){ return String(s||'').toLowerCase(); } }
 
@@ -698,8 +708,8 @@
         '<input id="bxlic-tim" type="search" placeholder="🔍 Tìm theo tên, email, mã CK…" oninput="BXLIC_timLoc(this.value)" '+
         'style="width:100%;box-sizing:border-box;margin:0 0 10px;padding:10px 12px;font-size:15px;border:1.5px solid #cfe0d6;border-radius:10px;outline:none">';
       html+='<div class="bxlic-tblwrap"><table class="bxlic-tbl"><thead><tr>'+
-        '<th>Họ tên / Email</th><th>Mã CK</th><th>Trạng thái</th><th>Kích hoạt lúc</th><th>Hết hạn</th><th>Đổi máy</th><th>Quyền (khối : môn)</th><th>Thao tác</th></tr></thead><tbody id="bxlic-admrows">';
-      if(!rows.length){ html+='<tr><td colspan="8" style="text-align:center;color:#889;padding:16px">Chưa có tài khoản nào yêu cầu.</td></tr>'; }
+        '<th>Họ tên / Email</th><th>Mã CK</th><th>Trạng thái</th><th>Kích hoạt lúc</th><th>Vào lần cuối</th><th>Hết hạn</th><th>Đổi máy</th><th>Quyền (khối : môn)</th><th>Thao tác</th></tr></thead><tbody id="bxlic-admrows">';
+      if(!rows.length){ html+='<tr><td colspan="9" style="text-align:center;color:#889;padding:16px">Chưa có tài khoản nào yêu cầu.</td></tr>'; }
       var MOI_MS=3*24*60*60*1000, nowTs=Date.now();
       rows.forEach(function(x){
         var r=x.r, ok=!!r.daTraPhi;
@@ -713,6 +723,7 @@
           '<td><code>'+esc(r.maCK||maCKof(x.uid))+'</code></td>'+
           '<td><span class="bxlic-tag '+(ok?'ok':'no')+'">'+(ok?'Đã trả':'Chưa')+'</span></td>'+
           '<td style="white-space:nowrap">'+(ok?fmtLuc(r.kichHoatTs||r.ngayTra):'—')+'</td>'+
+          '<td style="white-space:nowrap">'+fmtLanCuoi(r.lanCuoi)+'</td>'+
           '<td>'+fmtDate(r.ngayHetHan)+'</td>'+
           /* Ép SỐ hai trường client-ghi-được — chặn chèn mã vào bảng admin (phản biện 9/8) */
           '<td>💻'+(Number(r.soLanDoiMay)||0)+'/'+CONFIG.SO_LAN_DOI_MAY_TOI_DA+
@@ -1141,6 +1152,16 @@
     /* .catch rỗng: mạng chập chờn thì lượt ghi phụ này hỏng cũng không sao, nhưng thiếu nó là
        Console ném "Unhandled promise rejection" — đo thấy 19/8/2026 khi giả lập rớt mạng. */
     try{ db.ref('licenses/'+u.uid).update({ email:u.email||'', hoTen:u.displayName||'', maCK:maCKof(u.uid) }).catch(function(){}); }catch(e){}
+    /* (28/8/2026) MỐC TRUY CẬP — cột "Vào lần cuối" của trang Quản trị, để biết thầy cô nào
+       lâu rồi không mở app mà còn gọi hỏi thăm.
+       · Ghi RIÊNG một lượt, KHÔNG gộp vào lượt update ngay trên: Firebase ghi trọn gói hoặc
+         không ghi gì, gộp thì hôm nào luật chưa kịp mở khoá 'lanCuoi' là mất luôn email/họ tên
+         của người vừa đăng ký. Tách ra thì hỏng cái nào chỉ mất cái đó.
+       · Đặt ở onUser (đúng 1 lượt mỗi lần đăng nhập/mở app), KHÔNG đặt trong applyLicense:
+         applyLicense chạy theo MỌI tín hiệu realtime của chính nhánh này, ghi ở đó là
+         ghi → dội về → ghi tiếp, đúng cái vòng lặp đã đốt băng thông hồi tháng 7.
+       · ServerValue.TIMESTAMP: lấy giờ máy chủ, máy thầy cô đặt sai ngày cũng không lệch. */
+    try{ db.ref('licenses/'+u.uid+'/lanCuoi').set(firebase.database.ServerValue.TIMESTAMP).catch(function(){}); }catch(e){}
   }
 
   function boot(){
