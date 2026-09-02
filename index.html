@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-02 · 88';
+  var PB='2026-09-02 · 89';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -2101,7 +2101,7 @@ window.bxMergeKho = function(){
           <label class="fld"><span>Họ và tên</span><input id="set-name" value="Bút Xanh"></label>
           <label class="fld"><span>Cấp / Khối</span><input id="set-grade" value="" placeholder="Giáo viên Tiểu học — Lớp …"></label>
           <label class="fld"><span>Trường</span><input id="set-school" value="" placeholder="Tên trường…"></label>
-          <label class="fld"><span>Xã/Phường (UBND)</span><input id="set-xa" value="" placeholder="VD: Quảng Châu"></label>
+          <label class="fld"><span>Xã/Phường (UBND)</span><input id="set-xa" value="" placeholder="Tên xã/phường (in dòng UBND XÃ …)"></label>
           <label class="fld"><span>Hiệu trưởng</span><input id="set-hieutruong" value="" placeholder="Họ tên Hiệu trưởng (in ở ô ký)"></label>
           <label class="fld"><span>Năm học</span><input id="set-year" value="2026 - 2027"></label>
           <label class="fld"><span>Tổ chuyên môn</span><input id="set-team" placeholder="Tổ…"></label>
@@ -7573,7 +7573,7 @@ function buildKHGDPhuLuc2(LOP,dsMon){
      (16/8/2026: trước đây là 3 ô "Phê duyệt BGH / Tổ trưởng CM / Người lập" — không có trong mẫu.) */
   var _pf={}; try{ _pf=JSON.parse(localStorage.getItem('butxanh_profile')||'{}'); }catch(e){}
   var xa=String(_pf.xa||state.xa||'……………').trim().toUpperCase();
-  /* "Trường Tiểu học Quảng Châu 1" / "TH Quảng Châu 1" → "QUẢNG CHÂU 1" (dòng in sẵn "TRƯỜNG TIỂU HỌC") */
+  /* "Trường Tiểu học Hoa Sen" / "TH Hoa Sen" → "HOA SEN" (dòng in sẵn "TRƯỜNG TIỂU HỌC"); mọi tên đều lấy từ Cài đặt, không ghi cứng trường nào */
   var truong=String(_pf.school||state.truong||'……………').replace(/^\s*(trường\s+)?(tiểu\s*học|th)\s+/i,'').trim().toUpperCase();
   var truongTen=String(_pf.school||state.truong||'……………').replace(/^\s*(trường\s+)?(tiểu\s*học|th)\s+/i,'').trim(); /* giữ nguyên hoa/thường cho câu văn mục I */
   var nam=(state.year||_pf.year||'2026 – 2027');
