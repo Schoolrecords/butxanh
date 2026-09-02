@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-02 · 87';
+  var PB='2026-09-02 · 88';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -7575,6 +7575,7 @@ function buildKHGDPhuLuc2(LOP,dsMon){
   var xa=String(_pf.xa||state.xa||'……………').trim().toUpperCase();
   /* "Trường Tiểu học Quảng Châu 1" / "TH Quảng Châu 1" → "QUẢNG CHÂU 1" (dòng in sẵn "TRƯỜNG TIỂU HỌC") */
   var truong=String(_pf.school||state.truong||'……………').replace(/^\s*(trường\s+)?(tiểu\s*học|th)\s+/i,'').trim().toUpperCase();
+  var truongTen=String(_pf.school||state.truong||'……………').replace(/^\s*(trường\s+)?(tiểu\s*học|th)\s+/i,'').trim(); /* giữ nguyên hoa/thường cho câu văn mục I */
   var nam=(state.year||_pf.year||'2026 – 2027');
   var noiKy=String(_pf.place||_pf.xa||'…').trim(), hieuTruong=String(_pf.hieuTruong||'').trim();
   var ngayThang=noiKy+', ngày … tháng … năm '+((state.year||'2026').match(/(20\d{2})/)||['','2026'])[1];
@@ -7597,7 +7598,7 @@ function buildKHGDPhuLuc2(LOP,dsMon){
     (_ts.kns?bxPara('- Thông tư số 04/2014/TT-BGDĐT ngày 28/02/2014 của Bộ trưởng Bộ Giáo dục và Đào tạo ban hành Quy định quản lí hoạt động giáo dục kĩ năng sống và hoạt động giáo dục ngoài giờ chính khoá.',{jc:'both',sz:25,sb:80}):'')+
     (_ts.vietlao?bxPara('- Tài liệu giáo dục địa phương và kế hoạch của nhà trường về giáo dục truyền thống hữu nghị Việt Nam – Lào (ghi bổ sung số, ngày văn bản của cấp có thẩm quyền): ……………………………………',{jc:'both',sz:25,sb:80}):'')+
     bxPara('- Kế hoạch thời gian thực hiện chương trình các môn học của nhà trường năm học '+nam+'; hướng dẫn thực hiện nhiệm vụ năm học và hướng dẫn thực hiện các môn học, hoạt động giáo dục của các cấp có thẩm quyền.',{jc:'both',sz:25,sb:80})+
-    bxPara('- Kế hoạch giáo dục của Trường Tiểu học '+truong+' năm học '+nam+'.',{jc:'both',sz:25,sb:80});
+    bxPara('- Kế hoạch giáo dục của Trường Tiểu học '+truongTen+' năm học '+nam+'.',{jc:'both',sz:25,sb:80});
   var mucII=
     bxPara('II. ĐIỀU KIỆN THỰC HIỆN CÁC MÔN HỌC, HOẠT ĐỘNG GIÁO DỤC',{b:true,jc:'left',sz:25,sb:80})+
     bxPara('1. Đội ngũ giáo viên: …………………………………………………………………………………',{jc:'left',sz:25,sb:80})+
