@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-02 · 86';
+  var PB='2026-09-02 · 87';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -2101,6 +2101,8 @@ window.bxMergeKho = function(){
           <label class="fld"><span>Họ và tên</span><input id="set-name" value="Bút Xanh"></label>
           <label class="fld"><span>Cấp / Khối</span><input id="set-grade" value="" placeholder="Giáo viên Tiểu học — Lớp …"></label>
           <label class="fld"><span>Trường</span><input id="set-school" value="" placeholder="Tên trường…"></label>
+          <label class="fld"><span>Xã/Phường (UBND)</span><input id="set-xa" value="" placeholder="VD: Quảng Châu"></label>
+          <label class="fld"><span>Hiệu trưởng</span><input id="set-hieutruong" value="" placeholder="Họ tên Hiệu trưởng (in ở ô ký)"></label>
           <label class="fld"><span>Năm học</span><input id="set-year" value="2026 - 2027"></label>
           <label class="fld"><span>Tổ chuyên môn</span><input id="set-team" placeholder="Tổ…"></label>
           <label class="fld"><span>Lớp giảng dạy</span><input id="set-class" placeholder="VD: 5A"></label>
@@ -5831,6 +5833,7 @@ function loadSettings(){
   /* Chưa khai "Cấp / Khối" thì gợi ý theo lớp đang dạy, không ghi cứng Lớp 5A nữa */
   el('set-grade').value=p.grade||('Giáo viên Tiểu học — Lớp '+(p.klass||state.klass||''));
   if(p.school)el('set-school').value=p.school; if(p.year)el('set-year').value=p.year;
+  if(el('set-xa')) el('set-xa').value=p.xa||''; if(el('set-hieutruong')) el('set-hieutruong').value=p.hieuTruong||'';
   if(p.team)el('set-team').value=p.team;
   el('set-class').value=p.klass||state.klass; el('set-week').value=p.week||state.week; el('set-place').value=p.place||state.place;
   el('set-from').value=p.from||state.from; el('set-to').value=p.to||state.to;
@@ -5880,6 +5883,7 @@ function syncStaticLabels(){
 el('set-save').onclick=function(){
   const p={xung:el('set-xung').value,name:el('set-name').value,grade:el('set-grade').value,school:el('set-school').value,year:el('set-year').value,team:el('set-team').value,
     klass:el('set-class').value.trim(),week:el('set-week').value.trim(),place:el('set-place').value.trim(),
+    xa:(el('set-xa')?el('set-xa').value.trim():''),hieuTruong:(el('set-hieutruong')?el('set-hieutruong').value.trim():''),
     from:el('set-from').value.trim(),to:el('set-to').value.trim(),
     khbdIV:(el('set-khbd-iv')&&el('set-khbd-iv').value)||state.khbdIV||'auto'};
   try{localStorage.setItem('butxanh_profile',JSON.stringify(p));}catch(e){}
@@ -7439,7 +7443,8 @@ function bxRuns(text,o){o=o||{};
   return String(text==null?'':text).split('\n').map(function(ln,i){return '<w:r>'+rpr+(i>0?'<w:br/>':'')+'<w:t xml:space="preserve">'+_xe(ln)+'</w:t></w:r>';}).join('');
 }
 function bxPara(text,o){o=o||{};var jc=o.jc?'<w:jc w:val="'+o.jc+'"/>':'';var sp=o.sp!=null?o.sp:0;
-  return '<w:p><w:pPr><w:spacing w:after="'+sp+'" w:line="240" w:lineRule="auto"/>'+jc+'</w:pPr>'+bxRuns(text,o)+'</w:p>';}
+  var sb=o.sb!=null?(' w:before="'+o.sb+'"'):'';
+  return '<w:p><w:pPr><w:spacing'+sb+' w:after="'+sp+'" w:line="240" w:lineRule="auto"/>'+jc+'</w:pPr>'+bxRuns(text,o)+'</w:p>';}
 function bxTc(text,w,o){o=o||{};
   var span=o.span?'<w:gridSpan w:val="'+o.span+'"/>':'';
   /* (16/8/2026) o.vm: gộp ô theo CHIỀU DỌC cho bảng 2 tầng tiêu đề của Phụ lục 2 CV 2345.
@@ -7482,11 +7487,11 @@ window.BX_visibleCols=function(DATA){
 var KHGD_MAU_COLS=[850,2500,4350,1500,4200,1000]; /* tổng 14400 */
 function bxKHGDBangMau(LOP,SUBJ,DATA){
   var totalW=14400, COLS=KHGD_MAU_COLS, NC=6, rows=[];
-  var hdr=function(t,w,o){ return bxTc(t,w,Object.assign({color:NAVY,b:true,jc:'center',sz:18},o||{})); };
+  var hdr=function(t,w,o){ return bxTc(t,w,Object.assign({b:true,jc:'center',sz:18},o||{})); };
   var wNhom=COLS[1]+COLS[2]+COLS[3];
   /* Ô "Nội dung điều chỉnh, bổ sung" mang 2 đoạn: tiêu đề đậm + chú thích nghiêng đúng chữ mẫu */
   var oDC='<w:tc><w:tcPr><w:tcW w:w="'+COLS[4]+'" w:type="dxa"/><w:vMerge w:val="restart"/><w:vAlign w:val="center"/></w:tcPr>'+
-    bxPara('Nội dung điều chỉnh, bổ sung (nếu có)',{b:true,color:NAVY,jc:'center',sz:18})+
+    bxPara('Nội dung điều chỉnh, bổ sung (nếu có)',{b:true,jc:'center',sz:18})+
     bxPara('(Những điều chỉnh về nội dung, thời lượng, thiết bị dạy học và học liệu tham khảo; xây dựng chủ đề học tập, bổ sung tích hợp liên môn; thời gian và hình thức tổ chức…)',{i:true,jc:'center',sz:15})+
     '</w:tc>';
   var h1=hdr('Tuần, tháng',COLS[0],{vm:'restart'})+hdr('Chương trình và sách giáo khoa',wNhom,{span:3,bb:'solid'})+oDC+hdr('Ghi chú',COLS[5],{vm:'restart'});
@@ -7509,7 +7514,7 @@ function bxKHGDBangMau(LOP,SUBJ,DATA){
     }
     var hk=(parseInt(tuan,10)<=18)?'HỌC KÌ I':'HỌC KÌ II';
     if(hk!==prevHK){ prevHK=hk; prevChu='';prevTuan='';prevBai='';
-      rows.push('<w:tr>'+bxTc(hk,totalW,{span:NC,color:NAVY,b:true,jc:'center',sz:20,bb:'solid'})+'</w:tr>'); }
+      rows.push('<w:tr>'+bxTc(hk,totalW,{span:NC,b:true,jc:'center',sz:20,bb:'solid'})+'</w:tr>'); }
     var showChu=chude!==prevChu; if(showChu){prevChu=chude;prevBai='';}
     var showTuan=tuan!==prevTuan; if(showTuan)prevTuan=tuan;
     var showBai=bai!==prevBai; if(showBai)prevBai=bai;
@@ -7525,7 +7530,7 @@ function bxKHGDBangMau(LOP,SUBJ,DATA){
     var tietHoc=tietTxt?('Tiết '+tietTxt+(tlTxt?' ('+tlTxt+')':'')):tlTxt;
     rows.push('<w:tr>'+
       bxTc(showTuan?tuan:'',COLS[0],{jc:'center',bb})+
-      bxTc(showChu?chude:'',COLS[1],{b:showChu,color:showChu?NAVY:null,bb})+
+      bxTc(showChu?chude:'',COLS[1],{b:showChu,bb})+
       bxTc(tenBai,COLS[2],{bb})+
       bxTc(tietHoc,COLS[3],{jc:'center',bb})+
       bxTc(tich,COLS[4],{sz:17,bb})+
@@ -7560,60 +7565,69 @@ function buildKHGDPhuLuc2(LOP,dsMon){
   if(_ts.kns) QW.push(['KNS','Giáo dục kĩ năng sống (CT GDPT 2018; TT 04/2014/TT-BGDĐT)','Rèn kĩ năng tự phục vụ, giao tiếp, hợp tác, quản lí cảm xúc, ứng phó và tự bảo vệ ngay trong tiến trình bài dạy.']);
   if(_ts.dinhchinh) QW.push(['ĐÍNH CHÍNH','Điều chỉnh, bổ sung nội dung sách giáo khoa','Nội dung sách giáo khoa được cập nhật cho chính xác, khoa học theo tài liệu tập huấn của cơ quan quản lí; không phải nội dung tích hợp.']);
   var QWW=[1600,4200,8600];
-  var qrows=QW.map(function(row,ri){return '<w:tr>'+row.map(function(c,ci){return bxTc(c,QWW[ci],{color:ri===0?NAVY:null,b:ri===0,jc:ci===0?'center':'left',sz:18});}).join('')+'</w:tr>';});
+  var qrows=QW.map(function(row,ri){return '<w:tr>'+row.map(function(c,ci){return bxTc(c,QWW[ci],{b:ri===0,jc:ci===0?'center':'left',sz:18});}).join('')+'</w:tr>';});
   var qwTbl='<w:tbl><w:tblPr><w:tblW w:w="14400" w:type="dxa"/><w:jc w:val="center"/>'+bxBorders(false)+'<w:tblLayout w:type="fixed"/></w:tblPr>'+
     '<w:tblGrid>'+QWW.map(function(w){return '<w:gridCol w:w="'+w+'"/>';}).join('')+'</w:tblGrid>'+qrows.join('')+'</w:tbl>';
 
   /* Ký duyệt — đúng mẫu Phụ lục 2 CV 2345: Tổ trưởng (trái) · Hiệu trưởng (phải).
      (16/8/2026: trước đây là 3 ô "Phê duyệt BGH / Tổ trưởng CM / Người lập" — không có trong mẫu.) */
-  var ngayThang='…, ngày … tháng … năm '+((state.year||'2026').match(/(20\d{2})/)||['','2026'])[1];
+  var _pf={}; try{ _pf=JSON.parse(localStorage.getItem('butxanh_profile')||'{}'); }catch(e){}
+  var xa=String(_pf.xa||state.xa||'……………').trim().toUpperCase();
+  /* "Trường Tiểu học Quảng Châu 1" / "TH Quảng Châu 1" → "QUẢNG CHÂU 1" (dòng in sẵn "TRƯỜNG TIỂU HỌC") */
+  var truong=String(_pf.school||state.truong||'……………').replace(/^\s*(trường\s+)?(tiểu\s*học|th)\s+/i,'').trim().toUpperCase();
+  var nam=(state.year||_pf.year||'2026 – 2027');
+  var noiKy=String(_pf.place||_pf.xa||'…').trim(), hieuTruong=String(_pf.hieuTruong||'').trim();
+  var ngayThang=noiKy+', ngày … tháng … năm '+((state.year||'2026').match(/(20\d{2})/)||['','2026'])[1];
+  var _kyP=function(t,o){ return bxPara(t,Object.assign({jc:'center',sz:26},o||{})); };
   var signTbl='<w:tbl><w:tblPr><w:tblW w:w="14400" w:type="dxa"/><w:jc w:val="center"/><w:tblLayout w:type="fixed"/></w:tblPr>'+
     '<w:tblGrid><w:gridCol w:w="7200"/><w:gridCol w:w="7200"/></w:tblGrid>'+
     '<w:tr>'+
-     '<w:tc><w:tcPr><w:tcW w:w="7200" w:type="dxa"/></w:tcPr>'+bxPara('',{})+bxPara('TỔ TRƯỞNG',{b:true,jc:'center'})+bxPara('(Kí, ghi rõ họ tên)',{i:true,jc:'center'})+'</w:tc>'+
-     '<w:tc><w:tcPr><w:tcW w:w="7200" w:type="dxa"/></w:tcPr>'+bxPara(ngayThang,{i:true,jc:'center'})+bxPara('HIỆU TRƯỞNG',{b:true,jc:'center'})+bxPara('(Kí, ghi rõ họ tên)',{i:true,jc:'center'})+'</w:tc>'+
+     '<w:tc><w:tcPr><w:tcW w:w="7200" w:type="dxa"/></w:tcPr>'+_kyP('')+_kyP('TỔ TRƯỞNG',{b:true})+_kyP('(Kí, ghi rõ họ tên)',{i:true})+'</w:tc>'+
+     '<w:tc><w:tcPr><w:tcW w:w="7200" w:type="dxa"/></w:tcPr>'+_kyP(ngayThang,{i:true})+_kyP('HIỆU TRƯỞNG',{b:true})+_kyP('(Kí, ghi rõ họ tên)',{i:true})+_kyP('')+_kyP('')+_kyP('')+(hieuTruong?_kyP(hieuTruong,{b:true}):'')+'</w:tc>'+
     '</w:tr></w:tbl>';
 
-  var xa=(state.xa||'……………'), truong=(state.truong||'……………'), nam=(state.year||'2026 – 2027');
 
   var mucI=
-    bxPara('I. CĂN CỨ XÂY DỰNG KẾ HOẠCH',{b:true,jc:'left',sz:22,sp:100,color:NAVY})+
-    bxPara('- Chương trình giáo dục phổ thông 2018 ban hành kèm theo Thông tư số 32/2018/TT-BGDĐT ngày 26/12/2018 của Bộ trưởng Bộ Giáo dục và Đào tạo; chương trình các môn học, hoạt động giáo dục lớp '+LOP+'.',{jc:'both',sz:20})+
-    bxPara('- Sách giáo khoa các môn học lớp '+LOP+' sử dụng tại nhà trường và các sách giáo khoa khác thực hiện môn học có trong danh mục được Bộ Giáo dục và Đào tạo phê duyệt.',{jc:'both',sz:20})+
-    bxPara('- Công văn số 2345/BGDĐT-GDTH ngày 07/6/2021 của Bộ Giáo dục và Đào tạo về việc hướng dẫn xây dựng kế hoạch giáo dục của nhà trường cấp tiểu học.',{jc:'both',sz:20})+
-    bxPara('- Thông tư số 02/2025/TT-BGDĐT ngày 24/01/2025 quy định Khung năng lực số cho người học và Công văn số 3456/BGDĐT-GDPT ngày 27/6/2025 về hướng dẫn triển khai Khung năng lực số cho học sinh phổ thông.',{jc:'both',sz:20})+
-    (_ts.qpan?bxPara('- Thông tư số 08/2024/TT-BGDĐT ngày 15/5/2024 của Bộ trưởng Bộ Giáo dục và Đào tạo hướng dẫn lồng ghép nội dung giáo dục quốc phòng và an ninh trong trường tiểu học, trường trung học cơ sở và trường phổ thông có nhiều cấp học; văn bản hướng dẫn thực hiện nhiệm vụ giáo dục quốc phòng và an ninh năm học của cấp có thẩm quyền.',{jc:'both',sz:20}):'')+
-    (_ts.kns?bxPara('- Thông tư số 04/2014/TT-BGDĐT ngày 28/02/2014 của Bộ trưởng Bộ Giáo dục và Đào tạo ban hành Quy định quản lí hoạt động giáo dục kĩ năng sống và hoạt động giáo dục ngoài giờ chính khoá.',{jc:'both',sz:20}):'')+
-    (_ts.vietlao?bxPara('- Tài liệu giáo dục địa phương và kế hoạch của nhà trường về giáo dục truyền thống hữu nghị Việt Nam – Lào (ghi bổ sung số, ngày văn bản của cấp có thẩm quyền): ……………………………………',{jc:'both',sz:20}):'')+
-    bxPara('- Kế hoạch thời gian thực hiện chương trình các môn học của nhà trường năm học '+nam+'; hướng dẫn thực hiện nhiệm vụ năm học và hướng dẫn thực hiện các môn học, hoạt động giáo dục của các cấp có thẩm quyền.',{jc:'both',sz:20})+
-    bxPara('- Kế hoạch giáo dục của Trường Tiểu học '+truong+' năm học '+nam+'.',{jc:'both',sz:20,sp:120});
+    bxPara('I. CĂN CỨ XÂY DỰNG KẾ HOẠCH',{b:true,jc:'left',sz:25,sb:80})+
+    bxPara('- Chương trình giáo dục phổ thông 2018 ban hành kèm theo Thông tư số 32/2018/TT-BGDĐT ngày 26/12/2018 của Bộ trưởng Bộ Giáo dục và Đào tạo; chương trình các môn học, hoạt động giáo dục lớp '+LOP+'.',{jc:'both',sz:25,sb:80})+
+    bxPara('- Sách giáo khoa các môn học lớp '+LOP+' sử dụng tại nhà trường và các sách giáo khoa khác thực hiện môn học có trong danh mục được Bộ Giáo dục và Đào tạo phê duyệt.',{jc:'both',sz:25,sb:80})+
+    bxPara('- Công văn số 2345/BGDĐT-GDTH ngày 07/6/2021 của Bộ Giáo dục và Đào tạo về việc hướng dẫn xây dựng kế hoạch giáo dục của nhà trường cấp tiểu học.',{jc:'both',sz:25,sb:80})+
+    bxPara('- Thông tư số 02/2025/TT-BGDĐT ngày 24/01/2025 quy định Khung năng lực số cho người học và Công văn số 3456/BGDĐT-GDPT ngày 27/6/2025 về hướng dẫn triển khai Khung năng lực số cho học sinh phổ thông.',{jc:'both',sz:25,sb:80})+
+    (_ts.qpan?bxPara('- Thông tư số 08/2024/TT-BGDĐT ngày 15/5/2024 của Bộ trưởng Bộ Giáo dục và Đào tạo hướng dẫn lồng ghép nội dung giáo dục quốc phòng và an ninh trong trường tiểu học, trường trung học cơ sở và trường phổ thông có nhiều cấp học; văn bản hướng dẫn thực hiện nhiệm vụ giáo dục quốc phòng và an ninh năm học của cấp có thẩm quyền.',{jc:'both',sz:25,sb:80}):'')+
+    (_ts.kns?bxPara('- Thông tư số 04/2014/TT-BGDĐT ngày 28/02/2014 của Bộ trưởng Bộ Giáo dục và Đào tạo ban hành Quy định quản lí hoạt động giáo dục kĩ năng sống và hoạt động giáo dục ngoài giờ chính khoá.',{jc:'both',sz:25,sb:80}):'')+
+    (_ts.vietlao?bxPara('- Tài liệu giáo dục địa phương và kế hoạch của nhà trường về giáo dục truyền thống hữu nghị Việt Nam – Lào (ghi bổ sung số, ngày văn bản của cấp có thẩm quyền): ……………………………………',{jc:'both',sz:25,sb:80}):'')+
+    bxPara('- Kế hoạch thời gian thực hiện chương trình các môn học của nhà trường năm học '+nam+'; hướng dẫn thực hiện nhiệm vụ năm học và hướng dẫn thực hiện các môn học, hoạt động giáo dục của các cấp có thẩm quyền.',{jc:'both',sz:25,sb:80})+
+    bxPara('- Kế hoạch giáo dục của Trường Tiểu học '+truong+' năm học '+nam+'.',{jc:'both',sz:25,sb:80});
   var mucII=
-    bxPara('II. ĐIỀU KIỆN THỰC HIỆN CÁC MÔN HỌC, HOẠT ĐỘNG GIÁO DỤC',{b:true,jc:'left',sz:22,sp:100,color:NAVY})+
-    bxPara('1. Đội ngũ giáo viên: …………………………………………………………………………………',{jc:'left',sz:20})+
-    bxPara('2. Đặc điểm đối tượng học sinh: ………………………………………………………………………',{jc:'left',sz:20})+
-    bxPara('3. Nguồn học liệu, thiết bị dạy học, phòng học bộ môn (nếu có): ……………………………………',{jc:'left',sz:20})+
-    bxPara('4. Các nội dung về giáo dục địa phương, giáo dục an toàn giao thông, chủ đề hoạt động giáo dục tập thể, nội dung thực hiện tích hợp liên môn: ………………………………………………………………………………………………',{jc:'left',sz:20,sp:120});
+    bxPara('II. ĐIỀU KIỆN THỰC HIỆN CÁC MÔN HỌC, HOẠT ĐỘNG GIÁO DỤC',{b:true,jc:'left',sz:25,sb:80})+
+    bxPara('1. Đội ngũ giáo viên: …………………………………………………………………………………',{jc:'left',sz:25,sb:80})+
+    bxPara('2. Đặc điểm đối tượng học sinh: ………………………………………………………………………',{jc:'left',sz:25,sb:80})+
+    bxPara('3. Nguồn học liệu, thiết bị dạy học, phòng học bộ môn (nếu có): ……………………………………',{jc:'left',sz:25,sb:80})+
+    bxPara('4. Các nội dung về giáo dục địa phương, giáo dục an toàn giao thông, chủ đề hoạt động giáo dục tập thể, nội dung thực hiện tích hợp liên môn: ………………………………………………………………………………………………',{jc:'left',sz:25,sb:80});
   var mucIV=
-    bxPara('IV. TỔ CHỨC THỰC HIỆN',{b:true,jc:'left',sz:22,sp:140,color:NAVY})+
-    bxPara('1. Giáo viên (giáo viên phụ trách môn học, giáo viên chủ nhiệm): thực hiện dạy học theo kế hoạch; chủ động điều chỉnh nội dung, hình thức tổ chức cho phù hợp đối tượng học sinh và điều kiện thực tế; ghi nội dung điều chỉnh, bổ sung vào cột tương ứng và báo cáo tổ chuyên môn.',{jc:'both',sz:20})+
-    bxPara('2. Tổ trưởng (khối trưởng): theo dõi, hướng dẫn, kiểm tra việc thực hiện kế hoạch; tổng hợp đề xuất điều chỉnh của giáo viên, trình Hiệu trưởng phê duyệt.',{jc:'both',sz:20})+
-    bxPara('3. Tổng phụ trách Đội: phối hợp tổ chức các hoạt động giáo dục có liên quan theo kế hoạch chung của nhà trường.',{jc:'both',sz:20,sp:160});
+    bxPara('IV. TỔ CHỨC THỰC HIỆN',{b:true,jc:'left',sz:25,sb:120})+
+    bxPara('1. Giáo viên (giáo viên phụ trách môn học, giáo viên chủ nhiệm): thực hiện dạy học theo kế hoạch; chủ động điều chỉnh nội dung, hình thức tổ chức cho phù hợp đối tượng học sinh và điều kiện thực tế; ghi nội dung điều chỉnh, bổ sung vào cột tương ứng và báo cáo tổ chuyên môn.',{jc:'both',sz:25,sb:80})+
+    bxPara('2. Tổ trưởng (khối trưởng): theo dõi, hướng dẫn, kiểm tra việc thực hiện kế hoạch; tổng hợp đề xuất điều chỉnh của giáo viên, trình Hiệu trưởng phê duyệt.',{jc:'both',sz:25,sb:80})+
+    bxPara('3. Tổng phụ trách Đội: phối hợp tổ chức các hoạt động giáo dục có liên quan theo kế hoạch chung của nhà trường.',{jc:'both',sz:25,sb:80,sp:160});
 
+  /* Gạch ngang ngắn dưới tên trường — hình vẽ VML y như tệp mẫu thầy sửa (khai xmlns:v/o ở gốc tài liệu) */
+  var _gach='<w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman"/><w:b/><w:noProof/><w:sz w:val="26"/></w:rPr><w:pict><v:shapetype id="_x0000_t32" coordsize="21600,21600" o:spt="32" o:oned="t" path="m,l21600,21600e" filled="f"><v:path arrowok="t" fillok="f" o:connecttype="none"/><o:lock v:ext="edit" shapetype="t"/></v:shapetype><v:shape id="_x0000_s1026" type="#_x0000_t32" style="position:absolute;margin-left:57.75pt;margin-top:16.75pt;width:88.65pt;height:0;z-index:251658240" o:connectortype="straight"/></w:pict></w:r>';
   var header=
-    bxPara('UBND XÃ '+xa,{jc:'left',sz:20})+
-    bxPara('TRƯỜNG TIỂU HỌC '+truong,{b:true,jc:'left',sz:20,sp:120})+
-    bxPara('KẾ HOẠCH DẠY HỌC CÁC MÔN HỌC, HOẠT ĐỘNG GIÁO DỤC KHỐI LỚP '+LOP,{b:true,jc:'center',sz:28,color:NAVY})+
-    bxPara('Năm học '+nam,{b:true,jc:'center',sz:24,sp:60,color:NAVY})+
+    bxPara('            UBND XÃ '+xa,{jc:'left',sz:26})+
+    '<w:p><w:pPr><w:spacing w:after="120" w:line="240" w:lineRule="auto"/><w:jc w:val="left"/></w:pPr>'+_gach+bxRuns('TRƯỜNG TIỂU HỌC '+truong,{b:true,sz:26})+'</w:p>'+
+    bxPara('',{sz:8,sp:120})+
+    bxPara('KẾ HOẠCH DẠY HỌC CÁC MÔN HỌC, HOẠT ĐỘNG GIÁO DỤC KHỐI LỚP '+LOP,{b:true,jc:'center',sz:26})+
+    bxPara('Năm học '+nam,{b:true,jc:'center',sz:26,sp:60})+
     bxPara('(Lập theo Phụ lục 2 Công văn 2345/BGDĐT-GDTH; lồng ghép Năng lực số/AI theo Thông tư 02/2025/TT-BGDĐT và Công văn 3456/BGDĐT-GDPT'+
       (_ts.qpan?'; giáo dục quốc phòng và an ninh theo Thông tư 08/2024/TT-BGDĐT':'')+
       (_ts.kns?'; giáo dục kĩ năng sống theo Thông tư 04/2014/TT-BGDĐT':'')+
-      (_ts.vietlao?'; giáo dục truyền thống hữu nghị Việt Nam – Lào theo nội dung giáo dục địa phương':'')+')',{i:true,jc:'center',sz:18,sp:160})+
+      (_ts.vietlao?'; giáo dục truyền thống hữu nghị Việt Nam – Lào theo nội dung giáo dục địa phương':'')+')',{i:true,jc:'center',sz:24,sp:160})+
     mucI+mucII+
-    bxPara('III. KẾ HOẠCH DẠY HỌC CÁC MÔN HỌC, HOẠT ĐỘNG GIÁO DỤC',{b:true,jc:'left',sz:22,sp:120,color:NAVY});
+    bxPara('III. KẾ HOẠCH DẠY HỌC CÁC MÔN HỌC, HOẠT ĐỘNG GIÁO DỤC',{b:true,jc:'left',sz:26,sp:120});
   /* Mục III: mỗi môn một tiểu mục đánh số + một bảng 6 cột đúng mẫu */
   var mainTbl='';
   coDL.forEach(function(mon,idx){
-    mainTbl+=bxPara((idx+1)+'. Môn học, hoạt động giáo dục: '+mon,{b:true,jc:'left',sz:22,sp:80,color:NAVY})+
+    mainTbl+=bxPara((idx+1)+'. Môn học, hoạt động giáo dục: '+mon,{b:true,jc:'left',sz:26,sp:80})+
              bxKHGDBangMau(LOP,mon,KH[mon])+
              bxPara('',{sp:120});
   });
@@ -7624,7 +7638,7 @@ function buildKHGDPhuLuc2(LOP,dsMon){
     : '“Cơ bản 2” (lớp 4–5: nhiệm vụ quen thuộc, tự chủ một phần và có hướng dẫn khi cần thiết)';
   var after=
     bxPara('',{})+
-    bxPara('QUY ƯỚC MÃ NỘI DUNG TÍCH HỢP, LỒNG GHÉP',{b:true,jc:'left',sz:20,sp:80,color:NAVY})+qwTbl+
+    bxPara('QUY ƯỚC MÃ NỘI DUNG TÍCH HỢP, LỒNG GHÉP',{b:true,jc:'left',sz:20,sp:80})+qwTbl+
     bxPara('',{})+
     bxPara('Ghi chú: Nội dung tích hợp Năng lực số/AI là gợi ý ở mức '+mucCB+'; giáo viên chọn lọc, lồng ghép tự nhiên theo yêu cầu cần đạt của bài, bảo đảm không làm thay đổi hay gây quá tải Chương trình giáo dục phổ thông 2018. AI chỉ ở mức nhận biết/trải nghiệm do giáo viên kiểm soát.',{i:true,jc:'both',sz:18,sp:200})+
     (_ts.qpan?bxPara('Nội dung giáo dục quốc phòng và an ninh chỉ ghi ở những bài có địa chỉ lồng ghép phù hợp, trong các môn học và hoạt động giáo dục được Thông tư 08/2024/TT-BGDĐT quy định đối với cấp tiểu học; lồng ghép ngắn gọn, truyền cảm, dễ hiểu, phù hợp tâm lí lứa tuổi và không làm ảnh hưởng đến thời lượng, cấu trúc bài dạy.',{i:true,jc:'both',sz:18,sp:120}):'')+
@@ -7636,7 +7650,7 @@ function buildKHGDPhuLuc2(LOP,dsMon){
     signTbl;
 
   var sect='<w:sectPr><w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/><w:pgMar w:top="850" w:right="900" w:bottom="850" w:left="900" w:header="426" w:footer="426" w:gutter="0"/></w:sectPr>';
-  var doc='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'+header+mainTbl+after+sect+'</w:body></w:document>';
+  var doc='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"><w:body>'+header+mainTbl+after+sect+'</w:body></w:document>';
   var enc=new TextEncoder(), F=function(name,str){return {name:name,data:enc.encode(str)};};
   return _zipStore([
     F('[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>'),
