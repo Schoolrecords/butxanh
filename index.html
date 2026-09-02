@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-08-28 · 85';
+  var PB='2026-09-02 · 86';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -7469,57 +7469,42 @@ window.BX_visibleCols=function(DATA){
   return vis;
 };
 
-function buildKHGDMonDocx(){
-  var SUBJ=window.BX_curSubject||'Tiếng Việt';
-  var LOP=window.BX_curLop||'5';
-  var GROOT=window.BX_KHGD_G||{'5':window.BX_KHGD};
-  var DATA=((GROOT[LOP]||{})[SUBJ])||(window.BX_KHGD&&window.BX_KHGD[SUBJ])||TV5;
-  /* (16/8/2026) Bám mẫu Phụ lục 2 CV 2345: thêm cột "Ghi chú" (số 8) để trống cho
-     tổ chuyên môn ghi tay. Cột 8 CHỈ tồn tại trong bản Word này — không đụng dữ liệu
-     và không đụng BX_visibleCols (hàm đó dùng chung với bảng trên màn hình). */
-  var ALLCOLS=[700,1800,1300,1450,3300,750,950,3150,1000], totalW=14400;
-  var ALLHEAD=['Tuần, tháng','Chủ đề/ Mạch nội dung','Tên bài','Tên hoạt động','Nội dung hoạt động','Thời lượng (tiết)','Tiết theo KH môn học','Nội dung điều chỉnh, bổ sung (nếu có)','Ghi chú'];
-  var VIS=window.BX_visibleCols(DATA).slice();
-  /* (25/8/2026) Môn có dữ liệu cột 7 rỗng nhưng đang bật QPAN/Việt–Lào/Kĩ năng sống thì
-     vẫn phải mở cột, kẻo phần lồng ghép vừa sinh ra không có chỗ hiện. */
-  if(VIS.indexOf(7)<0 && window.BX_khgdCoIntg && window.BX_khgdCoIntg(LOP,SUBJ,DATA)) VIS.push(7);
-  VIS.sort(function(a,b){return a-b;});
-  VIS.push(8); var NC=VIS.length;
-  /* phân bổ lại bề rộng để bảng vẫn đầy 14400 sau khi bỏ cột rỗng */
-  var rawSum=VIS.reduce(function(a,c){return a+ALLCOLS[c];},0);
-  var COLS=VIS.map(function(c){return Math.round(ALLCOLS[c]*totalW/rawSum);});
-  var HEAD=VIS.map(function(c){return ALLHEAD[c];});
-  var rows=[];
-  /* Tiêu đề 2 tầng đúng mẫu: các cột 1–6 nằm dưới nhóm "Chương trình và sách giáo khoa";
-     cột Tuần/Điều chỉnh/Ghi chú gộp dọc qua 2 hàng. */
-  var iNhom=[], iRieng=[];
-  VIS.forEach(function(c,k){ (c>=1&&c<=6?iNhom:iRieng).push(k); });
-  var h1=[], h2=[];
-  VIS.forEach(function(c,k){
-    if(c>=1&&c<=6){
-      if(k===iNhom[0]){
-        var wNhom=iNhom.reduce(function(a,j){return a+COLS[j];},0);
-        h1.push(bxTc('Chương trình và sách giáo khoa',wNhom,{span:iNhom.length,color:NAVY,b:true,jc:'center',sz:18,bb:'solid'}));
-      }
-      h2.push(bxTc(ALLHEAD[c],COLS[k],{color:NAVY,b:true,jc:'center',sz:18,bb:'solid'}));
-    }else{
-      h1.push(bxTc(ALLHEAD[c],COLS[k],{color:NAVY,b:true,jc:'center',sz:18,vm:'restart'}));
-      h2.push(bxTc('',COLS[k],{vm:'cont',bb:'solid'}));
-    }
-  });
-  rows.push('<w:tr><w:trPr><w:tblHeader/></w:trPr>'+h1.join('')+'</w:tr>');
-  rows.push('<w:tr><w:trPr><w:tblHeader/></w:trPr>'+h2.join('')+'</w:tr>');
-  var W={}; VIS.forEach(function(c,k){W[c]=COLS[k];}); /* bề rộng theo cột gốc */
+/* ===== (2/9/2026) KHDH theo ĐÚNG Phụ lục 2 CV 2345 — bản hướng dẫn của Sở =====
+   Một văn bản cho CẢ KHỐI: "KẾ HOẠCH DẠY HỌC CÁC MÔN HỌC, HOẠT ĐỘNG GIÁO DỤC KHỐI LỚP …",
+   mục I · II chung; mục III mỗi môn một bảng ĐÚNG 6 CỘT của mẫu:
+     Tuần, tháng | [Chương trình và SGK: Chủ đề/Mạch nội dung | Tên bài học | Tiết học/thời lượng]
+     | Nội dung điều chỉnh, bổ sung (nếu có) | Ghi chú
+   rồi mục IV và ô ký Tổ trưởng – Hiệu trưởng. Nội dung tích hợp/lồng ghép (Năng lực số,
+   QPAN, KNS, Việt–Lào…) đổ vào cột "Nội dung điều chỉnh, bổ sung" (thầy Chung chốt 2/9/2026).
+   Bảng 8 cột chi tiết chỉ còn trên MÀN HÌNH để sửa; hai nút tải (từng môn / cả khối) đều đi
+   qua bxKHGDBangMau + buildKHGDPhuLuc2. Cột "Tên bài học" gộp Tên bài + Phân môn + Nội dung;
+   cột "Tiết học/thời lượng" ghi "Tiết 4+5 (2 tiết)". Bản sửa của trường (BX_khgdVal) vẫn chảy vào. */
+var KHGD_MAU_COLS=[850,2500,4350,1500,4200,1000]; /* tổng 14400 */
+function bxKHGDBangMau(LOP,SUBJ,DATA){
+  var totalW=14400, COLS=KHGD_MAU_COLS, NC=6, rows=[];
+  var hdr=function(t,w,o){ return bxTc(t,w,Object.assign({color:NAVY,b:true,jc:'center',sz:18},o||{})); };
+  var wNhom=COLS[1]+COLS[2]+COLS[3];
+  /* Ô "Nội dung điều chỉnh, bổ sung" mang 2 đoạn: tiêu đề đậm + chú thích nghiêng đúng chữ mẫu */
+  var oDC='<w:tc><w:tcPr><w:tcW w:w="'+COLS[4]+'" w:type="dxa"/><w:vMerge w:val="restart"/><w:vAlign w:val="center"/></w:tcPr>'+
+    bxPara('Nội dung điều chỉnh, bổ sung (nếu có)',{b:true,color:NAVY,jc:'center',sz:18})+
+    bxPara('(Những điều chỉnh về nội dung, thời lượng, thiết bị dạy học và học liệu tham khảo; xây dựng chủ đề học tập, bổ sung tích hợp liên môn; thời gian và hình thức tổ chức…)',{i:true,jc:'center',sz:15})+
+    '</w:tc>';
+  var h1=hdr('Tuần, tháng',COLS[0],{vm:'restart'})+hdr('Chương trình và sách giáo khoa',wNhom,{span:3,bb:'solid'})+oDC+hdr('Ghi chú',COLS[5],{vm:'restart'});
+  var h2=bxTc('',COLS[0],{vm:'cont',bb:'solid'})+hdr('Chủ đề/ Mạch nội dung',COLS[1],{bb:'solid'})+hdr('Tên bài học',COLS[2],{bb:'solid'})+hdr('Tiết học/ thời lượng',COLS[3],{bb:'solid'})+bxTc('',COLS[4],{vm:'cont',bb:'solid'})+bxTc('',COLS[5],{vm:'cont',bb:'solid'});
+  rows.push('<w:tr><w:trPr><w:tblHeader/></w:trPr>'+h1+'</w:tr>');
+  rows.push('<w:tr><w:trPr><w:tblHeader/></w:trPr>'+h2+'</w:tr>');
+  var S=function(v){ return String(v==null?'':v).trim(); };
   var prevHK='',prevChu='',prevTuan='',prevBai='';
+  var _v=window.BX_khgdVal;
   for(var i=0;i<DATA.length;i++){
     var r=DATA[i], tuan=r[0],chude=r[1],bai=r[2],hd=r[3],nd=r[4],tl=r[5],tiet=r[6],tich=r[7];
-    var _v=window.BX_khgdVal; if(_v){ nd=_v(LOP,SUBJ,i,4,nd); tl=_v(LOP,SUBJ,i,5,tl); tiet=_v(LOP,SUBJ,i,6,tiet); tich=_v(LOP,SUBJ,i,7,tich); } /* bản trường, theo lớp + môn */
-    /* Nối phần QPAN / Việt–Lào / Kĩ năng sống vào SAU nội dung Năng lực số đã có. */
+    if(_v){ nd=_v(LOP,SUBJ,i,4,nd); tl=_v(LOP,SUBJ,i,5,tl); tiet=_v(LOP,SUBJ,i,6,tiet); tich=_v(LOP,SUBJ,i,7,tich); } /* bản trường, theo lớp + môn */
+    /* Nối phần QPAN / Việt–Lào / Kĩ năng sống vào SAU nội dung Năng lực số đã có — tất cả nằm ở cột "Nội dung điều chỉnh, bổ sung". */
     if(window.BX_khgdIntgAdd){
       var _th=window.BX_khgdIntgAdd(LOP,SUBJ,r);
       if(_th.length){
         var _s=_th.map(function(p){return p[0]+': '+p[1];}).join('\n');
-        tich=String(tich==null?'':tich).trim(); tich=tich?(tich+'\n'+_s):_s;
+        tich=S(tich); tich=tich?(tich+'\n'+_s):_s;
       }
     }
     var hk=(parseInt(tuan,10)<=18)?'HỌC KÌ I':'HỌC KÌ II';
@@ -7531,22 +7516,31 @@ function buildKHGDMonDocx(){
     var nr=DATA[i+1];
     var lastOfTuan=!nr || (parseInt(nr[0],10)<=18?'HỌC KÌ I':'HỌC KÌ II')!==hk || nr[0]!==tuan;
     var bb=lastOfTuan?'solid':'dashed';
-    var cells={
-      0:bxTc(showTuan?tuan:'',W[0],{jc:'center',bb}),
-      1:bxTc(showChu?chude:'',W[1],{b:showChu,color:showChu?NAVY:null,bb}),
-      2:bxTc(showBai?bai:'',W[2],{bb}),
-      3:bxTc(hd,W[3],{bb}),
-      4:bxTc(nd,W[4],{bb}),
-      5:bxTc(tl,W[5],{jc:'center',bb}),
-      6:bxTc(tiet,W[6],{jc:'center',bb}),
-      7:bxTc(tich,W[7],{sz:17,bb}),
-      8:bxTc('',W[8],{bb})            /* Ghi chú — để trống cho tổ chuyên môn ghi tay */
-    };
-    rows.push('<w:tr>'+VIS.map(function(c){return cells[c];}).join('')+'</w:tr>');
+    /* Tên bài học = Tên bài (dòng đầu, khi đổi bài) + Phân môn/Hoạt động: Nội dung */
+    var tenBai=S(nd); if(S(hd)) tenBai=S(hd)+': '+tenBai;
+    if(showBai && S(bai)) tenBai=S(bai)+'\n'+tenBai;
+    /* Tiết học/thời lượng = "Tiết 4+5 (2 tiết)"; thời lượng chỉ là số thì thêm chữ "tiết" */
+    var tlTxt=S(tl); if(/^\d+$/.test(tlTxt)) tlTxt+=' tiết';
+    var tietTxt=S(tiet).replace(/\s*[-–—]\s*/g,'–'); /* "1 – 3" → "1–3" cho đồng nhất với "4+5" */
+    var tietHoc=tietTxt?('Tiết '+tietTxt+(tlTxt?' ('+tlTxt+')':'')):tlTxt;
+    rows.push('<w:tr>'+
+      bxTc(showTuan?tuan:'',COLS[0],{jc:'center',bb})+
+      bxTc(showChu?chude:'',COLS[1],{b:showChu,color:showChu?NAVY:null,bb})+
+      bxTc(tenBai,COLS[2],{bb})+
+      bxTc(tietHoc,COLS[3],{jc:'center',bb})+
+      bxTc(tich,COLS[4],{sz:17,bb})+
+      bxTc('',COLS[5],{bb})+            /* Ghi chú — để trống cho tổ chuyên môn ghi tay */
+    '</w:tr>');
   }
-  var mainTbl='<w:tbl><w:tblPr><w:tblW w:w="'+totalW+'" w:type="dxa"/><w:jc w:val="center"/>'+bxBorders(true)+'<w:tblLayout w:type="fixed"/></w:tblPr>'+
+  return '<w:tbl><w:tblPr><w:tblW w:w="'+totalW+'" w:type="dxa"/><w:jc w:val="center"/>'+bxBorders(true)+'<w:tblLayout w:type="fixed"/></w:tblPr>'+
     '<w:tblGrid>'+COLS.map(function(w){return '<w:gridCol w:w="'+w+'"/>';}).join('')+'</w:tblGrid>'+rows.join('')+'</w:tbl>';
-
+}
+/* Văn bản Phụ lục 2 cho khối LOP, gồm các môn trong dsMon (theo thứ tự truyền vào). */
+function buildKHGDPhuLuc2(LOP,dsMon){
+  var GROOT=window.BX_KHGD_G||{'5':window.BX_KHGD};
+  var KH=GROOT[LOP]||{};
+  var coDL=dsMon.filter(function(m){ return KH[m]&&KH[m].length; });
+  if(!coDL.length) throw new Error('Khối '+LOP+' chưa có dữ liệu Kế hoạch dạy học.');
   // Quy ước
   var QW=[
    ['Mã','Miền năng lực (Khung NLS – TT 02/2025)','Ý nghĩa khi đưa vào KHDH/KHBD'],
@@ -7582,25 +7576,23 @@ function buildKHGDMonDocx(){
 
   var xa=(state.xa||'……………'), truong=(state.truong||'……………'), nam=(state.year||'2026 – 2027');
 
-  /* Ba phần bắt buộc của Phụ lục 2 mà bản cũ thiếu: I. Căn cứ · II. Điều kiện · IV. Tổ chức thực hiện.
-     Để dạng có chỗ trống (…) cho nhà trường tự điền, không ghi cứng cơ quan quản lí. */
   var mucI=
     bxPara('I. CĂN CỨ XÂY DỰNG KẾ HOẠCH',{b:true,jc:'left',sz:22,sp:100,color:NAVY})+
-    bxPara('- Chương trình giáo dục phổ thông 2018 ban hành kèm theo Thông tư số 32/2018/TT-BGDĐT ngày 26/12/2018 của Bộ trưởng Bộ Giáo dục và Đào tạo; chương trình môn '+SUBJ+' lớp '+LOP+'.',{jc:'both',sz:20})+
-    bxPara('- Sách giáo khoa môn '+SUBJ+' lớp '+LOP+' đang sử dụng tại nhà trường và các sách giáo khoa khác có trong danh mục được Bộ Giáo dục và Đào tạo phê duyệt.',{jc:'both',sz:20})+
+    bxPara('- Chương trình giáo dục phổ thông 2018 ban hành kèm theo Thông tư số 32/2018/TT-BGDĐT ngày 26/12/2018 của Bộ trưởng Bộ Giáo dục và Đào tạo; chương trình các môn học, hoạt động giáo dục lớp '+LOP+'.',{jc:'both',sz:20})+
+    bxPara('- Sách giáo khoa các môn học lớp '+LOP+' sử dụng tại nhà trường và các sách giáo khoa khác thực hiện môn học có trong danh mục được Bộ Giáo dục và Đào tạo phê duyệt.',{jc:'both',sz:20})+
     bxPara('- Công văn số 2345/BGDĐT-GDTH ngày 07/6/2021 của Bộ Giáo dục và Đào tạo về việc hướng dẫn xây dựng kế hoạch giáo dục của nhà trường cấp tiểu học.',{jc:'both',sz:20})+
     bxPara('- Thông tư số 02/2025/TT-BGDĐT ngày 24/01/2025 quy định Khung năng lực số cho người học và Công văn số 3456/BGDĐT-GDPT ngày 27/6/2025 về hướng dẫn triển khai Khung năng lực số cho học sinh phổ thông.',{jc:'both',sz:20})+
     (_ts.qpan?bxPara('- Thông tư số 08/2024/TT-BGDĐT ngày 15/5/2024 của Bộ trưởng Bộ Giáo dục và Đào tạo hướng dẫn lồng ghép nội dung giáo dục quốc phòng và an ninh trong trường tiểu học, trường trung học cơ sở và trường phổ thông có nhiều cấp học; văn bản hướng dẫn thực hiện nhiệm vụ giáo dục quốc phòng và an ninh năm học của cấp có thẩm quyền.',{jc:'both',sz:20}):'')+
     (_ts.kns?bxPara('- Thông tư số 04/2014/TT-BGDĐT ngày 28/02/2014 của Bộ trưởng Bộ Giáo dục và Đào tạo ban hành Quy định quản lí hoạt động giáo dục kĩ năng sống và hoạt động giáo dục ngoài giờ chính khoá.',{jc:'both',sz:20}):'')+
     (_ts.vietlao?bxPara('- Tài liệu giáo dục địa phương và kế hoạch của nhà trường về giáo dục truyền thống hữu nghị Việt Nam – Lào (ghi bổ sung số, ngày văn bản của cấp có thẩm quyền): ……………………………………',{jc:'both',sz:20}):'')+
-    bxPara('- Kế hoạch thời gian năm học '+nam+' và hướng dẫn thực hiện nhiệm vụ năm học của các cấp có thẩm quyền.',{jc:'both',sz:20})+
+    bxPara('- Kế hoạch thời gian thực hiện chương trình các môn học của nhà trường năm học '+nam+'; hướng dẫn thực hiện nhiệm vụ năm học và hướng dẫn thực hiện các môn học, hoạt động giáo dục của các cấp có thẩm quyền.',{jc:'both',sz:20})+
     bxPara('- Kế hoạch giáo dục của Trường Tiểu học '+truong+' năm học '+nam+'.',{jc:'both',sz:20,sp:120});
   var mucII=
-    bxPara('II. ĐIỀU KIỆN THỰC HIỆN MÔN HỌC',{b:true,jc:'left',sz:22,sp:100,color:NAVY})+
+    bxPara('II. ĐIỀU KIỆN THỰC HIỆN CÁC MÔN HỌC, HOẠT ĐỘNG GIÁO DỤC',{b:true,jc:'left',sz:22,sp:100,color:NAVY})+
     bxPara('1. Đội ngũ giáo viên: …………………………………………………………………………………',{jc:'left',sz:20})+
     bxPara('2. Đặc điểm đối tượng học sinh: ………………………………………………………………………',{jc:'left',sz:20})+
     bxPara('3. Nguồn học liệu, thiết bị dạy học, phòng học bộ môn (nếu có): ……………………………………',{jc:'left',sz:20})+
-    bxPara('4. Nội dung giáo dục địa phương, an toàn giao thông, hoạt động giáo dục tập thể, tích hợp liên môn: ………………………………………………………………………………………………',{jc:'left',sz:20,sp:120});
+    bxPara('4. Các nội dung về giáo dục địa phương, giáo dục an toàn giao thông, chủ đề hoạt động giáo dục tập thể, nội dung thực hiện tích hợp liên môn: ………………………………………………………………………………………………',{jc:'left',sz:20,sp:120});
   var mucIV=
     bxPara('IV. TỔ CHỨC THỰC HIỆN',{b:true,jc:'left',sz:22,sp:140,color:NAVY})+
     bxPara('1. Giáo viên (giáo viên phụ trách môn học, giáo viên chủ nhiệm): thực hiện dạy học theo kế hoạch; chủ động điều chỉnh nội dung, hình thức tổ chức cho phù hợp đối tượng học sinh và điều kiện thực tế; ghi nội dung điều chỉnh, bổ sung vào cột tương ứng và báo cáo tổ chuyên môn.',{jc:'both',sz:20})+
@@ -7610,15 +7602,21 @@ function buildKHGDMonDocx(){
   var header=
     bxPara('UBND XÃ '+xa,{jc:'left',sz:20})+
     bxPara('TRƯỜNG TIỂU HỌC '+truong,{b:true,jc:'left',sz:20,sp:120})+
-    bxPara('KẾ HOẠCH DẠY HỌC MÔN HỌC',{b:true,jc:'center',sz:28,color:NAVY})+
-    bxPara('MÔN '+SUBJ.toUpperCase()+' – LỚP '+LOP,{b:true,jc:'center',sz:26,color:NAVY})+
-    bxPara('NĂM HỌC '+nam,{b:true,jc:'center',sz:24,sp:60,color:NAVY})+
+    bxPara('KẾ HOẠCH DẠY HỌC CÁC MÔN HỌC, HOẠT ĐỘNG GIÁO DỤC KHỐI LỚP '+LOP,{b:true,jc:'center',sz:28,color:NAVY})+
+    bxPara('Năm học '+nam,{b:true,jc:'center',sz:24,sp:60,color:NAVY})+
     bxPara('(Lập theo Phụ lục 2 Công văn 2345/BGDĐT-GDTH; lồng ghép Năng lực số/AI theo Thông tư 02/2025/TT-BGDĐT và Công văn 3456/BGDĐT-GDPT'+
       (_ts.qpan?'; giáo dục quốc phòng và an ninh theo Thông tư 08/2024/TT-BGDĐT':'')+
       (_ts.kns?'; giáo dục kĩ năng sống theo Thông tư 04/2014/TT-BGDĐT':'')+
       (_ts.vietlao?'; giáo dục truyền thống hữu nghị Việt Nam – Lào theo nội dung giáo dục địa phương':'')+')',{i:true,jc:'center',sz:18,sp:160})+
     mucI+mucII+
-    bxPara('III. KẾ HOẠCH DẠY HỌC MÔN '+SUBJ.toUpperCase(),{b:true,jc:'left',sz:22,sp:120,color:NAVY});
+    bxPara('III. KẾ HOẠCH DẠY HỌC CÁC MÔN HỌC, HOẠT ĐỘNG GIÁO DỤC',{b:true,jc:'left',sz:22,sp:120,color:NAVY});
+  /* Mục III: mỗi môn một tiểu mục đánh số + một bảng 6 cột đúng mẫu */
+  var mainTbl='';
+  coDL.forEach(function(mon,idx){
+    mainTbl+=bxPara((idx+1)+'. Môn học, hoạt động giáo dục: '+mon,{b:true,jc:'left',sz:22,sp:80,color:NAVY})+
+             bxKHGDBangMau(LOP,mon,KH[mon])+
+             bxPara('',{sp:120});
+  });
   /* Mức năng lực số theo Khung NLS: lớp 1–3 là Cơ bản 1, lớp 4–5 là Cơ bản 2.
      (16/8/2026: trước đây ghi cứng "Cơ bản 2" cho mọi lớp — sai với lớp 1,2,3.) */
   var mucCB=(['1','2','3'].indexOf(String(LOP))>=0)
@@ -7647,6 +7645,25 @@ function buildKHGDMonDocx(){
   ], BX_MIME.docx);
 }
 
+function buildKHGDMonDocx(){
+  return buildKHGDPhuLuc2(window.BX_curLop||'5',[window.BX_curSubject||'Tiếng Việt']);
+}
+/* Cả khối: mọi môn có dữ liệu, LỌC THẦM theo quyền bản quyền (im=true) — cùng luật với _bxLocTheoQuyen. */
+function buildKHGDKhoiDocx(LOP){
+  var ds=(window.BX_subjectsOf?window.BX_subjectsOf(LOP):Object.keys((window.BX_KHGD_G||{})[LOP]||{}));
+  try{ if(window.BXLIC&&BXLIC.duocPhep&&!(BXLIC.isAdmin&&BXLIC.isAdmin())) ds=ds.filter(function(m){ return BXLIC.duocPhep(LOP,m,true); }); }catch(e){}
+  return buildKHGDPhuLuc2(LOP,ds);
+}
+window.exportKHGDKhoiWord=function(){
+  try{
+    var LOP=window.BX_curLop||'5';
+    var yr=(state.year||'2026-2027').replace(/[^0-9]/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,'');
+    var blob=buildKHGDKhoiDocx(LOP);
+    /* Tên tệp mang "_Lop<khối>" để cổng bản quyền nhận ra khối; không mang tên môn → chỉ cần quyền khối. */
+    _downloadBlob('KHDH_PhuLuc2_CacMon_Lop'+LOP+'_'+yr+'.docx', blob, '');
+  }catch(e){ bxAlert('Không xuất được KHDH cả khối: '+e.message); }
+};
+window.buildKHGDKhoiDocx=buildKHGDKhoiDocx;
 window.exportKHGDMonWord=function(){
   try{
     var SUBJ=window.BX_curSubject||'Tiếng Việt';
@@ -8001,7 +8018,8 @@ function rebuild(){
     '<div class="khdh-bar">'+
       '<h3 id="khdh-title" style="margin:0;color:'+NAVY+'">'+esc(titleText())+'</h3>'+
       '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
-        '<button class="btn solid" onclick="exportKHGDMonWord()">📄 Tải KHDH về máy</button>'+
+        '<button class="btn solid" onclick="exportKHGDMonWord()">📄 Tải KHDH môn này</button>'+
+        '<button class="btn solid" onclick="exportKHGDKhoiWord()" title="Một tệp Word đủ các môn của khối, đúng Phụ lục 2 Công văn 2345">📚 Tải KHDH cả khối (Phụ lục 2)</button>'+
         '<button class="btn" id="khdh-edit-btn" onclick="BX_khgdToggleEdit()">✏️ Chỉnh sửa KHDH</button>'+
       '</div>'+
     '</div>'+
