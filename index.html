@@ -2965,7 +2965,11 @@ function _bxNorm(s){ return String(s==null?'':s).toLowerCase().normalize('NFD').
    5/8/2026: bổ sung "Tích hợp" (2.915 dòng, gồm cả mục ghi mã năng lực số theo
    Thông tư 02/2025), "Kiến thức", và bắt cả lỗi gõ "Phảm chất" có sẵn trong kho.
    Trước đó chỉ nhận "năng lực" và "phẩm chất" nên mục 4 hiện nhạt hơn ba mục kia. */
-function _isYccdHead(s){ return /^\s*\d+\s*[.\)]\s*(năng lực|phẩm chất|phảm chất|tích hợp|nội dung tích hợp|kiến thức)/i.test(String(s||'')); }
+/* 3/9/2026: KHBD Tiếng Anh 3-4-5 lấy từ giáo án thầy soạn nên tiêu đề mục I viết bằng
+   tiếng Anh ("1. Knowledge:", "3. Attributes", "4. Digital Competence (4.3CB2b)"…).
+   Không thêm thì bốn mục này hiện nhạt như dòng thường. Chỉ nới thêm từ khoá tiếng Anh,
+   các môn tiếng Việt giữ nguyên như cũ. */
+function _isYccdHead(s){ return /^\s*\d+\s*[.\)]\s*(năng lực|phẩm chất|phảm chất|tích hợp|nội dung tích hợp|kiến thức|knowledges?|skills?|attributes?|competenc(?:e|y|ies)|digital competenc|specific competenc|the disabled)/i.test(String(s||'')); }
 /* Một dòng mô tả 1 nhóm HS (cá nhân hóa từ menu "Học sinh cần hỗ trợ") */
 function _bxIVGroupLine(g){
   var head=((g.name||'').trim())||hsTypeLabel(g), meta=[];
@@ -7669,8 +7673,12 @@ function buildKHGDPhuLuc2(LOP,dsMon){
   /* (25/8/2026) Ba mã lồng ghép mới — chỉ in dòng quy ước của nội dung ĐANG BẬT. */
   /* Gọi QUA window: hàm gốc ở khối script khác — gọi tên trần là rơi vào giá trị mặc
      định, in cả căn cứ của nội dung thầy cô đã tắt (vấp 25/8/2026). */
-  var _ts=(window.BX_intgState?window.BX_intgState():{digital:true,qpan:true,kns:true,vietlao:false});
+  var _ts=(window.BX_intgState?window.BX_intgState():{digital:true,qpan:true,kns:true,vietlao:false,local:false});
   if(_ts.qpan) QW.push(['QPAN','Giáo dục quốc phòng và an ninh (TT 08/2024/TT-BGDĐT)','Lồng ghép trong Tiếng Việt, Tự nhiên và Xã hội, Đạo đức, Lịch sử và Địa lí, Âm nhạc, Mĩ thuật, Hoạt động trải nghiệm; không làm thay đổi thời lượng và cấu trúc bài dạy.']);
+  /* (3/9/2026) Bật GDĐP thì phải có dòng quy ước tương ứng — trước đây bảng chèn hoạt
+     động "(GD địa phương)" mà bảng quy ước mã không giải nghĩa mã đó. Đồng bộ với
+     website Kế hoạch dạy học các môn học, hoạt động giáo dục (website/ và web-chung/). */
+  if(_ts.local) QW.push(['GDĐP','Nội dung giáo dục của địa phương','Ở tiểu học không bố trí tiết riêng: lồng ghép vào Hoạt động trải nghiệm và các môn học qua tư liệu, di tích, lễ hội, sản vật, nghề truyền thống của địa phương.']);
   if(_ts.vietlao) QW.push(['VN-LÀO','Giáo dục truyền thống hữu nghị Việt Nam – Lào','Nội dung giáo dục địa phương theo kế hoạch giáo dục của nhà trường; lồng ghép ở những bài có chỗ bám tự nhiên.']);
   if(_ts.kns) QW.push(['KNS','Giáo dục kĩ năng sống (CT GDPT 2018; TT 04/2014/TT-BGDĐT)','Rèn kĩ năng tự phục vụ, giao tiếp, hợp tác, quản lí cảm xúc, ứng phó và tự bảo vệ ngay trong tiến trình bài dạy.']);
   if(_ts.dinhchinh) QW.push(['ĐÍNH CHÍNH','Điều chỉnh, bổ sung nội dung sách giáo khoa','Nội dung sách giáo khoa được cập nhật cho chính xác, khoa học theo tài liệu tập huấn của cơ quan quản lí; không phải nội dung tích hợp.']);
