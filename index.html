@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-02 · 89';
+  var PB='2026-09-03 · 90';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -6674,7 +6674,9 @@ var BX_QPAN_RULE={
   hdtn:[
     [/truyen thong|ngay 22|quan doi|bo doi|chu bo doi|cong an|den on|biet on|thuong binh|liet si/, 'Tổ chức hoạt động tìm hiểu, thăm hỏi, tri ân gia đình thương binh, liệt sĩ, đơn vị bộ đội, công an trên địa bàn; giới thiệu {CL}.'],
     [/que huong|cong dong|dia phuong|di tich|canh quan|moi truong/, 'Tổ chức tham quan di tích lịch sử, nhà truyền thống ở địa phương hoặc xem tư liệu thay thế; giáo dục {YC}.'],
-    [/an toan|giao thong|ki luat|noi quy|phong tranh/, 'Rèn nền nếp, kỉ luật, chấp hành pháp luật giao thông — yêu cầu cơ bản của giáo dục quốc phòng và an ninh ở tiểu học.'],
+    /* (3/9/2026) Bỏ /phong tranh/ khỏi luật: nó bắt cả "Phòng tránh bị xâm hại/bắt cóc"
+       (HĐTN 4) rồi gắn câu "pháp luật giao thông" — lệch hẳn nội dung bài (đo 2/9/2026). */
+    [/an toan giao thong|giao thong|ki luat|noi quy/, 'Rèn nền nếp, kỉ luật, chấp hành pháp luật giao thông — yêu cầu cơ bản của giáo dục quốc phòng và an ninh ở tiểu học.'],
     [/hoa binh|doan ket|ban be|the gioi/, 'Giáo dục lòng yêu hoà bình, tình đoàn kết; liên hệ {CL}.']
   ]
 };
@@ -6892,16 +6894,47 @@ window.BX_dinhChinh=BX_dinhChinh;
    ảnh hưởng. Chỉ ghi ở TIẾT ĐẦU của bài — nơi có cột Thời lượng — đúng nguyên tắc
    "địa chỉ tích hợp", không rải đều cho kín chỗ.
    r = [tuần, chủ đề, tên bài, hoạt động, nội dung, thời lượng, tiết KH, tích hợp] */
-window.BX_khgdIntgAdd=function(lop, mon, r){
+window.BX_khgdIntgAdd=function(lop, mon, r, st){
   if(!r) return [];
   if(!String(r[5]==null?'':r[5]).trim()) return [];
   var ten=[r[1],r[2],r[4]].map(function(x){return String(x==null?'':x);}).join(' ');
   var tenHep=[r[2],r[4]].map(function(x){return String(x==null?'':x);}).join(' ');
+  /* (3/9/2026) KHÔNG lồng ghép vào tiết ôn tập / kiểm tra / đánh giá định kì / thực hành
+     kĩ năng: TT 08/2024 yêu cầu không ảnh hưởng cấu trúc bài dạy, và tiết đánh giá không có
+     hoạt động dạy học để "bám" (bản xuất 2/9/2026 còn gắn QPAN vào cả dòng "Kiểm tra định kì
+     cuối học kì I" của Lịch sử và Địa lí 4). Bài dạy bình thường "Đánh giá, chỉnh sửa bài
+     văn…" của Tiếng Việt KHÔNG bị chặn — regex chỉ bắt "đánh giá" đi với giữa/cuối/định kì.
+     Đính chính SGK vẫn trả về — đó là điều chỉnh nội dung, không phải tích hợp. */
+  var _tk=BX_kd(tenHep);
+  if(/(kiem tra|thuc hanh ki nang|on tap)/.test(_tk) || /danh gia (giua|cuoi|dinh k[iy])/.test(_tk))
+    return BX_dinhChinh(lop, mon, tenHep);
   /* Cột 7 sẵn có của dòng này ĐÃ là một nội dung lồng ghép (thường là Năng lực số/AI,
      có nơi là nhãn "Tích hợp GD quốc phòng an ninh" do người soạn ghi) — phải tính vào
      giới hạn 2, nếu không bản kế hoạch lại dày đặc đúng thứ Sở dặn tránh. */
   var goc=String(r[7]==null?'':r[7]).trim(), daCo=goc?1:0;
-  var them=BX_capNoiDung(BX_intg3(mon, ten, lop, null, tenHep), daCo);
+  /* (3/9/2026) Chuỗi dò cố ý gồm cả CHỦ ĐỀ (r[1]) để Mĩ thuật/HĐTN — tên bài chỉ ghi
+     "Chủ đề n" — vẫn bắt được luật. Nhưng với môn dòng nào cũng có thời lượng (Tiếng
+     Việt 5), một luật trúng NHỜ CHỦ ĐỀ sẽ lặp nguyên văn suốt cả dải tuần (đo 2/9/2026:
+     15 dòng QPAN liền nhau ở chủ điểm "Tiếp bước cha ông"). Nay: nội dung trúng CHỈ nhờ
+     chủ đề được ghi MỘT LẦN cho mỗi (môn, chủ đề, nội dung); trúng nhờ chính tên bài thì
+     giữ nguyên. st là "sổ đã ghi" do nơi dựng bảng cấp — mỗi lượt dựng một sổ mới; không
+     truyền st (BX_khgdCoIntg chỉ hỏi có/không) thì chạy như cũ. */
+  var rong=BX_intg3(mon, ten, lop, null, tenHep);
+  var out=rong;
+  if(st && rong.length){
+    var hep={}; BX_intg3(mon, tenHep, lop, null, tenHep).forEach(function(p){ hep[p[0]+'|'+p[1]]=1; });
+    out=[];
+    for(var _i=0;_i<rong.length;_i++){
+      var _k=rong[_i][0]+'|'+rong[_i][1];
+      if(!hep[_k]){
+        var _ck=String(mon)+'|'+String(r[1]==null?'':r[1])+'|'+_k;
+        if(st[_ck]) continue;
+        st[_ck]=1;
+      }
+      out.push(rong[_i]);
+    }
+  }
+  var them=BX_capNoiDung(out, daCo);
   /* Đính chính SGK đứng riêng, luôn hiện, không bị giới hạn cắt mất. */
   return BX_dinhChinh(lop, mon, tenHep).concat(them);
 };
@@ -7500,13 +7533,14 @@ function bxKHGDBangMau(LOP,SUBJ,DATA){
   rows.push('<w:tr><w:trPr><w:tblHeader/></w:trPr>'+h2+'</w:tr>');
   var S=function(v){ return String(v==null?'':v).trim(); };
   var prevHK='',prevChu='',prevTuan='',prevBai='';
+  var _igst={}; /* (3/9/2026) sổ chống lặp lồng ghép theo chủ đề — cấp MỚI cho mỗi lượt dựng bảng */
   var _v=window.BX_khgdVal;
   for(var i=0;i<DATA.length;i++){
     var r=DATA[i], tuan=r[0],chude=r[1],bai=r[2],hd=r[3],nd=r[4],tl=r[5],tiet=r[6],tich=r[7];
     if(_v){ nd=_v(LOP,SUBJ,i,4,nd); tl=_v(LOP,SUBJ,i,5,tl); tiet=_v(LOP,SUBJ,i,6,tiet); tich=_v(LOP,SUBJ,i,7,tich); } /* bản trường, theo lớp + môn */
     /* Nối phần QPAN / Việt–Lào / Kĩ năng sống vào SAU nội dung Năng lực số đã có — tất cả nằm ở cột "Nội dung điều chỉnh, bổ sung". */
     if(window.BX_khgdIntgAdd){
-      var _th=window.BX_khgdIntgAdd(LOP,SUBJ,r);
+      var _th=window.BX_khgdIntgAdd(LOP,SUBJ,r,_igst);
       if(_th.length){
         var _s=_th.map(function(p){return p[0]+': '+p[1];}).join('\n');
         tich=S(tich); tich=tich?(tich+'\n'+_s):_s;
@@ -7527,6 +7561,16 @@ function bxKHGDBangMau(LOP,SUBJ,DATA){
     /* Tiết học/thời lượng = "Tiết 4+5 (2 tiết)"; thời lượng chỉ là số thì thêm chữ "tiết" */
     var tlTxt=S(tl); if(/^\d+$/.test(tlTxt)) tlTxt+=' tiết';
     var tietTxt=S(tiet).replace(/\s*[-–—]\s*/g,'–'); /* "1 – 3" → "1–3" cho đồng nhất với "4+5" */
+    /* (3/9/2026) Dữ liệu kiểu NÉN — cột Tiết chỉ ghi tiết đầu, thời lượng ghi cả bài, các
+       tiết sau KHÔNG có dòng riêng ("Tiết 2 (3 tiết)" của Toán 1) → in đủ khoảng "Tiết 2–4
+       (3 tiết)" cho thống nhất một kiểu ghi toàn văn bản. CHỈ nở khoảng khi dòng kế KHÔNG
+       phải tiết nối tiếp (Đạo đức 5 ghi "Tiết 9 (5 tiết)" rồi vẫn có dòng "Tiết 10" — nở
+       thành 9–13 sẽ mâu thuẫn với chính các dòng sau). */
+    var _mT=tietTxt.match(/^(\d+)$/), _mL=tlTxt.match(/^(\d+) tiết$/);
+    if(_mT&&_mL&&+_mL[1]>1){
+      var _nx=DATA[i+1], _nt=_nx?String(_nx[6]==null?'':_nx[6]).match(/^\s*(\d+)/):null;
+      if(!(_nt&&+_nt[1]===+_mT[1]+1)) tietTxt=_mT[1]+'–'+(+_mT[1]+(+_mL[1])-1);
+    }
     var tietHoc=tietTxt?('Tiết '+tietTxt+(tlTxt?' ('+tlTxt+')':'')):tlTxt;
     rows.push('<w:tr>'+
       bxTc(showTuan?tuan:'',COLS[0],{jc:'center',bb})+
@@ -7540,12 +7584,78 @@ function bxKHGDBangMau(LOP,SUBJ,DATA){
   return '<w:tbl><w:tblPr><w:tblW w:w="'+totalW+'" w:type="dxa"/><w:jc w:val="center"/>'+bxBorders(true)+'<w:tblLayout w:type="fixed"/></w:tblPr>'+
     '<w:tblGrid>'+COLS.map(function(w){return '<w:gridCol w:w="'+w+'"/>';}).join('')+'</w:tblGrid>'+rows.join('')+'</w:tbl>';
 }
+/* ===== (3/9/2026) TỰ KIỂM KHDH TRƯỚC KHI XUẤT — đối chiếu TT32/2018 & TT27/2020 =====
+   Vì sao: bản xuất 2/9/2026 lọt Toán lớp 1–3 KHÔNG có tiết kiểm tra định kì nào, Tiếng Anh
+   lại THỪA "kiểm tra định kì giữa kì", Công nghệ 3/GDTC 3 đặt kiểm tra cuối HKI ở tuần
+   19–22 — app không có tầng luật nào soi trước khi in. Bộ kiểm CHỈ CẢNH BÁO (console +
+   bxAlert), KHÔNG chặn xuất — dữ liệu là của tổ chuyên môn, app không được tự ý sửa. */
+var BX_TT32_TIET={ /* [regex tên môn (đã bỏ dấu), tổng tiết/năm theo TT32 – 35 tuần] */
+  '1':[['tieng viet',420],['toan',105],['dao duc',35],['tu nhien',70],['the chat|gdtc|the duc',70],['am nhac',35],['mi thuat|my thuat',35],['trai nghiem|hdtn',105]],
+  '2':[['tieng viet',350],['toan',175],['dao duc',35],['tu nhien',70],['the chat|gdtc|the duc',70],['am nhac',35],['mi thuat|my thuat',35],['trai nghiem|hdtn',105]],
+  '3':[['tieng viet',245],['toan',175],['anh|english',140],['dao duc',35],['tu nhien',70],['tin h',35],['cong nghe',35],['the chat|gdtc|the duc',70],['am nhac',35],['mi thuat|my thuat',35],['trai nghiem|hdtn',105]],
+  '4':[['tieng viet',245],['toan',175],['anh|english',140],['dao duc',35],['khoa h',70],['lich su|dia l',70],['tin h',35],['cong nghe',35],['the chat|gdtc|the duc',70],['am nhac',35],['mi thuat|my thuat',35],['trai nghiem|hdtn',105]]
+};
+BX_TT32_TIET['5']=BX_TT32_TIET['4']; /* lớp 5 cùng khung lớp 4 */
+/* Bỏ dấu — bản sao cục bộ vì BX_kd nằm ở khối script tích hợp (bẫy IIFE, xem :7560). */
+function bxKdKiem(s){
+  return String(s==null?'':s).toLowerCase()
+    .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g,'a').replace(/[èéẹẻẽêềếệểễ]/g,'e')
+    .replace(/[ìíịỉĩ]/g,'i').replace(/[òóọỏõôồốộổỗơờớợởỡ]/g,'o')
+    .replace(/[ùúụủũưừứựửữ]/g,'u').replace(/[ỳýỵỷỹ]/g,'y').replace(/đ/g,'d');
+}
+function bxKiemKHGD(LOP,dsMon,KH){
+  var canh=[], chuan=BX_TT32_TIET[String(LOP)]||[];
+  dsMon.forEach(function(mon){
+    var rows=KH[mon]||[]; if(!rows.length) return;
+    var mk=bxKdKiem(mon), maxT=0, tuanCo={}, texts=[];
+    rows.forEach(function(r){
+      String(r[6]==null?'':r[6]).split(/[^0-9]+/).forEach(function(x){ var n=parseInt(x,10); if(n>maxT)maxT=n; });
+      var w=parseInt(r[0],10)||0; if(w>=1&&w<=53) tuanCo[w]=1;
+      texts.push({w:w, t:bxKdKiem([r[1],r[2],r[3],r[4]].join(' '))});
+    });
+    /* 1) Tổng tiết: cột "Tiết KH" đánh liên tục cả năm → số lớn nhất = tổng tiết. */
+    var ch=null; for(var ci=0;ci<chuan.length;ci++){ if(new RegExp(chuan[ci][0]).test(mk)){ ch=chuan[ci]; break; } }
+    if(ch&&maxT&&maxT!==ch[1]) canh.push(mon+': tổng tiết theo cột "Tiết KH" là '+maxT+', chuẩn TT32 là '+ch[1]+' tiết/năm.');
+    /* 2) Phủ tuần 1–35. */
+    var thieu=[]; for(var w=1;w<=35;w++){ if(!tuanCo[w]) thieu.push(w); }
+    if(thieu.length) canh.push(mon+': thiếu dữ liệu tuần '+thieu.slice(0,6).join(', ')+(thieu.length>6?'…':'')+'.');
+    /* 3) Kiểm tra định kì theo TT27/2020. Môn điểm số: TV, Toán (mọi lớp); Tiếng Anh,
+       Tin học, Công nghệ (từ lớp 3); Khoa học, LS&ĐL (lớp 4–5). TNXH và các môn còn lại
+       đánh giá bằng nhận xét. */
+    var laToanTV=/tieng viet|toan/.test(mk);
+    var diemSo=laToanTV||((/anh|english|tin h|cong nghe|khoa h|lich su|dia l/.test(mk))&&!/tu nhien/.test(mk));
+    var reKT=/(kiem tra|danh gia)[^.,;:]{0,25}(dinh k[iy]|cuoi|giua|hoc k[iy])/;
+    var find=function(re,w1,w2){ for(var i=0;i<texts.length;i++){ if(texts[i].w>=w1&&texts[i].w<=w2&&re.test(texts[i].t)) return true; } return false; };
+    if(diemSo){
+      if(!find(reKT,14,18)) canh.push(mon+': chưa thấy tiết kiểm tra định kì CUỐI HỌC KÌ I (tuần 14–18) — TT27/2020.');
+      if(!find(reKT,32,35)) canh.push(mon+': chưa thấy tiết kiểm tra định kì CUỐI NĂM (tuần 32–35) — TT27/2020.');
+      if(laToanTV&&(String(LOP)==='4'||String(LOP)==='5')){
+        if(!find(/(kiem tra|danh gia)[^.,;:]{0,25}giua/,6,11)) canh.push(mon+': lớp '+LOP+' cần kiểm tra định kì GIỮA HỌC KÌ I (khoảng tuần 8–10) — chưa thấy.');
+        if(!find(/(kiem tra|danh gia)[^.,;:]{0,25}giua/,24,29)) canh.push(mon+': cần kiểm tra định kì GIỮA HỌC KÌ II (khoảng tuần 26–28) — chưa thấy.');
+      } else if(find(/kiem tra[^.,;:]{0,15}dinh k[iy][^.,;:]{0,15}giua|kiem tra dinh k[iy] giua/,1,35)){
+        canh.push(mon+': có bài "kiểm tra định kì GIỮA KÌ" — TT27/2020 không quy định cho môn/lớp này (nên đổi thành ôn tập).');
+      }
+    } else if(find(/kiem tra dinh k[iy]|bai kiem tra/,1,35)){
+      canh.push(mon+': môn đánh giá bằng nhận xét nhưng có dòng "kiểm tra định kì" — nên ghi "Ôn tập, đánh giá".');
+    }
+  });
+  return canh;
+}
+window.bxKiemKHGD=bxKiemKHGD; /* expose để kiểm thử */
 /* Văn bản Phụ lục 2 cho khối LOP, gồm các môn trong dsMon (theo thứ tự truyền vào). */
 function buildKHGDPhuLuc2(LOP,dsMon){
   var GROOT=window.BX_KHGD_G||{'5':window.BX_KHGD};
   var KH=GROOT[LOP]||{};
   var coDL=dsMon.filter(function(m){ return KH[m]&&KH[m].length; });
   if(!coDL.length) throw new Error('Khối '+LOP+' chưa có dữ liệu Kế hoạch dạy học.');
+  /* (3/9/2026) Tự kiểm trước khi dựng — chỉ cảnh báo, văn bản vẫn được tạo. */
+  try{
+    var _cb=bxKiemKHGD(LOP,coDL,KH);
+    if(_cb.length){
+      console.warn('[Bút Xanh] Tự kiểm KHDH khối '+LOP+':\n- '+_cb.join('\n- '));
+      if(typeof bxAlert==='function') bxAlert('Tự kiểm KHDH khối '+LOP+': '+_cb.length+' điểm cần xem lại (văn bản VẪN được tạo):\n\n• '+_cb.slice(0,8).join('\n• ')+(_cb.length>8?'\n… và '+(_cb.length-8)+' điểm khác (xem Console F12).':''));
+    }
+  }catch(_e){ try{console.warn('[Bút Xanh] bxKiemKHGD lỗi: '+_e.message);}catch(__e){} }
   // Quy ước
   var QW=[
    ['Mã','Miền năng lực (Khung NLS – TT 02/2025)','Ý nghĩa khi đưa vào KHDH/KHBD'],
@@ -7886,10 +7996,11 @@ function editableCell(i,col,cls,add){
   var mk=isEdited(i,col)?' class="'+(cls?cls+' ':'')+'khgd-cell-edited"':(cls?' class="'+cls+'"':'');
   return '<td'+mk+'>'+v+add+'</td>';
 }
-/* HTML của phần lồng ghép QPAN / Việt – Lào / Kĩ năng sống cho một dòng KHDH. */
-function khgdIntgHtml(r){
+/* HTML của phần lồng ghép QPAN / Việt – Lào / Kĩ năng sống cho một dòng KHDH.
+   (3/9/2026) st = sổ chống lặp theo chủ đề, do tableHtml cấp mỗi lượt vẽ — cùng nếp với bản Word. */
+function khgdIntgHtml(r, st){
   if(!window.BX_khgdIntgAdd) return '';
-  var ds=window.BX_khgdIntgAdd(curLop(), cur(), r); if(!ds.length) return '';
+  var ds=window.BX_khgdIntgAdd(curLop(), cur(), r, st); if(!ds.length) return '';
   return ds.map(function(p){
     return '<div class="khgd-th"><b>'+esc(p[0])+':</b> '+esc(p[1])+'</div>';
   }).join('');
@@ -7908,6 +8019,7 @@ function tableHtml(forPrint){
   var HEAD=VIS.map(function(c){return ALLHEAD[c];});
   var out='<table class="khgd-tbl"><thead><tr>'+HEAD.map(function(h,i){return '<th style="width:'+COLW[i]+'">'+esc(h)+'</th>';}).join('')+'</tr></thead><tbody>';
   var prevHK='',prevChu='',prevTuan='',prevBai='', shown=0;
+  var _igst={}; /* (3/9/2026) sổ chống lặp lồng ghép — mỗi lượt vẽ bảng một sổ mới */
   for(var i=0;i<D.length;i++){
     var r=D[i]; if(!rowMatch(r)) continue; shown++;
     var hk=hkLabel(r[0]);
@@ -7926,7 +8038,7 @@ function tableHtml(forPrint){
       4:(forPrint?'<td>'+esc(val(i,4))+'</td>':editableCell(i,4)),
       5:(forPrint?'<td class="c">'+esc(val(i,5))+'</td>':editableCell(i,5,'c')),
       6:(forPrint?'<td class="c">'+esc(val(i,6))+'</td>':editableCell(i,6,'c')),
-      7:(forPrint?'<td>'+esc(val(i,7))+khgdIntgHtml(r)+'</td>':editableCell(i,7,null,khgdIntgHtml(r)))
+      7:(forPrint?'<td>'+esc(val(i,7))+khgdIntgHtml(r,_igst)+'</td>':editableCell(i,7,null,khgdIntgHtml(r,_igst)))
     };
     out+='<tr'+trcls+'>'+VIS.map(function(c){return cells[c];}).join('')+'</tr>';
   }
@@ -7954,9 +8066,9 @@ window.renderKHDH=function(){
   var L=window.BX_khgdEdit[curLop()], s=L&&L[cur()], ne=s?Object.keys(s).length:0;
   var info=document.getElementById('khdh-info');
   /* Đếm địa chỉ lồng ghép mới đang hiện — để thầy cô biết bật công tắc có tác dụng gì. */
-  var dQ=0,dV=0,dK=0;
+  var dQ=0,dV=0,dK=0,_igsc={}; /* (3/9/2026) đếm cùng sổ chống lặp để khớp số hiện trên bảng */
   if(window.BX_khgdIntgAdd) D.forEach(function(r){
-    window.BX_khgdIntgAdd(curLop(),cur(),r).forEach(function(p){
+    window.BX_khgdIntgAdd(curLop(),cur(),r,_igsc).forEach(function(p){
       if(p[0]==='QPAN')dQ++; else if(p[0]==='VN-LÀO')dV++; else dK++;
     });
   });
