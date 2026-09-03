@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-04 · 96';
+  var PB='2026-09-04 · 97';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -2994,6 +2994,22 @@ function bxTachHoatDong(b){
   }
   if(i<g.length && _BX_RE_CTH.test(g[i])){ var d1=g[i].replace(_BX_RE_CTH,'').trim(); i++; if(d1){ g.splice(i,0,d1); } }
   var rest=g.slice(i), hang=[{gv:rest, hs:h}];
+  /* ===== (5/9/2026) BƯỚC ĐÃ XẾP SẴN TRONG KHO =====
+     cg / ch = vị trí dòng bắt đầu mỗi bước ở cột GV / cột HS; ng / nh = số dòng lúc xếp.
+     Chỉ lưu VỊ TRÍ CẮT chứ không chép lại chữ: cột GV 16,4 MB, cột HS 6,6 MB — chép thêm
+     một bản là kho phình 20%, thầy cô mạng chậm tải lâu.
+     ng/nh là chốt soát: nếu sau này phần tách "Mục tiêu" đổi làm số dòng lệch đi, chỉ số
+     cắt sẽ trỏ sai chỗ mà KHÔNG báo lỗi — nên khớp thì mới dùng, không khớp thì rơi về
+     cách in của bản 96. ĐỪNG bỏ hai chốt này. */
+  if(b && Array.isArray(b.cg) && Array.isArray(b.ch) && b.cg.length===b.ch.length && b.cg.length>1
+     && b.ng===rest.length && b.nh===h.length){
+    var H=[];
+    for(var q=0;q<b.cg.length;q++){
+      H.push({ gv:rest.slice(b.cg[q], (q+1<b.cg.length)?b.cg[q+1]:rest.length),
+               hs:h.slice(b.ch[q], (q+1<b.ch.length)?b.ch[q+1]:h.length) });
+    }
+    return {ten:ten, mucTieu:mt, hang:H};
+  }
   var re=_BX_RE_HD, G=_bxTachMoc(rest,re);
   if(G.parts.length<2){ re=_BX_RE_BUOC; G=_bxTachMoc(rest,re); }
   if(G.parts.length>=2){
