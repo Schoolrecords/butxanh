@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-03 · 91';
+  var PB='2026-09-03 · 92';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -488,6 +488,7 @@ tr.lesson:hover .gen-hint{display:inline}
 .hs-chip.iep-chua{background:var(--red-soft);color:#b13a28;border-color:rgba(229,80,59,.22)}
 .hs-kt-note{font-size:12px;line-height:1.5;color:#5a3fa0;background:var(--pur-soft);border:1px solid rgba(124,90,194,.18);border-radius:8px;padding:8px 10px;margin-bottom:8px}
 .hs-kt-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.hs-kt-pv{margin-top:3px;color:#3d2b73}
 @media(max-width:560px){.hs-kt-grid{grid-template-columns:1fr}}
 .hs-card ul{list-style:none;display:flex;flex-direction:column;gap:6px}
 .hs-card li{font-size:12.7px;color:#42554A;display:flex;gap:8px;line-height:1.45}
@@ -2497,13 +2498,14 @@ window.bxMergeKho = function(){
         <div id="hs-kt-fields" style="display:none;grid-column:1/-1">
           <div class="hs-kt-note">🧩 <b>Khuyết tật học hòa nhập</b> — theo Luật Người khuyết tật 2010 &amp; TT 03/2018/TT-BGDĐT: cần xác định <b>dạng tật</b>, <b>mức độ</b> và có <b>Kế hoạch giáo dục cá nhân (KHGDCN)</b>; đánh giá theo KHGDCN (TT 27/2020).</div>
           <div class="hs-kt-grid">
-            <label class="fld"><span>Dạng khuyết tật</span><select id="hs-disability"></select></label>
-            <label class="fld"><span>Mức độ</span><select id="hs-severity"></select></label>
+            <label class="fld"><span>Dạng khuyết tật</span><select id="hs-disability" onchange="bxHsktXemTruoc()"></select></label>
+            <label class="fld"><span>Mức độ</span><select id="hs-severity" onchange="bxHsktXemTruoc()"></select></label>
             <label class="fld"><span>Kế hoạch GD cá nhân</span><select id="hs-iep"></select></label>
           </div>
+          <div id="hs-kt-preview" class="hs-kt-note" style="margin-top:8px;margin-bottom:0"></div>
         </div>
         <label class="fld" style="grid-column:1/-1"><span>Môn liên quan</span><input id="hs-subject" placeholder="VD: Tiếng Việt (bỏ trống nếu chung)"></label>
-        <label class="fld" style="grid-column:1/-1"><span>Ghi chú / biện pháp (mỗi dòng một ý)</span><textarea id="hs-notes" rows="4" placeholder="Cho đọc nối tiếp câu trước khi đọc cả đoạn.&#10;Gọi đọc đoạn ngắn, khen ngợi kịp thời."></textarea></label>
+        <label class="fld" style="grid-column:1/-1"><span>Ghi chú / biện pháp (mỗi dòng một ý)</span><textarea id="hs-notes" rows="4" placeholder="Ghi chú chung áp dụng mọi môn. Muốn riêng một môn thì mở đầu dòng bằng tên môn, VD:&#10;Toán: dùng que tính, giảm còn một nửa số bài.&#10;Tiếng Việt: chép 1–2 câu ngắn, đọc theo GV."></textarea></label>
       </div>
     </div>
     <div class="modal-foot">
@@ -2971,14 +2973,21 @@ function _bxNorm(s){ return String(s==null?'':s).toLowerCase().normalize('NFD').
    các môn tiếng Việt giữ nguyên như cũ. */
 function _isYccdHead(s){ return /^\s*\d+\s*[.\)]\s*(năng lực|phẩm chất|phảm chất|tích hợp|nội dung tích hợp|kiến thức|knowledges?|skills?|attributes?|competenc(?:e|y|ies)|digital competenc|specific competenc|the disabled)/i.test(String(s||'')); }
 /* Một dòng mô tả 1 nhóm HS (cá nhân hóa từ menu "Học sinh cần hỗ trợ") */
-function _bxIVGroupLine(g){
-  var head=((g.name||'').trim())||hsTypeLabel(g), meta=[];
+function _bxIVGroupLine(g,L){
+  var head=((g.name||'').trim())||hsTypeLabel(g), meta=[], mon=L&&L.mon;
   if(g.count) meta.push(g.count+' HS');
   if(hsIsKT(g)){
     if(g.disability) meta.push(hsDisabilityLabel(g.disability));
     if(g.severity) meta.push('mức '+(hsSeverityLabel(g.severity)||'').toLowerCase());
   }
-  var pre=head+(meta.length?(' ('+meta.join(', ')+')'):''), notes=(g.notes||[]).join('; ');
+  var pre=head+(meta.length?(' ('+meta.join(', ')+')'):'');
+  /* (3/9/2026) HSKT: biện pháp theo môn đang dạy + chung + mức độ, mỗi ý một dòng "+".
+     Ghi chú GV mở đầu bằng tên môn chỉ in ở môn đó (bxTachGhiChu) — áp dụng cả nhóm thường. */
+  if(hsIsKT(g)){
+    var bp=bxHsktBienPhap(g,mon);
+    return '- '+pre+':'+(bp.length?('\n'+bp.map(function(x){ return '   + '+x; }).join('\n')):'');
+  }
+  var gc=bxTachGhiChu(g.notes,mon), notes=gc.chung.concat(gc.rieng).join(' ');
   return '- '+pre+(notes?(': '+notes):'');
 }
 /* Trả {show, items:[{label,lines[]}], note} cho mục IV theo chế độ state.khbdIV (auto|always|never) */
@@ -2991,8 +3000,8 @@ function bxSectionIV(L){
     if(gs && gs!==nm) return;            /* GV khai môn khác -> bỏ; rỗng = áp dụng mọi môn */
     if(hsIsKT(g)) kt.push(g); else support.push(g);
   });
-  var l1=support.map(_bxIVGroupLine); if(!l1.length && L && L.hotro)   l1=[L.hotro];
-  var l2=kt.map(_bxIVGroupLine);      if(!l2.length && L && L.hoanhap) l2=[L.hoanhap];
+  var l1=support.map(function(g){ return _bxIVGroupLine(g,L); }); if(!l1.length && L && L.hotro)   l1=[L.hotro];
+  var l2=kt.map(function(g){ return _bxIVGroupLine(g,L); });      if(!l2.length && L && L.hoanhap) l2=[L.hoanhap];
   if(mode==='always'){
     return {show:true, note:kt.length>0, items:[
       {label:'Học sinh cần hỗ trợ:', lines:l1.length?l1:['…']},
@@ -3005,6 +3014,177 @@ function bxSectionIV(L){
   if(l2.length) items.push({label:'Học sinh khuyết tật học hòa nhập:', lines:l2});
   return {show:items.length>0, items:items, note:kt.length>0};
 }
+/* ============================================================================
+   GIÁO DỤC HSKT THEO TỪNG MÔN × DẠNG TẬT × MỨC ĐỘ   (3/9/2026 — đề xuất GV: cô Hoàn Mỹ)
+   ----------------------------------------------------------------------------
+   Trước: GV khai một em khuyết tật (bỏ trống "Môn liên quan" = áp dụng mọi môn) rồi ghi
+   3 dòng biện pháp → Mục I và Mục IV của MỌI môn in y hệt 3 dòng ấy, Toán cũng như
+   Âm nhạc. GV phản ánh: "nó lặp lại cho các môn khác".
+   Nay: app tự sinh biện pháp riêng theo (dạng tật × môn) + một dòng theo mức độ; ghi
+   chú của GV vẫn giữ nguyên làm phần "chung". Dòng ghi chú mở đầu bằng tên môn
+   ("Toán: …") chỉ in ở môn đó.
+   Căn cứ chuyên môn: TT 03/2018/TT-BGDĐT (giáo dục hoà nhập), TT 27/2020 (đánh giá theo
+   KHGDCN), tài liệu "Hỗ trợ HS khuyết tật học hoà nhập cấp tiểu học" của Bộ GD&ĐT.
+   Nhóm môn dùng chung biện pháp (khi dạng tật không có gì đặc thù riêng cho môn):
+     xh  = Khoa học · TNXH · Lịch sử và Địa lí · Đạo đức
+     nt  = Âm nhạc · Mĩ thuật        th = Công nghệ · Tin học
+   ========================================================================== */
+var BX_HSKT_NHOM={khoa:'xh',lsdl:'xh',daoduc:'xh',amnhac:'nt',mythuat:'nt',congnghe:'th',tin:'th'};
+var BX_HSKT_BP={
+  vandong:{
+    chung:'Chỗ ngồi thuận tiện di chuyển, bàn ghế phù hợp; bạn cùng bàn hỗ trợ lấy, cất đồ dùng; không hạ điểm về hình thức trình bày do hạn chế vận động tay.',
+    tv:'Giảm lượng chữ phải viết (câu ngắn, vở ô li to hoặc bảng con); cho phép trả lời miệng thay cho viết; phần đọc – nghe – nói yêu cầu như các bạn.',
+    toan:'Cho dùng thẻ số, vật thật, bảng con cỡ lớn để thao tác; bài trình bày dài được làm miệng hoặc bạn ghi hộ; giữ nguyên yêu cầu về tính toán.',
+    xh:'Tham gia quan sát, thảo luận, trả lời như các bạn; sản phẩm (sơ đồ, phiếu) làm chung với nhóm hoặc trình bày miệng.',
+    amnhac:'Vận động theo nhạc thay bằng gõ đệm, vỗ tay, lắc lư tại chỗ; hát và nghe nhạc như các bạn.',
+    mythuat:'Chọn dụng cụ dễ cầm (bút sáp to, cọ cán to), cố định giấy bằng băng dính; chấp nhận sản phẩm ít chi tiết; đánh giá theo nỗ lực.',
+    th:'Hỗ trợ thao tác tay (chuột, kéo, dụng cụ); giao phần việc phù hợp trong quy trình; bảo đảm an toàn khi thực hành.',
+    hdtn:'Phân công vai trò ít di chuyển (thuyết trình, ghi chép, giám sát); nhóm hỗ trợ khi hoạt động ngoài lớp.',
+    gdtc:'Nội dung thay thế theo KHGDCN: bài tập tay/nửa thân trên, trò chơi tại chỗ; không yêu cầu chạy, nhảy nếu không phù hợp; đánh giá theo mức tiến bộ.',
+    anh:'Tập trung nghe – nói – đọc; phần viết giảm lượng hoặc trả lời miệng; hoạt động làm động tác (TPR) thay bằng chỉ tranh, nói.'
+  },
+  nghenoi:{
+    chung:'Chỗ ngồi hàng đầu, đối diện GV; GV nói chậm, rõ khẩu hình, kèm chữ viết và hình ảnh trên bảng; hỏi lại bằng câu ngắn để chắc HS đã hiểu nhiệm vụ.',
+    tv:'Ưu tiên đọc – viết; phần nghe – nói thay bằng đọc thầm, viết câu trả lời hoặc nói theo khả năng; cho xem tranh, từ khoá trước khi đọc; chấp nhận phát âm chưa chuẩn.',
+    toan:'Ghi đề bài, lệnh làm việc lên bảng hoặc phiếu; dùng hình vẽ, kí hiệu, vật thật; cho HS trình bày cách làm bằng viết hoặc thao tác thay vì nói.',
+    xh:'Cung cấp phiếu học tập, từ khoá, hình ảnh; thảo luận nhóm có bạn ghi lại ý chính cho HS; trả lời bằng viết, chỉ tranh hoặc lựa chọn.',
+    amnhac:'Cảm nhận nhịp qua vỗ tay, gõ đệm, quan sát động tác của bạn; không đánh giá cao độ, lời hát.',
+    mythuat:'Học như các bạn; hướng dẫn bằng làm mẫu và hình ảnh thay cho giảng bằng lời.',
+    th:'Hướng dẫn bằng làm mẫu chậm, tranh quy trình, chữ viết trên bảng; kiểm tra HS đã hiểu từng bước trước khi làm.',
+    hdtn:'Giao nhiệm vụ bằng hình ảnh, văn bản; bạn hỗ trợ nhắc lại yêu cầu; ghi nhận sự tham gia.',
+    gdtc:'Làm mẫu động tác, dùng tín hiệu tay, cờ thay hiệu lệnh còi; xếp HS ở vị trí nhìn rõ GV.',
+    anh:'Tập trung đọc – viết và từ vựng qua tranh; phần nghe – nói giảm yêu cầu hoặc thay bằng nhận diện từ; không đánh giá phát âm.'
+  },
+  nhin:{
+    chung:'Chỗ ngồi gần bảng, đủ ánh sáng; tài liệu phóng to (cỡ chữ 18–24), nét đậm, tương phản cao; GV đọc to những gì viết trên bảng; cho thêm thời gian.',
+    tv:'Bài đọc in phóng to hoặc GV, bạn đọc cho nghe; giảm lượng viết, dùng vở kẻ ô to, bút nét đậm; ưu tiên đánh giá qua nghe – nói.',
+    toan:'Đề bài phóng to hoặc đọc cho nghe; dùng vật thật, que tính, hình khối sờ được; giảm số bài, cho thêm thời gian; kiểm tra bằng hỏi – đáp.',
+    xh:'Mô tả bằng lời tranh, bản đồ, sơ đồ; dùng vật mẫu sờ được; yêu cầu nhận biết, nêu ý chính bằng lời thay cho quan sát chi tiết.',
+    amnhac:'Học như các bạn, phát huy thế mạnh nghe; hướng dẫn động tác bằng lời và cầm tay.',
+    mythuat:'Nặn, xé dán, tạo hình bằng vật liệu sờ được thay cho vẽ chi tiết; đánh giá theo nỗ lực.',
+    th:'Hướng dẫn bằng lời và cầm tay chỉ việc; dụng cụ đặt ở vị trí cố định; giao phần việc an toàn, phù hợp.',
+    hdtn:'Bạn hỗ trợ khi di chuyển, hoạt động ngoài lớp; giao nhiệm vụ nói, kể, hát, thuyết trình để phát huy thế mạnh.',
+    gdtc:'Bạn dẫn hướng khi di chuyển; hiệu lệnh bằng lời, bóng có chuông; sân tập không có vật cản; điều chỉnh nội dung theo KHGDCN.',
+    anh:'Ưu tiên nghe – nói; tài liệu phóng to; giảm phần đọc – viết chữ nhỏ; kiểm tra bằng hỏi – đáp.'
+  },
+  thankinh:{
+    chung:'Chỗ ngồi ổn định, ít bị phân tán; báo trước khi chuyển hoạt động; quy tắc lớp ngắn gọn bằng hình ảnh; khi HS căng thẳng cho tạm nghỉ ở góc yên tĩnh, không ép buộc.',
+    tv:'Câu hỏi ngắn, cụ thể; luyện nói theo mẫu câu có sẵn; đọc đoạn ngắn; khen ngay khi HS trả lời được.',
+    toan:'Tận dụng khả năng ghi nhớ quy tắc, thứ tự; trình bày từng bước theo mẫu; bài toán có lời văn dài chuyển thành sơ đồ, hình vẽ.',
+    xh:'Dùng tranh, thẻ hình, câu hỏi lựa chọn; thảo luận nhóm nhỏ (2–3 bạn) có bạn thân hỗ trợ; không ép trình bày trước lớp.',
+    nt:'Cho HS chọn hoạt động thấy thoải mái; tránh âm thanh quá lớn, thay đổi đột ngột; ghi nhận sản phẩm theo cách thể hiện riêng của HS.',
+    th:'Quy trình từng bước bằng hình ảnh, làm mẫu chậm; vị trí thực hành yên tĩnh; theo dõi sát về an toàn.',
+    hdtn:'Giao vai trò cụ thể, quen thuộc trong nhóm; báo trước nội dung, địa điểm hoạt động; bạn thân đồng hành.',
+    gdtc:'Bài tập có trình tự lặp lại, hiệu lệnh đơn giản; hạn chế trò chơi tranh đua gây kích động; cho tham gia theo nhịp riêng.',
+    anh:'Học từ vựng qua thẻ hình, lặp lại theo mẫu; hoạt động cặp với bạn quen; không ép nói trước lớp.'
+  },
+  trltue:{
+    chung:'Giao nhiệm vụ ngắn, chia nhỏ từng bước, làm mẫu trước; lặp lại nhiều lần với đồ dùng trực quan; chỗ ngồi gần GV, ghép bạn hỗ trợ; đánh giá theo sự tiến bộ so với chính HS.',
+    tv:'Đọc: nhận diện chữ, đọc tiếng, từ, câu ngắn trong bài; viết: chép 1–2 câu, viết từ khoá; nói: trả lời câu hỏi đơn giản về nội dung; không yêu cầu tìm ý, viết đoạn.',
+    toan:'Dùng que tính, vật thật, bảng số; giảm số bài và phạm vi số; chỉ yêu cầu dạng cơ bản nhất của bài (tính, nhận biết, so sánh); cho thêm thời gian.',
+    xh:'Yêu cầu nhận biết, gọi tên, chỉ tranh; nêu lại 1 ý chính bằng câu ngắn; phiếu dạng nối, khoanh, lựa chọn thay cho viết.',
+    amnhac:'Tham gia theo khả năng: hát một câu, vỗ tay hoặc gõ đệm theo nhịp; làm mẫu từng bước; khen ngợi sự tham gia.',
+    mythuat:'Vẽ, tô màu, xé dán hình đơn giản theo mẫu; làm mẫu từng bước; khen ngợi sự tham gia, không so sánh với bạn.',
+    th:'Làm mẫu chậm nhiều lần; giao phần việc 1–2 bước đơn giản, an toàn; GV hoặc bạn hỗ trợ trực tiếp.',
+    hdtn:'Nhiệm vụ cụ thể, vừa sức trong nhóm (chuẩn bị đồ, dán sản phẩm…); bạn hỗ trợ; ghi nhận sự tham gia.',
+    gdtc:'Làm mẫu, tập cùng bạn; giảm yêu cầu kĩ thuật, số lần lặp; ưu tiên trò chơi vận động đơn giản.',
+    anh:'Nhận diện, nói theo 2–3 từ vựng cốt lõi của bài qua tranh; không yêu cầu cấu trúc câu, viết chính tả.'
+  },
+  /* Khác / đa tật / chưa chọn dạng tật: phần theo môn lấy từ BX_HSKT_RULE (đã có sẵn theo môn). */
+  khac:{
+    chung:'Điều chỉnh theo KHGDCN của HS; giao nhiệm vụ vừa sức, chia nhỏ từng bước, làm mẫu trước; tăng trực quan; bạn hỗ trợ; đánh giá theo sự tiến bộ.'
+  }
+};
+/* Một dòng theo mức độ (Luật NKT 2010, NĐ 28/2012: nhẹ · nặng · đặc biệt nặng). */
+var BX_HSKT_MUCDO={
+  nhe:'Mức nhẹ: học theo chương trình chung, GV hỗ trợ khi cần; khuyến khích tự hoàn thành nhiệm vụ.',
+  nang:'Mức nặng: giảm khoảng một nửa yêu cầu về lượng và độ khó; GV hoặc bạn hỗ trợ trực tiếp trong hoạt động chính.',
+  dbnang:'Mức đặc biệt nặng: mục tiêu chủ yếu là tham gia, giao tiếp và kĩ năng xã hội; tiếp thu kiến thức theo khả năng; thực hiện hoàn toàn theo KHGDCN.'
+};
+/* Mục tiêu riêng (Mục I) — theo MÔN, dùng cho nhóm cần giảm yêu cầu nhận thức
+   (trí tuệ; thần kinh – tâm thần mức nặng; khác/đa tật). */
+var BX_HSKT_MT={
+  tv:'đọc được câu, đoạn ngắn; viết được từ, câu theo mẫu và trả lời được câu hỏi đơn giản về nội dung bài',
+  toan:'thực hiện được dạng cơ bản nhất của bài (tính, nhận biết, so sánh) với đồ dùng trực quan',
+  khoa:'nhận biết, gọi tên được sự vật, hiện tượng chính của bài; nêu lại được 1 ý chính',
+  lsdl:'nhận biết, chỉ ra được nhân vật, sự kiện, địa danh chính của bài trên tranh, bản đồ',
+  daoduc:'nhận biết được hành vi đúng – sai trong tình huống của bài; bày tỏ thái độ bằng lựa chọn đơn giản',
+  amnhac:'tham gia hát, vận động, gõ đệm theo khả năng; nhận biết được bài hát, nhạc cụ của bài',
+  mythuat:'tạo được sản phẩm đơn giản theo chủ đề với sự hỗ trợ; nêu được tên sản phẩm',
+  congnghe:'thực hiện được 1–2 thao tác đơn giản, an toàn trong quy trình của bài',
+  tin:'thực hiện được thao tác cơ bản nhất của bài trên máy tính với sự hướng dẫn',
+  hdtn:'tham gia hoạt động cùng nhóm với vai trò vừa sức; thực hiện được một việc cụ thể',
+  gdtc:'tập được động tác, trò chơi ở mức phù hợp thể trạng, bảo đảm an toàn',
+  anh:'nhận biết, nói theo được 2–3 từ, mẫu câu cốt lõi của bài qua tranh',
+  other:'thực hiện được yêu cầu cốt lõi của bài ở mức độ phù hợp với khả năng'
+};
+/* Nhóm giác quan – vận động: đạt YCCD như các bạn, chỉ điều chỉnh PHƯƠNG TIỆN; ngoại lệ theo môn. */
+var BX_HSKT_NGOAILE={
+  vandong:{tv:'phần viết giảm lượng hoặc thay bằng trả lời miệng',gdtc:'nội dung vận động thay thế theo KHGDCN',amnhac:'phần vận động theo nhạc thay bằng gõ đệm, vỗ tay',mythuat:'sản phẩm ít chi tiết hơn, phù hợp khả năng vận động tay',anh:'phần viết giảm lượng hoặc trả lời miệng'},
+  nghenoi:{tv:'phần nghe – nói điều chỉnh theo khả năng, không đánh giá phát âm',anh:'phần nghe – nói giảm yêu cầu, không đánh giá phát âm',amnhac:'tham gia qua nhịp điệu, không đánh giá cao độ',other:'nhiệm vụ được giao kèm chữ viết, hình ảnh'},
+  nhin:{tv:'phần đọc dùng chữ phóng to hoặc nghe đọc, phần viết giảm lượng',mythuat:'sản phẩm tạo hình bằng vật liệu sờ được',gdtc:'nội dung vận động có bạn dẫn hướng, điều chỉnh theo KHGDCN',lsdl:'quan sát tranh, bản đồ thay bằng nghe mô tả',khoa:'quan sát hình ảnh thay bằng nghe mô tả, sờ vật mẫu',other:'tài liệu phóng to hoặc nghe đọc'},
+  thankinh:{other:'hình thức làm việc phù hợp (nhiệm vụ rõ ràng, nhóm nhỏ, không ép trình bày trước lớp)'}
+};
+/* BX_subjKey và BX_HSKT_RULE nằm trong khối IIFE phía sau → lấy qua window (đã xuất ở đó). */
+function _bxHsktSk(mon){ var f=window.BX_subjKey||(typeof BX_subjKey==='function'?BX_subjKey:null); return f?f(mon):'other'; }
+function _bxHsktTenMon(mon){ var t=(typeof _bxSubjectFull==='function')?_bxSubjectFull(mon):mon; return String(t||'').trim()||'môn học'; }
+/* Có phải nhóm cần GIẢM yêu cầu nhận thức không (mục tiêu riêng theo BX_HSKT_MT)? */
+function _bxHsktGiamNhanThuc(g){
+  var d=g&&g.disability, s=g&&g.severity;
+  if(s==='dbnang') return true;
+  if(d==='trltue'||d==='khac'||!d) return true;
+  if(d==='thankinh') return s==='nang';
+  return false;
+}
+/* Mục tiêu riêng cho 1 HS/nhóm ở môn `mon` — chưa có "được đánh giá theo KHGDCN" ở cuối. */
+function bxHsktMucTieu(g, mon){
+  var sk=_bxHsktSk(mon), d=(g&&g.disability)||'';
+  if(g&&g.severity==='dbnang') return 'tham gia hoạt động của lớp theo khả năng; thực hiện mục tiêu đã xác định trong KHGDCN';
+  if(_bxHsktGiamNhanThuc(g)) return (BX_HSKT_MT[sk]||BX_HSKT_MT.other)+', với sự hỗ trợ của giáo viên và các bạn';
+  var nl=BX_HSKT_NGOAILE[d]||{}, x=nl[sk]||nl.other||'';
+  return 'đạt yêu cầu cần đạt của bài như các bạn với phương tiện hỗ trợ phù hợp'+(x?('; riêng '+x):'');
+}
+/* Tách ghi chú GV: dòng mở đầu bằng tên môn ("Toán: …") chỉ áp dụng cho môn đó.
+   Chỉ nhận là tên môn khi BX_subjKey đoán ra được — "Lưu ý: …" vẫn là ghi chú chung. */
+/* Chuẩn hoá một ý thành câu: viết hoa chữ đầu, có dấu chấm cuối (GV hay gõ thiếu/thừa). */
+function _bxCau(s){ s=String(s||'').trim().replace(/[.;,\s]+$/,''); return s?(s.charAt(0).toUpperCase()+s.slice(1)+'.'):''; }
+function bxTachGhiChu(notes, mon){
+  var sk=_bxHsktSk(mon), nm=_bxNorm(mon), chung=[], rieng=[];
+  (notes||[]).forEach(function(n){
+    n=_bxCau(n); if(!n) return;
+    var m=/^([^:：]{2,30})\s*[:：]\s*(.+)$/.exec(n);
+    if(m){
+      var k=_bxHsktSk(m[1]), pn=_bxNorm(m[1]);
+      if(k!=='other'||(pn&&pn===nm)){ if(k===sk||pn===nm) rieng.push(_bxCau(m[2])); return; }
+    }
+    chung.push(n);
+  });
+  return {chung:chung, rieng:rieng};
+}
+/* Các dòng biện pháp Mục IV cho 1 HS/nhóm khuyết tật ở môn `mon`. */
+function bxHsktBienPhap(g, mon){
+  var sk=_bxHsktSk(mon), d=(g&&g.disability)||'', bp=BX_HSKT_BP[d]||BX_HSKT_BP.khac;
+  var theoMon=bp[sk]||bp[BX_HSKT_NHOM[sk]]||'';
+  var R=window.BX_HSKT_RULE||(typeof BX_HSKT_RULE!=='undefined'?BX_HSKT_RULE:null);
+  if(!theoMon && R) theoMon=R[sk]||R.other;
+  var gc=bxTachGhiChu(g&&g.notes, mon), out=[];
+  if(gc.rieng.length) theoMon=(theoMon?theoMon+' ':'')+gc.rieng.join(' ');
+  if(theoMon) out.push('Trong tiết '+_bxHsktTenMon(mon)+': '+theoMon);
+  var chung=gc.chung.length?gc.chung.join(' '):bp.chung;
+  if(chung) out.push('Biện pháp chung: '+chung);
+  var md=BX_HSKT_MUCDO[g&&g.severity]; if(md) out.push(md);
+  return out;
+}
+/* Xem trước trong cửa sổ khai báo HS: cho GV thấy app đổi biện pháp theo từng môn. */
+function bxHsktXemTruoc(){
+  var box=document.getElementById('hs-kt-preview'); if(!box) return;
+  var g={disability:(document.getElementById('hs-disability')||{}).value||'', severity:(document.getElementById('hs-severity')||{}).value||''};
+  var mons=['Tiếng Việt','Toán','Âm nhạc'];
+  var esc=function(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); };
+  box.innerHTML='<b>App sẽ tự ghi biện pháp riêng cho từng môn</b> (theo dạng tật, mức độ đã chọn) — ví dụ:'+
+    mons.map(function(m){ var l=bxHsktBienPhap(g,m)[0]||''; return '<div class="hs-kt-pv">• '+esc(l)+'</div>'; }).join('');
+}
+window.bxHsktBienPhap=bxHsktBienPhap; window.bxHsktMucTieu=bxHsktMucTieu; window.bxHsktXemTruoc=bxHsktXemTruoc;
 var _BX_KT_NOTE='Ghi chú: HS khuyết tật học hòa nhập được đánh giá theo Kế hoạch giáo dục cá nhân (KHGDCN) — TT 03/2018/TT-BGDĐT, TT 27/2020/TT-BGDĐT.';
 /* ===== Mục I — mục tiêu riêng cho HS khuyết tật học hòa nhập (25/8/2026, đề xuất GV) =====
    Chỉ sinh khi GV BẬT nút "Tích hợp giáo dục HSKT" — GV không có HSKT thì không bật,
@@ -3023,8 +3203,10 @@ function bxYccdHsktLines(L){
     kt.push(g);
   });
   var out=['*) Mục tiêu riêng cho học sinh khuyết tật học hòa nhập:'];
-  var duoi='thực hiện được yêu cầu cốt lõi của bài ở mức độ phù hợp với khả năng, với sự hỗ trợ của giáo viên và các bạn; được đánh giá theo Kế hoạch giáo dục cá nhân (KHGDCN).';
-  if(!kt.length){ out.push('- Học sinh khuyết tật học hòa nhập '+duoi); return out; }
+  /* (3/9/2026) Mục tiêu sinh theo MÔN × dạng tật × mức độ (bxHsktMucTieu) — trước đây một câu
+     chung cho mọi môn, GV phản ánh giáo án môn nào cũng in y hệt. */
+  var duoi='; được đánh giá theo Kế hoạch giáo dục cá nhân (KHGDCN).';
+  if(!kt.length){ out.push('- Học sinh khuyết tật học hòa nhập '+bxHsktMucTieu(null,L&&L.mon)+duoi); return out; }
   kt.forEach(function(g){
     var ten=((g.name||'').trim())||'Học sinh khuyết tật học hòa nhập', meta=[];
     if(g.count) meta.push(g.count+' HS');
@@ -3032,7 +3214,7 @@ function bxYccdHsktLines(L){
     if(dl) meta.push(dl);
     var sl=(typeof hsSeverityLabel==='function')?hsSeverityLabel(g.severity):'';
     if(sl) meta.push('mức '+sl.toLowerCase());
-    out.push('- '+ten+(meta.length?(' ('+meta.join(', ')+')'):'')+': '+duoi);
+    out.push('- '+ten+(meta.length?(' ('+meta.join(', ')+')'):'')+': '+bxHsktMucTieu(g,L&&L.mon)+duoi);
   });
   return out;
 }
@@ -5442,7 +5624,7 @@ const HS_SAMPLE=[
   {type:'doc-cham',count:3,subject:'Tiếng Việt',name:'Nhóm đọc chậm',notes:['Cho đọc nối tiếp câu trước khi đọc cả đoạn.','Gọi đọc đoạn ngắn, khen ngợi kịp thời.','Tiết Tiếng Việt thứ 3 cần hỗ trợ thêm.']},
   {type:'cung-co',count:2,subject:'Toán',name:'Cần củng cố Toán',notes:['Bài nhiều bước giải — chuẩn bị bảng phụ.','Dành thêm thời gian trình bày cách làm.','Ghép cặp với bạn khá để hỗ trợ.']},
   {type:'mo-rong',count:4,subject:'',name:'Hoàn thành tốt — mở rộng',notes:['Giao thêm bài nâng cao, câu hỏi mở.','Khuyến khích hỗ trợ bạn trong nhóm.','Mở rộng vận dụng vào thực tế.']},
-  {type:'hoa-nhap',count:1,subject:'',name:'Em N.V.A — học hòa nhập (ví dụ)',disability:'trltue',severity:'nhe',iep:'dang',notes:['Giao nhiệm vụ ngắn, chia nhỏ từng bước, làm mẫu trước.','Đánh giá theo KHGDCN, ưu tiên động viên sự tiến bộ.','Sắp xếp chỗ ngồi gần GV, ghép bạn hỗ trợ.']}
+  {type:'hoa-nhap',count:1,subject:'',name:'Em N.V.A — học hòa nhập (ví dụ)',disability:'trltue',severity:'nhe',iep:'dang',notes:['Sắp xếp chỗ ngồi gần GV, ghép bạn hỗ trợ.','Toán: chỉ yêu cầu phép tính trong phạm vi đã học, giảm còn một nửa số bài.']}
 ];
 function loadHocSinh(){ try{const v=JSON.parse(localStorage.getItem('butxanh_hocsinh')); return Array.isArray(v)?v:HS_SEED.slice();}catch(e){return HS_SEED.slice();} }
 function persistHocSinh(){ return BX_luu('butxanh_hocsinh', JSON.stringify(state.hocsinh), 'danh sách học sinh'); }
@@ -5511,7 +5693,7 @@ function openHsEditor(id){
   if(isel) isel.value=s?(s.iep||'chua'):'chua';
   el('hs-subject').value=s?(s.subject||''):'';
   el('hs-notes').value=s?(s.notes||[]).join('\n'):'';
-  hsTypeChanged();
+  hsTypeChanged(); if(typeof bxHsktXemTruoc==='function') bxHsktXemTruoc();
   el('hs-overlay').classList.add('show');
 }
 function hsTypeChanged(){ const f=el('hs-kt-fields'); if(f) f.style.display=(el('hs-type')&&el('hs-type').value==='hoa-nhap')?'':'none'; }
@@ -6513,6 +6695,10 @@ function BX_subjKey(mon){
   if(/anh|english/.test(m)) return 'anh';
   return 'other';
 }
+/* (3/9/2026) Khối này bọc IIFE — phần HSKT theo môn (bxHsktBienPhap, khối script trước) cần
+   mã môn và bảng biện pháp theo môn, nên xuất ra window. Không xuất thì ngoài kia luôn ra
+   'other' và im lặng mất dòng "Trong tiết Toán: …" — lỗi bộ thử Node không bắt được. */
+window.BX_subjKey=BX_subjKey;
 var BX_NLS_RULE={
   tin:    {domain:'Ứng dụng và sáng tạo nội dung số', level:2, act:'HS thực hành thao tác cơ bản trên phần mềm theo hướng dẫn; tạo một sản phẩm số đơn giản.'},
   tv:     {domain:'Khai thác và xử lí thông tin số', level:1, act:'HS đọc/tra cứu văn bản, hình ảnh số do GV chuẩn bị; chọn lọc thông tin phù hợp nội dung bài.'},
@@ -6567,6 +6753,7 @@ var BX_HSKT_RULE={
      hoạt động, để Mục I lo mục tiêu, khối tích hợp lo cách dạy. */
   other:  'Giao nhiệm vụ vừa sức, chia nhỏ từng bước, có bạn hỗ trợ; tăng trực quan, làm mẫu chậm; động viên kịp thời sự tiến bộ.'
 };
+window.BX_HSKT_RULE=BX_HSKT_RULE;
 /* ============================================================================
    TÍCH HỢP QPAN · HỮU NGHỊ VIỆT – LÀO · KĨ NĂNG SỐNG   (25/8/2026)
    ----------------------------------------------------------------------------
@@ -7115,7 +7302,7 @@ var BX_INTG_DEFS=[
   {k:'kns',     label:'Tích hợp Kĩ năng sống',          icon:'🌱', hint:'Kĩ năng sống theo CT GDPT 2018 và TT 04/2014'},
   {k:'vietlao', label:'Tích hợp hữu nghị Việt – Lào',   icon:'🤝', hint:'Nội dung giáo dục địa phương — trường vùng biên giới Việt – Lào'},
   {k:'local',   label:'Tích hợp giáo dục địa phương',   icon:'🏞️', hint:'Liên hệ cảnh vật, di tích, nghề, con người ở địa phương'},
-  {k:'hskt',    label:'Tích hợp giáo dục HSKT',         icon:'🧩', hint:'Thêm mục tiêu riêng cho học sinh khuyết tật học hoà nhập vào Mục I và điều chỉnh hoạt động dạy học — khai báo HS ở menu "Học sinh cần hỗ trợ" để cá nhân hoá theo lớp mình'},
+  {k:'hskt',    label:'Tích hợp giáo dục HSKT',         icon:'🧩', hint:'Mục tiêu riêng (Mục I) và biện pháp (Mục IV) cho học sinh khuyết tật học hoà nhập sinh theo TỪNG MÔN, theo dạng tật và mức độ đã khai ở menu "Học sinh cần hỗ trợ"'},
   {k:'gioihan', label:'Tối đa 2 nội dung mỗi bài',      icon:'⚖️', hint:'Theo tập huấn Sở GD&ĐT Nghệ An 20/8/2026: mỗi bài 1–2 hoạt động có tích hợp, ưu tiên GDĐP, Năng lực số, Quốc phòng – An ninh'},
   {k:'dinhchinh',label:'Đính chính nội dung SGK',       icon:'📌', hint:'In phần điều chỉnh, bổ sung SGK theo tài liệu tập huấn (hiện có Lịch sử và Địa lí 5 — bài Biển, đảo Việt Nam)'}
 ];
