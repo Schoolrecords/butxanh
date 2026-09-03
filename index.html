@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-03 · 92';
+  var PB='2026-09-03 · 93';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -5751,6 +5751,14 @@ function buildHocSinhDocx(){
       P.push(_docP(det.join('   |   '),{italic:true,size:12,color:'7C5AC2'}));
     }
     (s.notes||[]).forEach(n=>P.push(_docP('•  '+n)));
+    /* (3/9/2026) HSKT: in kèm biện pháp theo môn app tự sinh (Tiếng Việt, Toán, hoặc đúng
+       môn GV khai) — làm chất liệu soạn Kế hoạch giáo dục cá nhân. */
+    if(hsIsKT(s) && typeof bxHsktBienPhap==='function'){
+      const mons=s.subject?[s.subject]:['Tiếng Việt','Toán'];
+      P.push(_docP('Biện pháp theo môn (Bút Xanh gợi ý theo dạng tật, mức độ):',{italic:true,size:12}));
+      mons.forEach(m=>{ const l=bxHsktBienPhap(s,m)[0]; if(l) P.push(_docP('   - '+l,{size:12})); });
+      const md=(typeof BX_HSKT_MUCDO!=='undefined')&&BX_HSKT_MUCDO[s.severity]; if(md) P.push(_docP('   - '+md,{size:12}));
+    }
     P.push(_docP(''));
   });
   if(hasKT) P.push(_docP('Ghi chú: Học sinh khuyết tật học hòa nhập cần có Kế hoạch giáo dục cá nhân (KHGDCN) và được đánh giá theo KHGDCN — căn cứ Luật Người khuyết tật 2010, TT 03/2018/TT-BGDĐT và TT 27/2020/TT-BGDĐT.',{italic:true,size:11,color:'7C5AC2'}));
@@ -7195,7 +7203,11 @@ function BX_intgLines(ig, L, row){
   BX_dinhChinh(_lop,_mon,_ten).forEach(function(p){ out.push(['hoatdong','• (ĐÍNH CHÍNH SGK) '+p[1]]); });
   nhom.forEach(function(n){ if(giu[n[0]]) n[1].forEach(function(d){ out.push(d); }); });
   // 5) GIÁO DỤC HSKT — điều chỉnh cho HS khuyết tật học hoà nhập, luôn giữ nếu thầy cô bật
-  if(s.hskt) out.push(['hoatdong','• (HSKT) '+(BX_HSKT_RULE[sk]||BX_HSKT_RULE.other)]);
+  /* (3/9/2026) Khối này in ở CUỐI giáo án, ngay sau Mục IV. Khi Mục IV đã có dòng
+     "Trong tiết <môn>: …" cho từng HSKT (bxSectionIV(L).note = true) thì dòng chung theo
+     môn ở đây gần như lặp lại — bỏ; chỉ giữ khi GV bật tích hợp mà chưa khai HSKT nào. */
+  var _ivCoHskt=false; try{ _ivCoHskt=!!(L&&typeof bxSectionIV==='function'&&bxSectionIV(L).note); }catch(e){}
+  if(s.hskt && !_ivCoHskt) out.push(['hoatdong','• (HSKT) '+(BX_HSKT_RULE[sk]||BX_HSKT_RULE.other)]);
   return out;
 }
 /* WRAP _lessonBodyParas (Word): chèn phần tích hợp vào cuối, gắn nhãn theo mục. */
