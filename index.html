@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-03 · 93';
+  var PB='2026-09-04 · 94';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -5626,7 +5626,22 @@ const HS_SAMPLE=[
   {type:'mo-rong',count:4,subject:'',name:'Hoàn thành tốt — mở rộng',notes:['Giao thêm bài nâng cao, câu hỏi mở.','Khuyến khích hỗ trợ bạn trong nhóm.','Mở rộng vận dụng vào thực tế.']},
   {type:'hoa-nhap',count:1,subject:'',name:'Em N.V.A — học hòa nhập (ví dụ)',disability:'trltue',severity:'nhe',iep:'dang',notes:['Sắp xếp chỗ ngồi gần GV, ghép bạn hỗ trợ.','Toán: chỉ yêu cầu phép tính trong phạm vi đã học, giảm còn một nửa số bài.']}
 ];
-function loadHocSinh(){ try{const v=JSON.parse(localStorage.getItem('butxanh_hocsinh')); return Array.isArray(v)?v:HS_SEED.slice();}catch(e){return HS_SEED.slice();} }
+/* (4/9/2026) Lọc bản ghi TRÙNG Y HỆT (tên, loại, môn, dạng tật, mức độ, ghi chú) — thầy Chung
+   thấy Mục IV in "Em N.V.A" ba lần: đồng bộ gộp theo id, còn nhóm ví dụ mẫu mỗi lần nạp
+   (hoặc nạp ở máy khác) lại mang id mới nên sau khi trộn thành 2–3 bản. Giữ bản đầu. */
+function _hsVanTay(s){ s=s||{}; return [s.name,s.type,s.subject,s.disability,s.severity,(s.notes||[]).join('|')].map(x=>String(x==null?'':x).trim().toLowerCase()).join(''); }
+function hsLocTrung(arr){
+  const daCo={}, out=[]; let bo=0;
+  (arr||[]).forEach(s=>{ if(!s) return; const k=_hsVanTay(s); if(daCo[k]){ bo++; return; } daCo[k]=1; out.push(s); });
+  return {list:out, bo:bo};
+}
+function loadHocSinh(){
+  let v; try{ v=JSON.parse(localStorage.getItem('butxanh_hocsinh')); }catch(e){ v=null; }
+  if(!Array.isArray(v)) return HS_SEED.slice();
+  const r=hsLocTrung(v);
+  if(r.bo){ try{ localStorage.setItem('butxanh_hocsinh', JSON.stringify(r.list)); console.log('[Bút Xanh] đã bỏ '+r.bo+' nhóm học sinh trùng'); }catch(e){} }
+  return r.list;
+}
 function persistHocSinh(){ return BX_luu('butxanh_hocsinh', JSON.stringify(state.hocsinh), 'danh sách học sinh'); }
 function hsTypeOf(s){ return HS_TYPES.find(x=>x.key===s.type)||null; }
 function hsTypeLabel(s){ const tp=hsTypeOf(s); return tp?tp.label:'Khác'; }
@@ -5715,7 +5730,16 @@ function delHs(id){ bxConfirm('Xoá nhóm này?').then(function(ok){ if(!ok)retu
 /* Nạp nhóm ví dụ mẫu (opt-in) — để GV hình dung cách dùng; có thể sửa/xoá tự do */
 function loadHsSample(){
   function go(){
-    HS_SAMPLE.forEach((s,i)=>state.hocsinh.push(Object.assign({},s,{notes:(s.notes||[]).slice(),id:'h'+Date.now()+'_'+i})));
+    /* id CỐ ĐỊNH theo loại ('hmau_doc-cham'…) để đồng bộ gộp theo id không nhân bản; nhóm
+       mẫu nào đã có (theo id hoặc trùng y hệt) thì bỏ qua, không thêm lần hai. (4/9/2026) */
+    const tenLoai=x=>String((x&&x.name)||'').trim().toLowerCase()+'#'+((x&&x.type)||'');
+    const coId={}, coTen={}; state.hocsinh.forEach(x=>{ if(x&&x.id) coId[x.id]=1; coTen[tenLoai(x)]=1; });
+    let them=0;
+    HS_SAMPLE.forEach((s,i)=>{
+      const id='hmau_'+(s.type||i); if(coId[id]||coTen[tenLoai(s)]) return;
+      state.hocsinh.push(Object.assign({},s,{notes:(s.notes||[]).slice(),id:id})); them++;
+    });
+    if(!them){ bxAlert('Các nhóm ví dụ mẫu đã có sẵn trong danh sách.'); return; }
     persistHocSinh(); renderHocSinh();
     if(el('v-dashboard')&&el('v-dashboard').classList.contains('active')) renderDashboard();
   }
