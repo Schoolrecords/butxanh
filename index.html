@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-04 · 94';
+  var PB='2026-09-04 · 95';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -3206,15 +3206,14 @@ function bxYccdHsktLines(L){
   /* (3/9/2026) Mục tiêu sinh theo MÔN × dạng tật × mức độ (bxHsktMucTieu) — trước đây một câu
      chung cho mọi môn, GV phản ánh giáo án môn nào cũng in y hệt. */
   var duoi='; được đánh giá theo Kế hoạch giáo dục cá nhân (KHGDCN).';
-  if(!kt.length){ out.push('- Học sinh khuyết tật học hòa nhập '+bxHsktMucTieu(null,L&&L.mon)+duoi); return out; }
+  /* (4/9/2026) Thầy Chung: Mục I chỉ ghi MỤC TIÊU, không kèm tên em và dạng tật, mức độ —
+     những thứ đó đã có ở Mục IV. Nhiều em cùng mục tiêu thì in một dòng. */
+  var hoa=function(s){ s=String(s||'').trim(); return s?(s.charAt(0).toUpperCase()+s.slice(1)):''; };
+  if(!kt.length){ out.push('- '+hoa(bxHsktMucTieu(null,L&&L.mon))+duoi); return out; }
+  var daCo={};
   kt.forEach(function(g){
-    var ten=((g.name||'').trim())||'Học sinh khuyết tật học hòa nhập', meta=[];
-    if(g.count) meta.push(g.count+' HS');
-    var dl=(typeof hsDisabilityLabel==='function')?hsDisabilityLabel(g.disability):'';
-    if(dl) meta.push(dl);
-    var sl=(typeof hsSeverityLabel==='function')?hsSeverityLabel(g.severity):'';
-    if(sl) meta.push('mức '+sl.toLowerCase());
-    out.push('- '+ten+(meta.length?(' ('+meta.join(', ')+')'):'')+': '+bxHsktMucTieu(g,L&&L.mon)+duoi);
+    var d='- '+hoa(bxHsktMucTieu(g,L&&L.mon))+duoi;
+    if(daCo[d]) return; daCo[d]=1; out.push(d);
   });
   return out;
 }
