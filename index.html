@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-04 · 95';
+  var PB='2026-09-04 · 96';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -489,6 +489,9 @@ tr.lesson:hover .gen-hint{display:inline}
 .hs-kt-note{font-size:12px;line-height:1.5;color:#5a3fa0;background:var(--pur-soft);border:1px solid rgba(124,90,194,.18);border-radius:8px;padding:8px 10px;margin-bottom:8px}
 .hs-kt-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .hs-kt-pv{margin-top:3px;color:#3d2b73}
+/* (4/9/2026) hàng "tên hoạt động + Mục tiêu" kéo suốt 2 cột trong bảng GV–HS */
+.a4 td.tt,.a4page td.tt{background:#f3f7f4}
+.a4 td.tt .mt,.a4page td.tt .mt{font-size:12px;margin-top:2px;color:#2f3f35}
 @media(max-width:560px){.hs-kt-grid{grid-template-columns:1fr}}
 .hs-card ul{list-style:none;display:flex;flex-direction:column;gap:6px}
 .hs-card li{font-size:12.7px;color:#42554A;display:flex;gap:8px;line-height:1.45}
@@ -962,6 +965,7 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
   #kho-prev-overlay .a4page table.hd td:before{display:block;font-weight:800;font-size:11px;letter-spacing:.4px;color:#0f5a34;margin-bottom:4px;font-family:system-ui,sans-serif}
   #kho-prev-overlay .a4page table.hd td.gv:before{content:'👩‍🏫 HOẠT ĐỘNG CỦA GV'}
   #kho-prev-overlay .a4page table.hd td:not(.gv):before{content:'🧑‍🎓 HOẠT ĐỘNG CỦA HS'}
+  #kho-prev-overlay .a4page table.hd td.tt:before{content:none}
   #kho-prev-overlay .a4page table.hd td:not(.gv){background:#f2f9f4;border-top:1px dashed #9fb0a4}
   #kho-prev-overlay .a4page table.hd td:not(.gv):empty{display:none}
 }
@@ -2953,10 +2957,76 @@ function _cellParas(text,title){
   (text||'').replace(/\r/g,'').split('\n').forEach(l=>{ if(l.trim()!=='') out.push(_docP(l,{size:12})); });
   return out.length?out.join(''):'<w:p/>';
 }
+/* ===== (4/9/2026) GIÓNG HÀNG CỘT GV – HS =====
+   Thầy Hoài (nhóm Zalo 4/9): "các hoạt động của GV và HS nhiều bài không tương ứng, phải
+   xem và điều chỉnh lại nhiều". Đo trên kho (4.317 tiết, 21.804 hoạt động): 31% hoạt động
+   lệch ≥4 dòng; 52% có "Mục tiêu" ở cột GV mà bên HS không có gì đối ứng. Nguyên nhân: kho
+   lưu mỗi hoạt động thành MỘT ô GV + MỘT ô HS, mất hết việc gióng hàng mà tác giả giáo án
+   gốc làm bằng tay trong Word.
+   Bước 1 (chỉ đổi CÁCH IN, không đụng dữ liệu):
+     · "Mục tiêu:" + các dòng "+" → hàng riêng kéo suốt 2 cột, ngay dưới tên hoạt động;
+     · nhãn trần "- Cách tiến hành:" bỏ (hai cột đã là cách tiến hành); có chữ sau dấu ":"
+       thì giữ làm dòng đầu;
+     · cắt hoạt động thành nhiều hàng theo mốc "Hoạt động n" (không có thì "Bước n") khi
+       bên HS có cùng số mốc, hoặc cùng số dòng mở đầu "- HS làm việc/thảo luận/quan sát…".
+       Không cắt được thì giữ một hàng như cũ — không tệ hơn trước.
+   Bước 2 (viết lại cột HS theo từng bước bằng AI, lưu trường `buoc`) chờ thầy Chung chốt.
+   Tiếng Anh 3–5 (bảng 1 hàng, ten rỗng, "* Aims:") không khớp mẫu nào → giữ nguyên. */
+function _bxDong(s){ return String(s==null?'':s).replace(/\r/g,'').split('\n').map(function(x){return x.trim();}).filter(Boolean); }
+var _BX_RE_MT=/^[-–+*•]?\s*\*?\s*(?:mục tiêu|muc tieu)\s*:?\s*/i;
+var _BX_RE_CTH=/^[-–+*•]?\s*\*?\s*(?:cách\s+(?:tiến hành|thức tiến hành|tổ chức|thực hiện)|tiến hành)\s*:?\s*/i;
+var _BX_RE_HD=/^[-–•*]?\s*(?:hoạt động|hđ)\s*\d+/i;
+var _BX_RE_BUOC=/^[-–•*]?\s*bước\s*\d+/i;
+var _BX_RE_HSDAU=/^[-–•*]\s*hs\s+(?:làm việc|thảo luận|quan sát|đọc|thực hiện|hoạt động|tham gia|làm|chơi|thi|thực hành|chia nhóm)/i;
+function _bxTachMoc(lines, re){
+  var pre=[], parts=[], cur=null;
+  lines.forEach(function(l){ if(re.test(l)){ cur=[l]; parts.push(cur); } else if(cur) cur.push(l); else pre.push(l); });
+  return {pre:pre, parts:parts};
+}
+function bxTachHoatDong(b){
+  var g=_bxDong(b&&b.gv), h=_bxDong(b&&b.hs), mt=[], i=0, ten=String((b&&b.ten)||'').trim();
+  /* Kho bóc nhầm một dòng tiến hành ("- GV yêu cầu HS…") làm tên hoạt động → trả về cột GV, không in đậm tiêu đề. */
+  if(ten && (/^[-–•+]\s*(gv|hs)\b/i.test(ten) || ten.length>90)){ g.unshift(ten); ten=''; }
+  if(g.length && _BX_RE_MT.test(g[0])){
+    var d0=g[0].replace(_BX_RE_MT,'').trim(); if(d0) mt.push(d0);
+    i=1;
+    while(i<g.length && mt.length<10 && !_BX_RE_CTH.test(g[i]) && !_BX_RE_HD.test(g[i]) && !_BX_RE_BUOC.test(g[i]) && !/^[-–•*]?\s*gv\b/i.test(g[i])){ mt.push(g[i]); i++; }
+  }
+  if(i<g.length && _BX_RE_CTH.test(g[i])){ var d1=g[i].replace(_BX_RE_CTH,'').trim(); i++; if(d1){ g.splice(i,0,d1); } }
+  var rest=g.slice(i), hang=[{gv:rest, hs:h}];
+  var re=_BX_RE_HD, G=_bxTachMoc(rest,re);
+  if(G.parts.length<2){ re=_BX_RE_BUOC; G=_bxTachMoc(rest,re); }
+  if(G.parts.length>=2){
+    var H=_bxTachMoc(h,re);
+    if(H.parts.length!==G.parts.length){ H=_bxTachMoc(h,_BX_RE_HSDAU); if(H.parts.length!==G.parts.length) H=null; }
+    if(H){
+      hang=[];
+      if(G.pre.length||H.pre.length) hang.push({gv:G.pre, hs:H.pre});
+      G.parts.forEach(function(p,k){ hang.push({gv:p, hs:H.parts[k]}); });
+    }
+  }
+  return {ten:ten, mucTieu:mt, hang:hang};
+}
+window.bxTachHoatDong=bxTachHoatDong;
 function hoatdongTableXml(blocks){
   const bd='<w:tblBorders>'+['top','left','bottom','right','insideH','insideV'].map(s=>`<w:${s} w:val="single" w:sz="4" w:space="0" w:color="000000"/>`).join('')+'</w:tblBorders>';
   const hdr='<w:tr><w:trPr><w:tblHeader/></w:trPr>'+_docTc(_docP('HOẠT ĐỘNG CỦA GV',{bold:true,center:true,size:12}),5400)+_docTc(_docP('HOẠT ĐỘNG CỦA HS',{bold:true,center:true,size:12}),3954)+'</w:tr>';
-  const rows=(blocks||[]).map(b=>'<w:tr>'+_docTc(_cellParas(b.gv,b.ten),5400)+_docTc(_cellParas(b.hs),3954)+'</w:tr>').join('');
+  const rows=(blocks||[]).map(b=>{
+    const T=bxTachHoatDong(b); let out='';
+    /* Hàng tên hoạt động + Mục tiêu kéo suốt 2 cột (gridSpan); không có cả hai → bỏ hàng (Tiếng Anh). */
+    if(T.ten||T.mucTieu.length){
+      let inner=T.ten?_docP(T.ten,{bold:true,size:12}):'';
+      if(T.mucTieu.length){ inner+=_docP('Mục tiêu:',{bold:true,italic:true,size:12}); T.mucTieu.forEach(l=>{ inner+=_docP(l,{italic:true,size:12}); }); }
+      out+='<w:tr><w:trPr><w:cantSplit/></w:trPr><w:tc><w:tcPr><w:tcW w:w="9354" w:type="dxa"/><w:gridSpan w:val="2"/></w:tcPr>'+(inner||'<w:p/>')+'</w:tc></w:tr>';
+    }
+    T.hang.forEach(r=>{
+      if(!r.gv.length&&!r.hs.length&&out) return;   /* khối chỉ có Mục tiêu (kho bóc phần tiến hành sang khối kế) → không in hàng rỗng */
+      /* Hàng ngắn thì không cho Word ngắt qua trang — tránh đôi cột bị rời nhau. */
+      const ngan=(r.gv.length+r.hs.length)<=14;
+      out+='<w:tr>'+(ngan?'<w:trPr><w:cantSplit/></w:trPr>':'')+_docTc(_cellParas(r.gv.join('\n')),5400)+_docTc(_cellParas(r.hs.join('\n')),3954)+'</w:tr>';
+    });
+    return out;
+  }).join('');
   return `<w:tbl><w:tblPr><w:tblW w:w="9354" w:type="dxa"/>${bd}<w:tblLayout w:type="fixed"/></w:tblPr><w:tblGrid><w:gridCol w:w="5400"/><w:gridCol w:w="3954"/></w:tblGrid>${hdr}${rows}</w:tbl>`;
 }
 /* ===== Mục I (tô đậm tiêu đề con) & Mục IV (cá nhân hóa + ẩn/hiện theo chế độ) ===== */
@@ -5231,7 +5301,10 @@ function lessonPreviewHtml(L,row){
   h+='<h2>III. CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU</h2>';
   if(Array.isArray(L.hoatdong)){
     h+='<table><thead><tr><th style="width:58%">HOẠT ĐỘNG CỦA GV</th><th>HOẠT ĐỘNG CỦA HS</th></tr></thead><tbody>';
-    L.hoatdong.forEach(b=>{ h+='<tr><td><b>'+esc(b.ten||'')+'</b><br>'+nl(b.gv)+'</td><td>'+nl(b.hs)+'</td></tr>'; });
+    L.hoatdong.forEach(b=>{ const T=bxTachHoatDong(b);
+      if(T.ten||T.mucTieu.length) h+='<tr><td colspan="2" class="tt"><b>'+esc(T.ten)+'</b>'+(T.mucTieu.length?('<div class="mt"><i>Mục tiêu:</i><br>'+nl(T.mucTieu.join('\n'))+'</div>'):'')+'</td></tr>';
+      T.hang.forEach(r=>{ if(!r.gv.length&&!r.hs.length&&(T.ten||T.mucTieu.length)) return; h+='<tr><td>'+nl(r.gv.join('\n'))+'</td><td>'+nl(r.hs.join('\n'))+'</td></tr>'; });
+    });
     h+='</tbody></table>';
   }else h+='<div class="ln">'+nl(L.hoatdong||'…')+'</div>';
   const iv=bxSectionIV(L);
@@ -6678,7 +6751,7 @@ var BX_SAFE_NOTE='Nội dung AI dùng ở mức trải nghiệm/nhận biết, g
    giáo dục địa phương, chỉ trường vùng biên giới Việt – Lào mới cần. */
 /* gioihan: tối đa 2 nội dung lồng ghép mỗi bài (hướng dẫn Sở GD&ĐT Nghệ An 20/8/2026).
    dinhchinh: in phần đính chính, bổ sung nội dung SGK theo tài liệu tập huấn. */
-var BX_INTG_DEF={digital:true, ai:false, local:false, hskt:false, qpan:true, vietlao:false, kns:true, gioihan:true, dinhchinh:true};
+var BX_INTG_DEF={digital:true, ai:false, local:false, hskt:false, qpan:true, vietlao:false, kns:true, gioihan:true, dinhchinh:true, stem:true};
 function BX_intgState(){ try{ var v=JSON.parse(localStorage.getItem('butxanh_intg_toggles')||'null'); return (v&&typeof v==='object'&&!Array.isArray(v))?Object.assign({},BX_INTG_DEF,v):Object.assign({},BX_INTG_DEF); }catch(e){ return Object.assign({},BX_INTG_DEF); } }
 /* Phải đưa ra window: buildKHGDMonDocx nằm ở khối script khác, gọi tên trần sẽ ra
    undefined và bản Word cứ in căn cứ pháp lí như thể mọi công tắc đều đang bật. */
@@ -6837,6 +6910,178 @@ function BX_monTH(mon){
   if(/anh|english/.test(m)) return 'anh';
   return 'other';
 }
+/* ============================================================================
+   GIÁO DỤC STEM — địa chỉ bài học STEM theo KHỐI × MÔN   (4/9/2026, thầy Chung chốt)
+   ----------------------------------------------------------------------------
+   Vì sao: GV hỏi "không có bài học STEM trong kế hoạch à" — KHDH mới có STEM lẻ tẻ ở
+   TNXH 1, Toán/TNXH 2, Khoa học – Công nghệ 4, Toán – Khoa học 5; lớp 3 trắng hoàn toàn.
+   CĂN CỨ
+   · CV 909/BGDĐT-GDTH ngày 08/3/2023: bài học STEM là 1 trong 3 hình thức, dạy trong
+     khuôn khổ môn học, dùng thời lượng + YCCD của môn; phải đưa vào KHGD nhà trường và
+     KHDH môn học; không ấn định số bài tối thiểu.
+   · CV 3132/SGD&ĐT-GDTrH,GDTH ngày 25/8/2026 (Sở GD&ĐT Nghệ An): "bài học STEM cho TẤT CẢ
+     khối lớp… tích hợp lồng ghép trong các môn Toán, Tin học, Khoa học, Công nghệ…";
+     "Hoạt động trải nghiệm STEM/STEAM… tối thiểu mỗi học kỳ 01 lần"; "phải được xây dựng
+     và thể hiện rõ, cụ thể trong KHGD môn học của từng bài học".
+   NGUYÊN TẮC
+   · Tên bài học STEM là gợi ý gắn với bài SGK (GV dùng bộ "Bài học STEM" NXBGDVN hoặc KH
+     giáo dục STEM của trường thì sửa tên ở ô cột 7 cho khớp).
+   · KHÔNG tính vào giới hạn "tối đa 2 nội dung/bài": STEM là HÌNH THỨC tổ chức bài học
+     thay tiết SGK, không phải nội dung lồng ghép (lớp 2 trong kho đã ghi "thay bài SGK
+     bằng bài học STEM theo KH giáo dục STEM của trường").
+   · Dòng dữ liệu lớp 4–5 ghi nhãn chung "GD STEM" → BX_khgdCot7Goc bỏ nhãn, thay bằng địa
+     chỉ cụ thể ở đây; địa chỉ đã ghi sẵn dạng "STEM: …" (lớp 1, 2) giữ nguyên.
+   b = cụm chữ (bỏ dấu) phải có trong tên bài · t = chỉ gắn vào tiết này (bài không ghi
+   số tiết thì gắn luôn).
+   ========================================================================== */
+var BX_STEM_DIACHI={
+ '1':{
+  toan:[
+   {b:'lap ghep, xep hinh',t:1,n:'Bức tranh ghép hình (Toán – Mĩ thuật): HS cắt, ghép hình vuông, tròn, tam giác, chữ nhật thành tranh ngôi nhà, con vật; bài học STEM 2 tiết thay tiết SGK.'},
+   {b:'uoc luong va do do dai',t:1,n:'Thước gang tay của em (Toán – Công nghệ): HS làm thước bìa chia vạch theo gang tay, đo bàn, bảng; ước lượng rồi kiểm tra; 2 tiết thay tiết SGK.'},
+   {b:'xem gio dung tren dong ho',t:1,n:'Đồng hồ của em (Toán – Mĩ thuật): HS làm mô hình đồng hồ kim bằng đĩa giấy, quay kim chỉ giờ đúng theo lịch sinh hoạt; 2 tiết thay tiết SGK.'}
+  ],
+  tnxh:[
+   {b:'cham soc va bao ve cay trong',t:1,n:'Chậu cây nhỏ của em (TNXH – Công nghệ): HS gieo hạt vào chậu tái chế, làm nhãn và lịch tưới, quan sát cây lớn lên; 2 tiết thay tiết SGK.'}
+  ]
+ },
+ '2':{
+  tnxh:[
+   {b:'tim hieu co quan van dong',t:1,n:'Mô hình bàn tay cử động (TNXH – Mĩ thuật): HS làm mô hình bàn tay bằng bìa, ống hút, dây để thấy xương, khớp, cơ hoạt động; 2 tiết thay tiết SGK.'},
+   {b:'ung pho voi thien tai',t:1,n:'Túi đồ dùng ứng phó thiên tai (TNXH – Công nghệ): HS thiết kế túi/hộp đựng vật dụng cần thiết khi có bão, lũ và thuyết minh cách dùng; 2 tiết thay tiết SGK.'}
+  ]
+ },
+ '3':{
+  toan:[
+   {b:'tam, ban kinh, duong kinh',n:'Com-pa của em (Toán – Công nghệ): HS chế dụng cụ vẽ đường tròn từ bìa, dây, bút; vẽ và đo tâm, bán kính, đường kính; 2 tiết thay tiết SGK.'},
+   {b:'mi-li-met, gam, mi-li-lit',t:1,n:'Cân thăng bằng (Toán – Công nghệ): HS làm cân đòn từ móc áo, cốc giấy; so sánh, ước lượng khối lượng theo gam; 2 tiết thay tiết SGK.'},
+   {b:'dien tich hinh chu nhat, dien tich hinh vuong',t:1,n:'Thảm hình học (Toán – Mĩ thuật): HS thiết kế tấm thảm/ô lát nền bằng các ô vuông 1 cm², tính và so sánh diện tích; 2 tiết thay tiết SGK.'},
+   {b:'xem dong ho. thang-nam',t:1,n:'Đồng hồ La Mã của em (Toán – Mĩ thuật): HS làm mặt đồng hồ ghi số La Mã, đặt kim theo giờ, phút; 2 tiết thay tiết SGK.'}
+  ],
+  tnxh:[
+   {b:'bai 13. mot so bo phan cua thuc vat',t:1,n:'Mô hình cây và các bộ phận (TNXH – Mĩ thuật): HS tạo mô hình cây bằng vật liệu tái chế, gắn nhãn rễ, thân, lá, hoa, quả; 2 tiết thay tiết SGK.'},
+   {b:'bai 18. co quan tieu hoa',t:1,n:'Cẩm nang ăn uống có lợi cho sức khoẻ (TNXH – Toán): HS thiết kế sổ tay/thực đơn, đếm số bữa, khẩu phần theo nhóm thức ăn; 2 tiết thay tiết SGK.'},
+   {b:'xac dinh cac phuong trong khong gian',t:1,n:'La bàn đơn giản (TNXH – Công nghệ): HS làm la bàn từ kim khâu nhiễm từ, nút bần, đĩa nước; xác định bốn phương ở sân trường; 2 tiết thay tiết SGK.'},
+   {b:'mat troi, trai dat, mat trang',t:1,n:'Mô hình Mặt Trời – Trái Đất – Mặt Trăng (TNXH – Mĩ thuật): HS làm mô hình chuyển động quay, giải thích ngày – đêm; 2 tiết thay tiết SGK.'}
+  ],
+  tin:[
+   {b:'sap xep de de tim kiem',t:1,n:'Kệ phân loại (Tin học – Công nghệ – Mĩ thuật): HS thiết kế hộp/kệ phân loại đồ dùng theo tiêu chí, gắn nhãn; vận dụng sắp xếp để dễ tìm; 2 tiết thay tiết SGK.'},
+   {b:'bai trinh chieu cua em',t:1,n:'Bài trình chiếu "Cây xanh quanh em" (Tin học – TNXH): HS tạo bài trình chiếu 3–4 trang giới thiệu cây đã quan sát; 2 tiết thay tiết SGK.'},
+   {b:'em thuc hien cong viec nhu the nao',t:1,n:'Sơ đồ các bước làm một việc (Tin học – Công nghệ): HS vẽ sơ đồ khối các bước pha nước chanh/gấp máy bay giấy rồi làm theo sơ đồ; 2 tiết thay tiết SGK.'}
+  ],
+  congnghe:[
+   {b:'lam do dung hoc tap',t:1,n:'Hộp bút đa năng (Công nghệ – Toán – Mĩ thuật): HS thiết kế, đo, cắt, ghép hộp bút từ bìa; thử và cải tiến; theo thời lượng bài SGK.'},
+   {b:'lam bien bao giao thong',t:1,n:'Biển báo giao thông cho sân trường (Công nghệ – TNXH – Toán): HS thiết kế biển báo đúng hình dạng, kích thước, màu sắc; theo thời lượng bài SGK.'},
+   {b:'lam do choi',t:1,n:'Đồ chơi chuyển động (Công nghệ – Toán): HS làm xe/chong chóng từ vật liệu tái chế, thử nghiệm và cải tiến để chạy, quay tốt hơn; theo thời lượng bài SGK.'}
+  ]
+ },
+ '4':{
+  toan:[
+   {b:'do goc, don vi do goc',t:1,n:'Thước đo góc của em (Toán – Công nghệ): HS làm thước đo góc bằng bìa/đĩa giấy, đo góc các vật trong lớp; 2 tiết thay tiết SGK.'},
+   {b:'hinh binh hanh, hinh thoi',t:1,n:'Khung cửa xếp (Toán – Công nghệ): HS lắp khung hình bình hành, hình thoi bằng que, ghim; khám phá vì sao khung biến dạng được; 2 tiết thay tiết SGK.'},
+   {b:'bieu do cot',t:1,n:'Biểu đồ cột về rác thải/thời tiết lớp em (Toán – Khoa học): HS thu thập số liệu, dựng biểu đồ cột bằng giấy hoặc phần mềm; 2 tiết thay tiết SGK.'}
+  ],
+  khoahoc:[
+   {b:'su chuyen the cua nuoc va vong tuan hoan',t:1,n:'Mô hình vòng tuần hoàn của nước (Khoa học – Mĩ thuật): HS làm mô hình túi/bình mô phỏng bay hơi – ngưng tụ – mưa; 2 tiết thay tiết SGK.'},
+   {b:'mot so cach lam sach nuoc',t:1,n:'Bộ lọc nước đơn giản (Khoa học – Công nghệ): HS thiết kế bộ lọc bằng chai nhựa, cát, sỏi, than; thử nghiệm và cải tiến; 2 tiết thay tiết SGK.'},
+   {b:'am thanh trong cuoc song',t:1,n:'Nhạc cụ từ vật liệu tái chế (Khoa học – Âm nhạc – Công nghệ): HS chế tạo nhạc cụ, khám phá âm thanh cao – thấp, to – nhỏ; 2 tiết thay tiết SGK.'},
+   {b:'vat dan nhiet tot va vat dan nhiet kem',t:1,n:'Hộp giữ nhiệt (Khoa học – Công nghệ): HS thiết kế hộp giữ ấm/lạnh bằng vật liệu cách nhiệt, đo nhiệt độ sau một thời gian; 2 tiết thay tiết SGK.'},
+   {b:'che do an uong can bang',t:1,n:'Thực đơn cân bằng cho một ngày (Khoa học – Toán): HS thiết kế thực đơn, tính tỉ lệ các nhóm chất, trình bày áp phích; 2 tiết thay tiết SGK.'}
+  ],
+  tin:[
+   {b:'tao bai trinh chieu',t:1,n:'Bài trình chiếu "Tiết kiệm nước" (Tin học – Khoa học): HS tạo bài trình chiếu có hình ảnh, số liệu về dùng nước ở gia đình; 2 tiết thay tiết SGK.'},
+   {b:'tao chuong trinh may tinh de dien ta y tuong',t:1,n:'Hoạt cảnh kể chuyện trên Scratch (Tin học – Tiếng Việt): HS lập trình nhân vật, lời thoại theo kịch bản ngắn; 2 tiết thay tiết SGK.'},
+   {b:'chuong trinh cua em',t:1,n:'Trò chơi tính nhẩm trên Scratch (Tin học – Toán): HS thiết kế trò chơi hỏi – đáp phép tính, chạy thử và sửa lỗi; 2 tiết thay tiết SGK.'}
+  ],
+  congnghe:[
+   {b:'gioi thieu bo lap ghep mo hinh ki thuat',t:1,n:'Làm quen bộ lắp ghép kĩ thuật (Công nghệ – Toán): HS nhận biết chi tiết, lắp mô hình tự chọn theo bản vẽ; theo thời lượng bài SGK.'},
+   {b:'lap ghep mo hinh bap benh',t:1,n:'Bập bênh thăng bằng (Công nghệ – Khoa học – Toán): HS lắp mô hình, thử vị trí điểm tựa để cân bằng vật nặng; theo thời lượng bài SGK.'},
+   {b:'lap ghep mo hinh ro-bot',t:1,n:'Rô-bốt của em (Công nghệ – Tin học): HS lắp mô hình rô-bốt, mô tả các bước hoạt động bằng sơ đồ; theo thời lượng bài SGK.'},
+   {b:'do choi dan gian',t:1,n:'Đồ chơi dân gian (Công nghệ – Mĩ thuật): HS làm chong chóng/đèn kéo quân nhỏ, thử nghiệm, điều chỉnh để quay, chuyển động được; theo thời lượng bài SGK.'},
+   {b:'lam den long',n:'Đèn lồng (Công nghệ – Toán – Mĩ thuật): HS thiết kế, đo và cắt khung, ghép thân đèn cân đối; theo thời lượng bài SGK.'},
+   {b:'chuon chuon thang bang',t:1,n:'Chuồn chuồn thăng bằng (Công nghệ – Khoa học): HS tìm trọng tâm, điều chỉnh cánh, đuôi để chuồn chuồn đứng thăng bằng trên đầu ngón tay; theo thời lượng bài SGK.'}
+  ]
+ },
+ '5':{
+  toan:[
+   {b:'do, ve, lap ghep, tao hinh',t:1,n:'Bộ ghép hình sáng tạo (Toán – Công nghệ – Mĩ thuật): HS đo, vẽ, cắt ghép các hình phẳng đã học thành sản phẩm trang trí; 2 tiết thay tiết SGK.'},
+   {b:'ti le ban do va ung dung',t:2,n:'Bản đồ trường em theo tỉ lệ (Toán – Lịch sử và Địa lí): HS đo thực tế sân, lớp học rồi vẽ sơ đồ theo tỉ lệ; 2 tiết thay tiết SGK.'},
+   {b:'hinh khai trien cua hinh lap phuong',t:1,n:'Hộp quà từ hình khai triển (Toán – Mĩ thuật): HS thiết kế, cắt gấp hộp hình hộp chữ nhật/lập phương, tính diện tích giấy cần dùng; 2 tiết thay tiết SGK.'},
+   {b:'uoc luong ve van toc',t:1,n:'Xe chạy bằng bóng bay (Toán – Khoa học – Công nghệ): HS chế tạo xe, đo quãng đường và thời gian, tính vận tốc, cải tiến; 2 tiết thay tiết SGK.'}
+  ],
+  khoahoc:[
+   {b:'o nhiem, xoi mon dat',t:1,n:'Mô hình chống xói mòn đất (Khoa học – Công nghệ): HS thử nghiệm khay đất có/không có cây khi tưới nước, đề xuất giải pháp giữ đất; 2 tiết thay tiết SGK.'},
+   {b:'hon hop va dung dich',t:2,n:'Tách chất khỏi hỗn hợp (Khoa học – Công nghệ): HS thiết kế cách tách muối, cát, mạt sắt khỏi hỗn hợp; thử nghiệm và so sánh; 2 tiết thay tiết SGK.'},
+   {b:'su bien doi hoa hoc cua chat',t:2,n:'Mực tàng hình từ nước chanh (Khoa học – Mĩ thuật): HS viết thông điệp bí mật, hơ nóng để thấy sự biến đổi hoá học; 2 tiết thay tiết SGK.'},
+   {b:'mach dien don gian',t:1,n:'Đèn pin của em (Khoa học – Công nghệ): HS lắp mạch điện với pin, bóng đèn, công tắc; thử vật dẫn điện, cách điện; 2 tiết thay tiết SGK.'},
+   {b:'nang luong gio, nang luong nuoc chay',t:2,n:'Tua-bin gió mini (Khoa học – Công nghệ): HS chế tạo chong chóng phát điện/cối xay gió, thử với hướng và tốc độ gió khác nhau; 2 tiết thay tiết SGK.'}
+  ],
+  tin:[
+   {b:'phan mem do hoa tao san pham so',n:'Áp phích "Tiết kiệm điện" (Tin học – Khoa học): HS thiết kế áp phích bằng phần mềm đồ hoạ, có hình và thông điệp; 2 tiết thay tiết SGK.'},
+   {b:'thuc hanh su dung lenh lap',t:1,n:'Vẽ hoa văn hình học bằng lệnh lặp (Tin học – Toán): HS lập trình Scratch vẽ hình vuông, đa giác, hoa văn đối xứng; 2 tiết thay tiết SGK.'},
+   {b:'tu kich ban den chuong trinh',t:1,n:'Trò chơi từ kịch bản trên Scratch (Tin học – Tiếng Việt): HS viết kịch bản, lập trình, chạy thử và sửa lỗi; 2 tiết thay tiết SGK.'}
+  ],
+  congnghe:[
+   {b:'thiet ke san pham',t:1,n:'Thiết kế sản phẩm phục vụ học tập (Công nghệ – Toán – Mĩ thuật): HS đi đủ các bước tìm hiểu – phác thảo – làm mẫu – thử nghiệm – cải tiến; theo thời lượng bài SGK.'},
+   {b:'xe dien chay bang pin',t:1,n:'Xe điện chạy bằng pin (Công nghệ – Khoa học): HS lắp mạch, thử nghiệm, cải tiến để xe chạy thẳng và xa hơn; theo thời lượng bài SGK.'},
+   {b:'may phat dien gio',t:1,n:'Máy phát điện gió (Công nghệ – Khoa học): HS lắp mô hình, thử số cánh, hướng gió để đèn sáng; theo thời lượng bài SGK.'},
+   {b:'mo hinh dien mat troi',t:1,n:'Điện mặt trời (Công nghệ – Khoa học): HS lắp mô hình pin mặt trời, thử góc đặt tấm pin để thiết bị hoạt động tốt nhất; theo thời lượng bài SGK.'}
+  ]
+ }
+};
+var BX_STEM_TRAINGHIEM={
+  I:'Hoạt động trải nghiệm STEM học kì I: ngày hội/câu lạc bộ/dự án STEM cấp lớp hoặc khối — tối thiểu 01 lần mỗi học kì (CV 3132/SGD&ĐT); HS trưng bày, giới thiệu sản phẩm từ các bài học STEM.',
+  II:'Hoạt động trải nghiệm STEM học kì II: ngày hội/câu lạc bộ/dự án STEM cấp lớp hoặc khối — tối thiểu 01 lần mỗi học kì (CV 3132/SGD&ĐT); HS trưng bày, giới thiệu sản phẩm từ các bài học STEM.'
+};
+/* Tiết ghi trong tên bài: "(Tiết 1)", "(T1)", "TIẾT 1:", "- TIẾT 2" — không có thì trả null. */
+function BX_stemTiet(kd){ var m=/\((?:tiet|t)\s*(\d+)\)|\btiet\s*(\d+)\b/.exec(kd); return m?parseInt(m[1]||m[2],10):null; }
+/* Địa chỉ bài học STEM cho 1 bài (tên bài + môn + lớp) → chuỗi mô tả hoặc null. */
+function BX_stemTim(lop, mon, ten){
+  var L=BX_STEM_DIACHI[String(lop).replace(/\D/g,'')]; if(!L) return null;
+  var ds=L[BX_monTH(mon)]; if(!ds) return null;
+  var kd=BX_kd(ten), tiet=BX_stemTiet(kd);
+  for(var i=0;i<ds.length;i++){
+    var d=ds[i]; if(kd.indexOf(d.b)<0) continue;
+    if(d.t!=null && tiet!=null && tiet!==d.t) continue;
+    return d.n;
+  }
+  return null;
+}
+/* Dòng STEM cho một dòng KHDH: bài học STEM theo môn, hoặc trải nghiệm STEM ở HĐTN
+   (tuần 8 = HK I, tuần 26 = HK II; ghi MỘT lần cho mỗi học kì nhờ sổ st; tuần đó đã có
+   "STEM" trong tên bài — lớp 4 tuần 8 "NGÀY HỘI STEM" — thì thôi). */
+function BX_stemDiaChi(lop, mon, r, st){
+  if(!BX_intgState().stem || !r) return [];
+  var ten=String(r[4]==null?'':r[4]), c7=String(r[7]==null?'':r[7]);
+  if(BX_monTH(mon)==='hdtn'){
+    var tuan=parseInt(r[0],10), hk=(tuan===8)?'I':((tuan===26)?'II':null); if(!hk) return [];
+    /* Chọn ĐÚNG MỘT dòng trong tuần: ưu tiên "Sinh hoạt dưới cờ", không có thì dòng đầu tuần;
+       tuần đã có "STEM" ở dòng nào (lớp 4 tuần 8 "NGÀY HỘI STEM") thì thôi. */
+    var G=window.BX_KHGD_G, rows=(G&&G[String(lop)]&&G[String(lop)][mon])||null;
+    if(rows){
+      var cung=rows.filter(function(x){ return parseInt(x[0],10)===tuan; });
+      if(cung.some(function(x){ return /STEM/i.test(String(x[4]||'')+' '+String(x[7]||'')); })) return [];
+      var muc=null; for(var q=0;q<cung.length;q++){ if(/duoi co/.test(BX_kd(cung[q][4]))){ muc=cung[q]; break; } }
+      muc=muc||cung[0];
+      if(!muc || String(muc[4])!==ten) return [];
+    }
+    var k='stem|hdtn|'+lop+'|'+hk;
+    if(st && st[k]) return [];
+    if(st) st[k]=1;
+    if(/STEM/i.test(ten+' '+c7)) return [];
+    return [['STEM', BX_STEM_TRAINGHIEM[hk]]];
+  }
+  if(/STEM/i.test(c7.replace(/\bGD STEM\b/g,''))) return [];   /* đã có địa chỉ cụ thể sẵn (lớp 1, 2) */
+  var n=BX_stemTim(lop, mon, ten); return n?[['STEM', n]]:[];
+}
+/* Cột 7 gốc: bỏ nhãn chung "GD STEM" (đã có địa chỉ cụ thể); tắt công tắc thì bỏ luôn
+   các đoạn "STEM: …" ghi sẵn trong dữ liệu. */
+window.BX_khgdCot7Goc=function(text){
+  var s=String(text==null?'':text).replace(/\bGD STEM\b\s*;?\s*/g,'');
+  if(!BX_intgState().stem) s=s.replace(/(?:BÀI HỌC )?STEM\s*:?[^;\n]*;?\s*/gi,'');
+  return s.replace(/^[\s;]+|[\s;]+$/g,'');
+};
+window.BX_stemTim=BX_stemTim; window.BX_stemDiaChi=BX_stemDiaChi;
 /* Chất liệu QPAN theo LỚP — lấy đúng nội dung từng khối trong Thông tư 08/2024. */
 var BX_QPAN_LOP={
   '1':{cl:'hình ảnh chú bộ đội Quân đội nhân dân, chú công an Công an nhân dân và di tích lịch sử ở địa phương',
@@ -7118,7 +7363,10 @@ window.BX_dinhChinh=BX_dinhChinh;
    r = [tuần, chủ đề, tên bài, hoạt động, nội dung, thời lượng, tiết KH, tích hợp] */
 window.BX_khgdIntgAdd=function(lop, mon, r, st){
   if(!r) return [];
-  if(!String(r[5]==null?'':r[5]).trim()) return [];
+  /* (4/9/2026) STEM tính TRƯỚC chỗ thoát sớm: bài học STEM có thể gắn vào tiết 2 — dòng
+     không ghi thời lượng (Toán 5 bài 37, Khoa học 5 bài 3, 5, 11). */
+  var stem=BX_stemDiaChi(lop, mon, r, st);
+  if(!String(r[5]==null?'':r[5]).trim()) return stem;
   var ten=[r[1],r[2],r[4]].map(function(x){return String(x==null?'':x);}).join(' ');
   var tenHep=[r[2],r[4]].map(function(x){return String(x==null?'':x);}).join(' ');
   /* (3/9/2026) KHÔNG lồng ghép vào tiết ôn tập / kiểm tra / đánh giá định kì / thực hành
@@ -7129,7 +7377,7 @@ window.BX_khgdIntgAdd=function(lop, mon, r, st){
      Đính chính SGK vẫn trả về — đó là điều chỉnh nội dung, không phải tích hợp. */
   var _tk=BX_kd(tenHep);
   if(/(kiem tra|thuc hanh ki nang|on tap)/.test(_tk) || /danh gia (giua|cuoi|dinh k[iy])/.test(_tk))
-    return BX_dinhChinh(lop, mon, tenHep);
+    return stem.concat(BX_dinhChinh(lop, mon, tenHep));
   /* Cột 7 sẵn có của dòng này ĐÃ là một nội dung lồng ghép (thường là Năng lực số/AI,
      có nơi là nhãn "Tích hợp GD quốc phòng an ninh" do người soạn ghi) — phải tính vào
      giới hạn 2, nếu không bản kế hoạch lại dày đặc đúng thứ Sở dặn tránh. */
@@ -7157,8 +7405,8 @@ window.BX_khgdIntgAdd=function(lop, mon, r, st){
     }
   }
   var them=BX_capNoiDung(out, daCo);
-  /* Đính chính SGK đứng riêng, luôn hiện, không bị giới hạn cắt mất. */
-  return BX_dinhChinh(lop, mon, tenHep).concat(them);
+  /* Đính chính SGK và bài học STEM đứng riêng, luôn hiện, không bị giới hạn cắt mất. */
+  return stem.concat(BX_dinhChinh(lop, mon, tenHep)).concat(them);
 };
 /* Môn nào ĐANG có ít nhất một dòng sinh được nội dung tích hợp mới → cột 7 phải hiện,
    kể cả khi dữ liệu gốc của môn đó bỏ trống cột 7 (nếu không, BX_visibleCols ẩn cột
@@ -7224,6 +7472,8 @@ function BX_intgLines(ig, L, row){
   chon.forEach(function(n){ giu[n[0]]=1; });
   var out=[];
   BX_dinhChinh(_lop,_mon,_ten).forEach(function(p){ out.push(['hoatdong','• (ĐÍNH CHÍNH SGK) '+p[1]]); });
+  /* (4/9/2026) Bài học STEM — không tính vào giới hạn 2 nội dung (hình thức tổ chức, không phải nội dung lồng ghép). */
+  if(s.stem){ var _stem=BX_stemTim(_lop,_mon,_ten); if(_stem) out.push(['hoatdong','• (STEM) Tổ chức theo hình thức bài học STEM — '+_stem+' Tiến trình: xác định vấn đề → tìm hiểu kiến thức nền → đề xuất, lựa chọn giải pháp → chế tạo, thử nghiệm → chia sẻ, đánh giá và điều chỉnh.']); }
   nhom.forEach(function(n){ if(giu[n[0]]) n[1].forEach(function(d){ out.push(d); }); });
   // 5) GIÁO DỤC HSKT — điều chỉnh cho HS khuyết tật học hoà nhập, luôn giữ nếu thầy cô bật
   /* (3/9/2026) Khối này in ở CUỐI giáo án, ngay sau Mục IV. Khi Mục IV đã có dòng
@@ -7337,6 +7587,7 @@ var BX_INTG_DEFS=[
   {k:'kns',     label:'Tích hợp Kĩ năng sống',          icon:'🌱', hint:'Kĩ năng sống theo CT GDPT 2018 và TT 04/2014'},
   {k:'vietlao', label:'Tích hợp hữu nghị Việt – Lào',   icon:'🤝', hint:'Nội dung giáo dục địa phương — trường vùng biên giới Việt – Lào'},
   {k:'local',   label:'Tích hợp giáo dục địa phương',   icon:'🏞️', hint:'Liên hệ cảnh vật, di tích, nghề, con người ở địa phương'},
+  {k:'stem',    label:'Tích hợp giáo dục STEM',         icon:'🔬', hint:'Bài học STEM trong Toán, TNXH/Khoa học, Tin học, Công nghệ (CV 909/BGDĐT-GDTH; CV 3132/SGD&ĐT Nghệ An 2026-2027: tất cả khối lớp, trải nghiệm STEM tối thiểu 1 lần/học kì)'},
   {k:'hskt',    label:'Tích hợp giáo dục HSKT',         icon:'🧩', hint:'Mục tiêu riêng (Mục I) và biện pháp (Mục IV) cho học sinh khuyết tật học hoà nhập sinh theo TỪNG MÔN, theo dạng tật và mức độ đã khai ở menu "Học sinh cần hỗ trợ"'},
   {k:'gioihan', label:'Tối đa 2 nội dung mỗi bài',      icon:'⚖️', hint:'Theo tập huấn Sở GD&ĐT Nghệ An 20/8/2026: mỗi bài 1–2 hoạt động có tích hợp, ưu tiên GDĐP, Năng lực số, Quốc phòng – An ninh'},
   {k:'dinhchinh',label:'Đính chính nội dung SGK',       icon:'📌', hint:'In phần điều chỉnh, bổ sung SGK theo tài liệu tập huấn (hiện có Lịch sử và Địa lí 5 — bài Biển, đảo Việt Nam)'}
@@ -7764,6 +8015,7 @@ function bxKHGDBangMau(LOP,SUBJ,DATA){
   for(var i=0;i<DATA.length;i++){
     var r=DATA[i], tuan=r[0],chude=r[1],bai=r[2],hd=r[3],nd=r[4],tl=r[5],tiet=r[6],tich=r[7];
     if(_v){ nd=_v(LOP,SUBJ,i,4,nd); tl=_v(LOP,SUBJ,i,5,tl); tiet=_v(LOP,SUBJ,i,6,tiet); tich=_v(LOP,SUBJ,i,7,tich); } /* bản trường, theo lớp + môn */
+    if(window.BX_khgdCot7Goc) tich=window.BX_khgdCot7Goc(tich); /* (4/9/2026) bỏ nhãn chung "GD STEM", tắt STEM thì bỏ địa chỉ STEM ghi sẵn */
     /* Nối phần QPAN / Việt–Lào / Kĩ năng sống vào SAU nội dung Năng lực số đã có — tất cả nằm ở cột "Nội dung điều chỉnh, bổ sung". */
     if(window.BX_khgdIntgAdd){
       var _th=window.BX_khgdIntgAdd(LOP,SUBJ,r,_igst);
@@ -7904,6 +8156,8 @@ function buildKHGDPhuLuc2(LOP,dsMon){
   if(_ts.vietlao) QW.push(['VN-LÀO','Giáo dục truyền thống hữu nghị Việt Nam – Lào','Nội dung giáo dục địa phương theo kế hoạch giáo dục của nhà trường; lồng ghép ở những bài có chỗ bám tự nhiên.']);
   if(_ts.kns) QW.push(['KNS','Giáo dục kĩ năng sống (CT GDPT 2018; TT 04/2014/TT-BGDĐT)','Rèn kĩ năng tự phục vụ, giao tiếp, hợp tác, quản lí cảm xúc, ứng phó và tự bảo vệ ngay trong tiến trình bài dạy.']);
   if(_ts.dinhchinh) QW.push(['ĐÍNH CHÍNH','Điều chỉnh, bổ sung nội dung sách giáo khoa','Nội dung sách giáo khoa được cập nhật cho chính xác, khoa học theo tài liệu tập huấn của cơ quan quản lí; không phải nội dung tích hợp.']);
+  /* (4/9/2026) Mã STEM — dữ liệu lớp 4–5 in "GD STEM" ở cột 7 từ lâu mà bảng này chưa giải nghĩa. */
+  if(_ts.stem!==false) QW.push(['STEM','Giáo dục STEM — bài học STEM (CV 909/BGDĐT-GDTH ngày 08/3/2023; CV 3132/SGD&ĐT-GDTrH,GDTH ngày 25/8/2026 của Sở GD&ĐT Nghệ An)','Tiết dạy tổ chức theo hình thức bài học STEM (tích hợp Toán, Khoa học/TNXH, Tin học, Công nghệ, Mĩ thuật…) trong thời lượng của môn học, thay cho tiết SGK tương ứng; tiến trình: xác định vấn đề → tìm hiểu kiến thức nền → đề xuất giải pháp → chế tạo, thử nghiệm → chia sẻ, đánh giá. Hoạt động trải nghiệm STEM tối thiểu 01 lần/học kì.']);
   var QWW=[1600,4200,8600];
   var qrows=QW.map(function(row,ri){return '<w:tr>'+row.map(function(c,ci){return bxTc(c,QWW[ci],{b:ri===0,jc:ci===0?'center':'left',sz:18});}).join('')+'</w:tr>';});
   var qwTbl='<w:tbl><w:tblPr><w:tblW w:w="14400" w:type="dxa"/><w:jc w:val="center"/>'+bxBorders(false)+'<w:tblLayout w:type="fixed"/></w:tblPr>'+
@@ -8217,7 +8471,8 @@ function rowMatch(r){
 /* add = khối tích hợp sinh động (QPAN/Việt–Lào/KNS). Nó nằm NGOÀI vùng contenteditable
    để thầy cô sửa ô không vô tình lưu luôn phần app tự sinh vào bản trường. */
 function editableCell(i,col,cls,add){
-  var v=esc(val(i,col)); add=add||'';
+  var _raw=val(i,col); if(col===7&&window.BX_khgdCot7Goc) _raw=window.BX_khgdCot7Goc(_raw); /* (4/9/2026) cùng nếp với bản Word */
+  var v=esc(_raw); add=add||'';
   if(EDIT && ECOLS[col]){
     var ed=isEdited(i,col)?' khgd-ce-edited':'';
     var extra=(col===7 && rowEdited(i))?'<div class="khgd-edited">✎ trường đã chỉnh · <a href="#" onclick="return BX_khgdResetRow('+i+')">↺ khôi phục dòng</a></div>':'';
@@ -8296,13 +8551,13 @@ window.renderKHDH=function(){
   var L=window.BX_khgdEdit[curLop()], s=L&&L[cur()], ne=s?Object.keys(s).length:0;
   var info=document.getElementById('khdh-info');
   /* Đếm địa chỉ lồng ghép mới đang hiện — để thầy cô biết bật công tắc có tác dụng gì. */
-  var dQ=0,dV=0,dK=0,_igsc={}; /* (3/9/2026) đếm cùng sổ chống lặp để khớp số hiện trên bảng */
+  var dQ=0,dV=0,dK=0,dS=0,_igsc={}; /* (3/9/2026) đếm cùng sổ chống lặp để khớp số hiện trên bảng */
   if(window.BX_khgdIntgAdd) D.forEach(function(r){
     window.BX_khgdIntgAdd(curLop(),cur(),r,_igsc).forEach(function(p){
-      if(p[0]==='QPAN')dQ++; else if(p[0]==='VN-LÀO')dV++; else dK++;
+      if(p[0]==='QPAN')dQ++; else if(p[0]==='VN-LÀO')dV++; else if(p[0]==='STEM')dS++; else dK++;
     });
   });
-  var them=[]; if(dQ)them.push(dQ+' QPAN'); if(dV)them.push(dV+' Việt–Lào'); if(dK)them.push(dK+' KNS');
+  var them=[]; if(dS)them.push(dS+' STEM'); if(dQ)them.push(dQ+' QPAN'); if(dV)them.push(dV+' Việt–Lào'); if(dK)them.push(dK+' KNS');
   if(info) info.innerHTML='Môn <b>'+esc(cur())+'</b> · Lớp <b>'+esc(curLop())+'</b> · <b>'+D.length+'</b> dòng / ~'+tiet+' tiết · bám SGK + lồng ghép NLS/AI (TT02·CV3456)'+
     (them.length?(' · <b style="color:#1f7d49">+'+them.join(' · ')+'</b>'):'')+
     (ne?(' · <b style="color:'+NAVY+'">'+ne+' dòng trường đã chỉnh</b>'):'');
@@ -8840,8 +9095,11 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
     H.push('<h4>III. CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU</h4>');
     if(Array.isArray(L.hoatdong)){
       var rows=L.hoatdong.map(function(b){
-        return '<tr><td class="gv"><b>'+esc(b.ten||'')+'</b>'+(b.gv?('<br>'+mline(b.gv)):'')+'</td>'
-             +'<td>'+mline(b.hs||'')+'</td></tr>';
+        var T=(typeof bxTachHoatDong==='function')?bxTachHoatDong(b):{ten:b.ten||'',mucTieu:[],hang:[{gv:String(b.gv||'').split('\n'),hs:String(b.hs||'').split('\n')}]};
+        var o='';
+        if(T.ten||T.mucTieu.length) o+='<tr><td colspan="2" class="tt"><b>'+esc(T.ten)+'</b>'+(T.mucTieu.length?('<div class="mt"><i>Mục tiêu:</i><br>'+mline(T.mucTieu.join('\n'))+'</div>'):'')+'</td></tr>';
+        T.hang.forEach(function(r){ if(!r.gv.length&&!r.hs.length&&o) return; o+='<tr><td class="gv">'+mline(r.gv.join('\n'))+'</td><td>'+mline(r.hs.join('\n'))+'</td></tr>'; });
+        return o;
       }).join('');
       H.push('<table class="hd"><thead><tr><th>HOẠT ĐỘNG CỦA GV</th><th>HOẠT ĐỘNG CỦA HS</th></tr></thead><tbody>'+rows+'</tbody></table>');
     } else {
@@ -8927,10 +9185,12 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
       else{s+=inlineRuns(ch,ctx,base);}
     }});return s;}
   function pX(runs,opt){opt=opt||{};return '<w:p><w:pPr>'+(opt.center?'<w:jc w:val="center"/>':'')+'</w:pPr>'+runs+'</w:p>';}
-  function cellX(td,ctx,w){var inner=inlineRuns(td,ctx,{size:12});return '<w:tc><w:tcPr><w:tcW w:w="'+w+'" w:type="dxa"/></w:tcPr>'+pX(inner,{})+'</w:tc>';}
+  function cellX(td,ctx,w,span){var inner=inlineRuns(td,ctx,{size:12});return '<w:tc><w:tcPr><w:tcW w:w="'+w+'" w:type="dxa"/>'+(span?'<w:gridSpan w:val="'+span+'"/>':'')+'</w:tcPr>'+pX(inner,{})+'</w:tc>';}
   function tableX(tbl,ctx){
     var bd='<w:tblBorders>'+['top','left','bottom','right','insideH','insideV'].map(function(s){return '<w:'+s+' w:val="single" w:sz="4" w:color="000000"/>';}).join('')+'</w:tblBorders>';
     var trs='';Array.prototype.forEach.call(tbl.querySelectorAll('tr'),function(tr){var c=tr.children;if(!c.length)return;
+      /* (4/9/2026) hàng "tên hoạt động + Mục tiêu" kéo suốt 2 cột (td colspan=2) → gridSpan */
+      if(c.length===1 && c[0].getAttribute('colspan')==='2'){ trs+='<w:tr>'+cellX(c[0],ctx,9354,2)+'</w:tr>'; return; }
       trs+='<w:tr>'+cellX(c[0],ctx,5400)+(c[1]?cellX(c[1],ctx,3954):'<w:tc><w:tcPr><w:tcW w:w="3954" w:type="dxa"/></w:tcPr><w:p/></w:tc>')+'</w:tr>';});
     return '<w:tbl><w:tblPr><w:tblW w:w="9354" w:type="dxa"/>'+bd+'<w:tblLayout w:type="fixed"/></w:tblPr><w:tblGrid><w:gridCol w:w="5400"/><w:gridCol w:w="3954"/></w:tblGrid>'+trs+'</w:tbl>';
   }
