@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-05 · 105';
+  var PB='2026-09-05 · 106';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -2217,6 +2217,7 @@ window.bxMergeKho = function(){
       <button class="btn ghost" id="btn-gen" onclick="generateKHBD()">✨ Tạo bản nháp</button>
       <button class="btn ghost" id="btn-copy" onclick="copyKHBD()" disabled>📋 Sao chép</button>
       <button class="btn save" id="btn-save" onclick="saveCurrentKHBD()" disabled>💾 Lưu vào kho</button>
+      <button class="btn ghost" id="btn-stem" onclick="bxTaiKhbdStem()" style="display:none">🔬 Giáo án bài học STEM</button>
       <button class="btn" id="btn-word" onclick="downloadKHBD()" disabled>📄 Tải Word (.docx)</button>
     </div>
   </div>
@@ -2736,6 +2737,7 @@ function openKHBD(idx){
   document.getElementById("khbd-loading").classList.add("hidden");
   document.getElementById("btn-copy").disabled=true;
   document.getElementById("btn-word").disabled=true;
+  try{ var _bs=document.getElementById('btn-stem'); if(_bs) _bs.style.display='none'; }catch(e){}
   document.getElementById("btn-save").disabled=true;
   document.getElementById("btn-save").textContent="💾 Lưu vào kho";
   document.getElementById("btn-gen").textContent="✨ Tạo bản nháp";
@@ -3379,6 +3381,115 @@ function buildKhbdDocx(items){
   return _wrapDocx(items.map((it,i)=>(i?'<w:p><w:r><w:br w:type="page"/></w:r></w:p>':'')+_khbdItemParas(it)).join(''));
 }
 function buildKhbdDocxFromLesson(L,row){ return _wrapDocx(_lessonBodyParas(L,row)); }
+
+/* ===== GIÁO ÁN DẠNG BÀI HỌC STEM (5/9/2026) =====
+   Tiết nào có địa chỉ bài học STEM thì dạy theo tiến trình 5 bước của Công văn
+   909/BGDĐT-GDTH ngày 08/3/2023 chứ không theo trình tự bài SGK — mẫu KHBD thường
+   (Phụ lục 4 CV 2345) không có chỗ cho tiến trình ấy, nên phải dựng riêng.
+   ⚠ ĐÂY LÀ KHUNG TIẾN TRÌNH, KHÔNG PHẢI NỘI DUNG SÁCH: tên sản phẩm lấy theo bộ
+   "Bài học STEM" (NXBGDVN), còn vật liệu, tiêu chí, câu hỏi cụ thể thì thầy cô điền
+   theo tài liệu STEM của trường. Đừng bịa các số liệu, bước làm cụ thể vào đây. */
+function bxStemBlocks(tenStem, baiSGK){
+  var sp=String(tenStem||'').replace(/\s*\([^)]*\)\s*$/,'').trim();   /* bỏ phần "(Toán – Mĩ thuật)" */
+  return [
+   {ten:'Hoạt động 1: Xác định vấn đề (7 – 10 phút)',
+    gv:'- Mục tiêu: HS nhận ra vấn đề thực tiễn và nhận nhiệm vụ của bài học STEM “'+sp+'”.\n'
+      +'- GV nêu tình huống thực tiễn dẫn đến nhiệm vụ học tập.\n'
+      +'- GV giao nhiệm vụ: các nhóm thực hiện bài học STEM “'+sp+'” và tạo ra sản phẩm của nhóm.\n'
+      +'- GV nêu tiêu chí đánh giá sản phẩm và thời gian thực hiện.\n'
+      +'- GV chia nhóm, phát phiếu học tập.',
+    hs:'- HS quan sát, lắng nghe tình huống và nêu vấn đề cần giải quyết.\n'
+      +'- HS nhận nhiệm vụ, nhắc lại tiêu chí của sản phẩm.\n'
+      +'- HS về nhóm, phân công nhiệm vụ cho từng bạn.'},
+   {ten:'Hoạt động 2: Nghiên cứu kiến thức nền (15 – 20 phút)',
+    gv:'- Mục tiêu: HS chiếm lĩnh kiến thức của bài “'+String(baiSGK||'').trim()+'” để dùng cho sản phẩm.\n'
+      +'- GV tổ chức cho HS đọc sách giáo khoa, quan sát vật thật/hình ảnh, làm thí nghiệm hoặc thực hành theo nhóm.\n'
+      +'- GV đặt câu hỏi dẫn dắt, theo dõi và hỗ trợ các nhóm.\n'
+      +'- GV chốt kiến thức cần dùng khi làm sản phẩm.',
+    hs:'- HS đọc, quan sát, làm việc nhóm và ghi kết quả vào phiếu học tập.\n'
+      +'- Đại diện nhóm trình bày; các nhóm khác nhận xét, bổ sung.\n'
+      +'- HS lắng nghe, ghi nhớ kiến thức sẽ vận dụng vào sản phẩm.'},
+   {ten:'Hoạt động 3: Đề xuất và lựa chọn giải pháp (10 – 15 phút)',
+    gv:'- Mục tiêu: HS đề xuất được phương án làm sản phẩm và chọn phương án phù hợp.\n'
+      +'- GV yêu cầu mỗi nhóm vẽ bản thiết kế, nêu vật liệu và cách làm.\n'
+      +'- GV tổ chức báo cáo bản thiết kế, gợi ý góp ý theo tiêu chí.\n'
+      +'- GV hướng dẫn nhóm chỉnh sửa và chốt phương án.',
+    hs:'- HS thảo luận nhóm, vẽ bản thiết kế, liệt kê vật liệu và các bước làm.\n'
+      +'- Đại diện nhóm trình bày bản thiết kế; nhóm khác nhận xét, đặt câu hỏi.\n'
+      +'- HS chỉnh sửa và thống nhất phương án của nhóm mình.'},
+   {ten:'Hoạt động 4: Chế tạo, thử nghiệm (25 – 30 phút)',
+    gv:'- Mục tiêu: HS làm được sản phẩm theo bản thiết kế, thử nghiệm và cải tiến.\n'
+      +'- GV phát vật liệu, dụng cụ; nhắc quy tắc an toàn khi thực hành.\n'
+      +'- GV theo dõi, hỗ trợ nhóm gặp khó khăn; nhắc thời gian.\n'
+      +'- GV gợi ý các nhóm thử nghiệm và điều chỉnh sản phẩm.',
+    hs:'- HS làm sản phẩm theo bản thiết kế của nhóm, giữ an toàn và vệ sinh.\n'
+      +'- HS thử nghiệm sản phẩm, ghi lại kết quả.\n'
+      +'- HS điều chỉnh, cải tiến để sản phẩm đạt tiêu chí.'},
+   {ten:'Hoạt động 5: Chia sẻ, thảo luận và đánh giá (10 – 15 phút)',
+    gv:'- Mục tiêu: HS giới thiệu được sản phẩm, tự đánh giá và đánh giá bạn theo tiêu chí.\n'
+      +'- GV tổ chức trưng bày và báo cáo sản phẩm của các nhóm.\n'
+      +'- GV hướng dẫn đánh giá theo tiêu chí đã nêu ở Hoạt động 1.\n'
+      +'- GV nhận xét, tuyên dương; liên hệ vận dụng vào thực tiễn.',
+    hs:'- Các nhóm trưng bày, giới thiệu sản phẩm và cách làm.\n'
+      +'- HS tự đánh giá sản phẩm của nhóm mình và nhận xét nhóm bạn theo tiêu chí.\n'
+      +'- HS nêu điều đã học được và cách vận dụng vào cuộc sống.'}
+  ];
+}
+function bxStemKhbdDocx(L,row,tenStem){
+  row=row||{};
+  var lop=row.lop||state.klass, tuan=L.tuan||row.tuan||state.week;
+  var sp=String(tenStem||'').replace(/\s*\([^)]*\)\s*$/,'').trim();
+  var mon=(/\(([^)]*)\)\s*$/.exec(tenStem)||[])[1]||_bxSubjectFull(L.mon);
+  var P=[];
+  P.push(_docP('KẾ HOẠCH BÀI DẠY',{bold:true,center:true,size:14}));
+  P.push(_docP('BÀI HỌC STEM',{bold:true,center:true,size:13}));
+  P.push(_docP(sp.toUpperCase(),{bold:true,center:true,size:13}));
+  P.push(_docP('Môn học: '+mon+'   |   Lớp: '+lop+'   |   Tuần: '+tuan+'   |   Thời lượng: 2 tiết',{center:true,size:12}));
+  P.push(_docP('Dạy thay cho tiết: '+_bxSubjectFull(L.mon)+' — '+String(L.bai||'').trim(),{center:true,italic:true,size:12}));
+  P.push(_docP(''));
+  P.push(_docP('I. YÊU CẦU CẦN ĐẠT',{bold:true}));
+  (L.yccd||'(Thầy cô đối chiếu SGK/SGV)').split('\n').forEach(function(l){ P.push(_docP(l, _isYccdHead(l)?{bold:true}:undefined)); });
+  P.push(_docP('*) Yêu cầu riêng của bài học STEM:',{bold:true}));
+  P.push(_docP('- Vận dụng kiến thức, kĩ năng của bài học và các môn tích hợp để thực hiện bài học STEM “'+sp+'”, tạo ra sản phẩm đạt tiêu chí đề ra.'));
+  P.push(_docP('- Đề xuất được phương án, làm, thử nghiệm và cải tiến sản phẩm; giới thiệu và đánh giá sản phẩm theo tiêu chí.'));
+  P.push(_docP('- Phát triển năng lực giải quyết vấn đề và sáng tạo, giao tiếp và hợp tác; chăm chỉ, trách nhiệm, giữ an toàn khi thực hành.'));
+  P.push(_docP(''));
+  P.push(_docP('II. ĐỒ DÙNG DẠY HỌC',{bold:true}));
+  P.push(_docP('1. Giáo viên',{bold:true,size:12}));
+  P.push(_docP('- Kế hoạch bài dạy, sản phẩm mẫu, phiếu học tập, phiếu đánh giá theo tiêu chí.'));
+  P.push(_docP('- Vật liệu, dụng cụ cho các nhóm: (thầy cô ghi theo tài liệu Bài học STEM của nhà trường).'));
+  P.push(_docP('2. Học sinh',{bold:true,size:12}));
+  P.push(_docP('- Sách giáo khoa, vở ghi, đồ dùng học tập.'));
+  P.push(_docP('- Vật liệu tái chế và dụng cụ được phân công chuẩn bị.'));
+  P.push(_docP(''));
+  P.push(_docP('III. CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU',{bold:true}));
+  P.push(_docP('(Tiến trình bài học STEM theo Công văn 909/BGDĐT-GDTH ngày 08/3/2023)',{italic:true,size:11}));
+  P.push(hoatdongTableXml(bxStemBlocks(tenStem, L.bai)));
+  P.push(_docP(''));
+  P.push(_docP('IV. ĐIỀU CHỈNH SAU BÀI DẠY',{bold:true}));
+  P.push(_docP(_DOTLINE)); P.push(_docP(_DOTLINE));
+  return _wrapDocx(P.join(''));
+}
+/* Nút "Giáo án bài học STEM" trong cửa sổ soạn KHBD — chỉ hiện khi tiết này CÓ địa chỉ STEM. */
+function bxStemCuaTiet(){
+  var l=state.current; if(!l||!l.bankId) return null;
+  try{ if(!window.BX_intgState||!window.BX_intgState().stem) return null; }catch(e){ return null; }
+  var L=bankAll().find(function(x){ return x.id===l.bankId; }); if(!L) return null;
+  var lop=(l.bankRow&&l.bankRow.lop)||L.khoi||L.lop||state.klass;
+  var ten=window.BX_stemTim?window.BX_stemTim(lop, L.mon, L.bai):null;
+  return ten?{L:L,row:l.bankRow,ten:ten}:null;
+}
+function bxHienNutStem(){
+  var b=document.getElementById('btn-stem'); if(!b) return;
+  var s=bxStemCuaTiet(); b.style.display=s?'':'none';
+  if(s) b.title='Bài học STEM: '+s.ten;
+}
+function bxTaiKhbdStem(){
+  var s=bxStemCuaTiet(); if(!s){ bxAlert('Tiết này không có địa chỉ bài học STEM.'); return; }
+  var sp=s.ten.replace(/\s*\([^)]*\)\s*$/,'').replace(/[^A-Za-zÀ-ỹ0-9]/g,'').slice(0,40);
+  _downloadBlob('KHBD_STEM_'+sp+'_Lop'+((s.row&&s.row.lop)||state.klass)+'.docx', bxStemKhbdDocx(s.L,s.row,s.ten), s.L.mon);
+}
+window.bxTaiKhbdStem=bxTaiKhbdStem; window.bxHienNutStem=bxHienNutStem;
 function downloadKHBD(){
   const l=state.current; if(!l) return;
   /* Bản lấy từ kho & chưa chỉnh tay → xuất bản bảng 2 cột đẹp từ giáo án gốc */
@@ -5218,6 +5329,7 @@ function serveBankIntoModal(row){
     ta.value=bankLessonToText(L,row); state.current.bankPristine=ta.value;
     ta.classList.remove('hidden'); empty.classList.add('hidden');
     el('btn-copy').disabled=false; el('btn-word').disabled=false; el('btn-save').disabled=false;
+    try{ bxHienNutStem(); }catch(e){}
     el('btn-save').textContent='💾 Lưu bản của tôi';
     if(tag){ tag.style.display=''; tag.className='bank-tag ok';
       tag.innerHTML='✅ Lấy từ <b>Kho giáo án số</b> · '+bankStatusLabel(L.status)+' · đã cá nhân hóa cho <b>'+_xe(state.gvcn||'thầy/cô')+'</b>. Thầy cô có thể chỉnh sửa, lưu bản của riêng mình.'; }
@@ -6975,95 +7087,115 @@ function BX_monTH(mon){
 var BX_STEM_DIACHI={
  '1':{
   toan:[
-   {b:'lap ghep, xep hinh',t:1,n:'Bức tranh ghép hình (Toán – Mĩ thuật): HS cắt, ghép hình vuông, tròn, tam giác, chữ nhật thành tranh ngôi nhà, con vật; bài học STEM 2 tiết thay tiết SGK.'},
-   {b:'uoc luong va do do dai',t:1,n:'Thước gang tay của em (Toán – Công nghệ): HS làm thước bìa chia vạch theo gang tay, đo bàn, bảng; ước lượng rồi kiểm tra; 2 tiết thay tiết SGK.'},
-   {b:'xem gio dung tren dong ho',t:1,n:'Đồng hồ của em (Toán – Mĩ thuật): HS làm mô hình đồng hồ kim bằng đĩa giấy, quay kim chỉ giờ đúng theo lịch sinh hoạt; 2 tiết thay tiết SGK.'}
+   {b:'so sanh so',n:'Dụng cụ so sánh số trong phạm vi 10 (Toán – Mĩ thuật)'},
+   {b:'lap ghep, xep hinh',t:1,n:'Thực hành trang trí lớp học bằng các hình hình học (Toán – Mĩ thuật)'},
+   {b:'bang cac so tu 1 den 100',t:1,n:'Bảng các số từ 1 đến 100 (Toán – Mĩ thuật)'},
+   {b:'xem gio dung tren dong ho',t:1,n:'Đồng hồ tiện ích (Toán – Mĩ thuật)'}
   ],
   tnxh:[
-   {b:'cham soc va bao ve cay trong',t:1,n:'Chậu cây nhỏ của em (TNXH – Công nghệ): HS gieo hạt vào chậu tái chế, làm nhãn và lịch tưới, quan sát cây lớn lên; 2 tiết thay tiết SGK.'}
+   {b:'an toan tren duong',t:1,n:'Đèn tín hiệu và biển báo giao thông (TNXH – Mĩ thuật)'},
+   {b:'cay xung quanh em',t:1,n:'Cây xung quanh em (TNXH – Mĩ thuật)'},
+   {b:'cham soc va bao ve vat nuoi',t:1,n:'Nhà cho vật nuôi (TNXH – Mĩ thuật)'},
+   {b:'con nguoi noi em song',t:1,n:'Trang trí nơi em sống (TNXH – Mĩ thuật)'},
+   {b:'cung kham pha bau troi',t:1,n:'Bầu trời ngày và đêm (TNXH – Mĩ thuật)'},
+   {b:'thoi tiet luon thay doi',t:1,n:'Thời tiết và trang phục (TNXH – Mĩ thuật)'}
   ]
  },
  '2':{
+  toan:[
+   {b:'tia so',t:2,n:'Tia số của em (Toán – Mĩ thuật)'},
+   {b:'phep cong (qua 10) trong pham vi 20',t:1,n:'Thanh cộng trong phạm vi 20 (Toán – Mĩ thuật)'},
+   {b:'ngay - thang',t:2,n:'Lịch để bàn tiện ích (Toán – Mĩ thuật)'},
+   {b:'bang chia 2',t:1,n:'Thực hành nhân nhẩm, chia nhẩm (Toán – Mĩ thuật)'},
+   {b:'khoi tru, khoi cau',n:'Trải nghiệm thành phố hình học (Toán – Mĩ thuật)'},
+   {b:'so co ba chu so',t:1,n:'Thực hành biểu diễn số với bàn tính (Toán – Mĩ thuật)'},
+   {b:'thuc hanh va trai nghiem do do dai',t:1,n:'Thước gấp (Toán – Mĩ thuật)'},
+   {b:'chac chan, co the, khong the',t:1,n:'Vòng xoay ngẫu nhiên (Toán – Mĩ thuật)'}
+  ],
   tnxh:[
-   {b:'tim hieu co quan van dong',t:1,n:'Mô hình bàn tay cử động (TNXH – Mĩ thuật): HS làm mô hình bàn tay bằng bìa, ống hút, dây để thấy xương, khớp, cơ hoạt động; 2 tiết thay tiết SGK.'},
-   {b:'ung pho voi thien tai',t:1,n:'Túi đồ dùng ứng phó thiên tai (TNXH – Công nghệ): HS thiết kế túi/hộp đựng vật dụng cần thiết khi có bão, lũ và thuyết minh cách dùng; 2 tiết thay tiết SGK.'}
+   {b:'nghe nghiep cua nguoi lon trong gia dinh',t:1,n:'Nghề nghiệp của người thân (TNXH – Mĩ thuật)'},
+   {b:'giu sach nha o',t:1,n:'Giữ gìn vệ sinh nhà ở (TNXH – Mĩ thuật)'},
+   {b:'dong vat song o dau',t:1,n:'Nơi sống của động vật (TNXH – Mĩ thuật)'},
+   {b:'tim hieu co quan van dong',t:1,n:'Cơ quan vận động (TNXH – Mĩ thuật)'},
+   {b:'bao ve co quan ho hap',t:1,n:'Bảo vệ cơ quan hô hấp (TNXH – Mĩ thuật)'},
+   {b:'hoat dong giao thong',t:1,n:'Các loại đường và phương tiện giao thông (TNXH – Mĩ thuật)'},
+   {b:'cac mua trong nam',t:1,n:'Các mùa trong năm ở Việt Nam (TNXH – Mĩ thuật)'}
   ]
  },
  '3':{
   toan:[
-   {b:'tam, ban kinh, duong kinh',n:'Com-pa của em (Toán – Công nghệ): HS chế dụng cụ vẽ đường tròn từ bìa, dây, bút; vẽ và đo tâm, bán kính, đường kính; 2 tiết thay tiết SGK.'},
-   {b:'mi-li-met, gam, mi-li-lit',t:1,n:'Cân thăng bằng (Toán – Công nghệ): HS làm cân đòn từ móc áo, cốc giấy; so sánh, ước lượng khối lượng theo gam; 2 tiết thay tiết SGK.'},
-   {b:'dien tich hinh chu nhat, dien tich hinh vuong',t:1,n:'Thảm hình học (Toán – Mĩ thuật): HS thiết kế tấm thảm/ô lát nền bằng các ô vuông 1 cm², tính và so sánh diện tích; 2 tiết thay tiết SGK.'},
-   {b:'xem dong ho. thang-nam',t:1,n:'Đồng hồ La Mã của em (Toán – Mĩ thuật): HS làm mặt đồng hồ ghi số La Mã, đặt kim theo giờ, phút; 2 tiết thay tiết SGK.'}
+   {b:'bang nhan',t:1,n:'Bảng nhân, chia (Toán – Mĩ thuật)'},
+   {b:'mot phan may',t:1,n:'Trải nghiệm cùng một phần mấy (Toán – Mĩ thuật)'},
+   {b:'thuc hanh va trai nghiem voi cac don vi mi-li-met, gam, mi-li-lit',t:1,n:'Cân thăng bằng (Toán – Công nghệ)'},
+   {b:'xem dong ho. thang-nam',t:1,n:'Đồng hồ số La Mã (Toán – Mĩ thuật)'},
+   {b:'dien tich cua mot hinh',t:1,n:'Trải nghiệm diện tích (Toán – Mĩ thuật)'}
   ],
   tnxh:[
-   {b:'bai 13. mot so bo phan cua thuc vat',t:1,n:'Mô hình cây và các bộ phận (TNXH – Mĩ thuật): HS tạo mô hình cây bằng vật liệu tái chế, gắn nhãn rễ, thân, lá, hoa, quả; 2 tiết thay tiết SGK.'},
-   {b:'bai 18. co quan tieu hoa',t:1,n:'Cẩm nang ăn uống có lợi cho sức khoẻ (TNXH – Toán): HS thiết kế sổ tay/thực đơn, đếm số bữa, khẩu phần theo nhóm thức ăn; 2 tiết thay tiết SGK.'},
-   {b:'xac dinh cac phuong trong khong gian',t:1,n:'La bàn đơn giản (TNXH – Công nghệ): HS làm la bàn từ kim khâu nhiễm từ, nút bần, đĩa nước; xác định bốn phương ở sân trường; 2 tiết thay tiết SGK.'},
-   {b:'mat troi, trai dat, mat trang',t:1,n:'Mô hình Mặt Trời – Trái Đất – Mặt Trăng (TNXH – Mĩ thuật): HS làm mô hình chuyển động quay, giải thích ngày – đêm; 2 tiết thay tiết SGK.'}
+   {b:'ho hang va nhung ngay ki niem cua gia dinh',t:1,n:'Họ hàng nội, ngoại (TNXH – Mĩ thuật)'},
+   {b:'di tich lich su van hoa',t:1,n:'Di tích lịch sử – văn hoá (TNXH – Mĩ thuật)'},
+   {b:'bai 13. mot so bo phan cua thuc vat',t:1,n:'Các bộ phận thực vật (TNXH – Mĩ thuật)'},
+   {b:'bai 18. co quan tieu hoa',t:1,n:'Cơ quan tiêu hoá (TNXH – Mĩ thuật)'},
+   {b:'be mat trai dat',t:1,n:'Bề mặt Trái Đất (TNXH – Mĩ thuật)'},
+   {b:'mat troi, trai dat, mat trang',t:1,n:'Mô hình Mặt Trời – Trái Đất – Mặt Trăng (TNXH – Mĩ thuật)'}
   ],
   tin:[
-   {b:'sap xep de de tim kiem',t:1,n:'Kệ phân loại (Tin học – Công nghệ – Mĩ thuật): HS thiết kế hộp/kệ phân loại đồ dùng theo tiêu chí, gắn nhãn; vận dụng sắp xếp để dễ tìm; 2 tiết thay tiết SGK.'},
-   {b:'bai trinh chieu cua em',t:1,n:'Bài trình chiếu "Cây xanh quanh em" (Tin học – TNXH): HS tạo bài trình chiếu 3–4 trang giới thiệu cây đã quan sát; 2 tiết thay tiết SGK.'},
-   {b:'em thuc hien cong viec nhu the nao',t:1,n:'Sơ đồ các bước làm một việc (Tin học – Công nghệ): HS vẽ sơ đồ khối các bước pha nước chanh/gấp máy bay giấy rồi làm theo sơ đồ; 2 tiết thay tiết SGK.'}
+   {b:'may tinh va em',t:1,n:'Cẩm nang máy tính an toàn (Tin học – Mĩ thuật)'},
+   {b:'thuc hanh voi tep va thu muc',t:1,n:'Thực hành tệp, thư mục (Tin học – Mĩ thuật)'}
   ],
   congnghe:[
-   {b:'lam do dung hoc tap',t:1,n:'Hộp bút đa năng (Công nghệ – Toán – Mĩ thuật): HS thiết kế, đo, cắt, ghép hộp bút từ bìa; thử và cải tiến; theo thời lượng bài SGK.'},
-   {b:'lam bien bao giao thong',t:1,n:'Biển báo giao thông cho sân trường (Công nghệ – TNXH – Toán): HS thiết kế biển báo đúng hình dạng, kích thước, màu sắc; theo thời lượng bài SGK.'},
-   {b:'lam do choi',t:1,n:'Đồ chơi chuyển động (Công nghệ – Toán): HS làm xe/chong chóng từ vật liệu tái chế, thử nghiệm và cải tiến để chạy, quay tốt hơn; theo thời lượng bài SGK.'}
+   {b:'su dung may thu hinh',t:1,n:'Cẩm nang máy thu hình (Công nghệ – Mĩ thuật)'},
+   {b:'lam do dung hoc tap',t:1,n:'Sáng tạo đồ dùng học tập (Công nghệ – Mĩ thuật)'}
   ]
  },
  '4':{
   toan:[
-   {b:'do goc, don vi do goc',t:1,n:'Thước đo góc của em (Toán – Công nghệ): HS làm thước đo góc bằng bìa/đĩa giấy, đo góc các vật trong lớp; 2 tiết thay tiết SGK.'},
-   {b:'hinh binh hanh, hinh thoi',t:1,n:'Khung cửa xếp (Toán – Công nghệ): HS lắp khung hình bình hành, hình thoi bằng que, ghim; khám phá vì sao khung biến dạng được; 2 tiết thay tiết SGK.'},
-   {b:'bieu do cot',t:1,n:'Biểu đồ cột về rác thải/thời tiết lớp em (Toán – Khoa học): HS thu thập số liệu, dựng biểu đồ cột bằng giấy hoặc phần mềm; 2 tiết thay tiết SGK.'}
+   {b:'the ki',t:1,n:'Thế kỉ (Toán – Mĩ thuật)'},
+   {b:'thuc hanh va trai nghiem uoc luong trong tinh toan',n:'Thực hành ước lượng (Toán – Mĩ thuật)'},
+   {b:'on tap hinh hoc',t:1,n:'Lắp ghép hình phẳng (Toán – Mĩ thuật)'}
   ],
   khoahoc:[
-   {b:'su chuyen the cua nuoc va vong tuan hoan',t:1,n:'Mô hình vòng tuần hoàn của nước (Khoa học – Mĩ thuật): HS làm mô hình túi/bình mô phỏng bay hơi – ngưng tụ – mưa; 2 tiết thay tiết SGK.'},
-   {b:'mot so cach lam sach nuoc',t:1,n:'Bộ lọc nước đơn giản (Khoa học – Công nghệ): HS thiết kế bộ lọc bằng chai nhựa, cát, sỏi, than; thử nghiệm và cải tiến; 2 tiết thay tiết SGK.'},
-   {b:'am thanh trong cuoc song',t:1,n:'Nhạc cụ từ vật liệu tái chế (Khoa học – Âm nhạc – Công nghệ): HS chế tạo nhạc cụ, khám phá âm thanh cao – thấp, to – nhỏ; 2 tiết thay tiết SGK.'},
-   {b:'vat dan nhiet tot va vat dan nhiet kem',t:1,n:'Hộp giữ nhiệt (Khoa học – Công nghệ): HS thiết kế hộp giữ ấm/lạnh bằng vật liệu cách nhiệt, đo nhiệt độ sau một thời gian; 2 tiết thay tiết SGK.'},
-   {b:'che do an uong can bang',t:1,n:'Thực đơn cân bằng cho một ngày (Khoa học – Toán): HS thiết kế thực đơn, tính tỉ lệ các nhóm chất, trình bày áp phích; 2 tiết thay tiết SGK.'}
+   {b:'su chuyen the cua nuoc va vong tuan hoan',t:1,n:'Sự chuyển thể của nước và vòng tuần hoàn của nước (Khoa học – Mĩ thuật)'},
+   {b:'gio, bao va phong chong bao',t:1,n:'Gió, bão (Khoa học – Công nghệ)'},
+   {b:'am thanh trong cuoc song',t:1,n:'Âm thanh trong cuộc sống (Khoa học – Âm nhạc)'},
+   {b:'vat dan nhiet tot va vat dan nhiet kem',t:1,n:'Dẫn nhiệt (Khoa học – Công nghệ)'},
+   {b:'che do an uong can bang',t:1,n:'Ăn uống cân bằng (Khoa học – Toán)'},
+   {b:'chuoi thuc an trong tu nhien',t:1,n:'Chuỗi thức ăn trong tự nhiên (Khoa học – Mĩ thuật)'}
   ],
   tin:[
-   {b:'tao bai trinh chieu',t:1,n:'Bài trình chiếu "Tiết kiệm nước" (Tin học – Khoa học): HS tạo bài trình chiếu có hình ảnh, số liệu về dùng nước ở gia đình; 2 tiết thay tiết SGK.'},
-   {b:'tao chuong trinh may tinh de dien ta y tuong',t:1,n:'Hoạt cảnh kể chuyện trên Scratch (Tin học – Tiếng Việt): HS lập trình nhân vật, lời thoại theo kịch bản ngắn; 2 tiết thay tiết SGK.'},
-   {b:'chuong trinh cua em',t:1,n:'Trò chơi tính nhẩm trên Scratch (Tin học – Toán): HS thiết kế trò chơi hỏi – đáp phép tính, chạy thử và sửa lỗi; 2 tiết thay tiết SGK.'}
+   {b:'tao bai trinh chieu',t:1,n:'Tạo bài trình chiếu (Tin học – Khoa học)'},
+   {b:'chuong trinh cua em',t:1,n:'Chương trình của em (Tin học – Toán)'}
   ],
   congnghe:[
-   {b:'gioi thieu bo lap ghep mo hinh ki thuat',t:1,n:'Làm quen bộ lắp ghép kĩ thuật (Công nghệ – Toán): HS nhận biết chi tiết, lắp mô hình tự chọn theo bản vẽ; theo thời lượng bài SGK.'},
-   {b:'lap ghep mo hinh bap benh',t:1,n:'Bập bênh thăng bằng (Công nghệ – Khoa học – Toán): HS lắp mô hình, thử vị trí điểm tựa để cân bằng vật nặng; theo thời lượng bài SGK.'},
-   {b:'lap ghep mo hinh ro-bot',t:1,n:'Rô-bốt của em (Công nghệ – Tin học): HS lắp mô hình rô-bốt, mô tả các bước hoạt động bằng sơ đồ; theo thời lượng bài SGK.'},
-   {b:'do choi dan gian',t:1,n:'Đồ chơi dân gian (Công nghệ – Mĩ thuật): HS làm chong chóng/đèn kéo quân nhỏ, thử nghiệm, điều chỉnh để quay, chuyển động được; theo thời lượng bài SGK.'},
-   {b:'lam den long',n:'Đèn lồng (Công nghệ – Toán – Mĩ thuật): HS thiết kế, đo và cắt khung, ghép thân đèn cân đối; theo thời lượng bài SGK.'},
-   {b:'chuon chuon thang bang',t:1,n:'Chuồn chuồn thăng bằng (Công nghệ – Khoa học): HS tìm trọng tâm, điều chỉnh cánh, đuôi để chuồn chuồn đứng thăng bằng trên đầu ngón tay; theo thời lượng bài SGK.'}
-  ]
+   {b:'chau hoa va cay canh mini',t:1,n:'Chậu hoa, cây cảnh mini (Công nghệ – Mĩ thuật)'},
+   {b:'do choi dan gian',t:1,n:'Làm chong chóng (Công nghệ – Khoa học)'}
+  ],
+  /* Bộ "Bài học STEM" lớp 4 còn bài "Dân cư và hoạt động sản xuất Tây Nguyên" (Lịch sử và
+     Địa lí) nhưng KHDH của trường không có tiết ấy (Tây Nguyên chỉ còn Bài 21 Lễ hội cồng
+     chiêng) — bỏ hẳn, KHÔNG gán bừa sang bài khác cho đủ 17 bài. */
  },
  '5':{
   toan:[
-   {b:'do, ve, lap ghep, tao hinh',t:1,n:'Bộ ghép hình sáng tạo (Toán – Công nghệ – Mĩ thuật): HS đo, vẽ, cắt ghép các hình phẳng đã học thành sản phẩm trang trí; 2 tiết thay tiết SGK.'},
-   {b:'ti le ban do va ung dung',t:2,n:'Bản đồ trường em theo tỉ lệ (Toán – Lịch sử và Địa lí): HS đo thực tế sân, lớp học rồi vẽ sơ đồ theo tỉ lệ; 2 tiết thay tiết SGK.'},
-   {b:'hinh khai trien cua hinh lap phuong',t:1,n:'Hộp quà từ hình khai triển (Toán – Mĩ thuật): HS thiết kế, cắt gấp hộp hình hộp chữ nhật/lập phương, tính diện tích giấy cần dùng; 2 tiết thay tiết SGK.'},
-   {b:'uoc luong ve van toc',t:1,n:'Xe chạy bằng bóng bay (Toán – Khoa học – Công nghệ): HS chế tạo xe, đo quãng đường và thời gian, tính vận tốc, cải tiến; 2 tiết thay tiết SGK.'}
+   {b:'viet so do dai luong duoi dang so thap phan',t:1,n:'Dụng cụ học số thập phân (Toán – Mĩ thuật)'},
+   {b:'do, ve, lap ghep, tao hinh',t:1,n:'Bộ lắp ghép hình Tangram (Toán – Mĩ thuật)'},
+   {b:'thuc hanh va trai nghiem su dung may tinh cam tay',n:'Sử dụng máy tính cầm tay (Toán – Tin học)'},
+   {b:'dien tich xung quanh va dien tich toan phan cua hinh hop chu nhat',t:1,n:'Ngôi nhà nhỏ, tiện ích (Toán – Công nghệ)'}
   ],
   khoahoc:[
-   {b:'o nhiem, xoi mon dat',t:1,n:'Mô hình chống xói mòn đất (Khoa học – Công nghệ): HS thử nghiệm khay đất có/không có cây khi tưới nước, đề xuất giải pháp giữ đất; 2 tiết thay tiết SGK.'},
-   {b:'hon hop va dung dich',t:2,n:'Tách chất khỏi hỗn hợp (Khoa học – Công nghệ): HS thiết kế cách tách muối, cát, mạt sắt khỏi hỗn hợp; thử nghiệm và so sánh; 2 tiết thay tiết SGK.'},
-   {b:'su bien doi hoa hoc cua chat',t:2,n:'Mực tàng hình từ nước chanh (Khoa học – Mĩ thuật): HS viết thông điệp bí mật, hơ nóng để thấy sự biến đổi hoá học; 2 tiết thay tiết SGK.'},
-   {b:'mach dien don gian',t:1,n:'Đèn pin của em (Khoa học – Công nghệ): HS lắp mạch điện với pin, bóng đèn, công tắc; thử vật dẫn điện, cách điện; 2 tiết thay tiết SGK.'},
-   {b:'nang luong gio, nang luong nuoc chay',t:2,n:'Tua-bin gió mini (Khoa học – Công nghệ): HS chế tạo chong chóng phát điện/cối xay gió, thử với hướng và tốc độ gió khác nhau; 2 tiết thay tiết SGK.'}
+   {b:'hon hop va dung dich',t:2,n:'Tách muối ra khỏi dung dịch (Khoa học – Công nghệ)'},
+   {b:'su bien doi hoa hoc cua chat',t:2,n:'Biến đổi chất (Khoa học – Công nghệ)'},
+   {b:'mach dien don gian',t:1,n:'Mạch điện đơn giản (Khoa học – Công nghệ)'},
+   {b:'nang luong gio, nang luong nuoc chay',t:2,n:'Mô hình thuyền buồm (Khoa học – Công nghệ)'},
+   {b:'su phat trien cua cay con',t:1,n:'Trồng cây không cần hạt (Khoa học – Công nghệ)'},
+   {b:'vong doi va su phat trien cua dong vat',t:1,n:'Vòng đời của động vật (Khoa học – Mĩ thuật)'},
+   {b:'vi khuan co ich trong che bien thuc pham',t:1,n:'Vi khuẩn có ích trong chế biến thực phẩm (Khoa học – Công nghệ)'},
+   {b:'cham soc suc khoe tuoi day thi',t:1,n:'Cẩm nang chăm sóc sức khoẻ tuổi dậy thì (Khoa học – Mĩ thuật)'}
   ],
   tin:[
-   {b:'phan mem do hoa tao san pham so',n:'Áp phích "Tiết kiệm điện" (Tin học – Khoa học): HS thiết kế áp phích bằng phần mềm đồ hoạ, có hình và thông điệp; 2 tiết thay tiết SGK.'},
-   {b:'thuc hanh su dung lenh lap',t:1,n:'Vẽ hoa văn hình học bằng lệnh lặp (Tin học – Toán): HS lập trình Scratch vẽ hình vuông, đa giác, hoa văn đối xứng; 2 tiết thay tiết SGK.'},
-   {b:'tu kich ban den chuong trinh',t:1,n:'Trò chơi từ kịch bản trên Scratch (Tin học – Tiếng Việt): HS viết kịch bản, lập trình, chạy thử và sửa lỗi; 2 tiết thay tiết SGK.'}
+   {b:'tu kich ban den chuong trinh',t:1,n:'Lập trình trò chơi (Tin học – Toán)'}
   ],
   congnghe:[
-   {b:'thiet ke san pham',t:1,n:'Thiết kế sản phẩm phục vụ học tập (Công nghệ – Toán – Mĩ thuật): HS đi đủ các bước tìm hiểu – phác thảo – làm mẫu – thử nghiệm – cải tiến; theo thời lượng bài SGK.'},
-   {b:'xe dien chay bang pin',t:1,n:'Xe điện chạy bằng pin (Công nghệ – Khoa học): HS lắp mạch, thử nghiệm, cải tiến để xe chạy thẳng và xa hơn; theo thời lượng bài SGK.'},
-   {b:'may phat dien gio',t:1,n:'Máy phát điện gió (Công nghệ – Khoa học): HS lắp mô hình, thử số cánh, hướng gió để đèn sáng; theo thời lượng bài SGK.'},
-   {b:'mo hinh dien mat troi',t:1,n:'Điện mặt trời (Công nghệ – Khoa học): HS lắp mô hình pin mặt trời, thử góc đặt tấm pin để thiết bị hoạt động tốt nhất; theo thời lượng bài SGK.'}
+   {b:'xe dien chay bang pin',t:1,n:'Xe ô tô cánh quạt chạy bằng pin (Công nghệ – Khoa học)'},
+   {b:'may phat dien gio',t:1,n:'Máy phát điện gió (Công nghệ – Khoa học)'}
   ]
  }
 };
@@ -7110,7 +7242,7 @@ function BX_stemDiaChi(lop, mon, r, st){
     return [['STEM', BX_STEM_TRAINGHIEM[hk]]];
   }
   if(/STEM/i.test(c7.replace(/\bGD STEM\b/g,''))) return [];   /* đã có địa chỉ cụ thể sẵn (lớp 1, 2) */
-  var n=BX_stemTim(lop, mon, ten); return n?[['STEM', n]]:[];
+  var n=BX_stemTim(lop, mon, ten); return n?[['STEM', n+' — dạy thay cho tiết này.']]:[];
 }
 /* Cột 7 gốc: bỏ nhãn chung "GD STEM" (đã có địa chỉ cụ thể); tắt công tắc thì bỏ luôn
    các đoạn "STEM: …" ghi sẵn trong dữ liệu. */
@@ -7119,7 +7251,7 @@ window.BX_khgdCot7Goc=function(text){
   if(!BX_intgState().stem) s=s.replace(/(?:BÀI HỌC )?STEM\s*:?[^;\n]*;?\s*/gi,'');
   return s.replace(/^[\s;]+|[\s;]+$/g,'');
 };
-window.BX_stemTim=BX_stemTim; window.BX_stemDiaChi=BX_stemDiaChi;
+window.BX_stemTim=BX_stemTim; window.BX_stemDiaChi=BX_stemDiaChi; window.BX_STEM_DIACHI=BX_STEM_DIACHI;
 /* Chất liệu QPAN theo LỚP — lấy đúng nội dung từng khối trong Thông tư 08/2024. */
 var BX_QPAN_LOP={
   '1':{cl:'hình ảnh chú bộ đội Quân đội nhân dân, chú công an Công an nhân dân và di tích lịch sử ở địa phương',
@@ -7511,7 +7643,7 @@ function BX_intgLines(ig, L, row){
   var out=[];
   BX_dinhChinh(_lop,_mon,_ten).forEach(function(p){ out.push(['hoatdong','• (ĐÍNH CHÍNH SGK) '+p[1]]); });
   /* (4/9/2026) Bài học STEM — không tính vào giới hạn 2 nội dung (hình thức tổ chức, không phải nội dung lồng ghép). */
-  if(s.stem){ var _stem=BX_stemTim(_lop,_mon,_ten); if(_stem) out.push(['hoatdong','• (STEM) Tổ chức theo hình thức bài học STEM — '+_stem+' Tiến trình: xác định vấn đề → tìm hiểu kiến thức nền → đề xuất, lựa chọn giải pháp → chế tạo, thử nghiệm → chia sẻ, đánh giá và điều chỉnh.']); }
+  if(s.stem){ var _stem=BX_stemTim(_lop,_mon,_ten); if(_stem) out.push(['hoatdong','• (STEM) Tổ chức theo hình thức bài học STEM: '+_stem+'. Tiến trình: xác định vấn đề → tìm hiểu kiến thức nền → đề xuất, lựa chọn giải pháp → chế tạo, thử nghiệm → chia sẻ, đánh giá và điều chỉnh.']); }
   nhom.forEach(function(n){ if(giu[n[0]]) n[1].forEach(function(d){ out.push(d); }); });
   // 5) GIÁO DỤC HSKT — điều chỉnh cho HS khuyết tật học hoà nhập, luôn giữ nếu thầy cô bật
   /* (3/9/2026) Khối này in ở CUỐI giáo án, ngay sau Mục IV. Khi Mục IV đã có dòng
@@ -8195,7 +8327,7 @@ function buildKHGDPhuLuc2(LOP,dsMon){
   if(_ts.kns) QW.push(['KNS','Giáo dục kĩ năng sống (CT GDPT 2018; TT 04/2014/TT-BGDĐT)','Rèn kĩ năng tự phục vụ, giao tiếp, hợp tác, quản lí cảm xúc, ứng phó và tự bảo vệ ngay trong tiến trình bài dạy.']);
   if(_ts.dinhchinh) QW.push(['ĐÍNH CHÍNH','Điều chỉnh, bổ sung nội dung sách giáo khoa','Nội dung sách giáo khoa được cập nhật cho chính xác, khoa học theo tài liệu tập huấn của cơ quan quản lí; không phải nội dung tích hợp.']);
   /* (4/9/2026) Mã STEM — dữ liệu lớp 4–5 in "GD STEM" ở cột 7 từ lâu mà bảng này chưa giải nghĩa. */
-  if(_ts.stem!==false) QW.push(['STEM','Giáo dục STEM — bài học STEM (CV 909/BGDĐT-GDTH ngày 08/3/2023; CV 3132/SGD&ĐT-GDTrH,GDTH ngày 25/8/2026 của Sở GD&ĐT Nghệ An)','Tiết dạy tổ chức theo hình thức bài học STEM (tích hợp Toán, Khoa học/TNXH, Tin học, Công nghệ, Mĩ thuật…) trong thời lượng của môn học, thay cho tiết SGK tương ứng; tiến trình: xác định vấn đề → tìm hiểu kiến thức nền → đề xuất giải pháp → chế tạo, thử nghiệm → chia sẻ, đánh giá. Hoạt động trải nghiệm STEM tối thiểu 01 lần/học kì.']);
+  if(_ts.stem!==false) QW.push(['STEM','Giáo dục STEM — bài học STEM (CV 909/BGDĐT-GDTH ngày 08/3/2023; CV 3132/SGD&ĐT-GDTrH,GDTH ngày 25/8/2026 của Sở GD&ĐT Nghệ An)','Tiết dạy tổ chức theo hình thức bài học STEM (tích hợp Toán, Khoa học/TNXH, Tin học, Công nghệ, Mĩ thuật…) trong thời lượng của môn học, thay cho tiết SGK tương ứng; tiến trình: xác định vấn đề → tìm hiểu kiến thức nền → đề xuất giải pháp → chế tạo, thử nghiệm → chia sẻ, đánh giá. Hoạt động trải nghiệm STEM tối thiểu 01 lần/học kì. Tên bài lấy theo bộ tài liệu “Bài học STEM” cấp Tiểu học (NXB Giáo dục Việt Nam); trường có kế hoạch giáo dục STEM riêng thì sửa lại tên bài cho khớp.']);
   var QWW=[1600,4200,8600];
   var qrows=QW.map(function(row,ri){return '<w:tr>'+row.map(function(c,ci){return bxTc(c,QWW[ci],{b:ri===0,jc:ci===0?'center':'left',sz:18});}).join('')+'</w:tr>';});
   var qwTbl='<w:tbl><w:tblPr><w:tblW w:w="14400" w:type="dxa"/><w:jc w:val="center"/>'+bxBorders(false)+'<w:tblLayout w:type="fixed"/></w:tblPr>'+
