@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-04 · 104';
+  var PB='2026-09-05 · 105';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1264,7 +1264,7 @@ window.bxMergeKho = function(){
 (function(){
   /* (4/9/2026) Đổi chuỗi này MỖI KHI sửa nội dung kho-data-*.js — trình duyệt nhớ tệp kho
      theo đúng đường dẫn kèm ?v=, không đổi là thầy cô vẫn mở ra kho cũ. */
-  var V='20260904-buoc';
+  var V='20260905-hstrong';
   window.BX_KHO_FILES={
     '1':['kho-data-lop1.js','kho-data-l1-gdtc.js','kho-data-l1-amnhac.js','kho-data-l1-mithuat.js'],
     '2':['kho-data-lop2.js','kho-data-l2-gdtc.js','kho-data-l2-amnhac.js','kho-data-l2-mithuat.js'],
@@ -2985,10 +2985,29 @@ function _bxTachMoc(lines, re){
   lines.forEach(function(l){ if(re.test(l)){ cur=[l]; parts.push(cur); } else if(cur) cur.push(l); else pre.push(l); });
   return {pre:pre, parts:parts};
 }
+/* (5/9/2026) Khối CHỈ để lặp lại mục "Điều chỉnh sau bài dạy" — kho bóc nhầm mục V của
+   giáo án thành một hoạt động, nội dung chỉ là dòng chấm. Mẫu KHBD đã in sẵn mục ấy ở
+   cuối, in thêm một lần nữa giữa bảng hoạt động là thừa. */
+function bxBoQuaHoatDong(b){
+  if(!b) return false;
+  var ten=String(b.ten||''), noi=String(b.gv||'')+String(b.hs||'');
+  if(!/đi[ềe]u ch[ỉi]nh sau b[àa]i d[ạa]y/i.test(ten+' '+noi)) return false;
+  return !/[0-9A-Za-zÀ-ỹ]/.test(noi.replace(/đi[ềe]u ch[ỉi]nh sau b[àa]i d[ạa]y/ig,''));
+}
+window.bxBoQuaHoatDong=bxBoQuaHoatDong;
 function bxTachHoatDong(b){
   var g=_bxDong(b&&b.gv), h=_bxDong(b&&b.hs), mt=[], i=0, ten=String((b&&b.ten)||'').trim();
+  /* (5/9/2026) Có kho ghi dồn cả mục tiêu vào TÊN hoạt động trên một dòng:
+     "2. HĐ Luyện tập, thực hành (22') – Mục tiêu: HS biết cách so sánh…".
+     Không tách thì cả câu bị in đậm làm tiêu đề, dài lê thê. */
+  var _mtd=/^(.{3,90}?)\s*[-–—]\s*\*?\s*[Mm]ục tiêu\s*[:：]\s*(.+)$/.exec(ten);
+  if(_mtd){ ten=_mtd[1].replace(/[\s\-–—:：]+$/,''); mt.push(_mtd[2].trim()); }
   /* Kho bóc nhầm một dòng tiến hành ("- GV yêu cầu HS…") làm tên hoạt động → trả về cột GV, không in đậm tiêu đề. */
   if(ten && (/^[-–•+]\s*(gv|hs)\b/i.test(ten) || ten.length>90)){ g.unshift(ten); ten=''; }
+  /* ⚠ ĐỪNG nới phép tách "Mục tiêu" ra ngoài DÒNG ĐẦU. Thử ngày 5/9/2026: cho nhận cả khi
+     Mục tiêu nằm ở dòng 2–3 (sau "Hoạt động 1: …") thì vòng gom bên dưới nuốt luôn các lệnh
+     dạy tiếp theo vào phần Mục tiêu — 487 hoạt động đổi cách in, có ca mất sạch cột GV
+     (SINH HOẠT LỚP: "2.2. Phương hướng tuần 2"). Chỉ được thêm 4 ca. Không đáng. */
   if(g.length && _BX_RE_MT.test(g[0])){
     var d0=g[0].replace(_BX_RE_MT,'').trim(); if(d0) mt.push(d0);
     i=1;
@@ -3030,6 +3049,7 @@ function hoatdongTableXml(blocks){
   const bd='<w:tblBorders>'+['top','left','bottom','right','insideH','insideV'].map(s=>`<w:${s} w:val="single" w:sz="4" w:space="0" w:color="000000"/>`).join('')+'</w:tblBorders>';
   const hdr='<w:tr><w:trPr><w:tblHeader/></w:trPr>'+_docTc(_docP('HOẠT ĐỘNG CỦA GV',{bold:true,center:true,size:12}),5400)+_docTc(_docP('HOẠT ĐỘNG CỦA HS',{bold:true,center:true,size:12}),3954)+'</w:tr>';
   const rows=(blocks||[]).map(b=>{
+    if(bxBoQuaHoatDong(b)) return '';
     const T=bxTachHoatDong(b); let out='';
     /* Hàng tên hoạt động + Mục tiêu kéo suốt 2 cột (gridSpan); không có cả hai → bỏ hàng (Tiếng Anh). */
     if(T.ten||T.mucTieu.length){
@@ -5319,7 +5339,7 @@ function lessonPreviewHtml(L,row){
   h+='<h2>III. CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU</h2>';
   if(Array.isArray(L.hoatdong)){
     h+='<table><thead><tr><th style="width:58%">HOẠT ĐỘNG CỦA GV</th><th>HOẠT ĐỘNG CỦA HS</th></tr></thead><tbody>';
-    L.hoatdong.forEach(b=>{ const T=bxTachHoatDong(b);
+    L.hoatdong.forEach(b=>{ if(bxBoQuaHoatDong(b)) return; const T=bxTachHoatDong(b);
       if(T.ten||T.mucTieu.length) h+='<tr><td colspan="2" class="tt"><b>'+esc(T.ten)+'</b>'+(T.mucTieu.length?('<div class="mt"><i>Mục tiêu:</i><br>'+nl(T.mucTieu.join('\n'))+'</div>'):'')+'</td></tr>';
       T.hang.forEach(r=>{ if(!r.gv.length&&!r.hs.length&&(T.ten||T.mucTieu.length)) return; h+='<tr><td>'+nl(r.gv.join('\n'))+'</td><td>'+nl(r.hs.join('\n'))+'</td></tr>'; });
     });
@@ -9113,6 +9133,7 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
     H.push('<h4>III. CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU</h4>');
     if(Array.isArray(L.hoatdong)){
       var rows=L.hoatdong.map(function(b){
+        if(typeof bxBoQuaHoatDong==='function'&&bxBoQuaHoatDong(b)) return '';
         var T=(typeof bxTachHoatDong==='function')?bxTachHoatDong(b):{ten:b.ten||'',mucTieu:[],hang:[{gv:String(b.gv||'').split('\n'),hs:String(b.hs||'').split('\n')}]};
         var o='';
         if(T.ten||T.mucTieu.length) o+='<tr><td colspan="2" class="tt"><b>'+esc(T.ten)+'</b>'+(T.mucTieu.length?('<div class="mt"><i>Mục tiêu:</i><br>'+mline(T.mucTieu.join('\n'))+'</div>'):'')+'</td></tr>';
