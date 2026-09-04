@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-05 · 106';
+  var PB='2026-09-05 · 107';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -4867,7 +4867,7 @@ const _XLSX_STYLES=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFD9EAD3"/></patternFill></fill></fills>
 <borders count="3"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FF000000"/></left><right style="thin"><color rgb="FF000000"/></right><top style="thin"><color rgb="FF000000"/></top><bottom style="thin"><color rgb="FF000000"/></bottom><diagonal/></border><border><left/><right/><top/><bottom style="thin"><color rgb="FF000000"/></bottom><diagonal/></border></borders>
 <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
-<cellXfs count="12">
+<cellXfs count="13">
 <xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
 <xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>
 <xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>
@@ -4880,12 +4880,15 @@ const _XLSX_STYLES=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="center" wrapText="1"/></xf>
 <xf numFmtId="0" fontId="5" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="center" wrapText="1"/></xf>
 <xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>
-</cellXfs>
+<xf numFmtId="0" fontId="4" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf></cellXfs>
 <cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
 </styleSheet>`;
 /* Mẫu bám file mẫu chuẩn của GV: cột Thứ·Buổi·Tiết·Môn·Lớp·Tên bài·Đồ dùng TBDH */
 function _tableModel(filled){
-  if(filled) return scheduleRows().map(d=>({thu:d.thuSpan?d.row.day.replace('Thứ ',''):'',thuSpan:d.thuSpan,buoi:d.buoiSpan?d.row.buoi:'',buoiSpan:d.buoiSpan,tiet:d.row.tiet,mon:d.row.mon,lop:d.row.lop||state.klass,bai:d.row.bai,tbdh:d.row.tbdh||''}));
+  /* (5/9/2026) Cột "Thứ" phải kèm NGÀY như bản xem trên màn hình — thầy Chung phát hiện
+     bản tải về chỉ có số thứ, mất ngày tháng, nộp tổ chuyên môn là thiếu. Ngày xuống dòng
+     dưới số thứ (ô A dùng kiểu 12 có wrapText). */
+  if(filled) return scheduleRows().map(d=>({thu:d.thuSpan?(d.row.day.replace('Thứ ','')+(d.row.date?('\n'+d.row.date):'')):'',thuSpan:d.thuSpan,buoi:d.buoiSpan?d.row.buoi:'',buoiSpan:d.buoiSpan,tiet:d.row.tiet,mon:d.row.mon,lop:d.row.lop||state.klass,bai:d.row.bai,tbdh:d.row.tbdh||''}));
   const out=[]; ['2','3','4','5','6'].forEach(d=>{ const groups=[['Sáng',[1,2,3,4]],['Chiều',[1,2,3]]]; let dFirst=true;
     groups.forEach(g=>{ let bFirst=true; g[1].forEach(t=>{ out.push({thu:dFirst?d:'',thuSpan:dFirst?7:0,buoi:bFirst?g[0]:'',buoiSpan:bFirst?g[1].length:0,tiet:t,mon:'',lop:'',bai:'',tbdh:''}); dFirst=false; bFirst=false; }); }); });
   return out;
@@ -4972,7 +4975,7 @@ function _scheduleSheetXml(filled){
     const mon=_lbgMon(m.mon), bai=_lbgBai(m.bai), tbdh=_lbgTbdh(m.tbdh);
     const lines=Math.max(_nLines(bai,80),_nLines(tbdh,18),1); // cột F rộng 80 (chữ thường), G rộng 20
     const rowH=Math.min(180,Math.max(18,Math.round((lines*15.5+4)*100)/100)); // trần 180pt phòng nội dung quá dài
-    rows.push(ROW(r,rowH,[C(0,r,6,m.thu),C(1,r,7,m.buoi),C(2,r,7,m.tiet,true),C(3,r,9,mon),C(4,r,8,m.lop),C(5,r,9,bai),C(6,r,10,tbdh)]));
+    rows.push(ROW(r,rowH,[C(0,r,12,m.thu),C(1,r,7,m.buoi),C(2,r,7,m.tiet,true),C(3,r,9,mon),C(4,r,8,m.lop),C(5,r,9,bai),C(6,r,10,tbdh)]));
     if(m.thuSpan>1) merges.push('A'+r+':A'+(r+m.thuSpan-1));
     if(m.buoiSpan>1) merges.push('B'+r+':B'+(r+m.buoiSpan-1));
     r++;
@@ -10624,7 +10627,12 @@ var MON_KHOI={
   'Tự nhiên và Xã hội':'123','Khoa học':'45','Lịch sử & Địa lí':'45',
   'Tiếng Anh':'345','Tin học':'345','Công nghệ':'345'
 };
-var MON_CHUYEN=['Tiếng Anh','Tin học','Công nghệ','Âm nhạc','Mĩ thuật','GDTC'];
+/* (5/9/2026) Thêm Đạo đức · Tự nhiên và Xã hội · Khoa học · Lịch sử và Địa lí — thầy Chung:
+   nhiều trường phân công "giáo viên 2" dạy riêng các môn này, không phải GVCN, trước đây
+   họ không tự khai được. Vẫn giữ trần TOI_DA_MON_CHUYEN=2 nên không nới quyền: các môn mới
+   đều đã có trong MON_KHOI, mở đúng những khối chương trình có môn ấy. */
+var MON_CHUYEN=['Tiếng Anh','Tin học','Công nghệ','Âm nhạc','Mĩ thuật','GDTC',
+  'Đạo đức','Tự nhiên và Xã hội','Khoa học','Lịch sử & Địa lí'];
 var MON_TATCA=Object.keys(MON_KHOI);
 var KHOI=['1','2','3','4','5'];
 function esc(s){ return (s==null?'':String(s)).replace(/[<>&"]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];}); }
@@ -10781,7 +10789,7 @@ function ve(){
           (on?'background:#0b8043;color:#fff;border:1px solid #0b8043':'background:#fff;color:#334;border:1px solid #d6e2da')+'">'+
           (on?'✓ ':'')+esc(m)+'</button>';
       }).join('')+'</div>'+
-      '<div style="margin:0 0 10px 26px;font-size:12.5px;color:#5b6b61">Chọn tối đa <b>'+TOI_DA_MON_CHUYEN+' môn</b>. Khối được mở tính theo chương trình: Tin học · Công nghệ · Tiếng Anh có từ <b>khối 3</b>; Âm nhạc · Mĩ thuật · Giáo dục thể chất có <b>đủ khối 1–5</b>.</div>';
+      '<div style="margin:0 0 10px 26px;font-size:12.5px;color:#5b6b61">Chọn tối đa <b>'+TOI_DA_MON_CHUYEN+' môn</b>. Khối được mở tính theo chương trình: Tin học · Công nghệ · Tiếng Anh có từ <b>khối 3</b>; Tự nhiên và Xã hội <b>khối 1–3</b>; Khoa học · Lịch sử và Địa lí <b>khối 4–5</b>; Âm nhạc · Mĩ thuật · Giáo dục thể chất · Đạo đức có <b>đủ khối 1–5</b>.</div>';
   }
 
   h+='<div style="margin-top:14px;padding:10px 12px;background:#eef6ff;border:1px solid #bcdcff;border-radius:10px;font-size:13px;color:#234">'+
