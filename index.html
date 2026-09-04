@@ -1925,8 +1925,10 @@ window.bxMergeKho = function(){
           <button class="btn-xs solid" onclick="bxRegenCurrentWeek()">✨ Tạo LBG tuần này</button>
           <button class="btn-xs" onclick="bxOpenExc()">📅 Nghỉ lễ<span class="an-mobile"> / dạy bù</span></button>
           <button class="btn-xs" onclick="openSchedEditor()">✏️ Sửa LBG</button>
-          <button class="btn-xs" onclick="exportScheduleXls()">📥 Tải<span class="an-mobile"> LBG</span> về máy</button>
-          <button class="btn-xs" onclick="exportScheduleDocx()">📄 Word<span class="an-mobile"> A4 dọc</span></button>
+          <!-- (5/9/2026) MỘT nút tải duy nhất, ra Word A4 dọc. Nút Excel cũ đã bỏ theo ý
+               thầy Chung: hai nút cạnh nhau làm thầy cô phân vân, mà bản Word mới in và
+               ghim được ngay. Hàm exportScheduleXls() vẫn giữ trong mã để gọi lại khi cần. -->
+          <button class="btn-xs" onclick="exportScheduleDocx()">📥 Tải<span class="an-mobile"> LBG</span> về máy</button>
         </div>
       </div>
       <div class="card lbg-card">
@@ -2363,7 +2365,7 @@ window.bxMergeKho = function(){
           <ul class="hlp-list">
             <li><b>✨ Tạo LBG tuần này</b> — app tự dựng cả tuần từ thời khóa biểu, kèm sẵn tên bài theo chương trình.</li>
             <li><b>✏️ Sửa LBG</b> — muốn đổi tên bài hay đồ dùng tiết nào thì sửa tiết đó.</li>
-            <li><b>📥 Tải LBG về máy</b> — ra file Excel, in hoặc nộp được ngay.</li>
+            <li><b>📥 Tải LBG về máy</b> — ra file Word khổ A4 dọc, lề trái rộng để ghim; in hoặc nộp được ngay.</li>
           </ul>
           <div class="hlp-tip">💡 Đổi tuần bằng ô <b>Tuần</b> ở đầu trang. Mỗi tuần một lịch riêng, làm tuần nào lưu tuần đó.</div>
         </div>
@@ -2962,7 +2964,8 @@ function _ngayFull(d){
   const m=/(\d{4})/.exec(state.from||state.to||state.year||'');
   return m? d.replace(/[/.\-]+$/,'')+'/'+m[1] : d;
 }
-function _docTc(inner,w){ return `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/></w:tcPr>${inner||'<w:p/>'}</w:tc>`; }
+/* them = XML thêm vào <w:tcPr> (gridSpan, tcBorders…). Không truyền thì chạy y như cũ. */
+function _docTc(inner,w,them){ return `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${them||''}</w:tcPr>${inner||'<w:p/>'}</w:tc>`; }
 function _cellParas(text,title){
   const out=[]; if(title) out.push(_docP(title,{bold:true,size:12}));
   (text||'').replace(/\r/g,'').split('\n').forEach(l=>{ if(l.trim()!=='') out.push(_docP(l,{size:12})); });
@@ -3004,8 +3007,18 @@ function bxBoQuaHoatDong(b){
   return !/[0-9A-Za-zÀ-ỹ]/.test(noi.replace(/đi[ềe]u ch[ỉi]nh sau b[àa]i d[ạa]y/ig,''));
 }
 window.bxBoQuaHoatDong=bxBoQuaHoatDong;
+/* (5/9/2026) Dòng "Hoạt động của GV" / "Hoạt động của HS" nằm LẪN TRONG NỘI DUNG.
+   465/21.914 khối bị: giáo án gốc để tiêu đề bảng thành một dòng chữ thường, bộ bóc
+   nuốt luôn vào cột. Bảng Word đã tự in hàng tiêu đề rồi nên in tiếp là LẶP HAI LẦN —
+   thầy Chung phát hiện ở giáo án Sinh hoạt dưới cờ. Đây là tiêu đề, không phải việc dạy,
+   nên bỏ ở khâu DỰNG (một chỗ, ăn cho cả Word lẫn bản xem trên màn), không sửa 465 chỗ
+   trong kho. */
+var _BX_RE_HDTIEUDE=/^\s*\**\s*ho[ạa]t\s*động\s*c[ủu]a\s*(gv|hs|giáo\s*viên|học\s*sinh)\s*[:.]?\s*\**\s*$/i;
 function bxTachHoatDong(b){
   var g=_bxDong(b&&b.gv), h=_bxDong(b&&b.hs), mt=[], i=0, ten=String((b&&b.ten)||'').trim();
+  var _boG=0,_boH=0;
+  while(g.length && _BX_RE_HDTIEUDE.test(g[0])){ g.shift(); _boG++; }
+  while(h.length && _BX_RE_HDTIEUDE.test(h[0])){ h.shift(); _boH++; }
   /* (5/9/2026) Có kho ghi dồn cả mục tiêu vào TÊN hoạt động trên một dòng:
      "2. HĐ Luyện tập, thực hành (22') – Mục tiêu: HS biết cách so sánh…".
      Không tách thì cả câu bị in đậm làm tiêu đề, dài lê thê. */
@@ -3031,12 +3044,21 @@ function bxTachHoatDong(b){
      ng/nh là chốt soát: nếu sau này phần tách "Mục tiêu" đổi làm số dòng lệch đi, chỉ số
      cắt sẽ trỏ sai chỗ mà KHÔNG báo lỗi — nên khớp thì mới dùng, không khớp thì rơi về
      cách in của bản 96. ĐỪNG bỏ hai chốt này. */
-  if(b && Array.isArray(b.cg) && Array.isArray(b.ch) && b.cg.length===b.ch.length && b.cg.length>1
-     && b.ng===rest.length && b.nh===h.length){
+  /* Bỏ dòng tiêu đề thừa ở trên làm MỌI chỉ số cắt tụt đi _boG/_boH — không dời theo thì
+     bước bị cắt lệch một dòng mà chốt ng/nh vẫn khớp, tức là sai LẶNG LẼ. Chỉ 4 khối vừa
+     có tiêu đề thừa vừa đã xếp bước, nhưng sai lặng lẽ thì một khối cũng không được. */
+  var _cg=b&&b.cg, _ch=b&&b.ch, _ng=b&&b.ng, _nh=b&&b.nh;
+  if((_boG||_boH) && Array.isArray(_cg) && Array.isArray(_ch)){
+    _cg=_cg.map(function(v){ return Math.max(0, v-_boG); });
+    _ch=_ch.map(function(v){ return Math.max(0, v-_boH); });
+    _ng=_ng-_boG; _nh=_nh-_boH;
+  }
+  if(b && Array.isArray(_cg) && Array.isArray(_ch) && _cg.length===_ch.length && _cg.length>1
+     && _ng===rest.length && _nh===h.length){
     var H=[];
-    for(var q=0;q<b.cg.length;q++){
-      H.push({ gv:rest.slice(b.cg[q], (q+1<b.cg.length)?b.cg[q+1]:rest.length),
-               hs:h.slice(b.ch[q], (q+1<b.ch.length)?b.ch[q+1]:h.length) });
+    for(var q=0;q<_cg.length;q++){
+      H.push({ gv:rest.slice(_cg[q], (q+1<_cg.length)?_cg[q+1]:rest.length),
+               hs:h.slice(_ch[q], (q+1<_ch.length)?_ch[q+1]:h.length) });
     }
     return {ten:ten, mucTieu:mt, hang:H};
   }
@@ -3055,8 +3077,19 @@ function bxTachHoatDong(b){
 }
 window.bxTachHoatDong=bxTachHoatDong;
 function hoatdongTableXml(blocks){
-  const bd='<w:tblBorders>'+['top','left','bottom','right','insideH','insideV'].map(s=>`<w:${s} w:val="single" w:sz="4" w:space="0" w:color="000000"/>`).join('')+'</w:tblBorders>';
-  const hdr='<w:tr><w:trPr><w:tblHeader/></w:trPr>'+_docTc(_docP('HOẠT ĐỘNG CỦA GV',{bold:true,center:true,size:12}),5400)+_docTc(_docP('HOẠT ĐỘNG CỦA HS',{bold:true,center:true,size:12}),3954)+'</w:tr>';
+  /* ===== (5/9/2026) BỚT KHUNG TRONG GIÁO ÁN =====
+     Thầy cô phản ánh qua thầy Chung: "nhiều ô, khung trong giáo án quá", đề nghị chuyển
+     thành ĐƯỜNG MỜ để in ra không thấy. Nên:
+       · viền ngoài + vạch dọc ngăn cột GV|HS  → ĐEN (còn ra hình hai cột để đối chiếu)
+       · các đường ngang giữa những dòng việc trong CÙNG một hoạt động → XÁM NHẠT
+       · đường ngang TRƯỚC mỗi tên hoạt động và DƯỚI hàng tiêu đề → ĐEN (giữ mốc phân đoạn)
+     Đổi màu chứ không bỏ hẳn: trên màn hình vẫn thấy mờ mờ để soát, in ra thì gần như mất. */
+  const _vien=(s,mau)=>`<w:${s} w:val="single" w:sz="4" w:space="0" w:color="${mau}"/>`;
+  const bd='<w:tblBorders>'+['top','left','bottom','right','insideV'].map(s=>_vien(s,'000000')).join('')+
+    _vien('insideH','D9D9D9')+'</w:tblBorders>';
+  const vienTren='<w:tcBorders>'+_vien('top','000000')+'</w:tcBorders>';   /* kẻ lại đường ngang ĐEN cho ô cần tách đoạn */
+  const vienDuoi='<w:tcBorders>'+_vien('bottom','000000')+'</w:tcBorders>';
+  const hdr='<w:tr><w:trPr><w:tblHeader/></w:trPr>'+_docTc(_docP('HOẠT ĐỘNG CỦA GV',{bold:true,center:true,size:12}),5400,vienDuoi)+_docTc(_docP('HOẠT ĐỘNG CỦA HS',{bold:true,center:true,size:12}),3954,vienDuoi)+'</w:tr>';
   const rows=(blocks||[]).map(b=>{
     if(bxBoQuaHoatDong(b)) return '';
     const T=bxTachHoatDong(b); let out='';
@@ -3064,10 +3097,13 @@ function hoatdongTableXml(blocks){
     if(T.ten||T.mucTieu.length){
       let inner=T.ten?_docP(T.ten,{bold:true,size:12}):'';
       if(T.mucTieu.length){ inner+=_docP('Mục tiêu:',{bold:true,italic:true,size:12}); T.mucTieu.forEach(l=>{ inner+=_docP(l,{italic:true,size:12}); }); }
-      out+='<w:tr><w:trPr><w:cantSplit/></w:trPr><w:tc><w:tcPr><w:tcW w:w="9354" w:type="dxa"/><w:gridSpan w:val="2"/></w:tcPr>'+(inner||'<w:p/>')+'</w:tc></w:tr>';
+      out+='<w:tr><w:trPr><w:cantSplit/></w:trPr>'+_docTc(inner||'<w:p/>',9354,'<w:gridSpan w:val="2"/>'+vienTren)+'</w:tr>';
     }
     T.hang.forEach(r=>{
-      if(!r.gv.length&&!r.hs.length&&out) return;   /* khối chỉ có Mục tiêu (kho bóc phần tiến hành sang khối kế) → không in hàng rỗng */
+      /* Hàng rỗng thì BỎ HẲN, không cần "&& out" như trước. Sau khi bỏ dòng tiêu đề thừa
+         (5/9/2026), khối đầu của 465 giáo án chỉ còn lại con số 0 dòng — điều kiện cũ để
+         lọt một hàng trắng ngay dưới hàng tiêu đề, nhìn như bảng bị lỗi. */
+      if(!r.gv.length&&!r.hs.length) return;
       /* Hàng ngắn thì không cho Word ngắt qua trang — tránh đôi cột bị rời nhau. */
       const ngan=(r.gv.length+r.hs.length)<=14;
       out+='<w:tr>'+(ngan?'<w:trPr><w:cantSplit/></w:trPr>':'')+_docTc(_cellParas(r.gv.join('\n')),5400)+_docTc(_cellParas(r.hs.join('\n')),3954)+'</w:tr>';
@@ -3336,15 +3372,10 @@ function bxYccdHsktLines(L){
 }
 window.bxYccdHsktLines=bxYccdHsktLines;
 /* ----- Dựng KHBD .docx trực tiếp từ 1 giáo án trong kho (mục III = bảng) ----- */
-function _lessonBodyParas(L,row){
+function _lessonBodyParas(L,row,ctx){
   row=row||{};
-  const lop=row.lop||state.klass, tuan=L.tuan||row.tuan||state.week;
-  const tiet=row.ppct||row.tiet||L.tiet||'', ngay=_ngayFull(row.date);
   const P=[];
-  P.push(_docP('KẾ HOẠCH BÀI DẠY',{bold:true,center:true,size:14}));
-  P.push(_docP('Môn: '+_bxSubjectFull(L.mon)+'   |   Lớp: '+lop+'   |   Tuần: '+tuan+(tiet?('   |   Tiết (PPCT): '+tiet):''),{center:true}));
-  P.push(_docP(_baiTitle(L.bai),{bold:true,center:true}));
-  if(ngay) P.push(_docP('Ngày dạy: '+ngay,{center:true,size:12}));
+  bxTieuDeTiet(L,row,ctx).forEach(function(x){ P.push(_docP(x.t,{bold:!x.thuong,center:true,size:x.sz})); });
   P.push(_docP(''));
   P.push(_docP('I. YÊU CẦU CẦN ĐẠT',{bold:true}));
   (L.yccd||'(Thầy cô đối chiếu SGK/SGV)').split('\n').forEach(l=>P.push(_docP(l, _isYccdHead(l)?{bold:true}:undefined)));
@@ -5390,6 +5421,49 @@ function _simTitle(a,b){ const A=new Set(_words(a)),B=new Set(_words(b)); if(!A.
 function _simContain(a,b){ const A=new Set(_words(a)),B=new Set(_words(b)); if(!A.size||!B.size) return 0; let it=0; A.forEach(x=>{if(B.has(x))it++;}); return it/Math.min(A.size,B.size); }
 /* dòng tiêu đề tên bài: nếu tên đã có sẵn "Bài N…" thì KHÔNG thêm nhãn "Bài:" (tránh lặp "Bài: Bài 12:") */
 function _baiTitle(bai){ bai=(bai||'').toString().trim(); const n=bai.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(); return /^bai\b/.test(n)?bai:('Bài: '+bai); }
+
+/* ============================================================================
+   (5/9/2026) TIÊU ĐỀ MỖI TIẾT THEO ĐÚNG NẾP GIÁO VIÊN VIẾT TAY
+   ----------------------------------------------------------------------------
+   Ý nguyện thầy cô (thầy Chung chuyển lại, kèm 3 ảnh mẫu):
+       Tuần 1                              ← CHỈ in một lần, ở tiết đầu tệp
+       Thứ 2 ngày 7 tháng 9 năm 2026       ← chỉ in lại KHI SANG NGÀY MỚI
+       Tiết 1: Toán                        ← mọi tiết (số tiết trong ngày, theo LBG)
+       Bài 01: ÔN TẬP CÁC SỐ ĐẾN 100 000 (Tiết 1)
+   Bỏ hẳn dòng "KẾ HOẠCH BÀI DẠY" và dòng "Môn … | Lớp … | Tuần … | Tiết (PPCT)"
+   — thầy cô chép tay không viết vậy, và lớp đã nằm trong TÊN TỆP (KHBD_Tuan1_Lop4A).
+
+   ctx = sổ nhớ chạy suốt tệp: {daInTuan, ngayTruoc}. Tải CẢ TUẦN thì truyền chung
+   một ctx cho mọi tiết; tải MỘT tiết thì để trống → in đủ bốn dòng.
+   ⚠ Dùng chung cho CẢ BA đường: Word chữ (_lessonBodyParas), Word có ảnh
+   (lessonPreviewHtml → lessonEl) và màn xem trước. Sửa một nơi phải sửa cả ba,
+   nếu không thầy cô xem một đằng tải về một nẻo.
+   ========================================================================== */
+function _bxNgayDayFull(row){
+  var d=String((row&&row.date)||'').trim();
+  var thu=String((row&&row.day)||'').trim();
+  if(!d) return thu;
+  var m=/^(\d{1,2})[\/.\-](\d{1,2})(?:[\/.\-](\d{2,4}))?$/.exec(d);
+  if(!m) return (thu?thu+' ':'')+d;
+  var nam=m[3]||((/(20\d{2})/.exec(state.from||state.to||state.year||'')||[])[1]||'');
+  if(nam&&nam.length===2) nam='20'+nam;
+  return (thu?thu+' ':'')+'ngày '+(+m[1])+' tháng '+(+m[2])+(nam?(' năm '+nam):'');
+}
+function bxTieuDeTiet(L,row,ctx){
+  row=row||{}; ctx=ctx||{};
+  var out=[], tuan=(L&&L.tuan)||row.tuan||state.week;
+  if(!ctx.daInTuan && tuan){ out.push({t:'Tuần '+tuan, sz:14}); ctx.daInTuan=true; }
+  var ngay=_bxNgayDayFull(row);
+  if(ngay && ngay!==ctx.ngayTruoc){ out.push({t:ngay, sz:13, thuong:true}); ctx.ngayTruoc=ngay; }
+  /* Số tiết TRONG NGÀY theo thời khoá biểu (row.tiet), KHÔNG phải tiết PPCT: thầy cô
+     ghi "Tiết 1, Tiết 2…" theo buổi dạy, còn PPCT là số thứ tự cả năm (58, 167…). */
+  var tiet=row.tiet||(L&&L.tiet)||'';
+  var mon=(typeof _bxSubjectFull==='function')?_bxSubjectFull((L&&L.mon)||row.mon||''):((L&&L.mon)||row.mon||'');
+  out.push({t:(tiet?('Tiết '+tiet+': '):'')+mon, sz:13});
+  out.push({t:_baiTitle(L&&L.bai), sz:13});
+  return out;
+}
+window.bxTieuDeTiet=bxTieuDeTiet;
 /* tìm giáo án trong kho khớp 1 tiết của lịch */
 function findBankLesson(row){
   if(!row) return null;
@@ -5534,8 +5608,8 @@ function _weekKhbdItems(){
 }
 function buildWeekKhbdDocx(rows){
   /* rows tham số để tương thích cũ; thực tế dùng cả tuần (kho + mẫu trống) */
-  const items=_weekKhbdItems();
-  const body=items.map((it,i)=>(i?'<w:p><w:r><w:br w:type="page"/></w:r></w:p>':'')+_lessonBodyParas(it.L,it.r)).join('');
+  const items=_weekKhbdItems(), ctx={};   /* MỘT sổ nhớ cho cả tệp: "Tuần N" in một lần, ngày in lại khi sang ngày mới */
+  const body=items.map((it,i)=>(i?'<w:p><w:r><w:br w:type="page"/></w:r></w:p>':'')+_lessonBodyParas(it.L,it.r,ctx)).join('');
   return _wrapDocx(body);
 }
 /* Bấm "Tạo KHBD Tuần" → mở cửa sổ thông báo (xem trước / lưu) */
@@ -5567,20 +5641,19 @@ function downloadWeekKHBD(){
   dong();
 }
 /* HTML 1 giáo án dạng trang A4 (mục III = bảng 2 cột) cho trang xem trước */
-function lessonPreviewHtml(L,row){
+function lessonPreviewHtml(L,row,ctx){
   row=row||{};
-  const lop=row.lop||state.klass, tuan=L.tuan||row.tuan||state.week;
-  const tiet=row.ppct||row.tiet||L.tiet||'', ngay=_ngayFull(row.date);
   const esc=_xe, _IMGB=(window.KHO_MEDIA_BASE||'kho-media/');
   const imgify=s=>esc(s==null?'':s).replace(/〖IMG:([^〗]+)〗/g,function(m,p){return window.BX_theAnh(_IMGB+p,'kho-img');});
   const nl=s=>imgify(s).replace(/\n/g,'<br>');
   const nlYccd=s=>String(s==null?'':s).split('\n').map(line=>{const seg=imgify(line); return _isYccdHead(line)?('<b>'+seg+'</b>'):seg;}).join('<br>');
   let h='<div class="a4">';
   if(L._blank) h+='<div style="background:#fff7e0;border:1px solid #f0d68a;color:#8a6d10;font-size:12px;border-radius:6px;padding:5px 9px;margin-bottom:8px">📝 Khung mẫu trống — tiết này chưa có trong Kho giáo án số; thầy cô soạn nội dung hoặc thêm vào kho.</div>';
-  h+='<h1>KẾ HOẠCH BÀI DẠY</h1>';
-  h+='<div class="a4-meta">Môn: '+esc(_bxSubjectFull(L.mon))+' &nbsp;|&nbsp; Lớp: '+esc(lop)+' &nbsp;|&nbsp; Tuần: '+esc(tuan)+(tiet?(' &nbsp;|&nbsp; Tiết (PPCT): '+esc(tiet)):'')+'</div>';
-  h+='<div class="a4-bai">'+esc(_baiTitle(L.bai))+'</div>';
-  if(ngay) h+='<div class="a4-meta">Ngày dạy: '+esc(ngay)+'</div>';
+  /* Tiêu đề tiết — cùng một hàm với bản Word để xem trước và tải về không lệch nhau */
+  bxTieuDeTiet(L,row,ctx).forEach(function(x){
+    h+= x.thuong ? ('<div class="a4-meta" style="font-size:13pt;color:#000">'+esc(x.t)+'</div>')
+                 : ('<div class="a4-bai" style="font-size:'+x.sz+'pt">'+esc(x.t)+'</div>');
+  });
   h+='<h2>I. YÊU CẦU CẦN ĐẠT</h2><div class="ln">'+nlYccd(L.yccd||'(Thầy cô đối chiếu SGK/SGV)')+'</div>';
   /* Mục tiêu riêng HSKT — phải khớp với bản Word tải về (_lessonBodyParas), xem trước
      một đằng tải một nẻo là GV mất tin vào màn xem trước (phản biện 25/8/2026). */
@@ -5613,7 +5686,8 @@ function previewWeekKhbd(){
   const nKho=items.filter(it=>it.src==='kho').length, nMau=items.length-nKho;
   el('pv-week').textContent='Tuần '+state.week;
   el('pv-count').textContent=items.length+' tiết'+(nMau?(' · '+nKho+' từ kho, '+nMau+' mẫu trống'):'');
-  el('pv-pages').innerHTML=items.map(it=>lessonPreviewHtml(it.L,it.r)).join('');
+  const _ctxPv={};   /* xem trước phải cùng nếp với tệp tải về */
+  el('pv-pages').innerHTML=items.map(it=>lessonPreviewHtml(it.L,it.r,_ctxPv)).join('');
   const sc=el('pv-pages'); if(sc) sc.scrollTop=0;
   el('preview-overlay').classList.add('show');
 }
@@ -7818,9 +7892,13 @@ function BX_intgLines(ig, L, row){
   return out;
 }
 /* WRAP _lessonBodyParas (Word): chèn phần tích hợp vào cuối, gắn nhãn theo mục. */
+/* ⚠️ (5/9/2026) PHẢI CHUYỀN TIẾP THAM SỐ THỨ BA (ctx — sổ nhớ tiêu đề cả tuần).
+   Lớp bọc này viết (L,row) nên nuốt mất ctx: tệp Word cả tuần lặp lại "Tuần 1" và dòng
+   thứ/ngày ở MỌI tiết, dù hàm bxTieuDeTiet chạy đúng khi gọi thẳng. Đã mất công dò một
+   lần rồi — thêm tham số mới cho _lessonBodyParas thì nhớ nới cả chỗ này. */
 var _bxLBPOrig = _lessonBodyParas;
-window._lessonBodyParas = function(L,row){
-  var xml=_bxLBPOrig(L,row);
+window._lessonBodyParas = function(L,row,ctx){
+  var xml=_bxLBPOrig(L,row,ctx);
   var ig=BX_integrationFor(L,row);
   var lines=BX_intgLines(ig, L, row); if(!lines.length) return xml;
   var add = _docP('NỘI DUNG TÍCH HỢP, LỒNG GHÉP',{bold:true});
@@ -9428,7 +9506,7 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
       return;
     }
     var fn='KHBD_Lop'+ST.lop+'_'+safe(ST.mon)+'_Tuan'+ST.tuan+'.docx';
-    if(typeof window.dlWeekImg==='function'){ window.dlWeekImg(rows.map(function(L){return {L:L,r:rowOf(L)};}), fn); return; }
+    if(typeof window.dlWeekImg==='function'){ window.dlWeekImg(rows.map(function(L){return {L:L,r:rowOf(L)};}), fn); return; }   /* dlWeekImg tự dựng ctx chung */
     if(typeof _wrapDocx!=='function'||typeof _lessonBodyParas!=='function') return;
     var body=rows.map(function(L,i){return (i?'<w:p><w:r><w:br w:type="page"/></w:r></w:p>':'')+_lessonBodyParas(L,rowOf(L));}).join('');
     _downloadBlob(fn, _wrapDocx(body));
@@ -9441,15 +9519,15 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
   function para(t){ return '<p>'+mline(t)+'</p>'; }
   /* Mục I: tô đậm các tiêu đề con "1. Năng lực đặc thù / 2. Năng lực chung / 3. Phẩm chất" */
   function yccdPara(t){ return '<p>'+String(t==null?'':t).replace(/\r/g,'').split('\n').map(function(line){ var seg=_richSeg(line); return _isYccdHead(line)?('<b>'+seg+'</b>'):seg; }).join('<br>')+'</p>'; }
-  function khoLessonToHtml(L,row){
+  function khoLessonToHtml(L,row,ctx){
     row=row||{};
-    var lop=row.lop||L.lop||'', tuan=L._tuan||L.tuan||row.tuan||'', tiet=row.ppct||row.tiet||L._tiet||L.tiet||'';
-    var ngay=(typeof _ngayFull==='function')?_ngayFull(row.date):'';
     var H=[];
-    H.push('<div class="doc-title">Kế hoạch bài dạy</div>');
-    H.push('<div class="doc-meta">Môn: '+esc(_bxSubjectFull(L.mon))+'&nbsp;&nbsp;|&nbsp;&nbsp;Lớp: '+esc(lop)+'&nbsp;&nbsp;|&nbsp;&nbsp;Tuần: '+esc(tuan)+(tiet?('&nbsp;&nbsp;|&nbsp;&nbsp;Tiết (PPCT): '+esc(tiet)):'')+'</div>');
-    H.push('<div class="doc-bai">'+esc(_baiTitle(L.bai))+'</div>');
-    if(ngay) H.push('<div class="doc-meta" style="font-size:13.5px">Ngày dạy: '+esc(ngay)+'</div>');
+    /* Tiêu đề tiết dùng chung bxTieuDeTiet — đây CHÍNH LÀ bản đi vào tệp Word có ảnh
+       (lessonEl chụp lại khối HTML này), nên đổi ở đây là đổi cả tệp tải về. */
+    (window.bxTieuDeTiet?window.bxTieuDeTiet(L,row,ctx):[]).forEach(function(x){
+      H.push(x.thuong ? ('<div class="doc-meta" style="font-size:15px;color:#000">'+esc(x.t)+'</div>')
+                      : ('<div class="doc-bai" style="font-size:'+(x.sz===14?17:16)+'px">'+esc(x.t)+'</div>'));
+    });
     H.push('<h4>I. YÊU CẦU CẦN ĐẠT</h4>'+yccdPara(L.yccd||'(Thầy cô đối chiếu SGK/SGV)'));
     var ktI=(typeof window.bxYccdHsktLines==='function')?window.bxYccdHsktLines(L):[];
     if(ktI.length) H.push('<p>'+ktI.map(function(s,i){ var e2=esc(s); return i?e2:('<b>'+e2+'</b>'); }).join('<br>')+'</p>');
@@ -9598,12 +9676,12 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
      (KHBD_preview dùng edits[key]). Trước đây lessonEl luôn dựng từ bản GỐC khoLessonToHtml,
      nên tải "cả tuần" / "tiết này" ra bản gốc dù thầy cô đã Sửa+Lưu — trái lời hứa lúc lưu
      ("hiển thị & tải Word đều theo bản đã sửa"). editKey/loadEdits nằm cùng khối script này. */
-  function lessonEl(L,row){
+  function lessonEl(L,row,ctx){
     var d=document.createElement('div');d.className='a4page';
     d.style.cssText='position:absolute;left:-99999px;top:0;width:794px';
     var r=row||{}, sua=null;
     try{ sua=loadEdits()[editKey(L,r)]; }catch(e){}
-    d.innerHTML=(sua!=null)?sua:window.khoLessonToHtml(L,r);
+    d.innerHTML=(sua!=null)?sua:window.khoLessonToHtml(L,r,ctx);
     document.body.appendChild(d);return d;
   }
 
@@ -9625,7 +9703,8 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
     })).map(function(x){ return x._it; });
     if(!items.length){ bxAlert(_bxLoiNhanQuyen()+' Tuần này chưa có tiết nào trong phạm vi đó.'); return; }
     if(items.length<truoc) bxAlert(_bxLoiNhanQuyen()+' Tệp gồm '+items.length+' tiết trong phạm vi đó (bỏ qua '+(truoc-items.length)+' tiết ngoài phạm vi).');
-    var els=items.map(function(it){return lessonEl(it.L,it.r);});
+    var _ctxW={};   /* cả tuần chung một sổ nhớ tiêu đề */
+    var els=items.map(function(it){return lessonEl(it.L,it.r,_ctxW);});
     try{var blob=await elsToDocxBlob(els);_downloadBlob(fname,blob);}
     catch(e){console.error('dlWeekImg',e);
       /* Đường lui buildWeekKhbdDocx() dựng lại TRỌN tuần từ lịch nên sẽ bỏ qua phần
