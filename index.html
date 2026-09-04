@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-05 · 109';
+  var PB='2026-09-05 · 110';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1427,7 +1427,13 @@ window.bxMergeKho = function(){
     ['butxanh_tkb','butxanh_schedule','butxanh_lbg_weeks','butxanh_khbd'].forEach(function(k){
       try{ _gomKhoi(localStorage.getItem(k), ks); }catch(e){}
     });
-    Object.keys(ks).forEach(function(k){ window.BX_ensureKho(k); });
+    var chos=Object.keys(ks).map(function(k){ try{ return window.BX_ensureKho(k); }catch(e){ return null; } });
+    /* (4/9/2026) Kho về đủ rồi mới chuyển khoá bản sửa giáo án sang tên bài mới — khoá có
+       cả tên bài, mà đợt chuẩn hoá tên bài khối 3 đổi 594 tên. Xem bxChuyenKhoaSuaTheoTenMoi. */
+    try{
+      Promise.all(chos.map(function(p){ return (p&&p.then)?p.catch(function(){}):null; }))
+        .then(function(){ if(window.bxChuyenKhoaSuaTheoTenMoi) window.bxChuyenKhoaSuaTheoTenMoi(); });
+    }catch(e){}
     /* KHGD đi kèm: các khối GV dạy + khối 5 (nền của Bản đồ chương trình) */
     ks['5']=1;
     Object.keys(ks).forEach(function(k){ window.BX_ensureKHGD(k); });
@@ -9502,6 +9508,60 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
 
   /* ====== Modal KHBD: Xem (như Kho) + Sửa + Lưu ====== */
   function editKey(L,row){return 'khbd|'+(row.lop||'')+'|'+(L.tuan||row.tuan||'')+'|'+(row.tiet||L.tiet||'')+'|'+(L.mon||'')+'|'+(L.bai||'');}
+  /* ⚠️ (4/9/2026) KHOÁ CÓ CẢ TÊN BÀI → ĐỔI TÊN BÀI TRONG KHO LÀ BẢN SỬA CỦA THẦY CÔ MẤT CHỖ.
+     Đợt chuẩn hoá tên bài khối 3 theo KHDH của tổ chuyên môn đổi 594 tên bài (và trước đó
+     70 tên bài GDTC lớp 3), nên bản sửa nào lưu theo tên cũ sẽ không bao giờ hiện lại —
+     thầy cô mất công đã soạn mà không hề được báo. Lớp - tuần - tiết - môn thì KHÔNG đổi,
+     nên chuyển khoá cũ sang tên bài hiện hành theo bốn phần đó. Chạy một lần, ghi dấu lại. */
+  function bxChuyenKhoaSuaTheoTenMoi(){
+    var DAU='butxanh_khbd_edits_dabatlai';
+    try{
+      if(localStorage.getItem(DAU)) return;
+      var m=loadEdits(), khoa=Object.keys(m);
+      if(!khoa.length){ localStorage.setItem(DAU,'1'); return; }
+      /* bản đồ lop|tuan|tiet|mon -> tên bài hiện hành trong kho */
+      var ban={};
+      (window.KHO_DATA||[]).forEach(function(L){
+        if(!L||!L.bai) return;
+        ban[[L.lop,L.tuan,L.tiet,L.mon].join('|')]=L.bai;
+      });
+      /* ⚠️ CHỈ chuyển khi hai tên là CÙNG MỘT BÀI. Có chỗ giáo án đổi hẳn chứ không phải đổi
+         cách viết — GDTC lớp 3 dựng lại theo PPCT của tổ, tuần 1 tiết 1 từ "Bài tập thể dục"
+         thành "Đội hình đội ngũ". Chuyển bừa là dán bản sửa của cô sang BÀI KHÁC, tệ hơn hẳn
+         so với để nguyên: để nguyên thì bản sửa nằm im, còn lấy lại được. */
+      var kd=function(s){ return String(s==null?'':s).toLowerCase()
+        .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g,'a').replace(/[èéẹẻẽêềếệểễ]/g,'e').replace(/[ìíịỉĩ]/g,'i')
+        .replace(/[òóọỏõôồốộổỗơờớợởỡ]/g,'o').replace(/[ùúụủũưừứựửữ]/g,'u').replace(/[ỳýỵỷỹ]/g,'y')
+        .replace(/đ/g,'d').replace(/\bbai\s*0*(\d+)\b/g,'bai $1').replace(/[^a-z0-9]+/g,' ').replace(/^ | $/g,''); };
+      var soBai=function(s){ var x=/\bbai (\d+)\b/.exec(kd(s)); return x?x[1]:null; };
+      var cungBai=function(a,b){
+        var x=soBai(a), y=soBai(b);
+        if(x&&y) return x===y;                              // khác số bài là khác bài, khỏi bàn
+        var A=kd(a).split(' ').filter(Boolean), B=kd(b).split(' ').filter(Boolean);
+        if(!A.length||!B.length) return false;
+        var d={}, chung=0; A.forEach(function(t){ d[t]=1; });
+        B.forEach(function(t){ if(d[t]===1){ chung++; d[t]=2; } });
+        return chung/(A.length+B.length-chung) >= 0.4;
+      };
+      var doi=0, boQua=0;
+      khoa.forEach(function(k){
+        var p=k.split('|');                       // khbd|lop|tuan|tiet|mon|bai (tên bài có thể chứa '|')
+        if(p[0]!=='khbd'||p.length<6) return;
+        var cu=p.slice(5).join('|');
+        var moi=ban[[p[1],p[2],p[3],p[4]].join('|')];
+        if(moi==null || moi===cu) return;         // không còn bản ghi đó, hoặc tên chưa đổi
+        var kMoi='khbd|'+p[1]+'|'+p[2]+'|'+p[3]+'|'+p[4]+'|'+moi;
+        if(m[kMoi]!=null) return;                 // đã có bản sửa theo tên mới, đừng đè
+        if(!cungBai(cu,moi)){ boQua++; return; }
+        m[kMoi]=m[k]; delete m[k]; doi++;
+      });
+      if(boQua) try{ console.warn('[Bút Xanh] '+boQua+' bản sửa giáo án nằm ở tiết nay đã đổi sang BÀI KHÁC — giữ nguyên, không chuyển'); }catch(e){}
+      if(doi){ localStorage.setItem('butxanh_khbd_edits',JSON.stringify(m));
+        try{ console.log('[Bút Xanh] chuyển '+doi+' bản sửa giáo án sang tên bài mới'); }catch(e){} }
+      localStorage.setItem(DAU,'1');
+    }catch(e){ try{ console.warn('[Bút Xanh] chuyển khoá bản sửa lỗi: '+e.message); }catch(e2){} }
+  }
+  window.bxChuyenKhoaSuaTheoTenMoi=bxChuyenKhoaSuaTheoTenMoi;
   function loadEdits(){try{return JSON.parse(localStorage.getItem('butxanh_khbd_edits')||'{}');}catch(e){return{};}}
   function saveEditHtml(key,html){var m=loadEdits();m[key]=html;try{localStorage.setItem('butxanh_khbd_edits',JSON.stringify(m));}catch(e){}}
   function safeName(s){return String(s||'').replace(/[^A-Za-zÀ-ỹ0-9]/g,'').slice(0,40);}
