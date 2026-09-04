@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-05 · 110';
+  var PB='2026-09-05 · 111';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1264,7 +1264,7 @@ window.bxMergeKho = function(){
 (function(){
   /* (4/9/2026) Đổi chuỗi này MỖI KHI sửa nội dung kho-data-*.js — trình duyệt nhớ tệp kho
      theo đúng đường dẫn kèm ?v=, không đổi là thầy cô vẫn mở ra kho cũ. */
-  var V='20260905-hstrong';
+  var V='20260905-dodung';   /* đổi MỖI KHI sửa kho-data-*: không đổi thì trình duyệt giữ bản cũ, thầy cô không thấy dữ liệu vừa vá */
   window.BX_KHO_FILES={
     '1':['kho-data-lop1.js','kho-data-l1-gdtc.js','kho-data-l1-amnhac.js','kho-data-l1-mithuat.js'],
     '2':['kho-data-lop2.js','kho-data-l2-gdtc.js','kho-data-l2-amnhac.js','kho-data-l2-mithuat.js'],
@@ -1926,6 +1926,7 @@ window.bxMergeKho = function(){
           <button class="btn-xs" onclick="bxOpenExc()">📅 Nghỉ lễ<span class="an-mobile"> / dạy bù</span></button>
           <button class="btn-xs" onclick="openSchedEditor()">✏️ Sửa LBG</button>
           <button class="btn-xs" onclick="exportScheduleXls()">📥 Tải<span class="an-mobile"> LBG</span> về máy</button>
+          <button class="btn-xs" onclick="exportScheduleDocx()">📄 Word<span class="an-mobile"> A4 dọc</span></button>
         </div>
       </div>
       <div class="card lbg-card">
@@ -5061,6 +5062,135 @@ window.bxNutBan=function(btn, chu, viec){
 };
 function downloadScheduleTemplate(){ _downloadBlob('Mau_Lich_Bao_Giang_ButXanh.xlsx', buildScheduleXlsx(false)); }
 function exportScheduleXls(){ _downloadBlob(`Lich_Bao_Giang_Tuan${state.week}_Lop${state.klass}.xlsx`, buildScheduleXlsx(true)); }
+
+/* ============================================================================
+   (5/9/2026) LỊCH BÁO GIẢNG RA WORD — A4 DỌC, LỀ TRÁI RỘNG ĐỂ GHIM
+   ----------------------------------------------------------------------------
+   Vì sao thêm: bản .xlsx đang có phải canh lại trang mỗi lần in; thầy cô nộp tổ
+   chuyên môn cần bản Word A4 DỌC để ghim thành tập cả năm, lề trái phải chừa chỗ
+   cho kim bấm — ghim vào chữ là hỏng cả tập.
+
+   LỀ theo Thông tư 01/2011/TT-BNV (thể thức văn bản hành chính):
+     trên 20mm · dưới 20mm · TRÁI 30mm · phải 15mm
+   ⇒ vùng chữ = 11906 − 1701 − 850 = 9355 twip. Bảy cột cộng lại phải ĐÚNG 9355;
+   sửa lẻ một cột mà quên bù cột khác thì Word tự giãn và bảng tràn ra ngoài lề.
+
+   Nội dung lấy từ _tableModel() — CÙNG nguồn với bản Excel và bản xem trên màn
+   hình, nên ô gộp Thứ/Buổi, thứ tự tiết, tên bài rút gọn giống hệt cả ba nơi;
+   sửa cách dựng dòng ở một chỗ là cả ba cùng đổi.
+   Tệp KHÔNG mang tiền tố KHBD_/KHGD_mon_ nên vẫn MIỄN PHÍ như bản Excel
+   (xem RE_CAN_PHI trong license.js) — cố ý, đừng đổi tên tệp thành KHBD_…
+   ========================================================================== */
+/* Thứ·Buổi·Tiết·Môn·Lớp·Tên bài·Đồ dùng TBDH = 9355 (đã in thử bằng Word rồi mới chốt).
+   Cột "Tiết" phải ≥640: để 500 thì chính chữ "Tiết" ở hàng tiêu đề vỡ làm hai dòng "Tiế/t". */
+var LBGW_COLS=[900,700,640,1250,550,3615,1700];
+
+function _lbgwRun(t,o){ o=o||{};
+  var sz=o.sz||24;
+  var rpr='<w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>'+
+    (o.b?'<w:b/><w:bCs/>':'')+(o.i?'<w:i/>':'')+'<w:sz w:val="'+sz+'"/><w:szCs w:val="'+sz+'"/></w:rPr>';
+  /* Xuống dòng trong ô (ví dụ "2\n11/11" ở cột Thứ) phải thành <w:br/>, không phải ký tự \n */
+  return String(t==null?'':t).split('\n').map(function(ln,i){
+    return '<w:r>'+rpr+(i?'<w:br/>':'')+'<w:t xml:space="preserve">'+_xe(ln)+'</w:t></w:r>'; }).join('');
+}
+function _lbgwP(t,o){ o=o||{};
+  var tab=o.tabRight?('<w:tabs><w:tab w:val="right" w:pos="'+o.tabRight+'"/></w:tabs>'):'';
+  return '<w:p><w:pPr>'+tab+'<w:spacing w:before="'+(o.sb||0)+'" w:after="'+(o.sa||0)+'" w:line="240" w:lineRule="auto"/>'+
+    '<w:jc w:val="'+(o.jc||'left')+'"/></w:pPr>'+(o.runs||_lbgwRun(t,o))+'</w:p>';
+}
+/* o.vm: 'restart' = ô mở đầu nhóm gộp dọc · 'cont' = ô nối tiếp (để RỖNG) */
+function _lbgwTc(t,w,o){ o=o||{};
+  var vm=o.vm?('<w:vMerge'+(o.vm==='restart'?' w:val="restart"':'')+'/>'):'';
+  return '<w:tc><w:tcPr><w:tcW w:w="'+w+'" w:type="dxa"/>'+vm+'<w:vAlign w:val="center"/></w:tcPr>'+
+    _lbgwP(t,{jc:o.jc||'center',sz:o.sz,b:o.b,i:o.i})+'</w:tc>';
+}
+function _lbgwBorders(){
+  var s=function(t){ return '<w:'+t+' w:val="single" w:sz="4" w:space="0" w:color="000000"/>'; };
+  return '<w:tblBorders>'+['top','left','bottom','right','insideH','insideV'].map(s).join('')+'</w:tblBorders>';
+}
+
+function buildScheduleDocx(){
+  var W=LBGW_COLS, TOT=0; W.forEach(function(w){ TOT+=w; });
+  var model=_tableModel(true);
+  if(!model.length){ try{ bxAlert('Tuần này chưa có tiết nào trong Lịch báo giảng.\n\nThầy/cô bấm "✨ Tạo LBG tuần này" hoặc "✏️ Sửa LBG" trước đã nhé.'); }catch(e){} return null; }
+
+  /* Cỡ chữ TỰ CO để một tuần vừa một trang — thầy cô ghim theo tuần, tràn sang trang 2
+     chỉ vì thừa vài dòng là rất khó chịu khi trình ký. */
+  var SZ=model.length<=20?24:(model.length<=28?22:20);   /* 12pt · 11pt · 10pt */
+
+  var _pf={}; try{ _pf=JSON.parse(localStorage.getItem('butxanh_profile')||'{}'); }catch(e){}
+  var truong=String(_pf.school||'').trim();
+
+  /* Dòng "TUẦN n … GV: …" — TUẦN dính lề trái, phần GV đẩy sát lề phải bằng tab canh phải */
+  var gvLine='GV: '+(state.gvcn||'');
+  var dsLop=[]; try{ dsLop=_lbgLopTrongTuan(state.schedule)||[]; }catch(e){}
+  gvLine+='  —  Lớp: '+(dsLop.length>1?dsLop.join(', '):(state.klass||''));
+  var runTab='<w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:sz w:val="24"/></w:rPr><w:tab/></w:r>';
+  var lineTuan=_lbgwP('',{tabRight:TOT,sa:100,
+    runs:_lbgwRun('TUẦN '+(state.week||''),{b:true,sz:24})+runTab+_lbgwRun(gvLine,{sz:24})});
+
+  var head=(truong?_lbgwP(truong.toUpperCase(),{b:true,sz:24,sa:60}):'')+
+    _lbgwP('LỊCH BÁO GIẢNG NĂM HỌC '+(state.year||''),{b:true,jc:'center',sz:28})+
+    _lbgwP('(Từ ngày '+(state.from||'')+' đến '+(state.to||'')+')',{i:true,jc:'center',sz:24,sa:120})+
+    lineTuan;
+
+  var HEAD=['Thứ','Buổi','Tiết','Môn','Lớp','Tên bài','Đồ dùng TBDH'];
+  /* tblHeader: hàng tiêu đề tự LẶP LẠI ở đầu trang 2 — tuần nhiều tiết là tràn trang,
+     không có dòng này thì trang sau chỉ còn bảng trơ không biết cột nào là cột gì. */
+  var trHead='<w:tr><w:trPr><w:tblHeader/><w:cantSplit/></w:trPr>'+
+    HEAD.map(function(h,i){ return _lbgwTc(h,W[i],{b:true,sz:SZ}); }).join('')+'</w:tr>';
+
+  var trs=model.map(function(m){
+    /* thuSpan/buoiSpan: >1 = mở đầu nhóm gộp · 1 = đứng một mình · 0 = dòng nối tiếp */
+    var vmT=m.thuSpan>1?'restart':(m.thuSpan?'':'cont');
+    var vmB=m.buoiSpan>1?'restart':(m.buoiSpan?'':'cont');
+    /* cantSplit: không cho một tiết bị cắt đôi giữa hai trang */
+    return '<w:tr><w:trPr><w:cantSplit/></w:trPr>'+
+      _lbgwTc(m.thu,W[0],{vm:vmT,sz:SZ-2,b:true})+
+      _lbgwTc(m.buoi,W[1],{vm:vmB,sz:SZ-2})+
+      _lbgwTc(m.tiet,W[2],{sz:SZ})+
+      _lbgwTc(_lbgMon(m.mon),W[3],{sz:SZ,jc:'left'})+
+      _lbgwTc(m.lop,W[4],{sz:SZ})+
+      _lbgwTc(_lbgBai(m.bai),W[5],{sz:SZ,jc:'left'})+
+      _lbgwTc(_lbgTbdh(m.tbdh),W[6],{sz:SZ-2,jc:'left'})+
+      '</w:tr>';
+  }).join('');
+
+  var tbl='<w:tbl><w:tblPr><w:tblW w:w="'+TOT+'" w:type="dxa"/><w:jc w:val="left"/>'+_lbgwBorders()+
+    '<w:tblLayout w:type="fixed"/>'+
+    '<w:tblCellMar><w:top w:w="20" w:type="dxa"/><w:left w:w="57" w:type="dxa"/><w:bottom w:w="20" w:type="dxa"/><w:right w:w="57" w:type="dxa"/></w:tblCellMar>'+
+    '</w:tblPr><w:tblGrid>'+W.map(function(w){ return '<w:gridCol w:w="'+w+'"/>'; }).join('')+'</w:tblGrid>'+
+    trHead+trs+'</w:tbl>';
+
+  /* Chân ký: bảng 2 ô KHÔNG viền — trái BGH-TTCM, phải nơi/ngày + giáo viên dạy */
+  var hL=Math.round(TOT/2), hR=TOT-hL;
+  var kyP=function(t,o){ o=o||{}; o.jc='center'; if(!o.sz) o.sz=24; return _lbgwP(t,o); };
+  var sign='<w:tbl><w:tblPr><w:tblW w:w="'+TOT+'" w:type="dxa"/><w:jc w:val="left"/><w:tblLayout w:type="fixed"/></w:tblPr>'+
+    '<w:tblGrid><w:gridCol w:w="'+hL+'"/><w:gridCol w:w="'+hR+'"/></w:tblGrid><w:tr><w:trPr><w:cantSplit/></w:trPr>'+
+    '<w:tc><w:tcPr><w:tcW w:w="'+hL+'" w:type="dxa"/></w:tcPr>'+kyP('')+kyP('PHÊ DUYỆT CỦA BGH-TTCM',{b:true})+'</w:tc>'+
+    '<w:tc><w:tcPr><w:tcW w:w="'+hR+'" w:type="dxa"/></w:tcPr>'+kyP(placeStr(),{i:true})+kyP('GIÁO VIÊN DẠY',{b:true})+
+      kyP('')+kyP('')+kyP('')+kyP(state.gvcn||'',{b:true})+'</w:tc>'+
+    '</w:tr></w:tbl>';
+
+  var sect='<w:sectPr><w:pgSz w:w="11906" w:h="16838"/>'+
+    '<w:pgMar w:top="1134" w:right="850" w:bottom="1134" w:left="1701" w:header="567" w:footer="567" w:gutter="0"/></w:sectPr>';
+
+  var doc='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'+
+    head+tbl+_lbgwP('',{sa:80})+sign+sect+'</w:body></w:document>';
+
+  var enc=new TextEncoder(), F=function(n,s){ return {name:n,data:enc.encode(s)}; };
+  return _zipStore([
+    F('[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>'),
+    F('_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'),
+    F('word/document.xml',doc)
+  ], BX_MIME.docx);
+}
+function exportScheduleDocx(){
+  var blob=buildScheduleDocx(); if(!blob) return;
+  _downloadBlob('Lich_Bao_Giang_Tuan'+state.week+'_Lop'+state.klass+'.docx', blob);
+}
+window.exportScheduleDocx=exportScheduleDocx;
 
 /* ---------- 9) KHO KHBD (localStorage) ---------- */
 function loadKHBD(){ try{return JSON.parse(localStorage.getItem('butxanh_khbd')||'[]');}catch(e){return [];} }
