@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-05 · 113';
+  var PB='2026-09-05 · 114';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -2410,6 +2410,7 @@ window.bxMergeKho = function(){
           <ul class="hlp-list">
             <li>Chọn <b>Lớp → Môn</b> để xem bảng cả năm.</li>
             <li>Bấm vào ô nào để sửa ô đó; bản sửa lưu riêng, <b>không đè bản gốc</b>.</li>
+            <li><b>📥 Nhập KHGD của tôi (Excel)</b> — khi tổ chuyên môn đã chốt một kế hoạch khác hẳn, đừng sửa từng ô: tải <b>file mẫu</b> (đã điền sẵn kế hoạch đang dùng, hoặc mẫu trống 35 tuần), sửa trong Excel rồi đưa lại lên. Bút Xanh cho <b>xem trước</b> mới nhận. Nhận rồi thì bảng, bản Word Phụ lục 2 và Bản đồ chương trình đều đổi theo; muốn quay lại bản dựng sẵn thì bấm <b>↺ Quay lại bản Bút Xanh</b>.</li>
             <li>Bấm <b>📄 Tải KHDH về máy</b> — ra file Word khổ ngang, trình ký được luôn.</li>
           </ul>
         </div>
@@ -4940,33 +4941,198 @@ function _lbgMon(m){
     'hoạt động trải nghiệm':'HĐTN','giáo dục thể chất':'GDTC'};
   return map[t.toLowerCase()]||t;
 }
-function _lbgTbdh(s){
-  if(!s) return '';
-  s=String(s).replace(/\.{2,}/g,'…');
-  s=s.replace(/\b(III|IV|II|V)\s*[.)]\s*(PHƯƠNG TIỆN|ĐIỀU CHỈNH|HÌNH THỨC|TIẾN TRÌNH)[\s\S]*$/i,' ');
-  s=s.replace(/ĐIỀU CHỈNH SAU BÀI DẠY[\s\S]*$/i,' ');
-  s=s.replace(/\r?\n/g,' ').replace(/\s*[-–—•]\s+/g,' ').replace(/\s*\+\s*/g,' ');
-  s=s.replace(/(\d\s*[.,)]?\s*)?Đối với\s+giáo\s*viên\s*:?/gi,' ')
-     .replace(/(\d\s*[.,)]?\s*)?Đối với\s+học\s*sinh\s*:?/gi,' ')
-     .replace(/(\d\s*[.,)]?\s*)?Giáo\s*viên\s*:/gi,' ')
-     .replace(/(\d\s*[.,)]?\s*)?Học\s*sinh\s*:/gi,' ')
-     .replace(/\bGV\s*(và\s*HS\s*)?(chuẩn bị\s*:?|:)/gi,' ')
-     .replace(/\bHS\s*(chuẩn bị\s*:?|:)/gi,' ');
-  [[/Kế hoạch bài dạy/gi,'KHBD'],[/Bài soạn/gi,'KHBD'],[/bài giảng\s*(điện tử|trình chiếu)/gi,'BGĐT'],
-   [/(bài giảng\s*)?power\s*point/gi,'PPT'],[/Sách giáo khoa/gi,'SGK'],[/Sách giáo viên/gi,'SGV'],
-   [/Vở\s*bài tập/gi,'VBT'],[/phiếu học tập/gi,'PHT'],[/thí nghiệm/gi,'TN'],[/máy vi tính/gi,'máy tính']
-  ].forEach(p=>s=s.replace(p[0],p[1]));
-  s=s.replace(/TN\s*\(TN\)/gi,'TN');
-  s=s.replace(/(và\s+)?(các\s+)?thiết bị,?\s*(và\s+)?(học liệu)?\s*(và\s*đồ dùng)?\s*(phục vụ)?\s*(cho)?\s*(tiết dạy|việc học tập|dạy học)?/gi,' ');
-  s=s.replace(/phục vụ\s*(cho)?\s*(tiết dạy|việc học tập|hoạt động[^,.;]*|dạy học)/gi,' ');
-  s=s.replace(/\s*[.;]+\s*/g,', ');
-  const parts=s.split(/\s*,\s*/).map(x=>x.replace(/^[\s\-–—•]+/,'').replace(/[\s\-–—•]+$/,'').replace(/\s{2,}/g,' ').trim()).filter(Boolean);
-  const seen=new Set(),uniq=[];
-  parts.forEach(p=>{const k=p.toLowerCase();if(!seen.has(k)){seen.add(k);uniq.push(p);}});
-  s=uniq.join(', ');
-  if(s.length>55) s=s.slice(0,53).replace(/[\s,;]+\S*$/,'')+'…';
-  return s?s.charAt(0).toUpperCase()+s.slice(1):'';
+/* ==================================================================================
+   RÚT GỌN CỘT "ĐỒ DÙNG TBDH" CHO LỊCH BÁO GIẢNG          (5/9/2026 — thầy Chung)
+   Mục II của giáo án viết cho NGƯỜI SOẠN nên có đề mục ("1. Đối với giáo viên"),
+   có cả phần của HỌC SINH, và những câu tả địa điểm dài cả dòng. Bê nguyên sang cột
+   ĐDDH của LBG thì rất dài mà chẳng nói được gì:
+       "1. Đối với giáo viên" · "Địa điểm: Sân trường (hoặc nhà đa năng) sạch sẽ, bằng ph…"
+   Cách làm — 5 bước:
+     1) bỏ phần HỌC SINH, bỏ đề mục, nhặt riêng ĐỊA ĐIỂM (Sân trường / Phòng máy…);
+     2) viết tắt theo thói quen nhà trường (KHBD, BGĐT, SGK, PHT, BĐD…);
+     3) cắt thành từng món, bỏ chữ đưa đẩy ("phục vụ cho tiết dạy", "nếu có"…), dồn trùng;
+     4) XẾP HẠNG: đồ dùng RIÊNG của tiết lên trước — có đồ dùng riêng rồi thì bỏ hẳn
+        thứ tiết nào cũng có (KHBD/SGK/BGĐT), để cột thật ngắn mà vẫn đúng việc;
+     5) cắt theo RANH GIỚI MÓN chứ không cắt giữa chữ.
+   ⚠ Không dùng \b ở cuối cụm tiếng Việt: \b của JS chỉ hiểu chữ ASCII nên "đồ dùng\b"
+     KHÔNG BAO GIỜ khớp — dùng (\s|$) hoặc (?![\p{L}]) thay thế.
+================================================================================== */
+function _ddHoa(s){ return s?s.charAt(0).toUpperCase()+s.slice(1):s; }
+function _ddLaHoa(t){ return t===t.toUpperCase() && t!==t.toLowerCase(); }
+/* Xếp SÂN TRƯỜNG trước NHÀ ĐA NĂNG: giáo án hay ghi "Sân trường (hoặc nhà đa năng)" */
+var _DD_DIADIEM=[
+  [/sân\s*(trường|tập|thể dục|vận động)/i,'Sân trường'],
+  [/nhà\s*(đa năng|thể chất|tập luyện)/i,'Nhà đa năng'],
+  [/phòng\s*(máy|tin học|máy tính)/i,'Phòng máy'],
+  [/phòng\s*(chức năng|nghệ thuật|âm nhạc|mĩ thuật|học bộ môn|thư viện)/i,'Phòng bộ môn']
+];
+var _DD_VIETTAT=[
+  [/\(\s*(kết nối tri thức[^)]*|knttvcs|cánh diều|chân trời sáng tạo)\s*\)/gi,' '],
+  [/kế hoạch bài dạy|kế hoạch dạy học|\bkhdh\b|giáo án(?:\s+word)?(?:\s+soạn rõ chi tiết)?|bài soạn|lesson plan/gi,'KHBD'],
+  [/(bài giảng|phần mềm)\s*(điện tử|trình chiếu|power\s*-?\s*point|powerpoint)/gi,'BGĐT'],
+  [/\bpower\s*-?\s*point\b|\bpowerpoint\b|\bppt\b|\bbgđt\b/gi,'BGĐT'],
+  [/sách giáo khoa|student'?s?\s*books?|\btextbooks?|\bsgk\b/gi,'SGK'],
+  [/sách học sinh|\bshs\b/gi,'SGK'],
+  [/sách giáo viên|teacher'?s?\s*(guide|book)|\bsgv\b/gi,'SGV'],
+  [/vở\s*bài\s*tập|\bworkbooks?|\bvbt\b/gi,'VBT'],
+  [/sách\s*bài\s*tập|\bsbt\b/gi,'SBT'],
+  [/phiếu\s*(học tập|bài tập|thảo luận|nhóm|giao việc)|\bpht\b/gi,'PHT'],
+  [/thí nghiệm/gi,'TN'],
+  [/sinh hoạt dưới cờ/gi,'SHDC'],[/sinh hoạt lớp/gi,'SHL'],
+  [/hệ thống âm thanh|loa\s*đài|loudspeakers?|speakers?|\baudio\b|cassette/gi,'loa'],
+  [/đàn\s*(phím điện tử|organ|oóc[- ]?gan|o[cr]gan)|\borgan\b/gi,'đàn'],
+  [/nhạc cụ(?:\s+(?:gõ|giai điệu|cơ bản|tự tạo))?/gi,'nhạc cụ'],
+  [/máy vi tính|máy tính|laptop|computers?|máy chiếu|ti\s*[-–—]?\s*vi|tivi|màn hình|thiết bị trình chiếu|máy soi|projector|smart\s*tv/gi,'máy chiếu'],
+  /* KHÔNG cho dấu PHẨY nối "tranh" với "ảnh": các món nối lại bằng ", " nên "tranh, ảnh…"
+     ở lần chạy sau sẽ khớp chính đầu ra của mình rồi nuốt mất một món (rà 5/9/2026). */
+  [/tranh\s*\/?\s*ảnh|hình\s*ảnh|pictures?|posters?/gi,'tranh'],
+  [/\s*minh\s*h(?:oạ|ọa|oa)(?![\p{L}])/giu,''],          /* chặn hậu tố kẻo ăn vào chữ "hoạt" */
+  [/\bclips?\b|đoạn phim|videos?/gi,'video'],
+  /* Chỉ đổi "flashcards" thành "thẻ"; KHÔNG cắt đuôi "thẻ từ/thẻ tên" — cắt thì
+     "thẻ tên riêng" hoá "thẻ riêng", mà giữ nguyên vẫn ngắn và đúng tên đồ dùng. */
+  [/flash\s*-?\s*cards?/gi,'thẻ'],
+  [/đề\s*(kiểm tra|đánh giá|thi)|paper\s*test|bài kiểm tra/gi,'Đề kiểm tra'],
+  /* "dạy học" vừa khớp được bằng 1 lượt vừa bằng 2 lượt → regex ăn ngược, chuỗi dài
+     treo cả tab. Chỉ cho từ ĐƠN trong vòng lặp. */
+  [/bộ\s*đồ dùng(?:\s+(?:dạy|và|học))*\s*(?:TV|Tiếng Việt)(?![\p{L}])/giu,'BĐD Tiếng Việt'],
+  [/bộ\s*đồ dùng\s*(dạy\s*)?(và\s*)?(học\s*)?(dạy học\s*)?/gi,'BĐD '],
+  [/\bTV(?![\p{L}])/gu,'máy chiếu']       /* \b của JS coi chữ có dấu là "không phải chữ" */
+];
+/* Món KHÔNG phải đồ dùng của giáo viên, hoặc chỉ là chữ đưa đẩy → bỏ hẳn */
+var _DD_BO=[
+  /^(và\s+)?(các\s+)?(thiết bị|học liệu|đồ dùng|phương tiện|dụng cụ)(\s|$)/i,
+  /^(phục vụ|cần thiết|có liên quan|liên quan|minh ho)/i,
+  /^(nếu|tu[yỳ]|hoặc|khác)(\s|$)/i,
+  /^(sạch sẽ|bằng phẳng|thoáng mát|khô ráo|rộng rãi|an toàn)/i,
+  /^(đảm bảo|bảo đảm|được kiểm tra|kiểm tra an toàn)/i,
+  /^(trang phục|giày|dép|khăn quàng|mũ|đồng phục|uống đủ nước|vệ sinh)/i,
+  /^(vở|bút|thước|tẩy|gôm|phấn|khăn lau|giấy (?:nháp|kiểm tra|làm bài|thi|trắng)|bảng con|màu vẽ|kéo|keo dán|đất nặn|school things|students?|pupils?|ready to)/i,
+  /^(bàn ghế|trong lớp|ngoài trời|không gian|tập (một|hai|1|2)|quyển)/i,
+  /^(theo|do|đã|kèm|gồm|cùng|ngoài ra|dùng bằng)(\s|$)/i,
+  /^(hướng dẫn chấm|biểu điểm|ma trận|đáp án|thang điểm|danh sách|đồng hồ theo dõi|sĩ số)/i,
+  /^(kiểm tra|ngắt kết nối|cài (?:sẵn|đặt)|thư mục|ổ đĩa|phân ca|chuột|bàn phím)/i,
+  /^[\d\s\-–—.:;()\/]*$/
+];
+/* Món mở đầu bằng những từ này thì gom cả món về đúng từ đó */
+var _DD_GOM=/^(KHBD|SGK|SGV|VBT|SBT|BGĐT|PHT|máy chiếu|loa|đàn|nhạc cụ|Đề kiểm tra|còi|phòng máy|bảng nhóm|bảng phụ|bảng con)(?![\p{L}])/iu;
+var _DD_HANG2=/^(máy chiếu|loa|đàn)$/i;                       /* thiết bị phòng học nào cũng có */
+var _DD_HANG3=/^(KHBD|SGK|SGV|VBT|SBT|BGĐT|BĐD)$/i;           /* tiết nào cũng có → bỏ khi đã có món riêng */
+
+function BX_ddTbdh(raw,gioiHan){
+  if(!raw) return '';
+  var LIM=gioiHan||46;
+  /* Bản in Excel/Word gọi lại hàm này trên chuỗi ĐÃ gọn; chuỗi đó một dòng và kết bằng "…"
+     nếu lần trước đã phải bỏ bớt món. Nhớ lấy dấu đó để lần chạy sau không đánh rơi. */
+  var daGon=/…\s*$/.test(String(raw)) && String(raw).indexOf('\n')<0;
+  var s=String(raw).replace(/\r/g,'').replace(/[‘’´`]/g,"'").replace(/\.{2,}|…/g,' ');
+  try{ s=s.normalize('NFC'); }catch(e){}   /* chữ dán từ Word/macOS hay ở dạng NFD → mọi regex dưới đây trượt hết */
+  /* Cắt phần đuôi giáo án. PHẢI nuốt luôn SỐ LA MÃ đứng trước, kẻo còn trơ lại "IV" rồi
+     nó lọt vào cột như một món đồ dùng — mà lại được chấm hạng 1 nên đá luôn "SGK" ra
+     ngoài: 4 tiết Công nghệ 5 in đúng một chữ "IV" (bắt được khi rà 5/9/2026). */
+  s=s.replace(/(?:^|\n)\s*(?:[IVX]+\s*[.)]\s*)?ĐIỀU CHỈNH SAU BÀI DẠY[\s\S]*$/i,' ');
+  s=s.replace(/(?:^|\n)\s*[IVX]+\s*[.)]\s*(?:ĐIỀU CHỈNH|TIẾN TRÌNH|CÁC HOẠT ĐỘNG|HOẠT ĐỘNG DẠY)[\s\S]*$/i,' ');
+
+  /* Nhãn PHẢI kết thúc bằng dấu (: . -) hoặc hết dòng — kẻo "Teacher's guide" bị coi
+     là nhãn "Teacher" rồi trơ lại "'s guide" trên lịch báo giảng Tiếng Anh. */
+  /* Nhiều giáo án nhét cả GV lẫn HS vào MỘT dòng ("- GV: máy tính, ti vi. - HS: sgk, vở
+     ghi.") — tách gạch đầu dòng giữa câu thành dòng mới thì nhãn mới đứng đầu dòng để
+     nhận ra. Không tách thì phần của học sinh chảy thẳng vào cột (rà 5/9/2026). */
+  s=s.replace(/\s+[-–—]\s*(?=(?:\d+\s*[.)]\s*)?(?:GV|HS|Giáo\s*viên|Học\s*sinh|Teacher|Students?|Pupils?)\b)/g,'\n');
+  /* Nhãn kết thúc bằng dấu, HẾT DÒNG, hoặc chỉ một khoảng trắng ("- HS SGK, vở ghi").
+     KHÔNG nhận khi liền sau là dấu nháy — kẻo "Teacher's guide" bị coi là nhãn. */
+  var END='(?:\\s*[:.\\-–—]\\s*|\\s+|$)';
+  /* Tiền tố đề mục: số Ả-rập HOẶC số La Mã — giáo án trường khác hay viết đề mục và nội
+     dung CÙNG một dòng ("II. ĐỒ DÙNG DẠY HỌC: tranh, bảng phụ"); chỉ nhận chữ số thì
+     "II" lọt vào cột và mất luôn món đầu tiên. */
+  var SO='((?:\\d+|[IVX]+)\\s*[.)]\\s*)?';
+  var LAB_HS=new RegExp('^'+SO+'(đối với\\s+)?(học\\s*sinh|hs|students?|pupils?)\\s*(\\([^)]*\\))?(\\s*chuẩn bị)?'+END,'i');
+  var LAB_GV=new RegExp('^'+SO+'(đối với\\s+)?(giáo\\s*viên|gv|gvcn|teacher)(\\s*(?:và|&|\\+)\\s*(?:hs|học\\s*sinh))?\\s*(\\([^)]*\\))?(\\s*chuẩn bị)?'+END,'i');
+  var LAB_TR=new RegExp('^'+SO+'(học liệu|đồ dùng(?: dạy học| học tập)?|phương tiện(?: hoạt động)?|thiết bị|chuẩn bị|dụng cụ)(\\s*và\\s*học liệu)?\\s*[:.]\\s*','i');
+  var LAB_DD=new RegExp('^'+SO+'(địa điểm|nơi (?:học|tập)|không gian)\\s*[:.]\\s*','i');
+  var LAP=/^([IVX]+)\s*[.)]\s*(.+)$/;
+
+  var lines=s.split('\n'), mode='gv', noiDung=[], diaDiem='';
+  lines.forEach(function(ln){
+    var t=ln.replace(/^[\s\-–—•*+]+/,'').replace(/\s+/g,' ').trim();
+    if(!t) return;
+    t=t.replace(/^(\d\s*[.)]\s*)?(GV|giáo\s*viên)(\s*(?:và|&|\+)\s*(?:HS|học\s*sinh))?\s*chuẩn bị\s*(?:các\s+)?[:：]?\s*/i,'');
+    /* Giáo án STEM hay đặt đề mục "1. Chuẩn bị của giáo viên" / "2. Chuẩn bị của HS
+       (dành cho 1 nhóm)" — bỏ mấy chữ đầu là hai nhãn dưới đây nhận ra ngay. */
+    t=t.replace(/^(\d\s*[.)]?\s*)?chuẩn bị của\s+/i,'');
+    if(!t) return;
+    if(/^[IVX]+\s*[.)]?\s*$/.test(t)){ mode='gv'; return; }                   /* dòng chỉ có số mục */
+    var mL=t.match(LAP);
+    if(mL && _ddLaHoa(mL[2].replace(/[^\p{L}]/gu,''))){ mode='gv'; return; }   /* "III. PHƯƠNG TIỆN…" */
+    var dd='';
+    for(var i=0;i<_DD_DIADIEM.length;i++) if(_DD_DIADIEM[i][0].test(t)){ dd=_DD_DIADIEM[i][1]; break; }
+    if(LAB_DD.test(t)){ if(dd&&!diaDiem) diaDiem=dd; return; }
+    /* Địa điểm nhặt riêng, KHÔNG phụ thuộc đang ở khối GV hay HS: giáo án GDTC hay để
+       dòng "Sân trường bằng phẳng…" nằm sau dòng "- HS: …" */
+    if(dd&&!diaDiem&&/^(sân|nhà|phòng|địa điểm|trong)/i.test(t)) diaDiem=dd;
+    if(LAB_HS.test(t)){ mode='hs'; t=t.replace(LAB_HS,''); if(!t) return; }
+    else if(LAB_GV.test(t)){ mode='gv'; t=t.replace(LAB_GV,''); if(!t) return; }
+    else if(LAB_TR.test(t)){ mode='gv'; t=t.replace(LAB_TR,''); if(!t) return; }
+    if(mode==='hs') return;
+    noiDung.push(t);
+  });
+
+  var body=noiDung.join('; ');
+  body=body.replace(/\([^()]*\)/g,' ').replace(/\([^()]*\)/g,' ');
+  _DD_VIETTAT.forEach(function(p){ body=body.replace(p[0],p[1]); });
+
+  /* Dấu chấm chỉ tính là hết món khi sau nó có khoảng trắng — kẻo "hoclieu.vn" đứt đôi */
+  body=body.replace(/\s*;\s*/g,', ').replace(/\.(\s|$)/g,', ').replace(/\s*\/\s*/g,'/');
+  var mon=body.split(/\s*,\s*/), ra=[], seen={};
+  mon.forEach(function(x){
+    x=x.replace(/^[\s\-–—•*+:]+/,'').replace(/[\s\-–—•*+:.]+$/,'').replace(/\s{2,}/g,' ').trim();
+    x=x.replace(/^\d+\s*[-–—]\s*\d+\s+(?=\p{L})/u,'');   /* "2-3 sản phẩm mẫu" — CHỈ bỏ khoảng, giữ "6 quả bóng" */
+    if(!x) return;
+    /* "tranh cắt từ SGK trang 6 - 7: nhóm nhân vật" → bỏ vế sau dấu hai chấm.
+       Chỉ làm khi vế trước dài từ 3 chữ, kẻo "Website: hoclieu.vn" cụt còn "Website". */
+    if(/:/.test(x) && x.split(':')[0].trim().split(/\s+/).length>=3) x=x.replace(/\s*:.*$/,'').trim();
+    x=x.replace(/^(một số|các|những|vài|một vài)\s+/i,'').replace(/\s+(và|hoặc|với|cùng|theo|của|cho|để|các|một số)$/i,'');
+    if(!x) return;
+    if(/^(mĩ thuật|âm nhạc|tin học|toán|tiếng việt|khoa học|đạo đức|công nghệ|lịch sử|địa lí|tự nhiên và xã hội)\s*\d?$/i.test(x)) x='SGK';
+    for(var i=0;i<_DD_BO.length;i++) if(_DD_BO[i].test(x)) return;
+    var g=x.match(_DD_GOM);
+    if(g) x=g[1];
+    else if(/^BĐD(?![\p{L}])/iu.test(x)){ var m2=x.match(/^BĐD\s*(Toán|Tiếng Việt|TV|Âm nhạc|Mĩ thuật|Tin học|Khoa học|Công nghệ)?/i); x='BĐD'+(m2&&m2[1]?' '+m2[1]:''); }
+    else if(/^(tranh|video|thẻ)(?![\p{L}])/iu.test(x) && x.length>16) x=x.match(/^(tranh|video|thẻ)/i)[1];
+    else if(/^tv$/i.test(x)) x='máy chiếu';
+    if(x.length>24) x=x.slice(0,24).replace(/[\s,;\/]+\S*$/,'');
+    /* Gỡ từ nối trơ lại ở cuối — phải LẶP: cắt "sản phẩm mẫu để HS" một lượt mới ra
+       "…để", lượt sau mới sạch. Kể cả dấu gạch cuối ("bài 2 –"). */
+    for(var _n=0;_n<4;_n++){
+      var _y=x.replace(/[\s\-–—]+(?:và|hoặc|với|cùng|theo|của|cho|để|các|một số|HS|GV|em|nhà)$/i,'').replace(/[\s,;:\-–—]+$/,'');
+      if(_y===x) break; x=_y;
+    }
+    if(x.length<2) return;
+    if(/^(KHBD|SGK|SGV|VBT|SBT|BGĐT|PHT|SHDC|SHL|TN|BĐD)/i.test(x)) x=x.replace(/^\S+/,function(w){return w.toUpperCase();});
+    var k=x.toLowerCase(); if(seen[k]) return; seen[k]=1; ra.push(x);
+  });
+  if(diaDiem){ var kd=diaDiem.toLowerCase(); if(!seen[kd]){ ra.unshift(diaDiem); seen[kd]=1; } }
+
+  var xh=ra.map(function(x,i){ return {x:x,i:i,h:_DD_HANG3.test(x)?3:(_DD_HANG2.test(x)?2:1)}; });
+  if(xh.some(function(o){ return o.h===1; })) xh=xh.filter(function(o){ return o.h<3; });
+  ra=xh.sort(function(a,b){ return a.h-b.h||a.i-b.i; }).map(function(o){ return o.x; });
+
+  var out=[],len=0,bo=false;
+  for(var i=0;i<ra.length;i++){
+    var add=(out.length?2:0)+ra[i].length;
+    if(out.length && len+add>LIM){ bo=true; break; }
+    out.push(ra[i]); len+=add;
+  }
+  if(!out.length) return '';
+  /* Nối dấu "…" TRƯỚC rồi mới đo, kẻo kết quả dài LIM+1 (47 chữ trong khi hẹn 46). */
+  var kq=out.join(', ');
+  if(bo||daGon) kq+='…';
+  if(kq.length>LIM) kq=kq.slice(0,LIM-1).replace(/[\s,;…]+\S*$/,'')+'…';
+  return _ddHoa(kq);
 }
+window.BX_ddTbdh=BX_ddTbdh;
+/* Bản in Excel/Word/thẻ điện thoại dùng chung một bộ rút gọn — chạy lại lần nữa trên
+   chuỗi đã gọn cũng ra đúng nó (không cắt thêm), nên gọi bao nhiêu lần cũng an toàn. */
+function _lbgTbdh(s){ return BX_ddTbdh(s); }
 /* Chuyển tên bài IN HOA -> chữ thường kiểu câu, giữ nguyên các viết tắt */
 const _LBG_KEEP=new Set(['STEM','SGK','SGV','VBT','PHT','TN','PPT','KHBD','BGĐT','HĐTN','TNXH','SHL','SHDC','GV','HS','LS','ĐL','TV','TA','ICT','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII']);
 function _sentenceCase(s){
@@ -7448,7 +7614,8 @@ function BX_stemDiaChi(lop, mon, r, st){
     var tuan=parseInt(r[0],10), hk=(tuan===8)?'I':((tuan===26)?'II':null); if(!hk) return [];
     /* Chọn ĐÚNG MỘT dòng trong tuần: ưu tiên "Sinh hoạt dưới cờ", không có thì dòng đầu tuần;
        tuần đã có "STEM" ở dòng nào (lớp 4 tuần 8 "NGÀY HỘI STEM") thì thôi. */
-    var G=window.BX_KHGD_G, rows=(G&&G[String(lop)]&&G[String(lop)][mon])||null;
+    var G=window.BX_KHGD_G, rows=(window.BX_khgdRows?window.BX_khgdRows(lop,mon):((G&&G[String(lop)]&&G[String(lop)][mon])||null))||null;
+    if(rows&&!rows.length) rows=null;
     if(rows){
       var cung=rows.filter(function(x){ return parseInt(x[0],10)===tuan; });
       if(cung.some(function(x){ return /STEM/i.test(String(x[4]||'')+' '+String(x[7]||'')); })) return [];
@@ -8037,7 +8204,11 @@ function BX_mapNorm(s){ return String(s==null?'':s).replace(/\s+/g,' ').trim(); 
    chương trình lớp 5. Nay đọc theo LỚP ĐANG XEM, lấy từ BX_KHGD_G[lớp].
    🛑 KHÔNG gán đè window.BX_KHGD — ba nơi khác đang giả định nó là lớp 5. */
 function BX_mapLop(){ return String(window.BX_curLop||state.khoi||'5'); }
-function BX_mapKho(){ return (window.BX_KHGD_G&&window.BX_KHGD_G[BX_mapLop()])||{}; }
+function BX_mapKho(){
+  var K=(window.BX_KHGD_G&&window.BX_KHGD_G[BX_mapLop()])||{};
+  try{ if(window.BX_khgdRiengCua) K=Object.assign({},K,window.BX_khgdRiengCua(BX_mapLop())); }catch(e){}
+  return K;
+}
 function BX_mapSubjects(){
   var KH=BX_mapKho(), co=function(s){ return KH[s]&&KH[s].length; };
   /* Giữ đúng thứ tự môn chuẩn của app nếu module KHDH đã nạp */
@@ -8536,6 +8707,8 @@ window.bxKiemKHGD=bxKiemKHGD; /* expose để kiểm thử */
 function buildKHGDPhuLuc2(LOP,dsMon){
   var GROOT=window.BX_KHGD_G||{'5':window.BX_KHGD};
   var KH=GROOT[LOP]||{};
+  /* Bản Word Phụ lục 2 phải in KẾ HOẠCH RIÊNG thầy cô đã nhập từ Excel, nếu môn đó có. */
+  try{ if(window.BX_khgdRiengCua) KH=Object.assign({},KH,window.BX_khgdRiengCua(LOP)); }catch(e){}
   var coDL=dsMon.filter(function(m){ return KH[m]&&KH[m].length; });
   if(!coDL.length) throw new Error('Khối '+LOP+' chưa có dữ liệu Kế hoạch dạy học.');
   /* (3/9/2026) Tự kiểm trước khi dựng — chỉ cảnh báo, văn bản vẫn được tạo. */
@@ -8811,7 +8984,11 @@ window.__bxKHGDDaVe=function(){
   }catch(e){}
 };
 var SUBJ_ORDER=['Tiếng Việt','Toán','Khoa học','Lịch sử & Địa lí','Tự nhiên và Xã hội','Đạo đức','Tin học','Công nghệ','HĐTN','Âm nhạc','Mĩ thuật','GDTC','Tiếng Anh'];
-function subjectsOf(lop){ var KH=window.BX_KHGD_G[lop]||{}; var has=function(s){return KH[s]&&KH[s].length;};
+/* Kế hoạch riêng thầy cô nhập vào cũng phải hiện trong ô "Môn học" — kể cả môn kho
+   dựng sẵn chưa có (trường dạy thêm môn tự chọn chẳng hạn). */
+function subjectsOf(lop){ var KH=window.BX_KHGD_G[lop]||{};
+  try{ if(window.BX_khgdRiengCua) KH=Object.assign({},KH,window.BX_khgdRiengCua(lop)); }catch(e){}
+  var has=function(s){return KH[s]&&KH[s].length;};
   return SUBJ_ORDER.filter(has).concat(Object.keys(KH).filter(function(s){return SUBJ_ORDER.indexOf(s)<0&&has(s);})); }
 window.BX_subjectsOf=subjectsOf;   // Bản đồ chương trình dùng chung thứ tự môn chuẩn (vá B1)
 var NAVY='#002060';
@@ -8859,7 +9036,13 @@ function monXemDuoc(l){
 bxGomKHGD();
 document.addEventListener('DOMContentLoaded', bxGomKHGD);
 function cur(){ return window.BX_curSubject||subjectsOf(curLop())[0]||'Tiếng Việt'; }
-function data(){ return (window.BX_KHGD_G[curLop()]||{})[cur()]||[]; }
+/* Đi qua BX_khgdRows để bảng lấy KẾ HOẠCH RIÊNG thầy cô đã nhập từ Excel (nếu có);
+   chưa nhập gì thì vẫn là kho dựng sẵn. Khối "Nhập KHGD cá nhân" nạp SAU khối này
+   nên phải phòng trường hợp hàm chưa có (lúc dựng lần đầu). */
+function data(){
+  if(typeof window.BX_khgdRows==='function') return window.BX_khgdRows(curLop(),cur());
+  return (window.BX_KHGD_G[curLop()]||{})[cur()]||[];
+}
 
 var EKEY='butxanh_khgd_edits';
 function loadE(){ try{ var v=JSON.parse(localStorage.getItem(EKEY)); if(v&&typeof v==='object') return v; }catch(e){} return {}; }
@@ -9000,6 +9183,7 @@ window.renderKHDH=function(){
   if(info) info.innerHTML='Môn <b>'+esc(cur())+'</b> · Lớp <b>'+esc(curLop())+'</b> · <b>'+D.length+'</b> dòng / ~'+tiet+' tiết · bám SGK + lồng ghép NLS/AI (TT02·CV3456)'+
     (them.length?(' · <b style="color:#1f7d49">+'+them.join(' · ')+'</b>'):'')+
     (ne?(' · <b style="color:'+NAVY+'">'+ne+' dòng trường đã chỉnh</b>'):'');
+  try{ if(window.BX_khgdVeBangRieng) window.BX_khgdVeBangRieng(); }catch(e){}
 };
 window.BX_khgdToggleEdit=function(){
   EDIT=!EDIT;
@@ -9072,8 +9256,10 @@ function rebuild(){
         '<button class="btn solid" onclick="exportKHGDMonWord()">📄 Tải KHDH môn này</button>'+
         '<button class="btn solid" onclick="exportKHGDKhoiWord()" title="Một tệp Word đủ các môn của khối, đúng Phụ lục 2 Công văn 2345">📚 Tải KHDH cả khối (Phụ lục 2)</button>'+
         '<button class="btn" id="khdh-edit-btn" onclick="BX_khgdToggleEdit()">✏️ Chỉnh sửa KHDH</button>'+
+        '<button class="btn" onclick="BX_khgdMoNhap()" title="Tải file Excel mẫu, sửa theo kế hoạch của tổ rồi đưa lại lên — thay cả bảng, không phải sửa từng ô">📥 Nhập KHGD của tôi (Excel)</button>'+
       '</div>'+
     '</div>'+
+    '<div id="khdh-rieng-banner"></div>'+
     '<div class="khdh-filters">'+
       '<label class="select"><span>Lớp</span><select id="khdh-lop" onchange="BX_khgdSetLop(this.value)">'+lops+'</select></label>'+
       '<label class="select"><span>Môn học</span><select id="khdh-subject" onchange="BX_khgdSetSubject(this.value)">'+subs+'</select></label>'+
@@ -9099,6 +9285,529 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
 console.log('[Bút Xanh] KHDH UI đa môn ('+window.BX_SUBJECTS.length+' môn) đã nạp.');
 })();
 
+</script>
+
+<!-- ===== NHẬP KẾ HOẠCH GIÁO DỤC MÔN HỌC CỦA RIÊNG THẦY CÔ ===== -->
+<script>
+/* ==============================================================================
+   NHẬP KHGD MÔN HỌC THEO CÁ NHÂN — 5/9/2026 (thầy Chung đặt)
+
+   VÌ SAO: mỗi tổ chuyên môn chốt một Kế hoạch giáo dục môn học riêng — khác thứ tự
+   bài, khác số tiết, khác tuần. Bút Xanh chỉ có bản dựng sẵn, nên tới giờ thầy cô
+   phải sửa TỪNG Ô trên màn hình (bản sửa lưu ở butxanh_khgd_edits, đánh theo CHỈ SỐ
+   DÒNG). Cách đó chỉ hợp khi sửa vài dòng; thay cả kế hoạch thì ngồi cả buổi.
+
+   CÁCH LÀM — vòng tròn Excel, đúng một cửa:
+     ① Bút Xanh XUẤT ra file Excel ĐÃ ĐIỀN SẴN kế hoạch đang dùng (kể cả phần thầy cô
+        đã sửa tay) → chính file đó là MẪU NHẬP. Ai muốn gõ từ đầu thì tải mẫu trống.
+     ② Thầy cô sửa trong Excel (hoặc dán bảng của tổ vào), lưu lại.
+     ③ Bấm "Chọn file" → Bút Xanh đọc, tự dò dòng tiêu đề và từng cột, cho XEM TRƯỚC
+        rồi mới hỏi "Dùng bản này?".
+   Nhờ bước ① mà không mất gì: bản sửa tay cũ đã nằm sẵn trong file, nhập lại là còn
+   nguyên nội dung. Vì thế lúc nhận file mới ta XOÁ bản sửa theo chỉ số dòng của môn
+   đó — giữ lại thì nó đè lên dòng thứ i của kế hoạch MỚI, sai hoàn toàn.
+
+   LƯU Ở ĐÂU: localStorage 'butxanh_khgd_rieng' = { lớp: { môn: {luc, ten, rows} } }.
+   rows dùng ĐÚNG khuôn 8 cột của kho gốc nên mọi nơi khác (bảng trên màn hình, Word
+   Phụ lục 2, Bản đồ chương trình) chạy nguyên như cũ, chỉ đổi nguồn đọc.
+   Khoá này đã thêm vào BACKUP_KEYS (theo file sao lưu) nhưng CHƯA đồng bộ đám mây:
+   thêm khoá vào Firebase phải mở luật ở Console trước — xem ghi nhớ 29/8.
+============================================================================== */
+(function(){
+"use strict";
+var RKEY='butxanh_khgd_rieng';
+var TEN_COT=['Tuần','Chủ đề/Mạch nội dung','Tên bài','Phân môn / Hoạt động','Nội dung/Tên bài học','Thời lượng','Tiết KH','Nội dung điều chỉnh, bổ sung'];
+var RONG_COT=[7,26,22,18,42,10,10,34];      /* độ rộng cột Excel */
+var NAVY='#002060';
+
+function S(v){ return String(v==null?'':v); }
+function esc(s){ return S(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function el(id){ return document.getElementById(id); }
+function lop(){ return String(window.BX_curLop||'5'); }
+function mon(){ return String(window.BX_curSubject||'Tiếng Việt'); }
+
+/* ---------------------------------------------------------------- kho lưu */
+/* CHỈ nhận mục đúng khuôn { rows: [ [8 ô], … ] }. Một mục hỏng lọt vào (khôi phục nhầm
+   tệp sao lưu, localStorage ghi dở) là màn KHDH ném lỗi và KHÔNG dựng nổi bảng — mất
+   luôn cả nút "↺ Quay lại bản Bút Xanh", thầy cô hết đường gỡ (rà 5/9/2026). */
+function locKho(v){
+  var ra={}; if(!v||typeof v!=='object') return ra;
+  Object.keys(v).forEach(function(l){
+    var L=v[l]; if(!L||typeof L!=='object') return;
+    Object.keys(L).forEach(function(m){
+      var r=L[m];
+      if(r&&typeof r==='object'&&Array.isArray(r.rows)&&r.rows.length&&r.rows.every(function(x){return Array.isArray(x);}))
+        (ra[l]=ra[l]||{})[m]=r;
+    });
+  });
+  return ra;
+}
+function docKho(){ try{ return locKho(JSON.parse(localStorage.getItem(RKEY))); }catch(e){ return {}; } }
+var KHO=docKho();
+/* Ghi kiểu ĐỌC – SỬA – GHI. Thầy cô hay mở hai thẻ trình duyệt (một xem KHDH, một soạn
+   KHBD); ghi đè nguyên cây trong bộ nhớ thì thẻ nhập sau XOÁ SẠCH bản của thẻ nhập
+   trước, không hỏi không báo (rà 5/9/2026). `bo` = danh sách [lớp,môn] cố ý xoá. */
+function luuKho(bo){
+  try{
+    var dia=docKho();
+    Object.keys(KHO).forEach(function(l){ Object.keys(KHO[l]).forEach(function(m){ (dia[l]=dia[l]||{})[m]=KHO[l][m]; }); });
+    (bo||[]).forEach(function(p){ if(dia[p[0]]) delete dia[p[0]][p[1]]; });
+    localStorage.setItem(RKEY,JSON.stringify(dia));
+    KHO=dia;
+    return true;
+  }
+  catch(e){
+    try{ if(window.bxAlert) bxAlert('⚠️ Chưa lưu được kế hoạch vừa nhập — bộ nhớ trình duyệt đã đầy.\n\nThầy/cô vào mục Cài đặt → Sao lưu & dọn dữ liệu để dọn bớt, rồi nhập lại giúp em ạ.'); }catch(e2){}
+    return false;
+  }
+}
+window.BX_khgdRiengMeta=function(l,m){ var L=KHO[String(l)]; var r=L&&L[m]; return (r&&r.rows&&r.rows.length)?r:null; };
+window.BX_khgdRiengCua=function(l){ var L=KHO[String(l)]||{}, o={};
+  Object.keys(L).forEach(function(m){ if(L[m]&&L[m].rows&&L[m].rows.length) o[m]=L[m].rows; }); return o; };
+/* CỬA ĐỌC DUY NHẤT cho KHGD một môn: có bản riêng thì dùng bản riêng, không thì kho gốc. */
+window.BX_khgdRows=function(l,m){
+  var r=window.BX_khgdRiengMeta(l,m); if(r) return r.rows;
+  return ((window.BX_KHGD_G||{})[String(l)]||{})[m]||[];
+};
+
+function veLai(){
+  try{ if(typeof window.BX_khgdRebuild==='function') window.BX_khgdRebuild();
+       else if(typeof window.renderKHDH==='function') window.renderKHDH(); }catch(e){}
+  try{ if((location.hash||'').slice(1)==='map' && typeof window.renderProgramMap==='function') window.renderProgramMap(); }catch(e){}
+}
+
+/* ------------------------------------------------- bảng nhắc trên màn KHDH */
+window.BX_khgdVeBangRieng=function(){
+  var b=el('khdh-rieng-banner'); if(!b) return;
+  var r=window.BX_khgdRiengMeta(lop(),mon());
+  if(!r){ b.innerHTML=''; return; }
+  var ngay=''; try{ ngay=new Date(r.luc).toLocaleDateString('vi-VN'); }catch(e){}
+  b.innerHTML='<div style="margin:6px 0;padding:8px 10px;background:#eaf7ee;border:1px solid #a9d9ba;border-radius:8px;font-size:13px;color:#14532d">'+
+    '📗 <b>Đang dùng kế hoạch riêng của thầy/cô</b> — '+r.rows.length+' dòng, nhập ngày '+esc(ngay)+
+    (r.ten?(' từ <i>'+esc(r.ten)+'</i>'):'')+'. Bảng dưới đây, bản Word Phụ lục 2 và Bản đồ chương trình đều lấy theo bản này. '+
+    '<a href="#" onclick="return BX_khgdBoRieng()" style="color:#a33">↺ Quay lại bản Bút Xanh</a>'+
+    '<div style="margin-top:4px;font-size:12px;color:#3d6b4d">Bản riêng lưu <b>trên máy này</b> (có trong tệp sao lưu, chưa đồng bộ đám mây). '+
+    'Địa chỉ lồng ghép STEM/QPAN dò theo <b>tên bài</b>, tổ ghi tên khác thì phần đó sẽ không tự gắn nữa.</div></div>';
+};
+window.BX_khgdBoRieng=function(){
+  var l=lop(), m=mon();
+  if(!window.BX_khgdRiengMeta(l,m)) return false;
+  var hoi=(window.bxConfirm?window.bxConfirm:function(t){ return Promise.resolve(window.confirm(t)); });
+  hoi('Bỏ kế hoạch riêng của môn '+m+' lớp '+l+' và quay lại bản dựng sẵn của Bút Xanh?\n\nBản riêng sẽ bị xoá khỏi máy này. Thầy/cô nên tải file Excel về giữ trước khi bỏ.')
+    .then(function(ok){ if(!ok) return;
+      if(KHO[l]) delete KHO[l][m];
+      luuKho([[l,m]]); veLai();      /* nói rõ là XOÁ, kẻo lượt đọc-sửa-ghi lôi nó về */
+      try{ if(window.bxAlert) bxAlert('✓ Đã quay lại kế hoạch dựng sẵn của Bút Xanh.'); }catch(e){}
+    });
+  return false;
+};
+
+/* ================================ XUẤT FILE MẪU ================================ */
+/* Lấy đúng những gì đang hiện trên bảng: kho gốc (hoặc bản riêng) + phần thầy cô sửa tay.
+   Cột 7 lấy giá trị THÔ, không kèm phần STEM/QPAN app tự sinh — nhập lại mới không bị
+   đóng cứng nội dung sinh động vào kế hoạch. */
+function duLieuHienTai(l,m){
+  var D=window.BX_khgdRows(l,m), V=window.BX_khgdVal;
+  return D.map(function(r,i){
+    var o=[S(r[0]),S(r[1]),S(r[2]),S(r[3]),S(r[4]),S(r[5]),S(r[6]),S(r[7])];
+    if(V) [3,4,5,6,7].forEach(function(c){ o[c]=S(V(l,m,i,c,o[c])); });
+    return o;
+  });
+}
+function khungTrong(){
+  var rows=[];
+  for(var t=1;t<=35;t++) for(var k=0;k<4;k++) rows.push([String(t),'','','','','','','']);
+  return rows;
+}
+function mauSheetXml(tieuDe, nhac, rows){
+  var LET=['A','B','C','D','E','F','G','H'];
+  var C=function(c,r,s,v){ var ref=LET[c]+r;
+    if(v==='' || v==null) return '<c r="'+ref+'" s="'+s+'"/>';
+    return '<c r="'+ref+'" s="'+s+'" t="inlineStr"><is><t xml:space="preserve">'+_xe(v)+'</t></is></c>'; };
+  var out=[], merges=[];
+  out.push('<row r="1" ht="24" customHeight="1">'+LET.map(function(_,i){return C(i,1,1,i===0?tieuDe:'');}).join('')+'</row>'); merges.push('A1:H1');
+  out.push('<row r="2" ht="30" customHeight="1">'+LET.map(function(_,i){return C(i,2,2,i===0?nhac:'');}).join('')+'</row>'); merges.push('A2:H2');
+  out.push('<row r="3" ht="34" customHeight="1">'+TEN_COT.map(function(t,i){return C(i,3,4,t);}).join('')+'</row>');
+  var r=4;
+  rows.forEach(function(d){
+    /* 0/5/6 canh giữa (kiểu 8), còn lại canh trái + tự xuống dòng (kiểu 9) */
+    out.push('<row r="'+r+'">'+LET.map(function(_,i){ return C(i,r,(i===0||i===5||i===6)?8:9,S(d[i])); }).join('')+'</row>');
+    r++;
+  });
+  var cols='<cols>'+RONG_COT.map(function(w,i){ return '<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+w+'" customWidth="1"/>'; }).join('')+'</cols>';
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr>'+
+    '<dimension ref="A1:H'+(r-1)+'"/>'+
+    '<sheetViews><sheetView showGridLines="0" workbookViewId="0"><pane ySplit="3" topLeftCell="A4" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>'+
+    '<sheetFormatPr defaultRowHeight="15"/>'+cols+
+    '<sheetData>'+out.join('')+'</sheetData>'+
+    '<mergeCells count="'+merges.length+'">'+merges.map(function(x){return '<mergeCell ref="'+x+'"/>';}).join('')+'</mergeCells>'+
+    '<pageMargins left="0.3" right="0.3" top="0.4" bottom="0.4" header="0.3" footer="0.3"/>'+
+    '<pageSetup paperSize="9" fitToWidth="1" fitToHeight="0" orientation="landscape"/></worksheet>';
+}
+function dungXlsx(tieuDe,nhac,rows){
+  var enc=new TextEncoder(), F=function(name,str){ return {name:name,data:enc.encode(str)}; };
+  return _zipStore([
+    F('[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>'),
+    F('_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'),
+    F('xl/workbook.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="KHGD" sheetId="1" r:id="rId1"/></sheets></workbook>'),
+    F('xl/_rels/workbook.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'),
+    F('xl/styles.xml',_XLSX_STYLES),
+    F('xl/worksheets/sheet1.xml',mauSheetXml(tieuDe,nhac,rows))
+  ]);
+}
+function slug(s){ return S(s).normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D').replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,''); }
+function namHoc(){ try{ return S((window.state&&state.year)||'2026-2027').replace(/[^0-9]/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,''); }catch(e){ return '2026_2027'; } }
+var NHAC='Cách dùng: giữ nguyên dòng tên cột và thứ tự cột · mỗi tiết một dòng · ô Tuần/Chủ đề/Tên bài để trống nghĩa là giống dòng trên · sửa xong lưu lại rồi vào Bút Xanh bấm "Nhập KHGD của tôi".';
+/* Cổng thu phí đọc theo TÊN TỆP (license.js: /^(KHBD_|KHGD_mon_|KhoGiaoAn_|KHDH_)/).
+   Khi môn này đã dùng KẾ HOẠCH RIÊNG thì nội dung xuất ra là của chính thầy cô, không
+   phải kho Bút Xanh — chặn thì vừa vô lý vừa trái lời hộp "nên tải file về giữ trước
+   khi bỏ", nên đặt tên tệp KHÔNG có tiền tố thu phí (rà 5/9/2026). */
+function tenTepMau(l,m){
+  return window.BX_khgdRiengMeta(l,m)
+    ? 'KHGD_cua_toi_'+slug(m)+'_Lop'+l+'_'+namHoc()+'.xlsx'
+    : 'KHGD_mon_'+slug(m)+'_Lop'+l+'_'+namHoc()+'_MAU-NHAP.xlsx';
+}
+window.BX_khgdTaiMau=function(){
+  try{
+    var l=(CUA&&CUA.lop)||lop(), m=(CUA&&CUA.mon)||mon(), rows=duLieuHienTai(l,m);
+    if(!rows.length){ if(window.bxAlert) bxAlert('Môn '+m+' lớp '+l+' chưa có dữ liệu để làm mẫu. Thầy/cô tải "mẫu trống" rồi tự điền giúp em ạ.'); return; }
+    var blob=dungXlsx('KẾ HOẠCH GIÁO DỤC MÔN '+m.toUpperCase()+' — LỚP '+l+' · NĂM HỌC '+S((window.state&&state.year)||'2026-2027'), NHAC, rows);
+    _downloadBlob(tenTepMau(l,m), blob, m);
+  }catch(e){ if(window.bxAlert) bxAlert('Chưa tạo được file mẫu: '+e.message); }
+};
+/* Mẫu TRỐNG — không mang nội dung nên miễn phí. Ghi số tuần ở MỌI dòng: để trống theo
+   nhóm 4 dòng thì chính mẫu của app lại thành bảng "ô trống = giống dòng trên", nhập
+   lại mất 105/140 số tuần và bảng xen kẽ 35 dải học kì (rà 5/9/2026). */
+window.BX_khgdTaiMauTrong=function(){
+  try{
+    var l=(CUA&&CUA.lop)||lop(), m=(CUA&&CUA.mon)||mon();
+    var blob=dungXlsx('KẾ HOẠCH GIÁO DỤC MÔN '+m.toUpperCase()+' — LỚP '+l+' (khung trống 35 tuần)', NHAC, khungTrong());
+    _downloadBlob('Mau_trong_KHGD_'+slug(m)+'_Lop'+l+'.xlsx', blob, '');
+  }catch(e){ if(window.bxAlert) bxAlert('Chưa tạo được file mẫu trống: '+e.message); }
+};
+
+/* ================================= ĐỌC FILE ================================= */
+/* Dò cột theo TỪ KHOÁ trong ô tiêu đề. Thứ tự dưới đây là thứ tự XÉT, KHÔNG phải thứ tự
+   cột — luật HẸP phải đứng trước luật RỘNG, vì nhiều tiêu đề chứa chung một chữ:
+     · "Chủ đề/Mạch nội dung"       có chữ "nội dung" → phải bắt bằng "chủ đề" TRƯỚC,
+       không thì nó cướp mất cột "Nội dung/Tên bài học" (đã sập ở lần đo 5/9/2026);
+     · "Nội dung điều chỉnh, bổ sung" có chữ "nội dung" → bắt bằng "điều chỉnh" trước;
+     · "Nội dung/Tên bài học"       có chữ "tên bài"   → bắt bằng "nội dung" trước.
+   Mỗi cột đích chỉ nhận MỘT lần. */
+var LUAT=[
+  [1,/chủ đề|chủ điểm|mạch|chương(?!\s*trình)/],
+  [7,/điều chỉnh|bổ sung|tích hợp|ghi chú|lồng ghép/],
+  [3,/phân môn|hoạt động|dạng bài|kiểu bài/],
+  [6,/tiết\s*kh|ppct|tiết\s*(học|thứ|số)|^\s*tiết\s*$/],
+  [5,/thời lượng|số tiết/],
+  [0,/tuần|tháng/],
+  [4,/nội dung/],
+  [2,/tên bài|bài học|bài dạy/]
+];
+function chuan(s){ return S(s).toLowerCase().replace(/\s+/g,' ').trim(); }
+function boc(cells){
+  var LET=['A','B','C','D','E','F','G','H','I','J','K','L'];
+  var maxRow=0; Object.keys(cells).forEach(function(k){ var m=k.match(/\d+$/); if(m&&+m[0]>maxRow) maxRow=+m[0]; });
+  if(!maxRow) throw new Error('File không có dữ liệu.');
+
+  /* Dòng tiêu đề = dòng khớp NHIỀU từ khoá nhất (cần ≥ 3). Quét tới 200 dòng chứ không
+     phải 30: nhiều bảng của trường có măng-sét + mấy dòng trống, tiêu đề tận dòng 34. */
+  var hRow=0, hBest=0;
+  for(var r=1;r<=Math.min(maxRow,200);r++){
+    var d=0, da={};
+    for(var c=0;c<LET.length;c++){
+      var v=chuan(cells[LET[c]+r]); if(!v) continue;
+      for(var k=0;k<LUAT.length;k++){ var t=LUAT[k][0]; if(!da[t]&&LUAT[k][1].test(v)){ da[t]=1; d++; break; } }
+    }
+    if(d>hBest){ hBest=d; hRow=r; }
+  }
+  if(hBest<3) throw new Error('Không tìm thấy dòng tiêu đề (cần các cột Tuần, Tên bài, Nội dung…). Thầy/cô tải file mẫu của Bút Xanh rồi sửa trên đó giúp em ạ.');
+
+  /* gán cột: quét trái → phải, mỗi ô nhận luật hẹp nhất còn trống */
+  var map={}, dung={}, tenCot=[];
+  for(var c2=0;c2<LET.length;c2++){
+    var h=chuan(cells[LET[c2]+hRow]); tenCot.push({let:LET[c2], ten:S(cells[LET[c2]+hRow])});
+    if(!h) continue;
+    for(var k2=0;k2<LUAT.length;k2++){ var t2=LUAT[k2][0];
+      if(dung[t2]==null && LUAT[k2][1].test(h)){ map[t2]=LET[c2]; dung[t2]=1; break; } }
+  }
+  /* Có kế thừa "ô trống = giống dòng trên" hay không, quyết theo HÌNH DẠNG DỮ LIỆU chứ
+     KHÔNG theo dòng nhắc/số thứ tự dòng tiêu đề. Đã đếm cả 51 môn của 5 khối: kho Bút
+     Xanh không môn nào bỏ trống ô Tuần, còn bảng có ô gộp thì cột Tuần trống hàng loạt.
+     Dựa vào dòng nhắc thì sai cả hai chiều (rà 5/9/2026):
+       · mẫu TRỐNG của chính app ghi tuần cách 4 dòng → tắt kế thừa → 105/140 dòng mất tuần;
+       · thầy cô xoá dòng nhắc cho gọn → bật kế thừa → 93 ô Tiếng Việt 3 bị điền đè tên
+         bài tuần trước (những ô Tên bài để trống CÓ Ý ở tuần ôn tập).
+     Thầy cô vẫn bật/tắt lại được ở bước xem trước. */
+  var coTuan=0, tongDong=0;
+  if(map[0]) for(var rr=hRow+1;rr<=maxRow;rr++){
+    var day=''; for(var cc=0;cc<LET.length;cc++) day+=S(cells[LET[cc]+rr]);
+    if(!day.trim()) continue;
+    tongDong++; if(S(cells[map[0]+rr]).trim()) coTuan++;
+  }
+  var keThua = tongDong>0 && (tongDong-coTuan)/tongDong > 0.15;
+  return {cells:cells, hRow:hRow, map:map, tenCot:tenCot, maxRow:maxRow, keThua:keThua};
+}
+/* Đọc dòng dữ liệu theo bản đồ cột đang chọn. Ô Tuần/Chủ đề/Tên bài để trống (hoặc do
+   GỘP Ô trong Excel — file .xlsx chỉ giữ chữ ở ô trên cùng) thì kế thừa dòng trên.
+   RIÊNG "Tên bài": chỉ kế thừa TRONG CÙNG MỘT CHỦ ĐỀ. Tuần ôn tập giữa kì vốn để trống
+   ô Tên bài một cách CÓ Ý (chủ đề đã nói rồi); kế thừa mù thì 24 dòng ôn tập của Tiếng
+   Việt 5 bị gán nhầm tên "Bài 16 (4 tiết)" của tuần trước (bắt được khi đo 5/9/2026). */
+function layDong(kq){
+  var cells=kq.cells, map=kq.map, rows=[], truoc=['','',''];
+  kq.dungTai=0;
+  for(var r=kq.hRow+1;r<=kq.maxRow;r++){
+    var o=[];
+    for(var c=0;c<8;c++) o.push(map[c]?S(cells[map[c]+r]).trim():'');
+    var het=o.join(' ');
+    if(/^\s*$/.test(het)) continue;
+    /* Vùng chân ký: dòng THƯA (nhiều nhất 2 ô có chữ), KHÔNG có tên bài lẫn nội dung, và
+       mang cụm chữ ký. Trước đây chỉ cần cụm chữ + ô Nội dung trống, nên một dòng ghi chú
+       "Giáo viên bộ môn dạy thay" cắt cụt nửa kế hoạch mà không báo gì; bảng của tổ không
+       có cột Nội dung thì mất luôn từ dòng đầu có chữ "giáo viên" (rà 5/9/2026). */
+    if(o.filter(Boolean).length<=2 && !o[2] && !o[4] &&
+       /PHÊ DUYỆT|HIỆU TRƯỞNG|TỔ TRƯỞNG|NGƯỜI LẬP|GIÁO VIÊN|NGÀY\s+\d+\s+THÁNG/i.test(het)){ kq.dungTai=r; break; }
+    if(kq.keThua){
+      if(o[0]) truoc[0]=o[0]; else o[0]=truoc[0];
+      if(o[1]){ if(o[1]!==truoc[1]) truoc[2]=''; truoc[1]=o[1]; } else o[1]=truoc[1];
+      if(o[2]) truoc[2]=o[2]; else o[2]=truoc[2];
+    }
+    if(!o[4] && !o[2]) continue;                       /* dòng không có nội dung lẫn tên bài */
+    rows.push(o);
+  }
+  return rows;
+}
+function soatXet(rows,kq){
+  var cb=[];
+  if(rows.length<5) cb.push('Chỉ đọc được '+rows.length+' dòng — thầy/cô xem lại xem có chọn nhầm file không.');
+  var coTuan=rows.filter(function(r){ var n=parseInt(r[0],10); return n>=1&&n<=45; }).length;
+  if(coTuan < rows.length*0.6) cb.push('Cột Tuần có '+(rows.length-coTuan)+'/'+rows.length+' dòng không phải số tuần — kiểm tra lại xem đã gán đúng cột chưa.');
+  /* Thiếu cột Nội dung là hỏng ngầm: bảng trắng một cột, bản Word mất phần thân tên bài,
+     và địa chỉ STEM/lồng ghép (dò theo r[4]) im lặng ngừng gắn (rà 5/9/2026). */
+  if(kq){
+    [[4,'Nội dung/Tên bài học'],[2,'Tên bài']].forEach(function(p){
+      if(!kq.map[p[0]]){ cb.push('Chưa gán được cột "'+p[1]+'" — chọn lại ở phần gán cột bên dưới, kẻo bảng và bản Word thiếu hẳn cột này.'); return; }
+      var trong=rows.filter(function(r){ return !S(r[p[0]]).trim(); }).length;
+      if(rows.length && trong>rows.length*0.5) cb.push('Cột "'+p[1]+'" trống ở '+trong+'/'+rows.length+' dòng — xem lại đã gán đúng cột chưa.');
+    });
+    if(kq.dungTai) cb.push('Đã dừng đọc ở dòng '+kq.dungTai+' vì gặp vùng chân ký (Phê duyệt / Hiệu trưởng / Giáo viên). Nếu kế hoạch còn nội dung phía dưới, thầy/cô xoá dòng đó trong Excel rồi nhập lại.');
+  }
+  var tiet=0; rows.forEach(function(r){ var n=parseInt(r[5],10); tiet+=(n>0?n:1); });
+  var tuanMax=0; rows.forEach(function(r){ var n=parseInt(r[0],10); if(n>tuanMax) tuanMax=n; });
+  if(tuanMax && tuanMax<30) cb.push('Kế hoạch chỉ tới tuần '+tuanMax+' — năm học thường 35 tuần.');
+  return {canhBao:cb, tiet:tiet, tuanMax:tuanMax};
+}
+
+/* ================================== CỬA NHẬP ================================== */
+var TAM=null;      /* kết quả đọc file đang chờ thầy cô duyệt */
+var CUA=null;      /* lớp + môn ĐÃ CHỐT lúc mở cửa — mọi việc trong cửa bám theo cặp này */
+function css(){
+  if(el('bx-nkg-style')) return;
+  var s=document.createElement('style'); s.id='bx-nkg-style';
+  s.textContent=
+   '#bx-nkg-ov{position:fixed;inset:0;background:rgba(18,40,28,.45);display:none;align-items:flex-start;justify-content:center;padding:24px 14px;z-index:70;overflow-y:auto}'+
+   '#bx-nkg-ov.show{display:flex}'+
+   '#bx-nkg-ov .bx-nkg{background:#fff;border-radius:14px;max-width:960px;width:100%;box-shadow:0 18px 50px rgba(0,0,0,.25);overflow:hidden}'+
+   '#bx-nkg-ov .hd{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;border-bottom:1px solid #e6ece7}'+
+   '#bx-nkg-ov .hd h3{margin:0;color:'+NAVY+';font-size:17px}'+
+   '#bx-nkg-ov .bd{padding:14px 18px;max-height:70vh;overflow:auto}'+
+   '#bx-nkg-ov .buoc{border:1px solid #dfe8e1;border-radius:12px;padding:12px 14px;margin-bottom:12px;background:#fbfdfb}'+
+   '#bx-nkg-ov .buoc h4{margin:0 0 6px;font-size:14.5px;color:'+NAVY+'}'+
+   '#bx-nkg-ov .buoc p{margin:0 0 10px;font-size:13px;color:#4a5a50;line-height:1.55}'+
+   '#bx-nkg-ov .tha{border:2px dashed #b7d3c0;border-radius:12px;padding:20px;text-align:center;background:#f4faf6;cursor:pointer}'+
+   '#bx-nkg-ov .tha.hover{border-color:#1f8b4d;background:#e9f6ee}'+
+   '#bx-nkg-ov .tha b{color:'+NAVY+'}'+
+   '#bx-nkg-ov .cot{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:8px;margin:8px 0}'+
+   '#bx-nkg-ov .cot label{font-size:12px;color:#4a5a50;display:block}'+
+   '#bx-nkg-ov .cot select{width:100%;padding:6px 8px;border:1px solid #cfdcd4;border-radius:7px;font-size:13px}'+
+   '#bx-nkg-ov table.xt{border-collapse:collapse;width:100%;font-size:12px}'+
+   '#bx-nkg-ov table.xt th{background:#eef5f0;color:'+NAVY+';border:1px solid #cfdcd4;padding:5px 6px;text-align:left}'+
+   '#bx-nkg-ov table.xt td{border:1px solid #e0e8e3;padding:5px 6px;vertical-align:top}'+
+   '#bx-nkg-ov .ft{display:flex;gap:8px;justify-content:flex-end;padding:12px 18px;border-top:1px solid #e6ece7;background:#fafcfa;flex-wrap:wrap}'+
+   '#bx-nkg-ov .canh{background:#fff7e6;border:1px solid #f0d089;border-radius:8px;padding:8px 10px;font-size:12.5px;color:#7a5b12;margin:8px 0}';
+  document.head.appendChild(s);
+}
+function dungKhung(){
+  if(el('bx-nkg-ov')) return;
+  var d=document.createElement('div'); d.id='bx-nkg-ov';
+  d.innerHTML='<div class="bx-nkg">'+
+    '<div class="hd"><h3 id="bx-nkg-tt">Nhập Kế hoạch giáo dục môn học</h3>'+
+      '<button class="btn" onclick="BX_khgdDongNhap()" style="border:none;background:none;font-size:22px;line-height:1;cursor:pointer;color:#789">×</button></div>'+
+    '<div class="bd">'+
+      '<div class="buoc"><h4>Bước 1 · Lấy file Excel để sửa</h4>'+
+        '<p>File mẫu <b>đã điền sẵn kế hoạch đang dùng</b>, kể cả những ô thầy/cô đã sửa tay. '+
+        'Thầy/cô mở bằng Excel, sửa hoặc dán kế hoạch của tổ vào, rồi lưu lại (vẫn để đuôi <b>.xlsx</b>).</p>'+
+        '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+          '<button class="btn solid" onclick="BX_khgdTaiMau()">⬇️ Tải mẫu có sẵn nội dung</button>'+
+          '<button class="btn" onclick="BX_khgdTaiMauTrong()">📄 Tải mẫu trống 35 tuần</button>'+
+        '</div></div>'+
+      '<div class="buoc"><h4>Bước 2 · Đưa file đã sửa lên</h4>'+
+        '<div class="tha" id="bx-nkg-tha">📂 <b>Bấm để chọn file Excel</b><br><span style="font-size:12.5px;color:#5d6f64">hoặc kéo thả file .xlsx vào đây</span>'+
+        '<input type="file" id="bx-nkg-file" accept=".xlsx" style="display:none"></div>'+
+        '<div id="bx-nkg-tt2" style="font-size:12.5px;color:#5d6f64;margin-top:8px"></div></div>'+
+      '<div class="buoc" id="bx-nkg-xt" style="display:none"><h4>Bước 3 · Xem trước rồi mới nhận</h4>'+
+        '<div id="bx-nkg-tt3"></div></div>'+
+    '</div>'+
+    '<div class="ft">'+
+      '<button class="btn" onclick="BX_khgdDongNhap()">Đóng</button>'+
+      '<button class="btn solid" id="bx-nkg-ok" onclick="BX_khgdNhanBan()" style="display:none">✔️ Dùng kế hoạch này</button>'+
+    '</div></div>';
+  document.body.appendChild(d);
+  var tha=el('bx-nkg-tha'), inp=el('bx-nkg-file');
+  tha.onclick=function(){ inp.value=''; inp.click(); };
+  inp.onchange=function(){ if(inp.files&&inp.files[0]) nhanFile(inp.files[0]); };
+  ['dragenter','dragover'].forEach(function(x){ tha.addEventListener(x,function(e){ e.preventDefault(); tha.classList.add('hover'); }); });
+  ['dragleave','drop'].forEach(function(x){ tha.addEventListener(x,function(e){ e.preventDefault(); tha.classList.remove('hover'); }); });
+  tha.addEventListener('drop',function(e){ var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(f) nhanFile(f); });
+  /* KHÔNG đóng khi bấm ra nền: đọc xong một file 3000 dòng rồi lỡ tay bấm trượt là mất
+     hết, phải chọn lại từ đầu. Đóng bằng nút × / Đóng / phím Esc. */
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape' && el('bx-nkg-ov') && el('bx-nkg-ov').classList.contains('show')) window.BX_khgdDongNhap();
+  });
+}
+window.BX_khgdMoNhap=function(){
+  css(); dungKhung();
+  /* CHỐT lớp + môn ngay lúc mở cửa. Ô "Môn học" phía sau vẫn bấm Tab tới được, và
+     BX_khgdSetLop còn tự đổi môn khi kho của lớp vừa tải về — không chốt thì kế hoạch
+     vừa đọc bị ghi vào NHẦM MÔN, lại xoá luôn bản sửa tay của môn đó (rà 5/9/2026). */
+  CUA={lop:lop(), mon:mon()}; TAM=null;
+  el('bx-nkg-tt').textContent='Nhập Kế hoạch giáo dục môn '+CUA.mon+' — Lớp '+CUA.lop;
+  el('bx-nkg-tt2').innerHTML=''; el('bx-nkg-xt').style.display='none'; el('bx-nkg-ok').style.display='none';
+  var f=el('bx-nkg-file'); if(f) f.value='';
+  el('bx-nkg-ov').classList.add('show');
+};
+window.BX_khgdDongNhap=function(){
+  var o=el('bx-nkg-ov'); if(o) o.classList.remove('show');
+  var f=el('bx-nkg-file'); if(f) f.value='';
+  TAM=null; CUA=null;
+};
+
+/* Thử LẦN LƯỢT mọi sheet trong file, lấy sheet đầu tiên dò ra được dòng tiêu đề. Chỉ đọc
+   sheet1.xml thì kế hoạch nằm ở sheet 2 (sheet 1 là thời khoá biểu) sẽ báo "không tìm
+   thấy dòng tiêu đề, tải mẫu Bút Xanh về mà sửa" — đổ oan cho file đúng (rà 5/9/2026). */
+async function docFile(file){
+  var ab=await file.arrayBuffer(), zip=await _unzip(ab);
+  var ds=Object.keys(zip).filter(function(n){ return /xl\/worksheets\/[^\/]*\.xml$/i.test(n); })
+    .sort(function(a,b){ var f=function(x){ var m=x.match(/(\d+)\.xml$/); return m?+m[1]:999; }; return f(a)-f(b); });
+  if(!ds.length) throw new Error('Không tìm thấy bảng tính trong file.');
+  var ss=Object.keys(zip).find(function(n){ return /sharedStrings\.xml$/i.test(n); });
+  var shared=ss?_parseSharedStrings(await _readPart(zip[ss])):[];
+  var loiDau=null;
+  for(var i=0;i<ds.length;i++){
+    try{ return boc(_parseSheet(await _readPart(zip[ds[i]]), shared)); }
+    catch(e){ if(!loiDau) loiDau=e; }
+  }
+  throw loiDau||new Error('Không đọc được bảng tính nào trong file.');
+}
+async function nhanFile(file){
+  var tt=el('bx-nkg-tt2');
+  tt.innerHTML='⏳ Đang đọc <b>'+esc(file.name)+'</b>…';
+  try{
+    if(!/\.xlsx$/i.test(file.name)) throw new Error('Bút Xanh chỉ đọc được file .xlsx. Trong Excel thầy/cô chọn "Lưu thành" → định dạng "Excel Workbook (*.xlsx)" giúp em ạ.');
+    TAM=await docFile(file); TAM.ten=file.name;
+    tt.innerHTML='✓ Đã đọc <b>'+esc(file.name)+'</b> — dòng tiêu đề: dòng '+TAM.hRow+'.';
+    veXemTruoc();
+  }catch(e){
+    TAM=null; el('bx-nkg-xt').style.display='none'; el('bx-nkg-ok').style.display='none';
+    tt.innerHTML='<span style="color:#a33">✕ '+esc(e.message||String(e))+'</span>';
+  }
+}
+function veXemTruoc(){
+  if(!TAM||!CUA) return;
+  var rows=layDong(TAM), xet=soatXet(rows,TAM); TAM.rows=rows;
+  var oCot=TEN_COT.map(function(t,i){
+    var v=TAM.map[i]||'';
+    var chon=TAM.tenCot.map(function(c){
+      return '<option value="'+c.let+'"'+(c.let===v?' selected':'')+'>'+c.let+(c.ten?(' — '+esc(c.ten)):'')+'</option>'; }).join('');
+    return '<label>'+esc(t)+'<select onchange="BX_khgdDoiCot('+i+',this.value)">'+
+      '<option value=""'+(v?'':' selected')+'>— không có —</option>'+chon+'</select></label>';
+  }).join('');
+  var dau=rows.slice(0,6).map(function(r){ return '<tr>'+r.map(function(x){ return '<td>'+esc(x.length>60?x.slice(0,60)+'…':x)+'</td>'; }).join('')+'</tr>'; }).join('');
+  var cu=window.BX_khgdEdit&&window.BX_khgdEdit[CUA.lop]&&window.BX_khgdEdit[CUA.lop][CUA.mon];
+  var soCu=cu?Object.keys(cu).length:0;
+  /* Lời hứa "nội dung không mất vì mẫu đã gộp sẵn phần sửa" CHỈ đúng nếu thầy cô tải
+     được mẫu có nội dung. Chưa kích hoạt bản quyền thì cổng chặn tệp đó, nên phải nói
+     thẳng thay vì trấn an sai (rà 5/9/2026). */
+  var taiDuocMau=true;
+  try{ if(window.BXLIC && BXLIC.needPaid && BXLIC.needPaid(tenTepMau(CUA.lop,CUA.mon)) && BXLIC.canDownload && !BXLIC.canDownload()) taiDuocMau=false; }catch(e){}
+  el('bx-nkg-tt3').innerHTML=
+    '<p style="margin:0 0 8px;font-size:13px;color:#254">Nhận vào môn <b>'+esc(CUA.mon)+'</b> — Lớp <b>'+esc(CUA.lop)+'</b> · đọc được <b>'+rows.length+' dòng</b> · khoảng <b>'+xet.tiet+' tiết</b> · tới <b>tuần '+(xet.tuanMax||'?')+'</b>.</p>'+
+    (xet.canhBao.length?('<div class="canh">⚠️ '+xet.canhBao.map(esc).join('<br>⚠️ ')+'</div>'):'')+
+    (soCu?('<div class="canh">✎ Môn này đang có <b>'+soCu+' dòng thầy/cô sửa tay</b>. Kế hoạch mới đánh số dòng khác nên bản sửa đó sẽ được xoá.'+
+      (taiDuocMau?' Nội dung KHÔNG mất vì file mẫu Bút Xanh xuất ra đã gộp sẵn phần sửa vào rồi.'
+                 :' <b>Máy này chưa kích hoạt bản quyền nên không tải được mẫu có nội dung</b> — phần sửa tay đó sẽ mất hẳn. Thầy/cô cân nhắc chép lại trước khi nhận.')+'</div>'):'')+
+    '<div style="font-size:12.5px;color:#4a5a50;margin:10px 0 2px">Bút Xanh tự gán cột như dưới đây — sai thì thầy/cô chọn lại:</div>'+
+    '<div class="cot">'+oCot+'</div>'+
+    '<label style="display:block;font-size:12.5px;color:#4a5a50;margin:6px 0">'+
+      '<input type="checkbox" onchange="BX_khgdDoiKeThua(this.checked)"'+(TAM.keThua?' checked':'')+'> '+
+      'Ô trống ở cột <b>Tuần / Chủ đề / Tên bài</b> nghĩa là <b>giống dòng trên</b>'+
+      ' <span style="color:#7a8a80">(bật khi bảng của tổ có ô gộp; file mẫu Bút Xanh xuất ra thì tắt vì đã ghi đủ mọi ô)</span></label>'+
+    '<div style="font-size:12.5px;color:#4a5a50;margin:10px 0 4px">6 dòng đầu sau khi đọc:</div>'+
+    '<div style="overflow:auto;max-height:230px"><table class="xt"><thead><tr>'+TEN_COT.map(function(t){return '<th>'+esc(t)+'</th>';}).join('')+'</tr></thead><tbody>'+
+    (dau||'<tr><td colspan="8" style="text-align:center;color:#888;padding:12px">Chưa đọc được dòng nào.</td></tr>')+'</tbody></table></div>';
+  el('bx-nkg-xt').style.display='';
+  el('bx-nkg-ok').style.display=rows.length?'':'none';
+}
+window.BX_khgdDoiKeThua=function(b){ if(TAM){ TAM.keThua=!!b; veXemTruoc(); } };
+window.BX_khgdDoiCot=function(i,letter){
+  if(!TAM) return;
+  if(letter){ Object.keys(TAM.map).forEach(function(k){ if(TAM.map[k]===letter && +k!==i) delete TAM.map[k]; }); TAM.map[i]=letter; }
+  else delete TAM.map[i];
+  veXemTruoc();
+};
+window.BX_khgdNhanBan=function(){
+  if(!TAM||!CUA||!TAM.rows||!TAM.rows.length) return;
+  var l=CUA.lop, m=CUA.mon;                 /* lớp+môn CHỐT lúc mở cửa, không đọc lại */
+  /* Bản sửa theo CHỈ SỐ DÒNG của kế hoạch cũ không còn đúng dòng nào của kế hoạch mới
+     nên phải bỏ — nhưng CẤT lại một bản trong chính mục vừa nhận, đừng xoá thẳng: thầy
+     cô chưa kích hoạt bản quyền không tải được mẫu có nội dung, xoá là mất hẳn. */
+  var edCu=null;
+  try{ var E0=window.BX_khgdEdit; if(E0&&E0[l]&&E0[l][m]&&Object.keys(E0[l][m]).length) edCu=E0[l][m]; }catch(e){}
+  KHO[l]=KHO[l]||{};
+  KHO[l][m]={luc:Date.now(), ten:TAM.ten||'', rows:TAM.rows};
+  if(edCu) KHO[l][m].edCu=edCu;
+  if(!luuKho()){ delete KHO[l][m]; return; }
+  try{
+    var E=window.BX_khgdEdit;
+    if(E&&E[l]&&E[l][m]){ delete E[l][m]; localStorage.setItem('butxanh_khgd_edits',JSON.stringify(E)); }
+  }catch(e){}
+  var so=TAM.rows.length;
+  window.BX_khgdDongNhap(); veLai();
+  try{ if(window.bxAlert) bxAlert('✓ Đã nhận kế hoạch riêng cho môn '+m+' lớp '+l+' — '+so+' dòng.\n\nBảng trên màn hình, bản Word Phụ lục 2 và Bản đồ chương trình đều đã đổi theo.'); }catch(e){}
+};
+
+/* ---------------------------------------------------------------- tự kiểm
+   Vòng tròn Excel phải KHÉP KÍN: xuất mẫu → đọc lại → ra đúng dữ liệu cũ. Nếu không
+   thì thầy cô tải mẫu về, chưa sửa gì, nhập lại đã mất dòng — hỏng cả kế hoạch.
+   Gõ trong Console:  BX_khgdTuKiem().then(console.log)   ·  chạy: node _do-nhap-khgd.js */
+window.BX_khgdTuKiem=async function(l,m){
+  l=String(l||lop()); m=m||mon();
+  var goc=duLieuHienTai(l,m);
+  if(!goc.length) return {lop:l,mon:m,loi:['môn này chưa có dữ liệu']};
+  var blob=dungXlsx('TỰ KIỂM',NHAC,goc);
+  var kq=await docFile(new File([blob],'tukiem.xlsx',{type:BX_MIME.xlsx}));
+  var rows=layDong(kq), loi=[];
+  if(kq.hRow!==3) loi.push('dò nhầm dòng tiêu đề: '+kq.hRow+' (phải là 3)');
+  for(var c=0;c<8;c++) if(!kq.map[c]) loi.push('không dò ra cột "'+TEN_COT[c]+'"');
+  if(rows.length!==goc.length) loi.push('đọc lại được '+rows.length+' dòng, gốc '+goc.length+' dòng');
+  var lech=0, viDu='';
+  for(var i=0;i<Math.min(rows.length,goc.length);i++) for(var c2=0;c2<8;c2++){
+    if(S(rows[i][c2]).trim()!==S(goc[i][c2]).trim()){
+      lech++; if(!viDu) viDu='dòng '+(i+1)+' cột "'+TEN_COT[c2]+'": "'+S(goc[i][c2]).slice(0,40)+'" → "'+S(rows[i][c2]).slice(0,40)+'"';
+    }
+  }
+  if(lech) loi.push(lech+' ô lệch sau khi xuất rồi đọc lại — '+viDu);
+  return {lop:l, mon:m, soDong:goc.length, docLai:rows.length, hRow:kq.hRow, loi:loi};
+};
+
+/* Có bản riêng thì phải dựng lại màn KHDH một lần sau khi khối này nạp xong, vì lúc
+   khối KHDH chạy (ở trên) hàm BX_khgdRows còn chưa tồn tại. */
+if(Object.keys(KHO).length){ if(document.readyState!=='loading') setTimeout(veLai,0); else document.addEventListener('DOMContentLoaded',veLai); }
+try{ if(typeof BACKUP_KEYS!=='undefined' && BACKUP_KEYS.indexOf(RKEY)<0) BACKUP_KEYS.push(RKEY); }catch(e){}
+try{ if(typeof BACKUP_KEYS!=='undefined' && BACKUP_KEYS.indexOf('butxanh_khgd_edits')<0) BACKUP_KEYS.push('butxanh_khgd_edits'); }catch(e){}
+console.log('[Bút Xanh] Nhập KHGD cá nhân đã sẵn sàng.');
+})();
 </script>
 
 <!-- ===== Dashboard: select theo tuần chạy thật ===== -->
@@ -11483,8 +12192,13 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
       return out;
     }catch(e){ return []; }
   }
+  /* Cột "Đồ dùng TBDH" của LBG. Trước đây chỉ lấy DÒNG ĐẦU của mục II rồi cắt 56 chữ —
+     mà dòng đầu thường là đề mục ("1. Đối với giáo viên") hoặc câu tả địa điểm, nên cột
+     vừa dài vừa chẳng nói gì. Nay dùng chung bộ rút gọn BX_ddTbdh (xem chú thích ở đó).
+     Hàm này nằm TRONG IIFE nên phải gọi qua window. */
   function shortTBDH(dodung){
     if(!dodung) return '';
+    try{ if(typeof window.BX_ddTbdh==='function') return window.BX_ddTbdh(dodung); }catch(e){}
     var line=String(dodung).split('\n')[0].replace(/^[-••\s]+/,'').replace(/^GV\s*:?\s*/i,'').trim();
     return line.length>56?line.slice(0,56)+'…':line;
   }
