@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-05 · 108';
+  var PB='2026-09-05 · 109';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -7208,13 +7208,21 @@ var BX_STEM_TRAINGHIEM={
 };
 /* Tiết ghi trong tên bài: "(Tiết 1)", "(T1)", "TIẾT 1:", "- TIẾT 2" — không có thì trả null. */
 function BX_stemTiet(kd){ var m=/\((?:tiet|t)\s*(\d+)\)|\btiet\s*(\d+)\b/.exec(kd); return m?parseInt(m[1]||m[2],10):null; }
+/* ⚠️ (4/9/2026) DÒ THEO CHỮ CÁI VÀ SỐ, BỎ HẾT DẤU CÂU.
+   Khoá dò ở BX_STEM_DIACHI viết theo lối KHDH — "bai 13. mot so bo phan cua thuc vat",
+   "mi-li-met, gam, mi-li-lit" — còn kho giáo án viết "Bài 13: MỘT SỐ BỘ PHẬN…",
+   "MI – LI – MÉT, GAM…". Chỉ khác dấu chấm/hai chấm và gạch nối mà indexOf trượt:
+   KHDH in ra 6 địa chỉ bài học STEM (TN&XH 3 hai bài, Toán 1 ba bài, Toán 3 một bài)
+   mà mở KHBD ra không thấy dòng STEM nào — cô giáo khối 3 báo 4/9/2026.
+   Nay hai bên cùng rút về "chỉ chữ và số cách nhau một dấu cách" rồi mới so. */
+function BX_kdp(s){ return BX_kd(s).replace(/[^a-z0-9]+/g,' ').replace(/^ | $/g,''); }
 /* Địa chỉ bài học STEM cho 1 bài (tên bài + môn + lớp) → chuỗi mô tả hoặc null. */
 function BX_stemTim(lop, mon, ten){
   var L=BX_STEM_DIACHI[String(lop).replace(/\D/g,'')]; if(!L) return null;
   var ds=L[BX_monTH(mon)]; if(!ds) return null;
-  var kd=BX_kd(ten), tiet=BX_stemTiet(kd);
+  var kd=BX_kd(ten), tiet=BX_stemTiet(kd), kdp=BX_kdp(ten);
   for(var i=0;i<ds.length;i++){
-    var d=ds[i]; if(kd.indexOf(d.b)<0) continue;
+    var d=ds[i]; if(kdp.indexOf(BX_kdp(d.b))<0) continue;
     if(d.t!=null && tiet!=null && tiet!==d.t) continue;
     return d.n;
   }
@@ -7255,6 +7263,23 @@ window.BX_khgdCot7Goc=function(text){
   return s.replace(/^[\s;]+|[\s;]+$/g,'');
 };
 window.BX_stemTim=BX_stemTim; window.BX_stemDiaChi=BX_stemDiaChi; window.BX_STEM_DIACHI=BX_STEM_DIACHI;
+/* ===== BÀI HỌC STEM TRONG LỊCH BÁO GIẢNG (4/9/2026) =====
+   Trước nay STEM chỉ hiện ở KHDH (cột "Nội dung điều chỉnh, bổ sung") và trong KHBD
+   (BX_intgLines). Lịch báo giảng dựng tên bài THUẦN từ kho giáo án nên không có chữ STEM
+   nào — cô giáo khối 3 báo "chưa đưa Bài học STEM vào lịch báo giảng" ngày 4/9/2026, và
+   đúng: 0/68 địa chỉ STEM lọt vào LBG. Lớp 1, 2 nhìn thấy STEM chỉ vì tên bài trong kho
+   vốn đã viết sẵn chữ "BÀI HỌC STEM".
+   LBG chỉ có 7 cột (Thứ · Buổi · Tiết · Môn · Lớp · Tên bài · Đồ dùng TBDH), không có ô
+   ghi chú, nên gắn ngay sau tên bài — đúng chỗ tổ chuyên môn đọc để đối chiếu KHDH. */
+window.BX_lbgThemStem=function(lop, mon, bai){
+  var s=String(bai==null?'':bai);
+  try{
+    if(!s || /STEM/i.test(s)) return s;                 /* tên bài đã có sẵn chữ STEM */
+    if(!BX_intgState().stem) return s;                  /* thầy cô tắt công tắc STEM */
+    var n=BX_stemTim(lop, mon, s);
+    return n ? (s+' — Bài học STEM: '+n) : s;
+  }catch(e){ return s; }
+};
 /* Chất liệu QPAN theo LỚP — lấy đúng nội dung từng khối trong Thông tư 08/2024. */
 var BX_QPAN_LOP={
   '1':{cl:'hình ảnh chú bộ đội Quân đội nhân dân, chú công an Công an nhân dân và di tích lịch sử ở địa phương',
@@ -8331,6 +8356,33 @@ function buildKHGDPhuLuc2(LOP,dsMon){
   if(_ts.dinhchinh) QW.push(['ĐÍNH CHÍNH','Điều chỉnh, bổ sung nội dung sách giáo khoa','Nội dung sách giáo khoa được cập nhật cho chính xác, khoa học theo tài liệu tập huấn của cơ quan quản lí; không phải nội dung tích hợp.']);
   /* (4/9/2026) Mã STEM — dữ liệu lớp 4–5 in "GD STEM" ở cột 7 từ lâu mà bảng này chưa giải nghĩa. */
   if(_ts.stem!==false) QW.push(['STEM','Giáo dục STEM — bài học STEM (CV 909/BGDĐT-GDTH ngày 08/3/2023; CV 3132/SGD&ĐT-GDTrH,GDTH ngày 25/8/2026 của Sở GD&ĐT Nghệ An)','Tiết dạy tổ chức theo hình thức bài học STEM (tích hợp Toán, Khoa học/TNXH, Tin học, Công nghệ, Mĩ thuật…) trong thời lượng của môn học, thay cho tiết SGK tương ứng; tiến trình: xác định vấn đề → tìm hiểu kiến thức nền → đề xuất giải pháp → chế tạo, thử nghiệm → chia sẻ, đánh giá. Hoạt động trải nghiệm STEM tối thiểu 01 lần/học kì. Tên bài lấy theo bộ tài liệu “Bài học STEM” cấp Tiểu học (NXB Giáo dục Việt Nam); trường có kế hoạch giáo dục STEM riêng thì sửa lại tên bài cho khớp.']);
+  /* (4/9/2026) Tổ chuyên môn ghi thẳng mã vào cột 7 của dữ liệu — có mã bảng này chưa liệt
+     kê (Tự nhiên và Xã hội 3 ghi GDMT, Âm nhạc 3 ghi NLS-ƯD), có mã đang tắt công tắc mà
+     dữ liệu vẫn in ra (GDĐP, KNS). Quét cột 7 của các môn sắp in, mã nào CÓ THẬT mà chưa
+     có dòng quy ước thì bổ sung — không để thầy cô đọc bảng gặp mã không giải nghĩa.
+     Đồng bộ với website Kế hoạch dạy học các môn học (data/integrations.json). */
+  var QW_THEM={
+   'NLS-ƯD':['NLS-ƯD','Năng lực số – ứng dụng thiết bị, phần mềm','Sử dụng thiết bị và phần mềm học tập ở mức đơn giản, dưới hướng dẫn và kiểm soát của giáo viên.'],
+   'NLS-NB':['NLS-NB','Năng lực số – nhận biết ban đầu','Làm quen, nhận biết thiết bị và sản phẩm số phù hợp lứa tuổi; chưa yêu cầu thao tác độc lập.'],
+   'NLS':['NLS','Năng lực số (ghi chung)','Dùng khi hoạt động chạm tới nhiều miền năng lực số, chưa tách rõ theo từng miền.'],
+   'GDMT':['GDMT','Giáo dục bảo vệ môi trường','Giữ gìn vệ sinh, bảo vệ cảnh quan và môi trường sống ở lớp, ở trường và ở địa phương; làm việc vừa sức để bảo vệ môi trường.'],
+   'ATGT':['ATGT','Giáo dục an toàn giao thông','Nhận biết và chấp hành quy định an toàn giao thông phù hợp lứa tuổi.'],
+   'QTE':['QTE','Giáo dục quyền trẻ em','Liên hệ quyền được học tập, vui chơi, được bảo vệ và được lắng nghe của trẻ em.'],
+   'GDĐP':['GDĐP','Nội dung giáo dục của địa phương','Ở tiểu học không bố trí tiết riêng: lồng ghép vào Hoạt động trải nghiệm và các môn học qua tư liệu, di tích, lễ hội, sản vật, nghề truyền thống của địa phương.'],
+   'KNS':['KNS','Giáo dục kĩ năng sống (CT GDPT 2018; TT 04/2014/TT-BGDĐT)','Rèn kĩ năng tự phục vụ, giao tiếp, hợp tác, quản lí cảm xúc, ứng phó và tự bảo vệ ngay trong tiến trình bài dạy.'],
+   'QPAN':['QPAN','Giáo dục quốc phòng và an ninh (TT 08/2024/TT-BGDĐT)','Lồng ghép trong Tiếng Việt, Tự nhiên và Xã hội, Đạo đức, Lịch sử và Địa lí, Âm nhạc, Mĩ thuật, Hoạt động trải nghiệm; không làm thay đổi thời lượng và cấu trúc bài dạy.']
+  };
+  try{
+    var _daCoMa={}; QW.forEach(function(r,i){ if(i) _daCoMa[r[0]]=1; });
+    var _cot7=''; coDL.forEach(function(mon){ (KH[mon]||[]).forEach(function(r){ _cot7+='\n'+String(r[7]==null?'':r[7]); }); });
+    Object.keys(QW_THEM).forEach(function(ma){
+      if(_daCoMa[ma]) return;
+      /* mã phải đứng đầu một đoạn (xuống dòng / ";" / "—") và có dấu ":" ngay sau,
+         để "NLS" không bắt nhầm phần đầu của "NLS-KT:" */
+      var re=new RegExp('[\\n;—]\\s*'+ma.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\s*(\\([^)]*\\))?\\s*:');
+      if(re.test(_cot7)) QW.push(QW_THEM[ma]);
+    });
+  }catch(_e){ try{console.warn('[Bút Xanh] bổ sung quy ước mã lỗi: '+_e.message);}catch(__e){} }
   var QWW=[1600,4200,8600];
   var qrows=QW.map(function(row,ri){return '<w:tr>'+row.map(function(c,ci){return bxTc(c,QWW[ci],{b:ri===0,jc:ci===0?'center':'left',sz:18});}).join('')+'</w:tr>';});
   var qwTbl='<w:tbl><w:tblPr><w:tblW w:w="14400" w:type="dxa"/><w:jc w:val="center"/>'+bxBorders(false)+'<w:tblLayout w:type="fixed"/></w:tblPr>'+
@@ -8872,7 +8924,8 @@ function BX_weekSchedule(w){
   rows.forEach(function(row){
     if(dates.byDay[row.day]) row.date=dates.byDay[row.day];
     var L=_listFor(row.mon);
-    if(L.list[L.idx]){ var rr=L.list[L.idx++]; row.bai=rr[4]||rr[2]||row.bai; if(rr[6]) row.ppct=rr[6]; }
+    if(L.list[L.idx]){ var rr=L.list[L.idx++]; row.bai=rr[4]||rr[2]||row.bai; if(rr[6]) row.ppct=rr[6];
+      if(typeof window.BX_lbgThemStem==='function') row.bai=window.BX_lbgThemStem(row.lop||state.klass, row.mon, row.bai); }
     else if(String(w)!=='12'){ row.bai='(theo PPCT)'; }
   });
   return rows;
@@ -11325,6 +11378,8 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
       if(E&&E.parts>1&&E.part>1) bai=bai+' (tiết '+E.part+'/'+E.parts+')';
       var fromK=false;
       if(!L && !bai && khName){ bai=String(khName); fromK=true; }   // Kho thiếu → lấy tên bài từ KHDH
+      /* (4/9/2026) Gắn địa chỉ bài học STEM ngay sau tên bài — xem BX_lbgThemStem. */
+      if(bai && typeof window.BX_lbgThemStem==='function') bai=window.BX_lbgThemStem(lop, s.mon, bai);
       var r={day:s.day,date:date,buoi:s.buoi,tiet:s.tiet,mon:s.mon,lop:lop,
         bai:(opts&&opts.bu?('↩️ Dạy bù: '+(bai||(opts.note||''))):bai),
         tbdh:L?shortTBDH(L.dodung):'',ppct:E?(E.ppct||''):'',_gen:true,
