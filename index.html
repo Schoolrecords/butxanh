@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-05 · 107';
+  var PB='2026-09-05 · 108';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -10633,6 +10633,11 @@ var MON_KHOI={
    đều đã có trong MON_KHOI, mở đúng những khối chương trình có môn ấy. */
 var MON_CHUYEN=['Tiếng Anh','Tin học','Công nghệ','Âm nhạc','Mĩ thuật','GDTC',
   'Đạo đức','Tự nhiên và Xã hội','Khoa học','Lịch sử & Địa lí'];
+/* Số tiết/tuần theo chương trình — nhân 35 tuần ra số tiết cả năm của MỘT khối.
+   Dùng để đo phạm vi thầy cô tự khai, KHÔNG dùng để dựng lịch. */
+var TIET_TUAN={'Tiếng Anh':4,'Tin học':1,'Công nghệ':1,'Âm nhạc':1,'Mĩ thuật':1,'GDTC':2,
+  'Đạo đức':1,'Tự nhiên và Xã hội':2,'Khoa học':2,'Lịch sử & Địa lí':2};
+function tietCua(m){ return (TIET_TUAN[m]||1)*35; }
 var MON_TATCA=Object.keys(MON_KHOI);
 var KHOI=['1','2','3','4','5'];
 function esc(s){ return (s==null?'':String(s)).replace(/[<>&"]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];}); }
@@ -10647,7 +10652,31 @@ function khoiCuaMon(m){ return (MON_KHOI[m]||'').split(''); }
      · dạy môn chuyên (tối đa TOI_DA_MON_CHUYEN môn, mở ở các khối có môn ấy).
    Ca ngoại lệ (chủ nhiệm một lớp + dạy thêm vài môn lớp khác) do NHÓM BÚT XANH mở
    tay ở trang Quản trị ▸ Sửa quyền — không để thầy cô tự cấp cho mình. */
-var TOI_DA_MON_CHUYEN=2;
+var TOI_DA_MON_CHUYEN=2;   /* giữ lại cho bản khai cũ; nay đếm theo CẶP môn × khối */
+/* (5/9/2026) Trước đây tick MỘT MÔN là mở môn ấy ở MỌI KHỐI có môn đó. Cô giáo dạy
+   Đạo đức lớp 1-2, TNXH lớp 1, Mĩ thuật lớp 3, Âm nhạc lớp 3 (thầy Chung nêu 5/9) vừa
+   KHÔNG khai nổi (4 môn > trần 2), vừa sẽ mở dư: 4 môn kiểu cũ = 734 tiết trong khi cô
+   chỉ dạy 210 tiết.
+   Nay khai theo CẶP môn × khối — đúng việc được phân công, và CHẶT HƠN kiểu cũ.
+   Hai trần cùng lúc:
+     · TOI_DA_CAP  = số ô được tick;
+     · TOI_DA_TIET = tổng tiết, lấy 600 vì GVCN khối thấp nhất (khối 1) là 594 tiết —
+       không ai tự khai được nhiều hơn một suất chủ nhiệm.
+   ⚠ ĐỪNG hạ TOI_DA_TIET xuống 500: giáo viên dạy Tiếng Anh + Tin học cả ba khối 3-4-5
+   cần 525 tiết, hạ xuống là chặn oan người đang dùng được (đã tính hụt lần đầu 5/9). */
+var TOI_DA_CAP=8, TOI_DA_TIET=600;
+function capHopLe(m,k){ return khoiCuaMon(m).indexOf(String(k))>=0; }
+function dsCap(tt){ return (tt&&tt.capMon)||[]; }
+function tongTietCap(tt){ var s=0; dsCap(tt).forEach(function(c){ s+=tietCua(c.split('|')[0]); }); return s; }
+/* Bản khai CŨ (chỉ có tên môn) → đổi thành các cặp môn × mọi khối có môn ấy.
+   KHÔNG đổi thì thầy cô đã khai "Tiếng Anh" bỗng mất sạch quyền khi mở app. */
+function chuyenCapCu(tt){
+  if(!tt || tt.kieu!=='chuyen' || (tt.capMon&&tt.capMon.length)) return tt;
+  var ra=[];
+  (tt.monChuyen||[]).forEach(function(m){ khoiCuaMon(m).forEach(function(k){ ra.push(m+'|'+k); }); });
+  if(ra.length) tt.capMon=ra;
+  return tt;
+}
 /* Phạm vi tự chọn HỢP LỆ? Nhiều nhất MỘT khối được mở trọn môn. Quyền do quản trị
    cấp nằm ở Firebase (rec.quyen) và KHÔNG đi qua đây nên không bị siết oan. */
 function hopLe(chuoi){
@@ -10661,7 +10690,7 @@ function docTT(){
     if(v && typeof v==='object'){
       /* Lựa chọn lưu từ bản có lỗ hổng → bỏ đi, hỏi lại thầy cô cho đúng */
       if(!hopLe(v.quyen||'')){ localStorage.removeItem(KEY); localStorage.removeItem(KEY_HOAN); return null; }
-      return v;
+      return chuyenCapCu(v);
     }
   }catch(e){}
   return null;
@@ -10674,8 +10703,13 @@ window.BX_quyenDaChon=function(){ var tt=docTT(); return (tt&&tt.quyen)||''; };
 function dungQuyen(tt){
   var q={};
   if(tt.kieu==='chuyen'){
-    (tt.monChuyen||[]).slice(0,TOI_DA_MON_CHUYEN).forEach(function(m){
-      khoiCuaMon(m).forEach(function(k){ q[k]=(q[k]||[]).concat([m]); });
+    /* Cắt theo CẢ HAI trần ngay lúc dựng chuỗi — không tin mỗi khâu giao diện. */
+    var tong=0;
+    dsCap(tt).slice(0,TOI_DA_CAP).forEach(function(c){
+      var i=c.indexOf('|'), m=c.slice(0,i), k=c.slice(i+1);
+      if(!capHopLe(m,k)) return;
+      tong+=tietCua(m); if(tong>TOI_DA_TIET) return;
+      q[k]=(q[k]||[]).concat([m]);
     });
   } else if(tt.khoiCN){ q[tt.khoiCN]='*'; }
   return Object.keys(q).sort().map(function(k){
@@ -10688,7 +10722,9 @@ function moTa(chuoi){
   if(!chuoi) return 'Chưa chọn — app đang tạm suy theo thời khoá biểu.';
   return chuoi.split('|').map(function(ph){
     var i=ph.indexOf(':'), k=ph.slice(0,i), v=ph.slice(i+1);
-    return 'Lớp '+k+': '+(v==='*'?'tất cả các môn':v);
+    /* Chỉ nới dấu cách khi HIỂN THỊ — chuỗi lưu vẫn ngăn bằng dấu phẩy trơn vì lớp
+       bản quyền (license.js) tách theo đúng dấu ấy. */
+    return 'Lớp '+k+': '+(v==='*'?'tất cả các môn':v.split(',').join(', '));
   }).join(' · ');
 }
 /* Đã kích hoạt bản quyền và đã gắn phạm vi → chốt, không cho tự đổi nữa */
@@ -10730,7 +10766,17 @@ function goiY(){
     var laBoMon = (nhieuNhat>0 && nhieuNhat<3 && soKhoi>=2
                    && dsMon.length>0 && dsMon.length===Object.keys(monTat).length
                    && dsMon.length<=TOI_DA_MON_CHUYEN);
-    if(laBoMon){ tt.kieu='chuyen'; tt.monChuyen=dsMon.slice(0,TOI_DA_MON_CHUYEN); }
+    if(laBoMon){
+      tt.kieu='chuyen'; tt.monChuyen=dsMon.slice(0,TOI_DA_MON_CHUYEN);
+      /* Thời khoá biểu vốn đã là các cặp (khối → những môn dạy ở khối ấy) nên gợi ý
+         thẳng thành cặp, thầy cô bộ môn chỉ việc bấm Xong. */
+      var cap=[];
+      Object.keys(pc).forEach(function(k){
+        if(!/^[1-5]$/.test(k)) return;
+        (pc[k]||[]).forEach(function(m){ if(capHopLe(m,k)) cap.push(m+'|'+k); });
+      });
+      if(cap.length) tt.capMon=cap.slice(0,TOI_DA_CAP);
+    }
     else if(chinh){ tt.khoiCN=chinh; }
   }catch(e){}
   if(tt.kieu==='cn' && !tt.khoiCN){ try{ tt.khoiCN=window.BX_khoiHienTai?window.BX_khoiHienTai():'5'; }catch(e){ tt.khoiCN='5'; } }
@@ -10780,16 +10826,28 @@ function ve(){
 
   h+='<label style="display:flex;gap:8px;align-items:flex-start;padding:8px 0;cursor:pointer;border-top:1px dashed #e3e8e5">'+
      '<input type="radio" name="bxpv-kieu" '+(TT.kieu==='chuyen'?'checked':'')+' onchange="BX_pvSet(\'kieu\',\'chuyen\')" style="margin-top:4px">'+
-     '<span><b>Hoặc: các thầy cô dạy môn chuyên</b><br><span style="color:#5b6b61;font-size:13px">Mở đúng môn đó ở mọi khối có môn ấy.</span></span></label>';
+     '<span><b>Hoặc: tôi dạy một số môn ở một số khối</b><br><span style="color:#5b6b61;font-size:13px">Tick đúng môn nào ở khối nào — mở đúng phần ấy.</span></span></label>';
   if(TT.kieu==='chuyen'){
-    h+='<div style="margin:2px 0 10px 26px;display:flex;flex-wrap:wrap;gap:6px">'+
+    var _ds=dsCap(TT), _t=tongTietCap(TT);
+    h+='<div style="margin:2px 0 8px 26px;overflow-x:auto"><table style="border-collapse:collapse;font-size:12.5px">'+
+      '<tr><th style="text-align:left;padding:2px 8px 4px 0;font-weight:600;color:#5b6b61">Môn</th>'+
+      KHOI.map(function(k){ return '<th style="padding:2px 4px 4px;font-weight:600;color:#5b6b61;width:34px">K'+k+'</th>'; }).join('')+'</tr>'+
       MON_CHUYEN.map(function(m){
-        var on=(TT.monChuyen||[]).indexOf(m)>=0;
-        return '<button type="button" onclick="BX_pvMon(\''+esc(m)+'\')" style="padding:6px 12px;border-radius:20px;cursor:pointer;font-size:13px;'+
-          (on?'background:#0b8043;color:#fff;border:1px solid #0b8043':'background:#fff;color:#334;border:1px solid #d6e2da')+'">'+
-          (on?'✓ ':'')+esc(m)+'</button>';
-      }).join('')+'</div>'+
-      '<div style="margin:0 0 10px 26px;font-size:12.5px;color:#5b6b61">Chọn tối đa <b>'+TOI_DA_MON_CHUYEN+' môn</b>. Khối được mở tính theo chương trình: Tin học · Công nghệ · Tiếng Anh có từ <b>khối 3</b>; Tự nhiên và Xã hội <b>khối 1–3</b>; Khoa học · Lịch sử và Địa lí <b>khối 4–5</b>; Âm nhạc · Mĩ thuật · Giáo dục thể chất · Đạo đức có <b>đủ khối 1–5</b>.</div>';
+        return '<tr><td style="padding:2px 8px 2px 0;white-space:nowrap">'+esc(m)+'</td>'+
+          KHOI.map(function(k){
+            if(!capHopLe(m,k)) return '<td style="text-align:center;color:#c3ccc7">—</td>';
+            var on=_ds.indexOf(m+'|'+k)>=0;
+            return '<td style="text-align:center;padding:1px">'+
+              '<button type="button" onclick="BX_pvCap(\''+esc(m)+'\',\''+k+'\')" title="'+esc(m)+' – khối '+k+'" '+
+              'style="width:28px;height:26px;border-radius:6px;cursor:pointer;font-size:13px;line-height:1;'+
+              (on?'background:#0b8043;color:#fff;border:1px solid #0b8043':'background:#fff;color:#9aa8a1;border:1px solid #d6e2da')+'">'+
+              (on?'✓':'')+'</button></td>';
+          }).join('')+'</tr>';
+      }).join('')+'</table></div>'+
+      '<div style="margin:0 0 8px 26px;font-size:12.5px;'+((_ds.length>TOI_DA_CAP||_t>TOI_DA_TIET)?'color:#b3261e;font-weight:600':'color:#0b8043')+'">'+
+        'Đã chọn <b>'+_ds.length+'</b> phần việc · <b>'+_t+'</b> tiết'+
+        ((_ds.length>TOI_DA_CAP||_t>TOI_DA_TIET)?' — vượt mức cho phép':' — trong mức cho phép')+'</div>'+
+      '<div style="margin:0 0 10px 26px;font-size:12.5px;color:#5b6b61">Tick đúng <b>môn nào ở khối nào</b> thầy/cô được phân công. Tối đa <b>'+TOI_DA_CAP+' phần việc</b> và <b>'+TOI_DA_TIET+' tiết</b>. Ô gạch ngang là chương trình khối ấy không có môn đó.</div>';
   }
 
   h+='<div style="margin-top:14px;padding:10px 12px;background:#eef6ff;border:1px solid #bcdcff;border-radius:10px;font-size:13px;color:#234">'+
@@ -10806,24 +10864,25 @@ function ve(){
   o().innerHTML=h;
 }
 window.BX_pvSet=function(k,v){ TT[k]=v; ve(); };
-window.BX_pvMon=function(m){
-  var a=TT.monChuyen||(TT.monChuyen=[]), i=a.indexOf(m);
-  if(i>=0){ a.splice(i,1); }
-  else {
-    /* Chặn ở đây luôn, không chỉ cắt lúc lưu — thầy cô phải thấy rõ vì sao không
-       tick thêm được, kẻo tưởng nút hỏng. */
-    if(a.length>=TOI_DA_MON_CHUYEN){
-      if(window.bxAlert) bxAlert('Mỗi bản quyền chọn tối đa '+TOI_DA_MON_CHUYEN+' môn chuyên ạ.\n\nThầy/cô dạy nhiều môn hơn thì nhắn '+HOTLINE()+' để nhóm Bút Xanh mở thêm.');
-      return;
-    }
-    a.push(m);
+window.BX_pvCap=function(m,k){
+  var a=TT.capMon||(TT.capMon=[]), key=m+'|'+k, i=a.indexOf(key);
+  if(i>=0){ a.splice(i,1); ve(); return; }
+  /* Chặn ngay lúc tick, không đợi lúc lưu — thầy cô phải thấy rõ vì sao không tick
+     thêm được, kẻo tưởng nút hỏng. */
+  if(a.length>=TOI_DA_CAP){
+    if(window.bxAlert) bxAlert('Mỗi bản quyền tự khai tối đa '+TOI_DA_CAP+' phần việc (một môn ở một khối là một phần việc) ạ.\n\nThầy/cô được phân công nhiều hơn thì nhắn '+HOTLINE()+' để nhóm Bút Xanh mở thêm giúp ạ.');
+    return;
   }
-  ve();
+  if(tongTietCap(TT)+tietCua(m)>TOI_DA_TIET){
+    if(window.bxAlert) bxAlert('Thêm '+m+' khối '+k+' thì vượt mức '+TOI_DA_TIET+' tiết một bản quyền ạ.\n\nThầy/cô được phân công nhiều hơn thì nhắn '+HOTLINE()+' để nhóm Bút Xanh mở thêm giúp ạ.');
+    return;
+  }
+  a.push(key); ve();
 };
 window.BX_pvDeSau=function(){ try{ localStorage.setItem(KEY_HOAN,'1'); }catch(e){} dong(); };
 window.BX_pvXong=function(){
   var chuoi=dungQuyen(TT);
-  if(!chuoi){ if(window.bxAlert) bxAlert('Thầy/cô chọn giúp em lớp chủ nhiệm, hoặc ít nhất một môn chuyên ạ.'); return; }
+  if(!chuoi){ if(window.bxAlert) bxAlert('Thầy/cô chọn giúp em lớp chủ nhiệm, hoặc tick ít nhất một ô môn × khối ạ.'); return; }
   TT.quyen=chuoi; luuTT(TT);
   try{ localStorage.removeItem(KEY_HOAN); }catch(e){}
   dong(); capNhat();
