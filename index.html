@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-05 · 114';
+  var PB='2026-09-05 · 115';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -5267,10 +5267,19 @@ function exportScheduleXls(){ _downloadBlob(`Lich_Bao_Giang_Tuan${state.week}_Lo
    chuyên môn cần bản Word A4 DỌC để ghim thành tập cả năm, lề trái phải chừa chỗ
    cho kim bấm — ghim vào chữ là hỏng cả tập.
 
-   LỀ theo Thông tư 01/2011/TT-BNV (thể thức văn bản hành chính):
-     trên 20mm · dưới 20mm · TRÁI 30mm · phải 15mm
-   ⇒ vùng chữ = 11906 − 1701 − 850 = 9355 twip. Bảy cột cộng lại phải ĐÚNG 9355;
-   sửa lẻ một cột mà quên bù cột khác thì Word tự giãn và bảng tràn ra ngoài lề.
+   LỀ (đổi 5/9/2026 — các cô đề xuất, thầy Chung chốt):
+     trên 10mm · dưới 12mm · TRÁI 18mm · phải 10mm
+   ⇒ vùng chữ NGANG = 11906 − 1021 − 567 = 10318 twip (18,2cm)
+      vùng chữ  DỌC = 16838 −  567 − 680 = 15591 twip (27,5cm)
+   Bảy cột cộng lại phải ĐÚNG 10318; sửa lẻ một cột mà quên bù cột khác thì Word tự
+   giãn và bảng tràn ra ngoài lề.
+
+   ⚠ VÌ SAO KHÔNG CÒN LỀ 30/20/20/15mm CỦA THÔNG TƯ 01/2011/TT-BNV:
+   Lịch báo giảng là HỒ SƠ CHUYÊN MÔN nộp tổ, không phải văn bản hành chính phát hành
+   ra ngoài, nên không bắt buộc theo thể thức đó. Ràng buộc thật của các cô là "một
+   tuần = ĐÚNG một trang A4" — đo ngày 5/9/2026: với lề cũ thì cả 5 khối đều tràn sang
+   trang 2 (khối 1 tràn 106mm). Lề trái vẫn để 18mm — đủ chỗ ghim kim mà không ghim
+   vào chữ; lề dưới 12mm vì nhiều máy in phun có vùng chết ~10mm ở đáy giấy.
 
    Nội dung lấy từ _tableModel() — CÙNG nguồn với bản Excel và bản xem trên màn
    hình, nên ô gộp Thứ/Buổi, thứ tự tiết, tên bài rút gọn giống hệt cả ba nơi;
@@ -5278,9 +5287,96 @@ function exportScheduleXls(){ _downloadBlob(`Lich_Bao_Giang_Tuan${state.week}_Lo
    Tệp KHÔNG mang tiền tố KHBD_/KHGD_mon_ nên vẫn MIỄN PHÍ như bản Excel
    (xem RE_CAN_PHI trong license.js) — cố ý, đừng đổi tên tệp thành KHBD_…
    ========================================================================== */
-/* Thứ·Buổi·Tiết·Môn·Lớp·Tên bài·Đồ dùng TBDH = 9355 (đã in thử bằng Word rồi mới chốt).
-   Cột "Tiết" phải ≥640: để 500 thì chính chữ "Tiết" ở hàng tiêu đề vỡ làm hai dòng "Tiế/t". */
-var LBGW_COLS=[900,700,640,1250,550,3615,1700];
+/* Thứ·Buổi·Tiết·Môn·Lớp·Tên bài·Đồ dùng TBDH = 10318 (đã in thử bằng Word rồi mới chốt).
+   Năm cột đầu chỉ bóp được ở "Thứ" (900→760) và "Lớp" (550→520); phần dôi ra dồn hết
+   cho hai cột hay xuống dòng nhất — Tên bài (3615→4500, +24%) và Đồ dùng (1700→1948, +15%).
+   ⚠ KHÔNG bóp thêm Buổi/Tiết/Môn: chữ "Chiều", "Tiết", "Tiếng Việt" mà vỡ đôi dòng thì
+   hàng nào cũng CAO THÊM một dòng — bóp ngang xong lại tràn dọc, phản tác dụng. */
+var LBGW_COLS=[760,700,640,1250,520,4500,1948];
+/* Lề trang (twip). Đổi ở ĐÂY, đừng ghi thẳng số vào <w:pgMar> — cả phần đo "vừa một
+   trang" bên dưới lẫn tổng bề ngang cột đều lấy từ bộ số này. */
+var LBGW_MAR={top:567,bottom:680,left:1021,right:567};
+var LBGW_PG={w:11906,h:16838};
+
+/* ============================ CO GIÃN CHO VỪA MỘT TRANG ============================
+   (5/9/2026 — các cô đề xuất) "Lịch báo giảng chỉ được phép trong 1 trang A4".
+   Bậc thang cỡ chữ cứng theo SỐ DÒNG (cũ) không đủ: hai tuần cùng 24 dòng nhưng tên bài
+   Tiếng Việt lớp 1 dài gấp đôi tên bài lớp 5 → tuần này vừa, tuần kia tràn.
+   Nay ĐO THẬT: vẽ ngầm đúng bảng đó bằng đúng phông Times New Roman, đúng cỡ chữ, đúng
+   bề ngang từng cột, rồi đọc chiều cao — trình duyệt và Word ngắt dòng gần như nhau.
+   Chọn mức nới tay nhất mà vẫn gọn một trang; hết cách mới chịu hai trang.
+   ⚠ Đo bằng DOM nên hàm này chỉ chạy được trong trình duyệt — đừng gọi từ Node. */
+var LBGW_BAC=[   /* sz: nửa-point (24 = 12pt) · ky: số dòng trống chừa cho chữ ký */
+  {sz:24,ky:3},{sz:23,ky:3},{sz:22,ky:3},{sz:21,ky:3},{sz:20,ky:3},
+  {sz:20,ky:2},{sz:19,ky:2},{sz:18,ky:2},{sz:18,ky:1},
+  /* Ba bậc cuối chỉ để cứu tuần dạy kín 35 tiết. 8pt Times đọc vẫn được khi in giấy,
+     và các cô nói thà chữ nhỏ còn hơn tuần nào cũng thành hai tờ. */
+  {sz:17,ky:2},{sz:17,ky:1},{sz:16,ky:1}
+];
+var LBGW_AN=0.96;        /* chừa 4% hao cho chênh lệch ngắt dòng còn lại giữa Word và trình duyệt */
+var LBGW_PHONG=10;       /* hệ số phóng to khi đo (xem _lbgwCaoBang) */
+/* Bù cho MỖI HÀNG (twip): lề trên+dưới trong ô (40) + phần Word vẫn cao hơn trình duyệt.
+   Con số 95 lấy từ đối chiếu 30 bản Word in thật ngày 5/9/2026 (chênh 35–50 twip/hàng).
+   ⚠ ĐÃ THỬ nới tay hơn cho chữ to hơn nửa point: BU=85 kèm LBGW_AN=0,97 → tuần dày lớp 4
+   tràn sang trang 2 trở lại. Đừng hạ nữa; muốn đổi thì chạy _kiemthu/do-lbg-sau-sua.js
+   rồi đếm trang bằng _kiemthu/dem-trang.ps1, phải ĐỦ 30/30 tệp một trang mới được chốt. */
+var LBGW_BU=95;
+function _lbgwHopDo(){
+  var d=document.getElementById('bx-lbgw-do');
+  if(!d){ d=document.createElement('div'); d.id='bx-lbgw-do';
+    d.setAttribute('aria-hidden','true');
+    d.style.cssText='position:absolute;left:-99999px;top:0;width:auto;visibility:hidden;'+
+      'font-family:"Times New Roman",Times,serif;line-height:1.15';
+    document.body.appendChild(d); }
+  return d;
+}
+/* Chiều cao bảng (twip) nếu in ở cỡ chữ sz. 1pt = 20 twip · 1px = 15 twip (96dpi)
+   ⚠ Bề ngang ô trong Word (w:tcW) ĐÃ GỒM lề trong ô (57 twip mỗi bên). Nếu để CSS
+   padding thì hộp đo rộng hơn Word → ngắt dòng ít hơn → đoán hụt, bản in tràn trang.
+   Nên: đo với bề ngang CHỮ = W−114 và padding 0, rồi cộng tay 40 twip lề trên/dưới
+   cho mỗi hàng. */
+function _lbgwCaoBang(model,sz,W){
+  var d=_lbgwHopDo();
+  /* Đo PHÓNG TO gấp LBGW_PHONG lần rồi chia lại: ở cỡ chữ thật (9–12pt ≈ 12–16px) trình
+     duyệt làm tròn bề rộng từng chữ theo điểm ảnh nên nhét được nhiều chữ hơn Word một
+     dòng — đo ở cỡ nhỏ là đoán hụt ~10% (5/9/2026, đối chiếu bản Word in ra thật). */
+  var S=LBGW_PHONG;
+  var pt=function(tw){ return (tw*S/20)+'pt'; };
+  var e=function(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>'); };
+  var o='padding:0;border:0;vertical-align:top;line-height:1.15';
+  var Wc=W.map(function(w){ return Math.max(60,w-114); });
+  var h='<table style="table-layout:fixed;border-collapse:collapse;width:'+pt(Wc.reduce(function(a,b){return a+b;},0))+'"><colgroup>'+
+    Wc.map(function(w){ return '<col style="width:'+pt(w)+'">'; }).join('')+'</colgroup><tbody>';
+  h+='<tr>'+['Thứ','Buổi','Tiết','Môn','Lớp','Tên bài','Đồ dùng TBDH'].map(function(t){
+      return '<td style="'+o+';font-size:'+pt(sz*10)+';font-weight:700;text-align:center">'+t+'</td>'; }).join('')+'</tr>';
+  model.forEach(function(m){
+    /* Ô Thứ/Buổi gộp dọc thì KHÔNG làm hàng cao thêm — chỉ tính khi nó đứng một mình */
+    var thu=(m.thuSpan===1)?m.thu:'', buoi=(m.buoiSpan===1)?m.buoi:'';
+    var c=function(t,s){ return '<td style="'+o+';font-size:'+pt((s||sz)*10)+'">'+e(t)+'</td>'; };
+    h+='<tr>'+c(thu,sz-2)+c(buoi,sz-2)+c(m.tiet)+c(_lbgMon(m.mon))+c(m.lop)+
+       c(_lbgBai(m.bai))+c(_lbgTbdh(m.tbdh),sz-2)+'</tr>';
+  });
+  d.innerHTML=h+'</tbody></table>';
+  var px=d.firstChild.getBoundingClientRect().height;
+  d.innerHTML='';
+  return Math.ceil(px*15/S) + (model.length+1)*LBGW_BU;
+}
+/* Chọn {sz,ky} để cả trang vừa một tờ A4. Trả thêm `vua` = có thật sự vừa hay không. */
+function _lbgwChonBac(model,W,coTruong){
+  var LH=276;                                   /* 1 dòng 12pt (12 × 1,15 × 20) */
+  var caoDau=(coTruong?LH+60:0)+322+(LH+120)+(LH+100);   /* tên trường · tiêu đề 14pt · dòng ngày · dòng TUẦN */
+  var caoTrong=LH+80;                                     /* đoạn trống giữa bảng và chân ký */
+  var conCa=LBGW_PG.h-LBGW_MAR.top-LBGW_MAR.bottom-caoDau-caoTrong;
+  var cao=0, cho=0;
+  for(var i=0;i<LBGW_BAC.length;i++){
+    var b=LBGW_BAC[i];
+    var caoKy=(3+b.ky)*LH;                      /* nơi-ngày · "GIÁO VIÊN DẠY" · k dòng trống · họ tên */
+    cao=_lbgwCaoBang(model,b.sz,W); cho=Math.round((conCa-caoKy)*LBGW_AN);
+    if(cao<=cho) return {sz:b.sz,ky:b.ky,vua:true,cao:cao,cho:cho};
+  }
+  var c=LBGW_BAC[LBGW_BAC.length-1];
+  return {sz:c.sz,ky:c.ky,vua:false,cao:cao,cho:cho};
+}
 
 function _lbgwRun(t,o){ o=o||{};
   var sz=o.sz||24;
@@ -5301,6 +5397,7 @@ function _lbgwTc(t,w,o){ o=o||{};
   return '<w:tc><w:tcPr><w:tcW w:w="'+w+'" w:type="dxa"/>'+vm+'<w:vAlign w:val="center"/></w:tcPr>'+
     _lbgwP(t,{jc:o.jc||'center',sz:o.sz,b:o.b,i:o.i})+'</w:tc>';
 }
+function _lap(s,n){ var o=''; for(var i=0;i<n;i++) o+=s; return o; }
 function _lbgwBorders(){
   var s=function(t){ return '<w:'+t+' w:val="single" w:sz="4" w:space="0" w:color="000000"/>'; };
   return '<w:tblBorders>'+['top','left','bottom','right','insideH','insideV'].map(s).join('')+'</w:tblBorders>';
@@ -5311,12 +5408,15 @@ function buildScheduleDocx(){
   var model=_tableModel(true);
   if(!model.length){ try{ bxAlert('Tuần này chưa có tiết nào trong Lịch báo giảng.\n\nThầy/cô bấm "✨ Tạo LBG tuần này" hoặc "✏️ Sửa LBG" trước đã nhé.'); }catch(e){} return null; }
 
-  /* Cỡ chữ TỰ CO để một tuần vừa một trang — thầy cô ghim theo tuần, tràn sang trang 2
-     chỉ vì thừa vài dòng là rất khó chịu khi trình ký. */
-  var SZ=model.length<=20?24:(model.length<=28?22:20);   /* 12pt · 11pt · 10pt */
-
   var _pf={}; try{ _pf=JSON.parse(localStorage.getItem('butxanh_profile')||'{}'); }catch(e){}
   var truong=String(_pf.school||'').trim();
+
+  /* Cỡ chữ + số dòng trống chỗ ký TỰ CO để một tuần vừa ĐÚNG một trang (xem LBGW_BAC).
+     Đo hỏng (chạy ngoài trình duyệt chẳng hạn) thì lui về bậc thang cũ theo số dòng. */
+  var _bac; try{ _bac=_lbgwChonBac(model,W,!!truong); }
+  catch(e){ _bac={sz:(model.length<=20?24:(model.length<=28?22:20)),ky:3,vua:true}; }
+  var SZ=_bac.sz, KY_TRONG=_bac.ky;
+  window.BX_lbgwLanCuoi={sz:SZ,ky:KY_TRONG,vua:_bac.vua,dong:model.length,cao:_bac.cao,cho:_bac.cho};   /* để soi khi cần */
 
   /* Dòng "TUẦN n … GV: …" — TUẦN dính lề trái, phần GV đẩy sát lề phải bằng tab canh phải */
   var gvLine='GV: '+(state.gvcn||'');
@@ -5366,11 +5466,12 @@ function buildScheduleDocx(){
     '<w:tblGrid><w:gridCol w:w="'+hL+'"/><w:gridCol w:w="'+hR+'"/></w:tblGrid><w:tr><w:trPr><w:cantSplit/></w:trPr>'+
     '<w:tc><w:tcPr><w:tcW w:w="'+hL+'" w:type="dxa"/></w:tcPr>'+kyP('')+kyP('PHÊ DUYỆT CỦA BGH-TTCM',{b:true})+'</w:tc>'+
     '<w:tc><w:tcPr><w:tcW w:w="'+hR+'" w:type="dxa"/></w:tcPr>'+kyP(placeStr(),{i:true})+kyP('GIÁO VIÊN DẠY',{b:true})+
-      kyP('')+kyP('')+kyP('')+kyP(state.gvcn||'',{b:true})+'</w:tc>'+
+      _lap(kyP(''),KY_TRONG)+kyP(state.gvcn||'',{b:true})+'</w:tc>'+
     '</w:tr></w:tbl>';
 
-  var sect='<w:sectPr><w:pgSz w:w="11906" w:h="16838"/>'+
-    '<w:pgMar w:top="1134" w:right="850" w:bottom="1134" w:left="1701" w:header="567" w:footer="567" w:gutter="0"/></w:sectPr>';
+  var sect='<w:sectPr><w:pgSz w:w="'+LBGW_PG.w+'" w:h="'+LBGW_PG.h+'"/>'+
+    '<w:pgMar w:top="'+LBGW_MAR.top+'" w:right="'+LBGW_MAR.right+'" w:bottom="'+LBGW_MAR.bottom+
+    '" w:left="'+LBGW_MAR.left+'" w:header="284" w:footer="284" w:gutter="0"/></w:sectPr>';
 
   var doc='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
     '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'+
