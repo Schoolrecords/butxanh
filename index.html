@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-05 · 123';
+  var PB='2026-09-05 · 124';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -10092,14 +10092,27 @@ window.BX_khgdTaiMauTrong=function(){
 var LUAT=[
   [1,/chủ đề|chủ điểm|mạch|chương(?!\s*trình)/],
   [7,/điều chỉnh|bổ sung|tích hợp|ghi chú|lồng ghép/],
-  [3,/phân môn|hoạt động|dạng bài|kiểu bài/],
-  [6,/tiết\s*kh|ppct|tiết\s*(học|thứ|số)|^\s*tiết\s*$/],
+  /* "Nội dung hoạt động" / "Tên bài học" là cột thân bài (đích 4) — phải bắt TRƯỚC luật
+     "hoạt động" của đích 3, không thì bảng Phụ lục 2 của trường bị đẩy cả tên bài sang ô
+     Phân môn, cột Nội dung trống và mọi dòng bị bỏ (0 dòng với 7/12 môn — rà 5/9/2026 đêm). */
+  [4,/nội dung hoạt động|nội dung bài|tên bài học|nội dung\s*\/\s*tên bài/],
+  [3,/phân môn|tên hoạt động|hoạt động|dạng bài|kiểu bài/],
+  [6,/tiết\s*kh|tiết\s*theo|ppct|tiết\s*(học|thứ|số)|^\s*tiết\s*$/],
   [5,/thời lượng|số tiết/],
   [0,/tuần|tháng/],
   [4,/nội dung/],
   [2,/tên bài|bài học|bài dạy/]
 ];
 function chuan(s){ return S(s).toLowerCase().replace(/\s+/g,' ').trim(); }
+/* Số ô có từ khoá tiêu đề trên một dòng (đếm theo đích, mỗi đích một lần) */
+function demTieuDe(cells,LET,r){
+  var d=0, da={};
+  for(var c=0;c<LET.length;c++){
+    var v=chuan(cells[LET[c]+r]); if(!v) continue;
+    for(var k=0;k<LUAT.length;k++){ var t=LUAT[k][0]; if(!da[t]&&LUAT[k][1].test(v)){ da[t]=1; d++; break; } }
+  }
+  return d;
+}
 function boc(cells){
   var LET=['A','B','C','D','E','F','G','H','I','J','K','L'];
   var maxRow=0; Object.keys(cells).forEach(function(k){ var m=k.match(/\d+$/); if(m&&+m[0]>maxRow) maxRow=+m[0]; });
@@ -10109,23 +10122,31 @@ function boc(cells){
      phải 30: nhiều bảng của trường có măng-sét + mấy dòng trống, tiêu đề tận dòng 34. */
   var hRow=0, hBest=0;
   for(var r=1;r<=Math.min(maxRow,200);r++){
-    var d=0, da={};
-    for(var c=0;c<LET.length;c++){
-      var v=chuan(cells[LET[c]+r]); if(!v) continue;
-      for(var k=0;k<LUAT.length;k++){ var t=LUAT[k][0]; if(!da[t]&&LUAT[k][1].test(v)){ da[t]=1; d++; break; } }
-    }
+    var d=demTieuDe(cells,LET,r);
     if(d>hBest){ hBest=d; hRow=r; }
   }
   if(hBest<3) throw new Error('Không tìm thấy dòng tiêu đề (cần các cột Tuần, Tên bài, Nội dung…). Thầy/cô tải file mẫu của Bút Xanh rồi sửa trên đó giúp em ạ.');
 
+  /* TIÊU ĐỀ HAI DÒNG của mẫu Phụ lục 2 (Công văn 2345): dòng trên "Tuần, tháng | Chương trình
+     và sách giáo khoa | Nội dung điều chỉnh, bổ sung | Ghi chú", dòng dưới "Chủ đề | Tên bài |
+     Thời lượng | Tiết". Chỉ đọc một dòng thì mất cột Tuần và cột tích hợp (ô Tuần gộp dọc, chữ
+     nằm ở dòng trên). Ghép chữ của dòng kề trên/dưới vào từng cột khi dòng đó cũng là dòng tiêu
+     đề (≥ 2 ô có từ khoá). Dòng nhắc của mẫu Bút Xanh chỉ có 1 ô nên không bị ghép nhầm. */
+  var hRows=[hRow];
+  if(hRow>1 && demTieuDe(cells,LET,hRow-1)>=2 && !/^\d+$/.test(chuan(cells['A'+(hRow-1)]))) hRows.unshift(hRow-1);
+  if(hRow<maxRow && demTieuDe(cells,LET,hRow+1)>=2 && !/^\d+$/.test(chuan(cells['A'+(hRow+1)]))) hRows.push(hRow+1);
+  var hCuoi=hRows[hRows.length-1];
+  var tieuDe=function(L){ return hRows.map(function(r){ return S(cells[L+r]); }).filter(Boolean).join(' / '); };
+
   /* gán cột: quét trái → phải, mỗi ô nhận luật hẹp nhất còn trống */
   var map={}, dung={}, tenCot=[];
   for(var c2=0;c2<LET.length;c2++){
-    var h=chuan(cells[LET[c2]+hRow]); tenCot.push({let:LET[c2], ten:S(cells[LET[c2]+hRow])});
+    var h=chuan(tieuDe(LET[c2])); tenCot.push({let:LET[c2], ten:tieuDe(LET[c2])});
     if(!h) continue;
     for(var k2=0;k2<LUAT.length;k2++){ var t2=LUAT[k2][0];
       if(dung[t2]==null && LUAT[k2][1].test(h)){ map[t2]=LET[c2]; dung[t2]=1; break; } }
   }
+  hRow=hCuoi;
   /* Có kế thừa "ô trống = giống dòng trên" hay không, quyết theo HÌNH DẠNG DỮ LIỆU chứ
      KHÔNG theo dòng nhắc/số thứ tự dòng tiêu đề. Đã đếm cả 51 môn của 5 khối: kho Bút
      Xanh không môn nào bỏ trống ô Tuần, còn bảng có ô gộp thì cột Tuần trống hàng loạt.
@@ -10150,11 +10171,17 @@ function boc(cells){
    Việt 5 bị gán nhầm tên "Bài 16 (4 tiết)" của tuần trước (bắt được khi đo 5/9/2026). */
 function layDong(kq){
   var cells=kq.cells, map=kq.map, rows=[], truoc=['','',''];
-  kq.dungTai=0;
+  var LETALL=['A','B','C','D','E','F','G','H','I','J','K','L'];
+  kq.dungTai=0; kq.dungQuyUoc=0;
   for(var r=kq.hRow+1;r<=kq.maxRow;r++){
     var o=[];
     for(var c=0;c<8;c++) o.push(map[c]?S(cells[map[c]+r]).trim():'');
     var het=o.join(' ');
+    /* Bảng "QUY ƯỚC MÃ NỘI DUNG TÍCH HỢP" in dưới kế hoạch (mẫu Phụ lục 2 của Phòng): từ dòng
+       tiêu đề đó trở xuống là chú giải, không phải tiết — không dừng thì 12 dòng chú giải
+       chui vào kế hoạch (Tiếng Việt Minh Châu 2 đọc ra 206 thay vì 194 dòng, rà 5/9/2026). */
+    var caDong=''; for(var cc=0;cc<LETALL.length;cc++) caDong+=' '+S(cells[LETALL[cc]+r]);
+    if(/QUY\s*ƯỚC\s*(MÃ|CÁC\s*MÃ|VIẾT)/i.test(caDong) && !o[6]){ kq.dungQuyUoc=r; break; }
     if(/^\s*$/.test(het)) continue;
     /* Vùng chân ký: dòng THƯA (nhiều nhất 2 ô có chữ), KHÔNG có tên bài lẫn nội dung, và
        mang cụm chữ ký. Trước đây chỉ cần cụm chữ + ô Nội dung trống, nên một dòng ghi chú
@@ -10162,8 +10189,28 @@ function layDong(kq){
        có cột Nội dung thì mất luôn từ dòng đầu có chữ "giáo viên" (rà 5/9/2026). */
     if(o.filter(Boolean).length<=2 && !o[2] && !o[4] &&
        /PHÊ DUYỆT|HIỆU TRƯỞNG|TỔ TRƯỞNG|NGƯỜI LẬP|GIÁO VIÊN|NGÀY\s+\d+\s+THÁNG/i.test(het)){ kq.dungTai=r; break; }
+    /* Dòng băng "HỌC KÌ I / HỌC KÌ II" (chỉ một ô chữ, không có tiết): bỏ qua, và KHÔNG để nó
+       thành "tuần" kế thừa cho các dòng dưới. */
+    if(/^học\s*k[iìỳ]\s*(i{1,2}|[12])\b/i.test(het.trim()) && !o[6]) continue;
+    var tuanGoc=o[0];
+    /* Dòng NỐI: không có số tiết, không thời lượng, không tuần riêng → thuộc tiết ở dòng trên.
+       · Chỉ có chữ ở cột tích hợp (Đạo đức: dòng "QPAN: …" dưới dòng "NLS-AT: …") → ghép vào
+         cột 7 dòng trên, dù có bật kế thừa hay không (trước đây bị bỏ vì không có tên bài).
+       · Bật kế thừa (bảng có ô gộp): một tiết ghi thành nhiều dòng (Âm nhạc: "Ôn đọc nhạc… /
+         Học bài hát…") → ghép cả nội dung vào dòng trên, không đếm thành tiết mới (Âm nhạc
+         Minh Châu 2 đọc ra 55 tiết thay vì 35, rà 5/9/2026). */
+    var noi = map[6] && !o[6] && !o[5] && !tuanGoc && rows.length>0;
+    if(noi && (kq.keThua ? (o[4]||o[2]||o[7]) : (o[7] && !o[4] && !o[2]))){
+      var tr=rows[rows.length-1];
+      if(o[4]) tr[4]=tr[4]?(tr[4]+'; '+o[4]):o[4];
+      if(o[2] && o[2]!==tr[2]) tr[2]=tr[2]?(tr[2]+'; '+o[2]):o[2];
+      /* tên chủ đề viết xuống dòng thứ hai ("Chủ đề 1" / "Âm thanh ngày mới") → ghép lại */
+      if(o[1] && o[1]!==tr[1]){ tr[1]=tr[1]?(tr[1]+': '+o[1]):o[1]; if(kq.keThua) truoc[1]=tr[1]; }
+      if(o[7]) tr[7]=tr[7]?(tr[7]+'\n'+o[7]):o[7];
+      continue;
+    }
     if(kq.keThua){
-      if(o[0]) truoc[0]=o[0]; else o[0]=truoc[0];
+      if(o[0]){ if(/\d/.test(o[0])) truoc[0]=o[0]; else o[0]=truoc[0]; } else o[0]=truoc[0];
       if(o[1]){ if(o[1]!==truoc[1]) truoc[2]=''; truoc[1]=o[1]; } else o[1]=truoc[1];
       if(o[2]) truoc[2]=o[2]; else o[2]=truoc[2];
     }
@@ -10180,14 +10227,27 @@ function soatXet(rows,kq){
   /* Thiếu cột Nội dung là hỏng ngầm: bảng trắng một cột, bản Word mất phần thân tên bài,
      và địa chỉ STEM/lồng ghép (dò theo r[4]) im lặng ngừng gắn (rà 5/9/2026). */
   if(kq){
-    [[4,'Nội dung/Tên bài học'],[2,'Tên bài']].forEach(function(p){
-      if(!kq.map[p[0]]){ cb.push('Chưa gán được cột "'+p[1]+'" — chọn lại ở phần gán cột bên dưới, kẻo bảng và bản Word thiếu hẳn cột này.'); return; }
-      var trong=rows.filter(function(r){ return !S(r[p[0]]).trim(); }).length;
-      if(rows.length && trong>rows.length*0.5) cb.push('Cột "'+p[1]+'" trống ở '+trong+'/'+rows.length+' dòng — xem lại đã gán đúng cột chưa.');
-    });
+    /* Cột "Tên bài" (đích 2) chỉ Tiếng Việt mới dùng; các môn khác để trống là bình thường,
+       nên chỉ báo khi CẢ hai cột 2 và 4 đều không gán được. */
+    if(!kq.map[4] && !kq.map[2]) cb.push('Chưa gán được cột "Nội dung/Tên bài học" — chọn lại ở phần gán cột bên dưới, kẻo bảng và bản Word thiếu hẳn cột này.');
+    else if(kq.map[4]){
+      var trong4=rows.filter(function(r){ return !S(r[4]).trim(); }).length;
+      if(rows.length && trong4>rows.length*0.5) cb.push('Cột "Nội dung/Tên bài học" trống ở '+trong4+'/'+rows.length+' dòng — xem lại đã gán đúng cột chưa.');
+    }
+    if(!kq.map[0]) cb.push('Chưa gán được cột "Tuần" — chọn lại ở phần gán cột bên dưới, không thì Lịch báo giảng không xếp được tuần.');
     if(kq.dungTai) cb.push('Đã dừng đọc ở dòng '+kq.dungTai+' vì gặp vùng chân ký (Phê duyệt / Hiệu trưởng / Giáo viên). Nếu kế hoạch còn nội dung phía dưới, thầy/cô xoá dòng đó trong Excel rồi nhập lại.');
   }
-  var tiet=0; rows.forEach(function(r){ var n=parseInt(r[5],10); tiet+=(n>0?n:1); });
+  /* Đếm tiết theo cột "Tiết KH" ("4+5" = 2, "57–61" = 5) nếu có; không có mới đếm theo Thời
+     lượng. Bảng Phụ lục 2 ghi thời lượng CẢ BÀI ở dòng đầu ("2 tiết") nên cộng theo thời lượng
+     sẽ đếm dư. */
+  var tiet=0; rows.forEach(function(r){
+    var t6=S(r[6]).trim(), m;
+    if(kq&&kq.map[6]&&t6){
+      if((m=/^(\d+)\s*\+\s*(\d+)$/.exec(t6))) tiet+=2;
+      else if((m=/^(\d+)\s*[–\-]\s*(\d+)$/.exec(t6))) tiet+=Math.max(1,(+m[2])-(+m[1])+1);
+      else tiet+=1;
+    } else { var n=parseInt(r[5],10); tiet+=(n>0?n:1); }
+  });
   var tuanMax=0; rows.forEach(function(r){ var n=parseInt(r[0],10); if(n>tuanMax) tuanMax=n; });
   if(tuanMax && tuanMax<30) cb.push('Kế hoạch chỉ tới tuần '+tuanMax+' — năm học thường 35 tuần.');
   return {canhBao:cb, tiet:tiet, tuanMax:tuanMax};
@@ -10280,27 +10340,60 @@ window.BX_khgdDongNhap=function(){
 /* Thử LẦN LƯỢT mọi sheet trong file, lấy sheet đầu tiên dò ra được dòng tiêu đề. Chỉ đọc
    sheet1.xml thì kế hoạch nằm ở sheet 2 (sheet 1 là thời khoá biểu) sẽ báo "không tìm
    thấy dòng tiêu đề, tải mẫu Bút Xanh về mà sửa" — đổ oan cho file đúng (rà 5/9/2026). */
-async function docFile(file){
+/* Tên sheet ↔ tên môn: bỏ dấu, bỏ khoảng trắng, so theo bí danh quen dùng của các tổ
+   ("Đ ĐỨC", "SỬ ĐỊA", "K. HỌC", "HDTN4", "TIN HỌC"…). */
+function khongDau(s){ return S(s).normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/gi,'d').toLowerCase().replace(/[^a-z0-9]/g,''); }
+var BI_DANH={
+  'toan':['toan'], 'tiengviet':['tiengviet','tv'], 'daoduc':['daoduc','dduc'], 'tunhienvaxahoi':['tnxh','tunhien'],
+  'lichsudiali':['sudia','lsdl','lichsu','diali'], 'khoahoc':['khoahoc','khoc'], 'hdtn':['hdtn','hoatdongtrainghiem','trainghiem'],
+  'tinhoc':['tinhoc'], 'congnghe':['congnghe'], 'amnhac':['amnhac'], 'mithuat':['mithuat','mythuat'],
+  'gdtc':['gdtc','theduc','giaoducthechat','thechat'], 'tienganh':['tienganh','english','anhvan']
+};
+function sheetKhopMon(tenSheet,mon){
+  var s=khongDau(tenSheet), m=khongDau(mon).replace(/^ngoaingu1?$/,'tienganh');
+  if(!s) return false;
+  var ds=null; Object.keys(BI_DANH).forEach(function(k){ if(m===k||m.indexOf(k)>=0||k.indexOf(m)>=0) ds=BI_DANH[k]; });
+  ds=ds||[m];
+  return ds.some(function(a){ return s===a || s.indexOf(a)===0 || (a.length>=4 && s.indexOf(a)>=0); });
+}
+/* Đọc MỌI sheet dò ra được dòng tiêu đề (file của tổ thường mỗi môn một sheet). Sheet nào có
+   tên khớp môn đang nhập thì chọn sẵn; không khớp thì lấy sheet đầu và để thầy cô chọn lại
+   trong bước xem trước. Trước đây lấy sheet đầu tiên cho mọi môn → nhập Tiếng Việt mà đọc
+   sheet Toán (rà với file 12 sheet của TH Minh Châu 2, 5/9/2026). */
+async function docFile(file,mon){
   var ab=await file.arrayBuffer(), zip=await _unzip(ab);
   var ds=Object.keys(zip).filter(function(n){ return /xl\/worksheets\/[^\/]*\.xml$/i.test(n); })
     .sort(function(a,b){ var f=function(x){ var m=x.match(/(\d+)\.xml$/); return m?+m[1]:999; }; return f(a)-f(b); });
   if(!ds.length) throw new Error('Không tìm thấy bảng tính trong file.');
   var ss=Object.keys(zip).find(function(n){ return /sharedStrings\.xml$/i.test(n); });
   var shared=ss?_parseSharedStrings(await _readPart(zip[ss])):[];
-  var loiDau=null;
+  /* tên sheet: workbook.xml (name + r:id) → workbook.xml.rels (r:id → worksheets/sheetN.xml) */
+  var ten={};
+  try{
+    var wb=await _readPart(zip['xl/workbook.xml']), rels=await _readPart(zip['xl/_rels/workbook.xml.rels']);
+    var rid={}, re=/<Relationship\b[^>]*?Id="([^"]+)"[^>]*?Target="([^"]+)"/g, m;
+    while((m=re.exec(rels))){ rid[m[1]]=m[2].replace(/^\/?xl\//,'').replace(/^\//,''); }
+    var re2=/<sheet\b[^>]*?name="([^"]*)"[^>]*?r:id="([^"]+)"/g;
+    while((m=re2.exec(wb))){ var p=rid[m[2]]; if(p) ten['xl/'+p]=_xunesc(m[1]); }
+  }catch(e){}
+  var sheets=[], loiDau=null;
   for(var i=0;i<ds.length;i++){
-    try{ return boc(_parseSheet(await _readPart(zip[ds[i]]), shared)); }
+    try{ var kq=boc(_parseSheet(await _readPart(zip[ds[i]]), shared)); kq.sheet=ten[ds[i]]||('Sheet '+(i+1)); sheets.push(kq); }
     catch(e){ if(!loiDau) loiDau=e; }
   }
-  throw loiDau||new Error('Không đọc được bảng tính nào trong file.');
+  if(!sheets.length) throw loiDau||new Error('Không đọc được bảng tính nào trong file.');
+  var chon=0;
+  if(mon && sheets.length>1){ for(var j=0;j<sheets.length;j++){ if(sheetKhopMon(sheets[j].sheet,mon)){ chon=j; break; } } }
+  var ra=sheets[chon]; ra.sheets=sheets; ra.sheetChon=chon; ra.sheetKhop=(sheets.length>1 && sheetKhopMon(sheets[chon].sheet,mon||''));
+  return ra;
 }
 async function nhanFile(file){
   var tt=el('bx-nkg-tt2');
   tt.innerHTML='⏳ Đang đọc <b>'+esc(file.name)+'</b>…';
   try{
     if(!/\.xlsx$/i.test(file.name)) throw new Error('Bút Xanh chỉ đọc được file .xlsx. Trong Excel thầy/cô chọn "Lưu thành" → định dạng "Excel Workbook (*.xlsx)" giúp em ạ.');
-    TAM=await docFile(file); TAM.ten=file.name;
-    tt.innerHTML='✓ Đã đọc <b>'+esc(file.name)+'</b> — dòng tiêu đề: dòng '+TAM.hRow+'.';
+    TAM=await docFile(file, CUA&&CUA.mon); TAM.ten=file.name;
+    tt.innerHTML='✓ Đã đọc <b>'+esc(file.name)+'</b>'+(TAM.sheets&&TAM.sheets.length>1?(' — file có '+TAM.sheets.length+' sheet, đang lấy sheet <b>'+esc(TAM.sheet)+'</b>'+(TAM.sheetKhop?' (khớp tên môn)':' (chưa chắc đúng môn — chọn lại bên dưới nếu cần)')):'')+' — dòng tiêu đề: dòng '+TAM.hRow+'.';
     veXemTruoc();
   }catch(e){
     TAM=null; el('bx-nkg-xt').style.display='none'; el('bx-nkg-ok').style.display='none';
@@ -10331,6 +10424,8 @@ function veXemTruoc(){
     (soCu?('<div class="canh">✎ Môn này đang có <b>'+soCu+' dòng thầy/cô sửa tay</b>. Kế hoạch mới đánh số dòng khác nên bản sửa đó sẽ được xoá.'+
       (taiDuocMau?' Nội dung KHÔNG mất vì file mẫu Bút Xanh xuất ra đã gộp sẵn phần sửa vào rồi.'
                  :' <b>Máy này chưa kích hoạt bản quyền nên không tải được mẫu có nội dung</b> — phần sửa tay đó sẽ mất hẳn. Thầy/cô cân nhắc chép lại trước khi nhận.')+'</div>'):'')+
+    (TAM.sheets&&TAM.sheets.length>1?('<label style="display:block;font-size:12.5px;color:#4a5a50;margin:6px 0">Kế hoạch của môn này nằm ở sheet: <select onchange="BX_khgdDoiSheet(this.value)" style="padding:4px 8px;border:1px solid #cfdcd4;border-radius:7px;font-size:13px">'+
+      TAM.sheets.map(function(s,i){ return '<option value="'+i+'"'+(i===TAM.sheetChon?' selected':'')+'>'+esc(s.sheet)+'</option>'; }).join('')+'</select></label>'):'')+
     '<div style="font-size:12.5px;color:#4a5a50;margin:10px 0 2px">Bút Xanh tự gán cột như dưới đây — sai thì thầy/cô chọn lại:</div>'+
     '<div class="cot">'+oCot+'</div>'+
     '<label style="display:block;font-size:12.5px;color:#4a5a50;margin:6px 0">'+
@@ -10344,6 +10439,13 @@ function veXemTruoc(){
   el('bx-nkg-ok').style.display=rows.length?'':'none';
 }
 window.BX_khgdDoiKeThua=function(b){ if(TAM){ TAM.keThua=!!b; veXemTruoc(); } };
+window.BX_khgdDoiSheet=function(i){
+  if(!TAM||!TAM.sheets) return;
+  var s=TAM.sheets[+i]; if(!s) return;
+  var sheets=TAM.sheets, ten=TAM.ten;
+  TAM=s; TAM.sheets=sheets; TAM.sheetChon=+i; TAM.ten=ten; TAM.sheetKhop=true;
+  veXemTruoc();
+};
 window.BX_khgdDoiCot=function(i,letter){
   if(!TAM) return;
   if(letter){ Object.keys(TAM.map).forEach(function(k){ if(TAM.map[k]===letter && +k!==i) delete TAM.map[k]; }); TAM.map[i]=letter; }
@@ -12611,7 +12713,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
 <!-- Lớp bản quyền (License) — tách riêng để an toàn, dễ cập nhật.
      ⚠️ Có dấu phiên bản ?v= vì GitHub Pages giữ bản cũ 10 phút — sửa license.js mà
      quên đổi dấu này thì máy thầy cô vẫn chạy bản cũ. (5/8/2026) -->
-<script src="khgd-sgv.js?v=20260905-2"></script>
+<script src="khgd-sgv.js?v=20260905-3"></script>
 <script src="license.js?v=20260828-lancuoi"></script>
 
 <!-- ============ MODAL: LỊCH NGHỈ & DẠY BÙ (Phase 2 — con trỏ tiến độ) ============ -->
