@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-05 · 117';
+  var PB='2026-09-05 · 118';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -6884,10 +6884,134 @@ function BX_doiTenLop(cu, moi){
   return kq;
 }
 window.BX_demLop=BX_demLop; window.BX_doiTenLop=BX_doiTenLop;
-/* Gọi sau khi Lưu hồ sơ: lớp đổi + còn dữ liệu mang lớp cũ → hỏi rồi đổi. */
+/* ---------- 16a-2) CHUYỂN KHỐI (4A → 5A) = XOÁ DỮ LIỆU KHỐI CŨ, CÓ CẢNH BÁO (5/9/2026 — thầy Chung chốt) ----------
+   Khác khối thì KHÔNG đổi tên được: khác chương trình, khác học sinh — đổi nhãn là dán "5A" lên
+   lịch báo giảng mang tên bài lớp 4. Thầy Chung chốt: coi như bắt đầu lớp mới → dữ liệu khối cũ
+   trên máy và trên đám mây bị XOÁ, có cảnh báo rõ, không có đường vòng "chỉ đổi hồ sơ" — để một
+   máy không thể đổi lớp mỗi tuần cho nhiều người dùng chung một bản quyền.
+     · Chỉ xoá dữ liệu của KHỐI CŨ (ô/dòng/giáo án ghi lớp thuộc khối đó, hoặc không ghi lớp).
+       Lớp khối khác của giáo viên bộ môn (2B, 3C…) giữ nguyên.
+     · Tự tải một tệp sao lưu JSON trước khi xoá (đúng luồng exportBackup sẵn có).
+     · Ghi rỗng qua BX_luu/removeItem → móc Storage đánh dấu dirty → đẩy lên mây ngay (FBX.flush).
+       Luật gộp "rỗng không ghi đè dữ liệu thật" chỉ áp khi MỘT bên rỗng lúc kéo về; ở đây máy
+       chủ động đẩy giá trị rỗng lên nên đám mây cũng rỗng theo, không trả lại dữ liệu cũ.
+     · Bấm "Giữ nguyên": hồ sơ quay về lớp cũ (nút Lưu đã ghi lớp mới trước đó).
+     · Không có dữ liệu khối cũ → chuyển êm, không hỏi. */
+function _bxKhoiCua(lop, macDinh){ var k=(window.BX_khoiCuaLop?window.BX_khoiCuaLop(lop):((String(lop||'').match(/\d/)||[''])[0])); return k||macDinh||''; }
+function BX_demKhoi(k, lopCu){
+  k=String(k||''); var n={tkb:0,lbg:0,khbd:0,sua:0,hs:0,khgd:0,tong:0};
+  if(!k) return n;
+  function la(lop){ return _bxKhoiCua(lop, k)===k; }        // không ghi lớp → coi là lớp chính (khối cũ)
+  var tkb=_bxDocJSON('butxanh_tkb');
+  if(tkb&&Array.isArray(tkb.slots)) tkb.slots.forEach(function(s){ if(s&&la(s.lop)) n.tkb++; });
+  var lbg=_bxDocJSON('butxanh_lbg_weeks');
+  if(lbg&&typeof lbg==='object'&&!Array.isArray(lbg)) Object.keys(lbg).forEach(function(w){ (Array.isArray(lbg[w])?lbg[w]:[]).forEach(function(r){ if(r&&la(r.lop)) n.lbg++; }); });
+  var kb=_bxDocJSON('butxanh_khbd');
+  if(Array.isArray(kb)) kb.forEach(function(x){ if(x&&la(x.lop)) n.khbd++; });
+  var ed=_bxDocJSON('butxanh_khbd_edits');
+  if(ed&&typeof ed==='object'&&!Array.isArray(ed)) Object.keys(ed).forEach(function(key){ var p=key.split('|'); if(p[0]==='khbd'&&la(p[1])) n.sua++; });
+  var hs=_bxDocJSON('butxanh_hocsinh'); if(Array.isArray(hs)) n.hs=hs.length;
+  var E=_bxDocJSON('butxanh_khgd_edits'); if(E&&typeof E==='object'&&E[k]&&Object.keys(E[k]).length) n.khgd=1;
+  n.tong=n.tkb+n.lbg+n.khbd+n.sua+n.hs+n.khgd;
+  return n;
+}
+function BX_xoaDuLieuKhoi(k){
+  k=String(k||''); var kq={tkb:0,lbg:0,khbd:0,sua:0,hs:0,khgd:0,loi:[]};
+  if(!k) return kq;
+  function la(lop){ return _bxKhoiCua(lop, k)===k; }
+  function ghi(key,v,ten){ var ok=BX_luu(key, JSON.stringify(v), ten); if(!ok) kq.loi.push(ten); return ok; }
+  /* 1) Thời khoá biểu */
+  var tkb=_bxDocJSON('butxanh_tkb');
+  if(tkb&&Array.isArray(tkb.slots)){
+    var giuT=tkb.slots.filter(function(s){ return s&&!la(s.lop); }); kq.tkb=tkb.slots.length-giuT.length;
+    if(kq.tkb){ tkb.slots=giuT; tkb.updated=new Date().toISOString(); ghi('butxanh_tkb',tkb,'thời khoá biểu'); }
+  }
+  /* 2) Lịch báo giảng từng tuần + gương tuần đang xem + dấu tuần tự sinh */
+  var lbg=_bxDocJSON('butxanh_lbg_weeks');
+  if(lbg&&typeof lbg==='object'&&!Array.isArray(lbg)){
+    var ra={}, bo=0;
+    Object.keys(lbg).forEach(function(w){ var a=Array.isArray(lbg[w])?lbg[w]:[]; var g=a.filter(function(r){ return r&&!la(r.lop); }); bo+=a.length-g.length; if(g.length) ra[w]=g; });
+    kq.lbg=bo;
+    if(bo){ ghi('butxanh_lbg_weeks',ra,'lịch báo giảng');
+      try{ var tg=_bxDocJSON('butxanh_lbg_tugen'); if(tg&&typeof tg==='object'){ Object.keys(tg).forEach(function(w){ if(!ra[w]) delete tg[w]; }); localStorage.setItem('butxanh_lbg_tugen',JSON.stringify(tg)); } }catch(e){} }
+  }
+  var sch=_bxDocJSON('butxanh_schedule');
+  if(Array.isArray(sch)){ var g2=sch.filter(function(r){ return r&&!la(r.lop); }); if(g2.length!==sch.length){ try{ localStorage.setItem('butxanh_schedule',JSON.stringify(g2)); }catch(e){} } }
+  /* 3) Giáo án đã lưu */
+  var kb=_bxDocJSON('butxanh_khbd');
+  if(Array.isArray(kb)){ var g3=kb.filter(function(x){ return x&&!la(x.lop); }); kq.khbd=kb.length-g3.length; if(kq.khbd) ghi('butxanh_khbd',g3,'giáo án đã lưu'); }
+  /* 4) Bản sửa giáo án */
+  var ed=_bxDocJSON('butxanh_khbd_edits');
+  if(ed&&typeof ed==='object'&&!Array.isArray(ed)){
+    var g4={}, bo4=0; Object.keys(ed).forEach(function(key){ var p=key.split('|'); if(p[0]==='khbd'&&la(p[1])) bo4++; else g4[key]=ed[key]; });
+    kq.sua=bo4; if(bo4) ghi('butxanh_khbd_edits',g4,'bản sửa giáo án');
+  }
+  /* 5) Bản nháp */
+  try{ var nh=_bxDocJSON('butxanh_khbd_nhap'); if(nh&&nh.khoa){ var q=String(nh.khoa).split('§'); if(q.length>=5&&la(q[3])) localStorage.removeItem('butxanh_khbd_nhap'); } }catch(e){}
+  /* 6) Học sinh cần hỗ trợ — thuộc lớp cũ */
+  var hs=_bxDocJSON('butxanh_hocsinh');
+  if(Array.isArray(hs)&&hs.length){ kq.hs=hs.length; ghi('butxanh_hocsinh',[],'danh sách học sinh'); }
+  /* 7) Bản sửa KHGD môn học của khối cũ (khoá theo khối) */
+  try{ var E=_bxDocJSON('butxanh_khgd_edits'); if(E&&typeof E==='object'&&E[k]){ delete E[k]; kq.khgd=1; localStorage.setItem('butxanh_khgd_edits',JSON.stringify(E)); if(window.BX_khgdEdit) delete window.BX_khgdEdit[k]; } }catch(e){}
+  try{ if(window.BXLIC&&BXLIC.quenQuyen) BXLIC.quenQuyen(); }catch(e){}   // phạm vi suy từ TKB đổi rồi
+  try{ if(window.FBX&&window.FBX.flush) window.FBX.flush(); }catch(e){}
+  return kq;
+}
+window.BX_demKhoi=BX_demKhoi; window.BX_xoaDuLieuKhoi=BX_xoaDuLieuKhoi;
+function _bxHoSoVeLop(lop){   // hồ sơ quay về lớp cũ (nút Lưu đã ghi lớp mới trước khi hỏi)
+  var p={}; try{ p=JSON.parse(localStorage.getItem('butxanh_profile')||'{}'); }catch(e){}
+  p.klass=lop; try{ localStorage.setItem('butxanh_profile',JSON.stringify(p)); }catch(e){}
+  try{ var f=el('set-class'); if(f) f.value=lop; }catch(e){}
+  try{ applyProfile(p); }catch(e){}
+}
+function BX_hoiChuyenKhoi(cu, moi, kCu, kMoi){
+  var n=BX_demKhoi(kCu, cu);
+  if(!n.tong) return false;                                   // không có gì của khối cũ → chuyển êm
+  if(window.BX_CHIXEM){
+    _bxHoSoVeLop(cu);
+    try{ if(window.bxAlert) bxAlert('📱 Điện thoại đang ở chế độ xem nên chưa chuyển từ lớp '+cu+' sang '+moi+' được (việc này xoá dữ liệu khối '+kCu+').\n\nThầy/cô làm trên MÁY TÍNH nhé. Hồ sơ vẫn là lớp '+cu+'.'); }catch(e){}
+    return true;
+  }
+  if(typeof window.BX_confirm!=='function'){ _bxHoSoVeLop(cu); return true; }
+  var dong=[];
+  if(n.tkb) dong.push(n.tkb+' ô Thời khoá biểu');
+  if(n.lbg) dong.push(n.lbg+' dòng Lịch báo giảng');
+  if(n.khbd) dong.push(n.khbd+' giáo án đã lưu');
+  if(n.sua) dong.push(n.sua+' bản sửa giáo án');
+  if(n.hs) dong.push(n.hs+' học sinh cần hỗ trợ');
+  if(n.khgd) dong.push('bản sửa KHGD môn học khối '+kCu);
+  var daKhoa=false; try{ daKhoa=!!(window.BXLIC&&BXLIC.daKhoaQuyen&&BXLIC.daKhoaQuyen()); }catch(e){}
+  BX_confirm({
+    title:'⚠️ Chuyển từ khối '+bxEsc(kCu)+' sang khối '+bxEsc(kMoi)+'?',
+    html:'Thầy/cô đang đổi lớp <b>'+bxEsc(cu)+'</b> → <b>'+bxEsc(moi)+'</b>, tức là <b>chuyển khối</b>. Bút Xanh không thể đổi tên dữ liệu khối '+bxEsc(kCu)+' thành khối '+bxEsc(kMoi)+' (khác chương trình, khác học sinh) nên sẽ coi như <b>bắt đầu lớp mới</b>.<br><br>'+
+         '<b style="color:#c62828">Dữ liệu khối '+bxEsc(kCu)+' trên máy và trên đám mây sẽ bị XOÁ:</b> '+bxEsc(dong.join(', '))+'. Dữ liệu lớp khối khác (nếu có) giữ nguyên. Bút Xanh sẽ tải xuống một tệp sao lưu trước khi xoá.'+
+         (daKhoa?'<br><br>Phạm vi bản quyền đã chốt (khối × môn) <b>không</b> đổi theo lớp mới; cần mở khối '+bxEsc(kMoi)+' thì liên hệ quản trị.':'')+
+         '<br><br>Thầy/cô cân nhắc kỹ trước khi bấm.',
+    okText:'Xoá và chuyển sang '+bxEsc(moi), cancelText:'Giữ nguyên '+bxEsc(cu)
+  }, function(){
+    try{ exportBackup(); }catch(e){ console.warn('[Bút Xanh] sao lưu trước khi xoá', e&&e.message); }
+    var kq=BX_xoaDuLieuKhoi(kCu);
+    try{ reloadAllState(); }catch(e){}
+    try{ if(window.BX_setWeek) BX_setWeek(state.week); }catch(e){}
+    try{ if(window.BX_fillLopSelect) BX_fillLopSelect(); }catch(e){}
+    try{ if(typeof window.bxRenderTKBView==='function') window.bxRenderTKBView(); }catch(e){}
+    try{ if(typeof showView==='function') showView('tkb'); }catch(e){}
+    var tb='✓ Đã xoá dữ liệu khối '+kCu+' và chuyển sang lớp '+moi+'. Tệp sao lưu vừa được tải xuống — cất giữ nếu cần.\n\nMời thầy/cô nhập Thời khoá biểu lớp '+moi+' rồi bấm 💾 Lưu; Bút Xanh sẽ tạo Lịch báo giảng và giáo án khối '+kMoi+' theo đúng lịch đó.';
+    if(kq.loi.length) tb+='\n\n⚠️ Chưa ghi được: '+kq.loi.join(', ')+'.';
+    try{ if(window.bxAlert) bxAlert(tb); }catch(e){}
+  }, function(){
+    _bxHoSoVeLop(cu);
+    var m=el('set-msg'); if(m){ m.textContent='Giữ nguyên lớp '+cu+' — chưa đổi gì.'; setTimeout(function(){ m.textContent=''; },4000); }
+  });
+  return true;
+}
+window.BX_hoiChuyenKhoi=BX_hoiChuyenKhoi;
+/* Gọi sau khi Lưu hồ sơ: lớp đổi → CÙNG khối thì hỏi đổi tên (16a), KHÁC khối thì hỏi xoá khối cũ (16a-2). */
 function BX_hoiDoiTenLop(cu, moi){
   var C=_bxLopChuan(cu), M=_bxLopChuan(moi);
   if(!C||!M||C===M) return false;
+  var kCu=_bxKhoiCua(cu), kMoi=_bxKhoiCua(moi);
+  if(kCu&&kMoi&&kCu!==kMoi) return BX_hoiChuyenKhoi(cu, moi, kCu, kMoi);
   var n=BX_demLop(cu); if(!n.tong) return false;
   cu=String(cu).replace(/^Lớp\s*/i,'').trim(); moi=String(moi).replace(/^Lớp\s*/i,'').trim();
   if(typeof window.BX_confirm!=='function') return false;
