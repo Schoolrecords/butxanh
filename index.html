@@ -11510,10 +11510,24 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
 
   /* ---- (19/8/2026) ĐĂNG NHẬP KIỂU CHUYỂN TRANG cho điện thoại & trình duyệt trong ứng dụng ---- */
   var KHOA_CT='butxanh_dn_chuyentrang';     // dấu "vừa đi Google về", để biết mà đỡ nếu hỏng
+  /* 🔴 LỖI ĐÃ VÁ (5/9/2026 — thầy Chung gửi ảnh Samsung Android, Chrome, butxanh.net/#tkb):
+     điện thoại dùng TRÌNH DUYỆT THẬT đi lối chuyển trang thì xong màn Google quay về luôn
+     hiện "Đăng nhập chưa xong", bấm Thử lại bao nhiêu lần cũng vậy.
+     Vì sao: butxanh.net chạy trên GitHub Pages, còn trang nhận phiên của Firebase nằm ở
+     but-xanh.firebaseapp.com (authDomain). Lối chuyển trang cất kết quả ở kho của
+     firebaseapp.com rồi về butxanh.net đọc lại qua một khung ẩn — Chrome (từ bản 115, chia ngăn
+     kho bên thứ ba), Samsung Internet, Safari, Firefox đều KHÔNG cho khung ẩn đọc kho đó nữa,
+     nên getRedirectResult() về tay không. Firebase ghi rõ trong "Best practices for
+     signInWithRedirect": muốn giữ lối này phải đặt authDomain trùng tên miền app (cần chuyển
+     hosting hoặc proxy /__/auth), còn không thì dùng signInWithPopup.
+     Nay: chỉ TRÌNH DUYỆT TRONG ỨNG DỤNG (Zalo, Messenger…) mới chuyển trang — ở đó cửa sổ phụ
+     không nói chuyện được với tab app (ca cô Hoà 19/8). Điện thoại mở Chrome/Samsung thật quay
+     về lối cửa sổ phụ như trước 19/8 (Chrome Android mở thành tab mới rồi tự đóng khi xong):
+     cửa sổ phụ trả kết quả bằng postMessage, không cần kho bên thứ ba nên không dính lỗi này.
+     Bộ kiểm thử _kiemthu/kiem-dangnhap-dienthoai.js đã đổi ca 4–5 theo. */
   function nenChuyenTrang(){
     try{
       if(laTrongUngDungKhac()) return true;                       // Zalo, Messenger, TikTok…
-      if(typeof window.bxLaCamTay==='function' && window.bxLaCamTay()) return true;   // điện thoại, máy tính bảng
     }catch(e){}
     return false;
   }
@@ -11590,7 +11604,8 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
       var p=new firebase.auth.GoogleAuthProvider();
       loginBusy(true);
       /* 🔴 (19/8/2026 — thầy Chung gửi ảnh máy cô Hoà, Samsung, bấm link trong Zalo)
-         ĐIỆN THOẠI VÀ TRÌNH DUYỆT TRONG ỨNG DỤNG KHÁC ĐI LỐI CHUYỂN TRANG, KHÔNG MỞ CỬA SỔ PHỤ.
+         TRÌNH DUYỆT TRONG ỨNG DỤNG ĐI LỐI CHUYỂN TRANG, KHÔNG MỞ CỬA SỔ PHỤ.
+         (5/9/2026: điện thoại mở bằng trình duyệt THẬT không đi lối này nữa — xem nenChuyenTrang.)
          Đo thật trên bản live với UA Zalo + khổ điện thoại: bấm "Đăng nhập" thì app MỞ MỘT TAB
          MỚI sang accounts.google.com và bỏ lại tab app. Xong việc ở Google, tab phụ phải "nói
          chuyện ngược" về tab app rồi tự đóng — nhưng trong trình duyệt của Zalo (và cả khi máy
