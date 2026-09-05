@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-05 · 119';
+  var PB='2026-09-05 · 120';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -9402,10 +9402,11 @@ function migE(o){ if(!o||typeof o!=='object') return {}; var L={'1':1,'2':1,'3':
   return Object.keys(o).every(function(k){return L[k];}) ? o : {'5':o}; }   // di trú {môn:..} cũ -> {"5":{môn:..}}
 function saveE(){ try{ localStorage.setItem(EKEY,JSON.stringify(window.BX_khgdEdit||{})); }catch(e){} }
 window.BX_khgdEdit=migE(loadE());  // { lớp: { môn: { i: { col:val } } } }
-window.BX_khgdVal=function(lop,subj,i,col,base){ var L=window.BX_khgdEdit[lop]; var s=L&&L[subj]; var e=s&&s[i]; return (e&&e[col]!=null)?e[col]:base; };
+window.BX_khgdVal=function(lop,subj,i,col,base){ var L=window.BX_khgdEdit[lop]; var sk=(typeof window.BX_khgdSubjKey==='function')?window.BX_khgdSubjKey(lop,subj):subj; var s=L&&L[sk]; var e=s&&s[i]; return (e&&e[col]!=null)?e[col]:base; };
 function baseV(i,col){ return (data()[i]&&data()[i][col])||''; }
+function _sk(){ return (typeof window.BX_khgdSubjKey==='function')?window.BX_khgdSubjKey(curLop(),cur()):cur(); }   /* khoá bản sửa theo nền (5/9) */
 function val(i,col){ return window.BX_khgdVal(curLop(),cur(),i,col,baseV(i,col)); }
-function isEdited(i,col){ var L=window.BX_khgdEdit[curLop()]; var s=L&&L[cur()]; var e=s&&s[i]; return !!(e&&e[col]!=null&&e[col]!==baseV(i,col)); }
+function isEdited(i,col){ var L=window.BX_khgdEdit[curLop()]; var s=L&&L[_sk()]; var e=s&&s[i]; return !!(e&&e[col]!=null&&e[col]!==baseV(i,col)); }
 function rowEdited(i){ return [4,5,6,7].some(function(c){return isEdited(i,c);}); }
 function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function hkLabel(t){ return parseInt(t,10)<=18?'HỌC KÌ I':'HỌC KÌ II'; }
@@ -9506,14 +9507,14 @@ function tableHtml(forPrint){
   return out;
 }
 window.BX_khgdSaveCell=function(div){
-  var i=+div.getAttribute('data-i'), c=+div.getAttribute('data-c'), L=curLop(), s=cur();
+  var i=+div.getAttribute('data-i'), c=+div.getAttribute('data-c'), L=curLop(), s=_sk();
   var v=(div.innerText||'').replace(/ /g,' ').trim(), b=baseV(i,c).trim();
   var E=window.BX_khgdEdit; E[L]=E[L]||{}; E[L][s]=E[L][s]||{}; E[L][s][i]=E[L][s][i]||{};
   if(v===b){ delete E[L][s][i][c]; if(!Object.keys(E[L][s][i]).length) delete E[L][s][i]; }
   else { E[L][s][i][c]=v; }
   saveE(); renderKHDH();
 };
-window.BX_khgdResetRow=function(i){ var E=window.BX_khgdEdit, L=curLop(), s=cur(); if(E[L]&&E[L][s]) delete E[L][s][i]; saveE(); renderKHDH(); return false; };
+window.BX_khgdResetRow=function(i){ var E=window.BX_khgdEdit, L=curLop(), s=_sk(); if(E[L]&&E[L][s]) delete E[L][s][i]; saveE(); renderKHDH(); return false; };
 
 window.renderKHDH=function(){
   var box=document.getElementById('khdh-table'); if(!box) return;
@@ -9522,7 +9523,7 @@ window.renderKHDH=function(){
      ("Bài 1 – TIẾT 1 - 2: ĐỌC"). Đếm dòng làm Tiếng Việt lớp 2 hiện ra 219 tiết
      thay vì 350 tiết/năm theo Chương trình GDPT 2018 (thầy Chung phát hiện 7/8/2026). */
   var D=data(), tiet=0; D.forEach(function(r){ tiet+=BX_rowPeriods(r); });
-  var L=window.BX_khgdEdit[curLop()], s=L&&L[cur()], ne=s?Object.keys(s).length:0;
+  var L=window.BX_khgdEdit[curLop()], s=L&&L[_sk()], ne=s?Object.keys(s).length:0;
   var info=document.getElementById('khdh-info');
   /* Đếm địa chỉ lồng ghép mới đang hiện — để thầy cô biết bật công tắc có tác dụng gì. */
   var dQ=0,dV=0,dK=0,dS=0,_igsc={}; /* (3/9/2026) đếm cùng sổ chống lặp để khớp số hiện trên bảng */
@@ -9611,6 +9612,7 @@ function rebuild(){
         '<button class="btn" onclick="BX_khgdMoNhap()" title="Tải file Excel mẫu, sửa theo kế hoạch của tổ rồi đưa lại lên — thay cả bảng, không phải sửa từng ô">📥 Nhập KHGD của tôi (Excel)</button>'+
       '</div>'+
     '</div>'+
+    '<div id="khdh-nen-bar"></div>'+
     '<div id="khdh-rieng-banner"></div>'+
     '<div class="khdh-filters">'+
       '<label class="select"><span>Lớp</span><select id="khdh-lop" onchange="BX_khgdSetLop(this.value)">'+lops+'</select></label>'+
@@ -9716,11 +9718,122 @@ function luuKho(bo){
 window.BX_khgdRiengMeta=function(l,m){ var L=KHO[String(l)]; var r=L&&L[m]; return (r&&r.rows&&r.rows.length)?r:null; };
 window.BX_khgdRiengCua=function(l){ var L=KHO[String(l)]||{}, o={};
   Object.keys(L).forEach(function(m){ if(L[m]&&L[m].rows&&L[m].rows.length) o[m]=L[m].rows; }); return o; };
-/* CỬA ĐỌC DUY NHẤT cho KHGD một môn: có bản riêng thì dùng bản riêng, không thì kho gốc. */
+/* ===================== NỀN KẾ HOẠCH: CHUẨN SGV hay BẢN TỔ QUẢNG CHÂU 1 (5/9/2026, thầy Chung chốt) =====================
+   Vì sao: Bộ chỉ chốt tổng tiết/năm; SGV ghi số tiết từng bài và cộng đúng tổng đó nên dồn theo
+   số tiết/tuần là ra "tuần chuẩn" cho mọi trường. Kế hoạch của tổ Quảng Châu 1 (khgd-lopN.js) chỉ
+   thêm 2 tiết ở tuần 4–5 mà 30/35 tuần Toán 3 đã khác SGV → giáo viên trường khác thấy "lệch tiết".
+   Thứ tự ưu tiên khi đọc KHGD một môn:  bản riêng đã nhập (Excel)  >  nền đang chọn  >  bản tổ.
+   Nền do thầy cô chọn, lưu trong hồ sơ (`khgdNen`: 'sgv' | 'to', đồng bộ đám mây theo hồ sơ).
+   Mặc định: máy đã có Thời khoá biểu / Lịch báo giảng / giáo án, hoặc trường ghi "Quảng Châu 1"
+   → giữ 'to' (không đổi gì với người đang dùng); máy mới → 'sgv'.
+   Bản sửa ô (BX_khgdEdit) khoá theo CHỈ SỐ DÒNG nên phải tách theo nền: sửa trên nền SGV lưu dưới
+   khoá "<môn>§sgv" — xem BX_khgdSubjKey. Lịch báo giảng: môn nào đang KHÁC bản tổ (nền SGV, bản
+   riêng, hoặc có ô sửa tay) thì sinh theo kế hoạch đó (genForWeek → _planWeek), còn lại giữ nguyên
+   lối cũ lấy giáo án theo tuần của kho. */
+function docHoSo(){ try{ return JSON.parse(localStorage.getItem('butxanh_profile')||'{}'); }catch(e){ return {}; } }
+function ghiHoSo(p){ try{ localStorage.setItem('butxanh_profile',JSON.stringify(p)); }catch(e){} }
+function coDuLieuCu(){
+  var d=function(k){ try{ return JSON.parse(localStorage.getItem(k)||'null'); }catch(e){ return null; } };
+  var t=d('butxanh_tkb'); if(t&&Array.isArray(t.slots)&&t.slots.length) return true;
+  var w=d('butxanh_lbg_weeks'); if(w&&typeof w==='object'&&Object.keys(w).length) return true;
+  var k=d('butxanh_khbd'); if(Array.isArray(k)&&k.length) return true;
+  return false;
+}
+window.BX_khgdNen=function(){
+  var p=docHoSo();
+  if(p.khgdNen==='sgv'||p.khgdNen==='to') return p.khgdNen;
+  var nen=(/qu[aả]ng\s*ch[aâ]u\s*1\b/i.test(String(p.school||'')) || coDuLieuCu())?'to':'sgv';
+  p.khgdNen=nen; ghiHoSo(p);
+  return nen;
+};
+window.BX_khgdCoSGV=function(l,m){ var S=window.BX_KHGD_SGV; return !!(S&&S[String(l)]&&S[String(l)][m]&&S[String(l)][m].length); };
+window.BX_khgdNguon=function(l,m){
+  if(window.BX_khgdRiengMeta(l,m)) return 'rieng';
+  if(window.BX_khgdNen()==='sgv' && window.BX_khgdCoSGV(l,m)) return 'sgv';
+  return 'to';
+};
+/* CỬA ĐỌC DUY NHẤT cho KHGD một môn: bản riêng > nền SGV (nếu có bản SGV môn đó) > bản tổ. */
 window.BX_khgdRows=function(l,m){
   var r=window.BX_khgdRiengMeta(l,m); if(r) return r.rows;
+  if(window.BX_khgdNen()==='sgv' && window.BX_khgdCoSGV(l,m)) return window.BX_KHGD_SGV[String(l)][m];
   return ((window.BX_KHGD_G||{})[String(l)]||{})[m]||[];
 };
+/* Khoá lưu bản sửa ô theo nền: nền SGV đánh số dòng khác bản tổ nên không dùng chung khoá được. */
+window.BX_khgdSubjKey=function(l,m){ return (window.BX_khgdNguon(l,m)==='sgv')?(m+'§sgv'):m; };
+/* Toàn bộ môn của một lớp theo đúng ưu tiên trên: {môn: rows} */
+window.BX_khgdBang=function(l){
+  var l0=String(l), co={}, G=(window.BX_KHGD_G||{})[l0]||{}, S=(window.BX_KHGD_SGV||{})[l0]||{}, R={};
+  try{ R=window.BX_khgdRiengCua(l0)||{}; }catch(e){}
+  [G,S,R].forEach(function(x){ Object.keys(x).forEach(function(m){ co[m]=1; }); });
+  var ra={}; Object.keys(co).forEach(function(m){ var rows=window.BX_khgdRows(l0,m); if(rows&&rows.length) ra[m]=rows; });
+  return ra;
+};
+/* Môn này đang KHÁC bản tổ? (nền SGV / bản riêng / có ô sửa tay) → lịch báo giảng phải đi theo kế hoạch */
+window.BX_khgdTheoKeHoach=function(l,m){
+  var ng=window.BX_khgdNguon(l,m); if(ng!=='to') return true;
+  try{ var E=window.BX_khgdEdit, s=E&&E[String(l)]&&E[String(l)][m]; return !!(s&&Object.keys(s).length); }catch(e){ return false; }
+};
+/* So kế hoạch đang dùng (kể cả ô sửa tay) với chuẩn SGV, theo từng tuần. null = môn chưa có bản SGV. */
+window.BX_khgdSoSGV=function(l,m){
+  if(!window.BX_khgdCoSGV(l,m)) return null;
+  var S=window.BX_KHGD_SGV[String(l)][m], D=window.BX_khgdRows(l,m), V=window.BX_khgdVal;
+  var khoa=function(name){
+    var s=String(name||'').trim(), b=/b[aà]i\s*0*(\d+)/i.exec(s), t=/ti[eế]t\s*0*(\d+)/i.exec(s);
+    return (b?('B'+b[1]):s.toLowerCase().replace(/\s+/g,' '))+(t?('.'+t[1]):'');
+  };
+  var theoTuan=function(rows,dung){
+    var o={};
+    rows.forEach(function(r,i){
+      var w=String(r[0]||'').match(/\d+/); if(!w) return;
+      var n=(window.BX_rowPeriods?window.BX_rowPeriods(r):1)||1; if(n>12) n=1;
+      var name=dung&&V?V(l,m,i,4,r[4]):r[4];
+      for(var j=0;j<n;j++) (o[w[0]]=o[w[0]]||[]).push(khoa(name));
+    });
+    return o;
+  };
+  var a=theoTuan(S,false), b=theoTuan(D,true), khac={};
+  Object.keys(a).forEach(function(w){ if((a[w]||[]).join('|')!==(b[w]||[]).join('|')) khac[w]=1; });
+  Object.keys(b).forEach(function(w){ if(!a[w]) khac[w]=1; });
+  var ds=Object.keys(khac).map(Number).sort(function(x,y){return x-y;});
+  return {tuanKhac:ds, tuanDau:ds.length?ds[0]:null};
+};
+window.BX_khgdDoiNen=function(nen){
+  if(nen!=='sgv'&&nen!=='to') return false;
+  var p=docHoSo(); if(p.khgdNen===nen) return false;
+  p.khgdNen=nen; ghiHoSo(p);
+  veLai();
+  try{ if(window.bxAlert) bxAlert((nen==='sgv'?'✓ Đang dùng KẾ HOẠCH CHUẨN THEO SÁCH GIÁO VIÊN.':'✓ Đang dùng kế hoạch của tổ chuyên môn Quảng Châu 1.')+
+    '\n\nLịch báo giảng các tuần ĐÃ LƯU giữ nguyên. Tuần sinh mới sẽ theo kế hoạch này; muốn tuần đang xem đổi theo, thầy/cô bấm "Sinh LBG từ TKB".'); }catch(e){}
+  return true;
+};
+/* Thanh chọn nền + lời nhắc so với SGV, vẽ vào #khdh-nen-bar mỗi lần vẽ bảng */
+function veNenBar(){
+  var box=el('khdh-nen-bar'); if(!box) return;
+  var l=lop(), m=mon(), nen=window.BX_khgdNen(), ng=window.BX_khgdNguon(l,m), coS=window.BX_khgdCoSGV(l,m);
+  var radio=function(v,nhan,ghi){
+    return '<label style="display:inline-flex;align-items:center;gap:6px;margin-right:14px;cursor:pointer">'+
+      '<input type="radio" name="khdh-nen" value="'+v+'"'+(nen===v?' checked':'')+' onchange="BX_khgdDoiNen(this.value)"> <b>'+nhan+'</b>'+(ghi?(' <span style="color:#6b7b71;font-weight:400">'+ghi+'</span>'):'')+'</label>';
+  };
+  var dong=[];
+  if(ng==='rieng') dong.push('Môn này đang dùng <b>kế hoạch riêng</b> thầy/cô đã nhập nên nền bên trên tạm không áp dụng.');
+  else if(!coS) dong.push('Môn này <b>chưa có bản chuẩn SGV</b> trong Bút Xanh, đang dùng bản tổ Quảng Châu 1.');
+  var so=window.BX_khgdSoSGV(l,m), luuY='';
+  if(so&&so.tuanKhac.length){
+    var ds=so.tuanKhac.map(function(w){return 'T'+w;}), hien=ds.slice(0,12).join(', ')+(ds.length>12?'…':'');
+    luuY='<div style="margin-top:5px;color:#a33">⚠️ Kế hoạch đang dùng <b>khác chuẩn SGV ở '+ds.length+'/35 tuần</b> (từ tuần '+so.tuanDau+'): '+hien+
+         '. Trường dạy theo SGV sẽ thấy lịch báo giảng lệch ở đúng những tuần này.</div>';
+  } else if(so && ng!=='rieng'){
+    luuY='<div style="margin-top:5px;color:#14532d">✓ Kế hoạch đang dùng khớp chuẩn SGV cả 35 tuần.</div>';
+  }
+  box.innerHTML='<div style="margin:6px 0;padding:8px 10px;background:#f6fbf7;border:1px solid #cfe2d5;border-radius:8px;font-size:13px;color:#233">'+
+    '<span style="margin-right:10px;color:#2c6b48;font-weight:700">Kế hoạch nền:</span>'+
+    radio('sgv','Chuẩn theo Sách giáo viên','(mốc chung mọi trường)')+
+    radio('to','Tổ chuyên môn Quảng Châu 1','(bản Bút Xanh dựng sẵn)')+
+    (dong.length?('<div style="margin-top:5px;color:#5b6b61">'+dong.join(' ')+'</div>'):'')+luuY+
+    '<div style="margin-top:5px;font-size:12px;color:#6b7b71">Lịch báo giảng và giáo án tuần mới sinh đi theo kế hoạch đang dùng; tổ mình xếp khác thì sửa đúng ô đó (✏️ Chỉnh sửa KHDH) hoặc 📥 nhập kế hoạch của tổ.</div>'+
+  '</div>';
+}
+window.BX_khgdVeNen=veNenBar;
 
 function veLai(){
   try{ if(typeof window.BX_khgdRebuild==='function') window.BX_khgdRebuild();
@@ -9730,6 +9843,7 @@ function veLai(){
 
 /* ------------------------------------------------- bảng nhắc trên màn KHDH */
 window.BX_khgdVeBangRieng=function(){
+  try{ veNenBar(); }catch(e){ console.warn('[KHGD] thanh nền', e&&e.message); }
   var b=el('khdh-rieng-banner'); if(!b) return;
   var r=window.BX_khgdRiengMeta(lop(),mon());
   if(!r){ b.innerHTML=''; return; }
@@ -10076,7 +10190,7 @@ function veXemTruoc(){
       '<option value=""'+(v?'':' selected')+'>— không có —</option>'+chon+'</select></label>';
   }).join('');
   var dau=rows.slice(0,6).map(function(r){ return '<tr>'+r.map(function(x){ return '<td>'+esc(x.length>60?x.slice(0,60)+'…':x)+'</td>'; }).join('')+'</tr>'; }).join('');
-  var cu=window.BX_khgdEdit&&window.BX_khgdEdit[CUA.lop]&&window.BX_khgdEdit[CUA.lop][CUA.mon];
+  var cu=window.BX_khgdEdit&&window.BX_khgdEdit[CUA.lop]&&window.BX_khgdEdit[CUA.lop][(window.BX_khgdSubjKey?window.BX_khgdSubjKey(CUA.lop,CUA.mon):CUA.mon)];
   var soCu=cu?Object.keys(cu).length:0;
   /* Lời hứa "nội dung không mất vì mẫu đã gộp sẵn phần sửa" CHỈ đúng nếu thầy cô tải
      được mẫu có nội dung. Chưa kích hoạt bản quyền thì cổng chặn tệp đó, nên phải nói
@@ -10111,18 +10225,19 @@ window.BX_khgdDoiCot=function(i,letter){
 window.BX_khgdNhanBan=function(){
   if(!TAM||!CUA||!TAM.rows||!TAM.rows.length) return;
   var l=CUA.lop, m=CUA.mon;                 /* lớp+môn CHỐT lúc mở cửa, không đọc lại */
+  var mk=(window.BX_khgdSubjKey?window.BX_khgdSubjKey(l,m):m);   /* khoá bản sửa của NỀN đang dùng (tính TRƯỚC khi đặt bản riêng) */
   /* Bản sửa theo CHỈ SỐ DÒNG của kế hoạch cũ không còn đúng dòng nào của kế hoạch mới
      nên phải bỏ — nhưng CẤT lại một bản trong chính mục vừa nhận, đừng xoá thẳng: thầy
      cô chưa kích hoạt bản quyền không tải được mẫu có nội dung, xoá là mất hẳn. */
   var edCu=null;
-  try{ var E0=window.BX_khgdEdit; if(E0&&E0[l]&&E0[l][m]&&Object.keys(E0[l][m]).length) edCu=E0[l][m]; }catch(e){}
+  try{ var E0=window.BX_khgdEdit; if(E0&&E0[l]&&E0[l][mk]&&Object.keys(E0[l][mk]).length) edCu=E0[l][mk]; }catch(e){}
   KHO[l]=KHO[l]||{};
   KHO[l][m]={luc:Date.now(), ten:TAM.ten||'', rows:TAM.rows};
   if(edCu) KHO[l][m].edCu=edCu;
   if(!luuKho()){ delete KHO[l][m]; return; }
   try{
     var E=window.BX_khgdEdit;
-    if(E&&E[l]&&E[l][m]){ delete E[l][m]; localStorage.setItem('butxanh_khgd_edits',JSON.stringify(E)); }
+    if(E&&E[l]&&E[l][mk]){ delete E[l][mk]; localStorage.setItem('butxanh_khgd_edits',JSON.stringify(E)); }
   }catch(e){}
   var so=TAM.rows.length;
   window.BX_khgdDongNhap(); veLai();
@@ -12368,6 +12483,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
 <!-- Lớp bản quyền (License) — tách riêng để an toàn, dễ cập nhật.
      ⚠️ Có dấu phiên bản ?v= vì GitHub Pages giữ bản cũ 10 phút — sửa license.js mà
      quên đổi dấu này thì máy thầy cô vẫn chạy bản cũ. (5/8/2026) -->
+<script src="khgd-sgv.js?v=20260905-1"></script>
 <script src="license.js?v=20260828-lancuoi"></script>
 
 <!-- ============ MODAL: LỊCH NGHỈ & DẠY BÙ (Phase 2 — con trỏ tiến độ) ============ -->
@@ -12708,8 +12824,70 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
   }
   window.bxPptWeekOf=pptWeekOf; window.bxLoadExc=loadExc;
   var _DOWg={'Thứ 2':2,'Thứ 3':3,'Thứ 4':4,'Thứ 5':5,'Thứ 6':6,'Thứ 7':7,'CN':8}, _BUg={'Sáng':0,'Chiều':1,'Tối':2};
+    /* ---------- (5/9/2026) LỊCH ĐI THEO KẾ HOẠCH khi môn KHÁC bản tổ (nền SGV / bản riêng / có ô sửa) ----------
+       Lối cũ lấy giáo án theo (lớp, môn, TUẦN) của kho — tức tuần của tổ Quảng Châu 1 — nên trường
+       khác thấy "lệch tiết". Nay: môn nào BX_khgdTheoKeHoach() thì đọc dòng KHGD của tuần PPCT pw
+       (đã gộp ô sửa tay), rồi dò giáo án trong kho theo SỐ BÀI + SỐ TIẾT + độ giống tên, ưu tiên bản
+       ghi có tuần gần pw nhất. Môn còn dùng bản tổ nguyên vẹn → giữ y nguyên lối cũ (không đổi gì
+       với người đang dùng). window.BX_LBG_KHO_CU=true ép lối cũ (dùng cho kiểm thử đối chiếu). */
+    var planCache={};
+    function _canonMon(m){ return (typeof _bxCanonSubject==='function')?(_bxCanonSubject(m)||m):m; }
+    function _timGiaoAn(lopN,mon,name,pw,used){
+      var K=window.KHO_DATA||[], nm=_n(mon), nc=_n(_canonMon(mon));
+      var nn=_n(name), bn=(typeof _baiNo==='function')?_baiNo(name):null, tn=(typeof _tietNo==='function')?_tietNo(name):null;
+      var pool=[];
+      K.forEach(function(r){ if(String(r.lop)!==String(lopN)) return; var rn=_n(r.mon), rc=_n(_canonMon(r.mon)); if(rn===nm||rn===nc||rc===nm||rc===nc) pool.push(r); });
+      if(!pool.length) return null;
+      var sim=function(r){ return (typeof _simTitle==='function')?_simTitle(name,r.bai):0; };
+      var gan=function(r){ return Math.abs((+r.tuan||0)-(+pw||0)); };
+      var chonTot=function(ds,diem){ var c=null,b=-Infinity; ds.forEach(function(r){ var sc=diem(r)*100-gan(r); if(sc>b){ b=sc; c=r; } }); return c; };
+      var chua=pool.filter(function(r){ return used.indexOf(r)<0; });
+      /* Vòng 1 (chặt): đúng tên, hoặc đúng số bài + đúng số tiết — trong số bản ghi CHƯA dùng */
+      var v1=chua.filter(function(r){
+        if(_n(r.bai)===nn) return true;
+        if(bn==null) return sim(r)>=0.5;
+        var rb=_baiNo(r.bai), rt=_tietNo(r.bai); if(rb!==bn) return false;
+        if(tn!=null&&rt!=null&&rt!==tn) return false;
+        if(tn==null&&rt!=null&&rt!==1) return false;
+        return true;
+      });
+      var c=chonTot(v1,function(r){ return _n(r.bai)===nn?3:(1+sim(r)); });
+      /* Vòng 2: cùng số bài, BỎ QUA số tiết (kho ghi nhầm — vd hai bản Bài 22 cùng "Tiết 2"), chưa dùng */
+      if(!c&&bn!=null){ var v2=chua.filter(function(r){ return _baiNo(r.bai)===bn; }); c=chonTot(v2,function(r){ return 1+sim(r); }); }
+      /* Vòng 3: cùng số bài, cho DÙNG LẠI bản đã gán (kho ít tiết hơn kế hoạch: Bài 23, 65…) — ưu tiên đúng số tiết */
+      if(!c&&bn!=null){ var v3=pool.filter(function(r){ return _baiNo(r.bai)===bn; }); c=chonTot(v3,function(r){ var rt=_tietNo(r.bai); return (tn!=null&&rt===tn?2:1)+sim(r); }); if(c) return c; }
+      if(c) used.push(c);
+      return c;
+    }
+    function _planWeek(lop,mon,pw){
+      if(window.BX_LBG_KHO_CU) return null;
+      var lopN=_digits(lop)||_digits(state.klass);
+      var ck=lopN+'|'+_n(mon)+'#'+pw; if(ck in planCache) return planCache[ck];
+      var ra=null;
+      try{
+        if(typeof window.BX_khgdBang==='function'&&typeof window.BX_khgdTheoKeHoach==='function'){
+          var B=window.BX_khgdBang(lopN), nm=_n(mon), nc=_n(_canonMon(mon)), mk=null;
+          Object.keys(B).forEach(function(k){ if(mk) return; var kk=_n(k), kc=_n(_canonMon(k)); if(kk===nm||kk===nc||kc===nm||kc===nc) mk=k; });
+          if(mk && window.BX_khgdTheoKeHoach(lopN,mk)){
+            var rows=B[mk], E=[], Kn=[], used=[];
+            rows.forEach(function(row,i){
+              if(!row) return;
+              var w=String(row[0]||'').match(/\d+/); if(!w||parseInt(w[0],10)!==parseInt(pw,10)) return;
+              var name=String(((window.BX_khgdVal)?window.BX_khgdVal(lopN,mk,i,4,row[4]):row[4])||'').trim(); if(!name) return;
+              var sp=(window.BX_rowPeriods?window.BX_rowPeriods(row):1)||1; if(sp>12) sp=1;
+              var L=_timGiaoAn(lopN,mon,name,pw,used);
+              for(var k=0;k<sp;k++){ E.push({L:L,part:k+1,parts:sp,ppct:String(row[6]||'')}); Kn.push(sp>1?(name+' (tiết '+(k+1)+'/'+sp+')'):name); }
+            });
+            ra={E:E,K:Kn};
+          }
+        }
+      }catch(e){ console.warn('[LBG] kế hoạch → kho lỗi, dùng lối cũ', e&&e.message); ra=null; }
+      planCache[ck]=ra; return ra;
+    }
+    window.bxPlanWeek=function(lop,mon,pw){ planCache={}; return _planWeek(lop,mon,pw); };
   function genForWeek(targetW){
     targetW=parseInt(targetW,10)||1;
+    planCache={};
     var exc=loadExc();
     var slots=_sortSlots(loadTKB());
     /* ⚠️ KHOÁ HÀNG ĐỢI phải dùng TÊN LỚP ĐẦY ĐỦ (_n) chứ KHÔNG phải _digits (8/8/2026).
@@ -12721,7 +12899,8 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     var lwCache={};          // memo: key#pw -> bài đã trải của tuần PPCT đó
     function _newLessons(key,lop,mon,pw){
       var ck=key+'#'+pw; if(lwCache[ck]) return lwCache[ck];
-      var v=_expandLessons(lessonsForWeek(lop,mon,pw), _khdhTietTuan(lop,mon,pw)); lwCache[ck]=v; return v;
+      var P=_planWeek(lop,mon,pw);   /* môn khác bản tổ → theo kế hoạch (5/9) */
+      var v=P?P.E.slice():_expandLessons(lessonsForWeek(lop,mon,pw), _khdhTietTuan(lop,mon,pw)); lwCache[ck]=v; return v;
     }
     function _mkRow(s,lop,date,E,opts,khName){
       var L=E&&E.L, bai=L?(L.bai||''):'';
@@ -12756,7 +12935,8 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
       var pendingK={};        // mon|lop -> tên bài KHDH (phân phối CT) tuần PPCT pw — nguồn DỰ PHÒNG
       var _pendK=function(key,lop,mon){
         if(pendingK[key]) return pendingK[key];
-        var a=(pw!==null)?khdhNamesForWeek(lop,mon,pw).slice():[];
+        var Pk=(pw!==null)?_planWeek(lop,mon,pw):null;
+        var a=(pw!==null)?(Pk?Pk.K.slice():khdhNamesForWeek(lop,mon,pw).slice()):[];
         pendingK[key]=a; return a;
       };
       slots.forEach(function(s){
