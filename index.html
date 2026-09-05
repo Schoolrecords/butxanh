@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-05 · 122';
+  var PB='2026-09-05 · 123';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1352,8 +1352,10 @@ window.bxMergeKho = function(){
      để nạp đủ kho, tránh báo nhầm "Đang cập nhật kho". */
   function _gomKhoi(chuoi, ks){
     if(!chuoi) return;
-    var re=/"lop"\s*:\s*"?\s*([1-5])/g, m;
-    while((m=re.exec(chuoi))!==null){ if(window.BX_KHO_FILES[m[1]]) ks[m[1]]=1; }
+    /* (5/9/2026) Nhận cả "Lớp 4 H", "lớp 4D", "L ớp 2D" — trước đây bắt buộc chữ số đứng đầu giá trị,
+       nên giáo viên bộ môn gõ "Lớp 4H" là kho khối 4 KHÔNG BAO GIỜ được nạp → cả năm trống tên bài (ca thật 5/9). */
+    var re=/"lop"\s*:\s*(?:"([^"]*)"|([1-5]))/g, m;
+    while((m=re.exec(chuoi))!==null){ var d=(m[2]||String(m[1]||'').match(/[1-5]/)||[''])[0]; if(m[2]) d=m[2]; if(d&&window.BX_KHO_FILES[d]) ks[d]=1; }
   }
   /* ===== KHGD MÔN HỌC cũng nạp THEO LỚP (3/8/2026) =====
      Trước: khgd-lop1..4 (~500KB) tải cho mọi người + KHGD lớp 5 nhúng ngay trong
@@ -1432,7 +1434,8 @@ window.bxMergeKho = function(){
        cả tên bài, mà đợt chuẩn hoá tên bài khối 3 đổi 594 tên. Xem bxChuyenKhoaSuaTheoTenMoi. */
     try{
       Promise.all(chos.map(function(p){ return (p&&p.then)?p.catch(function(){}):null; }))
-        .then(function(){ if(window.bxChuyenKhoaSuaTheoTenMoi) window.bxChuyenKhoaSuaTheoTenMoi(); });
+        .then(function(){ if(window.bxChuyenKhoaSuaTheoTenMoi) window.bxChuyenKhoaSuaTheoTenMoi(); })
+        .then(function(){ try{ if(window.bxTuChuaTuanTrong) window.bxTuChuaTuanTrong(); }catch(e){} });
     }catch(e){}
     /* KHGD đi kèm: các khối GV dạy + khối 5 (nền của Bản đồ chương trình) */
     ks['5']=1;
@@ -5872,6 +5875,27 @@ function _weekKhbdItems(){
     if(r&&r._nghi) return;
     const L=findBankLesson(r); items.push(L?{L,r,src:'kho'}:{L:_blankLessonFromRow(r),r,src:'mau'});
   });
+  /* (5/9/2026) GIÁO VIÊN BỘ MÔN dạy một bài ở nhiều lớp (Đạo đức 4 ở 4B, 4D, 4E, 4H, 4K…): một giáo án
+     ghi đủ các lớp, không in lặp 5 lần. Gộp theo môn + tên bài (bỏ phần "(tiết k/n)" máy nở); lớp liệt
+     kê ở dòng "Lớp:" của tiêu đề, giữ Thứ/ngày/tiết của lượt dạy đầu. Tắt bằng window.BX_KHBD_KHONG_GOP=true. */
+  if(!window.BX_KHBD_KHONG_GOP){
+    const gop=[], theo={};
+    items.forEach(it=>{
+      const r=it.r||{}, bai=String(r.bai||'').replace(/\s*\(tiết\s*\d+\/\d+\)\s*$/i,'').trim();
+      const key=_normTxt(r.mon||'')+'|'+_normTxt(bai);
+      if(!bai){ gop.push(it); return; }
+      const co=theo[key];
+      if(co){
+        const lop=String(r.lop||state.klass||'').trim();
+        if(lop && co._lops.indexOf(lop)<0) co._lops.push(lop);
+        co.r.lop=co._lops.join(', '); co._gopTu++;
+        return;
+      }
+      const r2=Object.assign({},r); const it2={L:it.L,r:r2,src:it.src,_lops:[String(r.lop||state.klass||'').trim()].filter(Boolean),_gopTu:1};
+      theo[key]=it2; gop.push(it2);
+    });
+    return gop;
+  }
   return items;
 }
 function buildWeekKhbdDocx(rows){
@@ -5889,9 +5913,11 @@ function openWeekKhbdModal(){
   const found=rows.filter(r=>findBankLesson(r)), miss=rows.length-found.length;
   if(!found.length){ bxAlert('Tuần '+state.week+' chưa có tiết nào khớp Kho giáo án số.\nHãy nạp thêm giáo án vào kho (mục Kho giáo án) hoặc dùng mẫu/AI để soạn từng tiết.'); return; }
   const msg=el('week-msg');
+  let gopNote='';
+  try{ const its=_weekKhbdItems(), gopSo=its.filter(it=>it._gopTu>1).length; if(gopSo) gopNote=' Có <b>'+gopSo+'</b> bài dạy ở nhiều lớp đã gộp thành một giáo án ghi đủ các lớp ('+rows.length+' tiết → '+its.length+' giáo án).'; }catch(e){}
   if(msg) msg.innerHTML='Kế hoạch bài dạy <b>Tuần '+_xe(state.week)+'</b> của thầy cô đã tạo xong'+
     (miss>0?(' — <b>'+found.length+'/'+rows.length+'</b> tiết có trong kho'):'')+
-    ', thầy cô xem trước khi lưu về máy tính của mình!';
+    ', thầy cô xem trước khi lưu về máy tính của mình!'+gopNote;
   el('week-overlay').classList.add('show');
 }
 function downloadWeekKHBD(){
@@ -12901,7 +12927,9 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
   var _khoHasCache={};
   function _subjHasKho(lop,mon){
     var lopN=_digits(lop)||_digits(state.klass), nm=_n(mon), nc=_n((typeof _bxCanonSubject==='function')?(_bxCanonSubject(mon)||mon):mon);
-    var k=lopN+'|'+nm; if(k in _khoHasCache) return _khoHasCache[k];
+    /* (5/9/2026) Khoá nhớ kèm SỐ TIẾT đang có trong kho: kho nạp lười theo khối, kết quả "không có"
+       tính lúc khối 3/4 chưa về mà nhớ mãi thì cả phiên giáo viên bộ môn không bao giờ có tên bài. */
+    var k=lopN+'|'+nm+'#'+((window.KHO_DATA||[]).length); if(k in _khoHasCache) return _khoHasCache[k];
     var has=(window.KHO_DATA||[]).some(function(r){ return String(r.lop)===String(lopN) && (_n(r.mon)===nm||_n(r.mon)===nc); });
     _khoHasCache[k]=has; return has;
   }
@@ -13098,9 +13126,54 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
         (noko?('\n• '+noko+' tiết môn chưa có trong Kho — để trống tên bài cho thầy cô tự ghi.'):'')+
         (ovf?('\n• '+ovf+' ô trống: tuần này ít bài hơn số ô (tuần ôn tập/kiểm tra) hoặc đã hết bài trong Kho — mời thầy cô tự ghi. (Tiết lỡ do nghỉ ngày đã tự dồn sang tuần sau.)'):''));
     };
-    var saved=(typeof getLBGForWeek==='function')?getLBGForWeek(w):null;
-    if(saved && saved.length){ bxConfirm('Tuần '+w+' đã có Lịch báo giảng (có thể đã chỉnh tay).\nSinh lại từ TKB sẽ GHI ĐÈ tuần này. Tiếp tục?',{okText:'Ghi đè',cancelText:'Giữ nguyên'}).then(function(ok){ if(ok) _doGen(); }); }
-    else _doGen();
+    /* (5/9/2026) PHẢI CHỜ KHO + KHGD của MỌI KHỐI trong Thời khoá biểu về rồi mới dựng. Giáo viên bộ
+       môn (lớp chính khối 2, dạy thêm khối 3, 4): kho khối 2 có sẵn, khối 3/4 nạp lười vài giây sau;
+       bấm sinh ngay là tiết khối 3/4 trống tên bài rồi LƯU luôn (ca thật 5/9, cô dạy 4 môn ở 15 lớp). */
+    _choKhoTKB().then(function(){
+      var saved=(typeof getLBGForWeek==='function')?getLBGForWeek(w):null;
+      if(saved && saved.length){ bxConfirm('Tuần '+w+' đã có Lịch báo giảng (có thể đã chỉnh tay).\nSinh lại từ TKB sẽ GHI ĐÈ tuần này. Tiếp tục?',{okText:'Ghi đè',cancelText:'Giữ nguyên'}).then(function(ok){ if(ok) _doGen(); }); }
+      else _doGen();
+    });
+  };
+  /* Kho + KHGD của các khối có trong TKB (và lớp chính) — Promise luôn resolve */
+  function _choKhoTKB(){
+    var ks={}; try{ var k0=_digits(state.klass); if(k0) ks[k0[0]]=1; }catch(e){}
+    try{ loadTKB().forEach(function(sl){ var d=_digits(sl&&sl.lop); if(d) ks[d[0]]=1; }); }catch(e){}
+    var ps=[];
+    Object.keys(ks).forEach(function(k){
+      try{ if(window.BX_ensureKho) ps.push(Promise.resolve(window.BX_ensureKho(k)).catch(function(){})); }catch(e){}
+      try{ if(window.BX_ensureKHGD) ps.push(Promise.resolve(window.BX_ensureKHGD(k)).catch(function(){})); }catch(e){}
+    });
+    return Promise.all(ps).catch(function(){});
+  }
+  window.bxChoKhoTKB=_choKhoTKB;
+  /* Tuần đang xem do MÁY TỰ SINH mà còn ô trống tên bài của môn nay đã có kho (kho về muộn) → dựng lại
+     và lưu lại. Tuần thầy cô đã chạm tay (không còn dấu tự sinh) thì không đụng. Gọi sau khi kho về. */
+  window.bxTuChuaTuanTrong=function(){
+    try{
+      if(!hasUserTKB()) return false;
+      var w=parseInt(state.week,10)||1;
+      var saved=(typeof getLBGForWeek==='function')?getLBGForWeek(w):null;
+      var daTuGen=(typeof BX_laTuanTuGen==='function')&&BX_laTuanTuGen(w);
+      var nguon=(saved&&saved.length)?saved:(state.schedule||[]);
+      if(saved&&saved.length&&!daTuGen) return false;
+      var laThem=function(r){ return typeof BX_laMonThem==='function' && BX_laMonThem(r&&r.mon); };
+      var trong=nguon.filter(function(r){ return r && !r._nghi && !laThem(r) && !String(r.bai||'').trim(); });
+      if(!trong.length) return false;
+      if(!trong.some(function(r){ return _subjHasKho(r.lop||state.klass, r.mon); })) return false;
+      var moi=genForWeek(w);
+      var conTrong=moi.filter(function(r){ return r && !r._nghi && !laThem(r) && !String(r.bai||'').trim(); }).length;
+      if(conTrong>=trong.length) return false;      // không khá hơn thì đừng ghi đè, đừng báo
+      state.schedule=moi;
+      try{ if(typeof fillScheduleDates==='function') fillScheduleDates(); }catch(e){}
+      try{ if(typeof persistSchedule==='function') persistSchedule(); }catch(e){}
+      try{ if(typeof BX_ghiDauTuGen==='function') BX_ghiDauTuGen(w); }catch(e){}
+      try{ if(typeof renderSchedule==='function') renderSchedule(); }catch(e){}
+      try{ if(document.getElementById('v-lich').classList.contains('active')&&typeof renderFullSchedule==='function') renderFullSchedule(); }catch(e){}
+      try{ if(document.getElementById('v-khbd').classList.contains('active')&&typeof renderKHBDView==='function') renderKHBDView(); }catch(e){}
+      console.log('[LBG] tuần '+w+' tự dựng lại sau khi kho về: '+(trong.length-conTrong)+'/'+trong.length+' ô trống đã điền.');
+      return true;
+    }catch(e){ console.warn('[LBG] tự chữa tuần trống lỗi', e&&e.message); return false; }
   };
 
   /* ---------- trình soạn TKB — LƯỚI chuyên nghiệp (cột Thứ × hàng Tiết) ---------- */
