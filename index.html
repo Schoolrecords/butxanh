@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-05 · 121';
+  var PB='2026-09-05 · 122';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -2480,7 +2480,7 @@ window.bxMergeKho = function(){
       <button class="close" onclick="closeModal('sched-overlay')">×</button>
     </div>
     <div class="modal-body">
-      <div class="notice">Bấm <b>✏️ Sửa</b> ở từng dòng để chỉnh trực tiếp; <b>Xoá</b> để bỏ tiết; thêm tiết mới ở form dưới bảng. Lịch tự sắp theo Thứ → Buổi → Tiết khi lưu.</div>
+      <div class="notice">Bấm <b>🔁 Đổi bài</b> để chọn giáo án khác của môn đó trong kho (khi tổ xếp khác kế hoạch); <b>✏️ Sửa</b> để chỉnh trực tiếp; <b>Xoá</b> để bỏ tiết; thêm tiết mới ở form dưới bảng. Lịch tự sắp theo Thứ → Buổi → Tiết khi lưu.</div>
       <div id="sched-rows" style="overflow-x:auto"></div>
       <div class="form-grid sched-add">
         <label class="fld"><span>Thứ</span><input id="se-day" placeholder="Thứ 2"></label>
@@ -4802,7 +4802,8 @@ function renderFullSchedule(){
     let h='';
     if(d.thuSpan) h+=`<td class="thu" rowspan="${d.thuSpan}">${r.day.replace('Thứ ','')}<div style="font-weight:400;font-size:10.5px;color:var(--muted);margin-top:2px">${r.date}</div></td>`;
     if(d.buoiSpan) h+=`<td class="buoi" rowspan="${d.buoiSpan}">${r.buoi}</td>`;
-    h+=`<td>${r.tiet}</td><td class="bai">${r.mon}</td><td>${r.lop||state.klass}</td><td class="bai">${r.bai}</td><td class="tbdh">${r.tbdh||''}</td>`;
+    /* (5/9/2026) nút 🔁 Đổi bài ngay trên bảng — ẩn khi in (CSS @media print) */
+    h+=`<td>${r.tiet}</td><td class="bai">${r.mon}</td><td>${r.lop||state.klass}</td><td class="bai">${r.bai}<button type="button" class="bx-doibai-nut" title="Đổi bài: chọn giáo án khác của môn này trong kho (tuần tổ xếp khác kế hoạch)" onclick="BX_doiBai(${state.schedule.indexOf(r)})">🔁</button></td><td class="tbdh">${r.tbdh||''}</td>`;
     tr.innerHTML=h; tb.appendChild(tr);
   });
   renderLbgCards();
@@ -7217,7 +7218,7 @@ function renderSchedRows(){
         +'<td>'+_xe(r.day||'')+'</td><td>'+_xe(r.date||'')+'</td><td>'+_xe(r.buoi||'')+'</td>'
         +'<td>'+_xe(String(r.tiet||''))+'</td><td>'+_xe(r.mon||'')+'</td><td>'+_xe(r.lop||state.klass)+'</td>'
         +'<td class="se-bai">'+_xe(r.bai||'')+'</td><td class="se-tbdh">'+_xe(r.tbdh||'')+'</td>'
-        +'<td class="se-act"><button class="btn-xs" onclick="editSchedRow('+i+')">✏️ Sửa</button><button class="btn-xs danger" onclick="delSchedRow('+i+')">Xoá</button></td>'
+        +'<td class="se-act"><button class="btn-xs solid" onclick="BX_doiBai('+i+')" title="Chọn giáo án khác của môn này trong kho — cho tuần tổ xếp khác kế hoạch">🔁 Đổi bài</button><button class="btn-xs" onclick="editSchedRow('+i+')">✏️ Sửa</button><button class="btn-xs danger" onclick="delSchedRow('+i+')">Xoá</button></td>'
         +'</tr>';
     }
   });
@@ -7241,6 +7242,107 @@ function addSchedRow(){
   _seEdit=-1; refreshSchedule();
 }
 function delSchedRow(i){ _seEdit=-1; state.schedule.splice(i,1); refreshSchedule(); }
+/* ---------- 16b-2) NÚT "ĐỔI BÀI" TRÊN DÒNG LỊCH BÁO GIẢNG (5/9/2026 — thầy Chung đặt hàng) ----------
+   Trường xếp khác bản tổ vài tuần thì cô không cần sửa cả bảng KHGD: bấm "Đổi bài" ở dòng đó, chọn
+   giáo án khác của môn trong kho (danh sách quanh tuần đang xem, có ô tìm), app điền tên bài, đồ
+   dùng, tiết PPCT rồi lưu tuần (refreshSchedule → persistSchedule + bỏ dấu "tự sinh" để lần dựng
+   lại không đè). Giáo án đi kèm tự khớp vì Kế hoạch bài dạy dò theo tên bài (findBankLesson). */
+var _dbHienTai=null;   // {i, pool}
+function _dbCanon(m){ return (typeof _bxCanonSubject==='function')?(_bxCanonSubject(m)||m):m; }
+function _dbNorm(s){ return (typeof _normTxt==='function')?_normTxt(s):String(s||'').toLowerCase(); }
+function _dbPool(lopN, mon){
+  var nm=_dbNorm(mon), nc=_dbNorm(_dbCanon(mon));
+  return (window.KHO_DATA||[]).filter(function(r){
+    if(String(r.lop)!==String(lopN)) return false;
+    var rn=_dbNorm(r.mon), rc=_dbNorm(_dbCanon(r.mon));
+    return rn===nm||rn===nc||rc===nm||rc===nc;
+  }).sort(function(a,b){ return (+a.tuan||0)-(+b.tuan||0)||(+a.tiet||0)-(+b.tiet||0); });
+}
+/* Tiết PPCT của một bài theo kế hoạch đang dùng (KHGD: bản riêng > nền SGV > bản tổ); không dò được thì '' */
+function _dbPpct(lopN, mon, bai){
+  try{
+    if(typeof window.BX_khgdRows!=='function') return '';
+    var B=(typeof window.BX_khgdBang==='function')?window.BX_khgdBang(lopN):null, rows=null;
+    if(B){ var nm=_dbNorm(mon), nc=_dbNorm(_dbCanon(mon)); Object.keys(B).forEach(function(k){ if(rows) return; var kk=_dbNorm(k), kc=_dbNorm(_dbCanon(k)); if(kk===nm||kk===nc||kc===nm||kc===nc) rows=B[k]; }); }
+    if(!rows||!rows.length) return '';
+    var bn=_baiNo(bai), tn=_tietNo(bai), nb=_dbNorm(bai), tot=null, best=-1;
+    rows.forEach(function(r){
+      var name=String(r[4]||''); if(!name) return;
+      var s=0;
+      if(_dbNorm(name)===nb) s=3;
+      else if(bn!=null){ if(_baiNo(name)!==bn) return; var rt=_tietNo(name); if(tn!=null&&rt!=null&&rt!==tn) return; s=1+_simTitle(bai,name); }
+      else { s=_simTitle(bai,name); if(s<0.5) return; }
+      if(s>best){ best=s; tot=r; }
+    });
+    return tot?String(tot[6]||''):'';
+  }catch(e){ return ''; }
+}
+function _dbDong(){ var o=el('bx-doibai'); if(o) o.remove(); _dbHienTai=null; }
+function BX_doiBai(i){
+  var r=(state.schedule||[])[i]; if(!r) return;
+  if(window.BX_kChan && window.BX_kChan('butxanh_lbg_weeks')){ try{ if(window.BX_baoCheDoXem) BX_baoCheDoXem(); }catch(e){} return; }
+  var lop=r.lop||state.klass, lopN=(String(lop).match(/\d/)||[state.khoi||''])[0];
+  var pool=_dbPool(lopN, r.mon);
+  if(!pool.length){ bxAlert('Kho chưa có giáo án môn '+r.mon+' lớp '+lopN+' để chọn.\n\nThầy/cô bấm ✏️ Sửa để gõ tên bài.'); return; }
+  _dbDong();
+  _dbHienTai={i:i, pool:pool};
+  var w=parseInt(state.week,10)||1, nay=_dbNorm(r.bai||'');
+  var ov=document.createElement('div'); ov.id='bx-doibai'; ov.className='bxc-overlay show';
+  ov.innerHTML='<div class="bxc-modal" role="dialog" aria-modal="true" style="max-width:640px">'+
+    '<div class="bxc-top"><div class="bxc-mascot"></div><div class="bxc-title">Đổi bài — '+bxEsc(r.mon)+' · '+bxEsc(r.day||'')+' tiết '+bxEsc(String(r.tiet||''))+'</div></div>'+
+    '<div class="bxc-body" style="padding-top:14px">'+
+      '<div style="font-size:13px;color:#37473e;margin-bottom:8px">Đang ghi: <b>'+bxEsc(r.bai||'(trống)')+'</b>. Chọn giáo án khác trong kho lớp '+bxEsc(lopN)+' — danh sách mở sẵn quanh tuần '+w+'.</div>'+
+      '<input id="bx-doibai-q" placeholder="Tìm: số bài, chữ trong tên bài, tuần…" oninput="BX_doiBaiLoc()" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid #cfe2d5;border-radius:10px;font-size:14px;margin-bottom:8px">'+
+      '<div id="bx-doibai-ds" style="max-height:min(52vh,420px);overflow:auto;border:1px solid #e3ede6;border-radius:10px"></div>'+
+      '<div class="bxc-actions" style="margin-top:14px"><button class="bxc-btn cancel" onclick="_dbDong()">Đóng</button></div>'+
+    '</div></div>';
+  document.body.appendChild(ov);
+  ov.addEventListener('click', function(e){ if(e.target===ov) _dbDong(); });
+  BX_doiBaiLoc();
+  /* cuộn tới tuần đang xem */
+  try{ var muc=ov.querySelector('[data-tuan="'+w+'"]'); if(muc) muc.scrollIntoView({block:'start'}); }catch(e){}
+  try{ var q=el('bx-doibai-q'); if(q && !bxLaCamTay()) q.focus(); }catch(e){}
+}
+window.BX_doiBai=BX_doiBai;
+function BX_doiBaiLoc(){
+  var D=_dbHienTai; if(!D) return;
+  var box=el('bx-doibai-ds'); if(!box) return;
+  var q=_dbNorm((el('bx-doibai-q')||{}).value||'').trim(), qn=q.match(/^\d+$/)?+q:null;
+  var r=state.schedule[D.i], nay=_dbNorm(r.bai||''), w=parseInt(state.week,10)||1;
+  var ds=D.pool.filter(function(L){
+    if(!q) return true;
+    if(qn!=null) return _baiNo(L.bai)===qn || +L.tuan===qn;
+    return _dbNorm(L.bai).indexOf(q)>=0 || ('tuan '+L.tuan).indexOf(q)>=0;
+  });
+  if(!ds.length){ box.innerHTML='<div style="padding:14px;color:#888;text-align:center">Không có bài nào khớp.</div>'; return; }
+  var h='', tuanCu=null;
+  ds.forEach(function(L){
+    var idx=D.pool.indexOf(L);
+    if(L.tuan!==tuanCu){ tuanCu=L.tuan; h+='<div data-tuan="'+bxEsc(String(L.tuan))+'" style="padding:6px 10px;background:#f1f7f3;font-size:12px;font-weight:700;color:#2c6b48;position:sticky;top:0">Tuần '+bxEsc(String(L.tuan))+(+L.tuan===w?' — đang xem':'')+'</div>'; }
+    var la=_dbNorm(L.bai)===nay;
+    h+='<div onclick="BX_doiBaiChon('+idx+')" style="display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-top:1px solid #eef3ef;cursor:pointer;'+(la?'background:#e6f5ea;':'')+'" onmouseover="this.style.background=\'#f6fbf7\'" onmouseout="this.style.background=\''+(la?'#e6f5ea':'')+'\'">'+
+      '<span style="flex:0 0 46px;font-size:12px;color:#6b7b71">Tiết '+bxEsc(String(L.tiet||''))+'</span>'+
+      '<span style="flex:1;font-size:13.5px;color:#1f2d26">'+bxEsc(L.bai||'')+(la?' <span style="color:#1FA45C;font-size:12px">✓ đang ghi</span>':'')+'</span>'+
+      '<span style="flex:0 0 auto;font-size:12px;color:#1FA45C;font-weight:700">Chọn ›</span></div>';
+  });
+  box.innerHTML=h;
+}
+window.BX_doiBaiLoc=BX_doiBaiLoc;
+function BX_doiBaiChon(idx){
+  var D=_dbHienTai; if(!D) return;
+  var L=D.pool[idx], i=D.i, r=state.schedule[i]; if(!L||!r) return;
+  var lop=r.lop||state.klass, lopN=(String(lop).match(/\d/)||[state.khoi||''])[0];
+  var bai=L.bai||'';
+  try{ if(typeof window.BX_lbgThemStem==='function') bai=window.BX_lbgThemStem(lop, r.mon, bai); }catch(e){}
+  r.bai=bai;
+  try{ r.tbdh=(typeof window.BX_ddTbdh==='function')?window.BX_ddTbdh(L.dodung||''):String(L.dodung||'').split('\n')[0].slice(0,56); }catch(e){ r.tbdh=''; }
+  r.ppct=_dbPpct(lopN, r.mon, L.bai)||'';
+  r._doiBai=true; delete r._nokho; delete r._overflow; delete r._fromkhdh;
+  _dbDong();
+  _seEdit=-1; refreshSchedule();
+  try{ BX_confirm({title:'Đã đổi bài', html:'Dòng '+bxEsc(r.day||'')+' tiết '+bxEsc(String(r.tiet||''))+' nay là:<br><b>'+bxEsc(L.bai||'')+'</b>'+(r.ppct?(' <span style="color:#6b7b71">(tiết PPCT '+bxEsc(r.ppct)+')</span>'):'')+'<br><br>Giáo án ở mục Kế hoạch bài dạy đi theo bài mới. Tuần này đã được đánh dấu là thầy/cô sửa tay nên lần dựng lại lịch sẽ hỏi trước.', okText:'Đã hiểu', single:true, autoClose:3500}); }catch(e){}
+}
+window.BX_doiBaiChon=BX_doiBaiChon;
 function resetSchedule(){ bxConfirm('Khôi phục lịch mẫu ban đầu? Lịch hiện tại sẽ bị thay thế.').then(function(ok){ if(!ok)return; state.schedule=JSON.parse(JSON.stringify(SCHEDULE_SEED)); refreshSchedule(); }); }
 
 /* ---------- 16c) TẢI TẤT CẢ KHBD (Word gộp) ---------- */
@@ -13677,7 +13779,9 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
    từ Excel, nhưng nhiều thầy cô quen nhấn Ctrl+P, nên dọn cho ra tờ giấy sạch.
    Chỉ ẩn phần VỎ app và các nút bấm — không đụng gì tới bảng biểu, nên không có chuyện
    mất nội dung. Phiếu bài tập in bằng cửa sổ riêng, không đi qua đây. */
-@media print{
+.bx-doibai-nut{margin-left:6px;border:1px solid #cfe2d5;background:#f6fbf7;color:#2c6b48;border-radius:8px;font-size:11px;line-height:1.2;padding:1px 6px;cursor:pointer;vertical-align:middle}
+.bx-doibai-nut:hover{background:#e6f5ea}
+@media print{.bx-doibai-nut{display:none!important}
   #bxZalo{ display:none }
   .sidebar, .header, #mnav{ display:none !important }
   .main{ margin:0 !important; padding:0 !important; width:auto !important; max-width:none !important }
