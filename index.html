@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-06 · 130';
+  var PB='2026-09-06 · 131';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -3021,6 +3021,14 @@ window.bxBoQuaHoatDong=bxBoQuaHoatDong;
    nên bỏ ở khâu DỰNG (một chỗ, ăn cho cả Word lẫn bản xem trên màn), không sửa 465 chỗ
    trong kho. */
 var _BX_RE_HDTIEUDE=/^\s*\**\s*ho[ạa]t\s*động\s*c[ủu]a\s*(gv|hs|giáo\s*viên|học\s*sinh)\s*[:.]?\s*\**\s*$/i;
+/* (6/9/2026 tối, GV đề xuất) Bỏ dòng chỉ có NHÃN để trống trong giáo án gốc ("Câu 1:", "Câu 2:", "Bài toán: …",
+   "HS trả lời: …") — giáo viên soạn gốc chừa chỗ tự điền, in ra thành dấu chấm chờ. Lọc SAU khi đã cắt bước
+   (cg/ch) để không làm lệch chỉ số cắt. Chỉ bỏ dòng không còn nội dung nào sau dấu hai chấm. */
+var _BX_RE_NHAN_TRONG=/^\s*[-–+•*]?\s*(Câu\s*\d+|Câu hỏi\s*\d*|Bài toán|HS trả lời|Trả lời|Đáp án)\s*[:：]\s*(…|\.{2,})?\s*$/i;
+function _bxLocNhanTrong(hang){
+  try{ (hang||[]).forEach(function(r){ if(Array.isArray(r.gv)) r.gv=r.gv.filter(function(l){ return !_BX_RE_NHAN_TRONG.test(String(l||'')); }); if(Array.isArray(r.hs)) r.hs=r.hs.filter(function(l){ return !_BX_RE_NHAN_TRONG.test(String(l||'')); }); }); }catch(e){}
+  return hang;
+}
 function bxTachHoatDong(b){
   var g=_bxDong(b&&b.gv), h=_bxDong(b&&b.hs), mt=[], i=0, ten=String((b&&b.ten)||'').trim();
   var _boG=0,_boH=0;
@@ -3067,7 +3075,7 @@ function bxTachHoatDong(b){
       H.push({ gv:rest.slice(_cg[q], (q+1<_cg.length)?_cg[q+1]:rest.length),
                hs:h.slice(_ch[q], (q+1<_ch.length)?_ch[q+1]:h.length) });
     }
-    return {ten:ten, mucTieu:mt, hang:H};
+    return {ten:ten, mucTieu:mt, hang:_bxLocNhanTrong(H)};
   }
   var re=_BX_RE_HD, G=_bxTachMoc(rest,re);
   if(G.parts.length<2){ re=_BX_RE_BUOC; G=_bxTachMoc(rest,re); }
@@ -3080,7 +3088,7 @@ function bxTachHoatDong(b){
       G.parts.forEach(function(p,k){ hang.push({gv:p, hs:H.parts[k]}); });
     }
   }
-  return {ten:ten, mucTieu:mt, hang:hang};
+  return {ten:ten, mucTieu:mt, hang:_bxLocNhanTrong(hang)};
 }
 window.bxTachHoatDong=bxTachHoatDong;
 function hoatdongTableXml(blocks){
@@ -3147,8 +3155,10 @@ function _bxIVGroupLine(g,L){
     var bp=bxHsktBienPhap(g,mon);
     return '- '+pre+':'+(bp.length?('\n'+bp.map(function(x){ return '   + '+x; }).join('\n')):'');
   }
-  var gc=bxTachGhiChu(g.notes,mon), notes=gc.chung.concat(gc.rieng).join(' ');
-  return '- '+pre+(notes?(': '+notes):'');
+  var gc=bxTachGhiChu(g.notes,mon), ds=gc.chung.concat(gc.rieng).map(function(x){ return String(x||'').replace(/^[-+•*]\s*/,'').trim(); }).filter(Boolean);
+  /* (6/9/2026 tối, GV đề xuất) Nhiều ghi chú → mỗi ý một dòng "+" ngắn, không nối thành một câu dài */
+  if(ds.length>1) return '- '+pre+':\n'+ds.map(function(x){ return '   + '+x; }).join('\n');
+  return '- '+pre+(ds.length?(': '+ds[0]):'');
 }
 /* Trả {show, items:[{label,lines[]}], note} cho mục IV theo chế độ state.khbdIV (auto|always|never) */
 function bxSectionIV(L){
@@ -3313,6 +3323,8 @@ function bxTachGhiChu(notes, mon){
   (notes||[]).forEach(function(n){
     n=_bxCau(n); if(!n) return;
     var m=/^([^:：]{2,30})\s*[:：]\s*(.+)$/.exec(n);
+    /* (6/9/2026 tối, GV đề xuất) Ghi chú cô gõ "Chung: …" → bỏ nhãn, giữ nội dung (trước in nguyên "Chung: Chung: …" nặng chữ) */
+    if(m && /^(chung|tất cả|mọi môn|các môn)$/i.test(m[1].trim())){ chung.push(_bxCau(m[2])); return; }
     if(m){
       var k=_bxHsktSk(m[1]), pn=_bxNorm(m[1]);
       if(k!=='other'||(pn&&pn===nm)){ if(k===sk||pn===nm) rieng.push(_bxCau(m[2])); return; }
@@ -5728,7 +5740,10 @@ function bxTieuDeTiet(L,row,ctx){
   var out=[], tuan=row.tuan||state.week||(L&&L.tuan);   /* (6/9/2026) tuần đang dạy trước, tuần kho sau */
   if(!ctx.daInTuan && tuan){ out.push({t:'Tuần '+tuan, sz:14}); ctx.daInTuan=true; }
   var ngay=_bxNgayDayFull(row);
-  if(ngay && ngay!==ctx.ngayTruoc){ out.push({t:ngay, sz:13, thuong:true}); ctx.ngayTruoc=ngay; }
+  if(ngay && ngay!==ctx.ngayTruoc){ out.push({t:ngay, sz:13, thuong:true}); ctx.ngayTruoc=ngay; ctx.buoiTruoc=''; }
+  /* (6/9/2026 tối, GV đề xuất) In "Buổi sáng / Buổi chiều" một lần khi sang buổi mới trong ngày */
+  var buoi=String(row.buoi||'').trim();
+  if(buoi && buoi!==ctx.buoiTruoc){ out.push({t:'Buổi '+buoi.toLowerCase(), sz:13, thuong:true}); ctx.buoiTruoc=buoi; }
   /* Số tiết TRONG NGÀY theo thời khoá biểu (row.tiet), KHÔNG phải tiết PPCT: thầy cô
      ghi "Tiết 1, Tiết 2…" theo buổi dạy, còn PPCT là số thứ tự cả năm (58, 167…). */
   var tiet=row.tiet||(L&&L.tiet)||'';
@@ -11091,7 +11106,10 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
       else{s+=inlineRuns(ch,ctx,base);}
     }});return s;}
   function pX(runs,opt){opt=opt||{};return '<w:p><w:pPr>'+(opt.center?'<w:jc w:val="center"/>':'')+'</w:pPr>'+runs+'</w:p>';}
-  function cellX(td,ctx,w,span){var inner=inlineRuns(td,ctx,{size:12});return '<w:tc><w:tcPr><w:tcW w:w="'+w+'" w:type="dxa"/>'+(span?'<w:gridSpan w:val="'+span+'"/>':'')+'</w:tcPr>'+pX(inner,{})+'</w:tc>';}
+  /* (6/9/2026 tối, GV đề xuất) th → in đậm, căn giữa; ô "tên hoạt động + Mục tiêu" (td.tt) → in đậm tên, nền xám nhạt */
+  function cellX(td,ctx,w,span){var laTh=(td.tagName||'').toLowerCase()==='th', laTt=/\btt\b/.test(td.className||'');
+    var inner=inlineRuns(td,ctx,laTh?{size:12,bold:true}:{size:12});
+    return '<w:tc><w:tcPr><w:tcW w:w="'+w+'" w:type="dxa"/>'+(span?'<w:gridSpan w:val="'+span+'"/>':'')+((laTh||laTt)?'<w:shd w:val="clear" w:color="auto" w:fill="'+(laTh?'E8EEEA':'F3F7F4')+'"/>':'')+'</w:tcPr>'+pX(inner,{center:laTh})+'</w:tc>';}
   function tableX(tbl,ctx){
     var bd='<w:tblBorders>'+['top','left','bottom','right','insideH','insideV'].map(function(s){return '<w:'+s+' w:val="single" w:sz="4" w:color="000000"/>';}).join('')+'</w:tblBorders>';
     var trs='';Array.prototype.forEach.call(tbl.querySelectorAll('tr'),function(tr){var c=tr.children;if(!c.length)return;
