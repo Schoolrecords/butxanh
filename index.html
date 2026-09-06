@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-06 · 126';
+  var PB='2026-09-06 · 127';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1436,7 +1436,9 @@ window.bxMergeKho = function(){
     try{
       Promise.all(chos.map(function(p){ return (p&&p.then)?p.catch(function(){}):null; }))
         .then(function(){ if(window.bxChuyenKhoaSuaTheoTenMoi) window.bxChuyenKhoaSuaTheoTenMoi(); })
-        .then(function(){ try{ if(window.bxTuChuaTuanTrong) window.bxTuChuaTuanTrong(); }catch(e){} });
+        .then(function(){ try{ if(window.bxTuChuaTuanTrong) window.bxTuChuaTuanTrong(); }catch(e){} })
+        .then(function(){ try{ if(window.bxChoKhoTKB) return window.bxChoKhoTKB(); }catch(e){} })   /* (6/9/2026) chờ đủ kho các khối trong TKB */
+        .then(function(){ try{ if(window.bxLamMoiSauCapNhat) window.bxLamMoiSauCapNhat(); }catch(e){} });
     }catch(e){}
     /* KHGD đi kèm: các khối GV dạy + khối 5 (nền của Bản đồ chương trình) */
     ks['5']=1;
@@ -13351,6 +13353,64 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
       console.log('[LBG] tuần '+w+' tự dựng lại sau khi kho về: '+(trong.length-conTrong)+'/'+trong.length+' ô trống đã điền.');
       return true;
     }catch(e){ console.warn('[LBG] tự chữa tuần trống lỗi', e&&e.message); return false; }
+  };
+
+  /* ---------- (6/9/2026) LÀM MỚI LỊCH ĐÃ LƯU SAU KHI CẬP NHẬT BẢN MỚI ----------
+     App luôn ưu tiên tuần ĐÃ LƯU, nên lỗi sinh lịch đã vá mà máy các cô vẫn hiện lịch cũ (bản 124 sinh sai rồi tự lưu).
+     Mỗi khi máy chạy bản mới hơn bản đã ghi nhớ: tuần do MÁY TỰ SINH (dấu tugen, cô chưa chạm tay) → sinh lại theo TKB
+     và lưu; tuần cô đã chỉnh tay → giữ nguyên, chỉ nhắc cách làm mới. Chạy SAU khi kho các khối trong TKB đã về.
+     Lời báo cố ý không ghi số bản ("bản cập nhật mới nhất") — thầy Chung 6/9. */
+  var PBX_KEY='butxanh_pb_daxem';
+  window.bxLamMoiSauCapNhat=function(){
+    try{
+      var pb=String(window.BX_PHIENBAN||''); if(!pb) return false;
+      var daXem=null; try{ daXem=localStorage.getItem(PBX_KEY); }catch(e){}
+      if(daXem===pb) return false;
+      var ghiNho=function(){ try{ localStorage.setItem(PBX_KEY,pb); }catch(e){} };
+      if(!hasUserTKB()){ ghiNho(); return false; }
+      var map=(typeof loadLBGWeeks==='function')?loadLBGWeeks():{};
+      var tuGen=[], tay=[];
+      Object.keys(map).forEach(function(w){
+        var rows=map[w]; if(!Array.isArray(rows)||!rows.length) return;
+        var n=parseInt(w,10); if(!(n>=1&&n<=35)) return;
+        if(typeof BX_laTuanTuGen==='function'&&BX_laTuanTuGen(n)) tuGen.push(n); else tay.push(n);
+      });
+      tuGen.sort(function(a,b){return a-b;}); tay.sort(function(a,b){return a-b;});
+      var doi=0;
+      tuGen.forEach(function(w){
+        try{
+          var moi=genForWeek(w); if(!moi||!moi.length) return;
+          var cu=map[String(w)]||[];
+          var kq=function(rs){ return rs.map(function(r){ return [r.day,r.buoi,r.tiet,r.mon,r.lop,r.bai,r._khoBai||''].join('|'); }).join('\n'); };
+          if(kq(cu)===kq(moi)) return;
+          map[String(w)]=moi; doi++;
+        }catch(e){ console.warn('[LBG] làm mới tuần '+w+' lỗi', e&&e.message); }
+      });
+      if(doi){
+        try{ saveLBGWeeks(map); }catch(e){}
+        var wNow=parseInt(state.week,10)||1;
+        if(map[String(wNow)]&&tuGen.indexOf(wNow)>=0){
+          state.schedule=map[String(wNow)];
+          try{ if(typeof fillScheduleDates==='function') fillScheduleDates(); }catch(e){}
+          try{ localStorage.setItem('butxanh_schedule',JSON.stringify(state.schedule)); }catch(e){}
+          try{ if(typeof renderSchedule==='function') renderSchedule(); }catch(e){}
+          try{ if(document.getElementById('v-lich').classList.contains('active')&&typeof renderFullSchedule==='function') renderFullSchedule(); }catch(e){}
+          try{ if(document.getElementById('v-khbd').classList.contains('active')&&typeof renderKHBDView==='function') renderKHBDView(); }catch(e){}
+          try{ if(typeof renderDashStats==='function') renderDashStats(); }catch(e){}
+        }
+      }
+      ghiNho();
+      var lietKe=function(a){ return a.map(function(w){ return 'Tuần '+w; }).join(', '); };
+      /* Tuần tự sinh có thể vừa được bxTuChuaTuanTrong dựng lại trước đó → vẫn báo là đã kiểm/làm mới */
+      if(tuGen.length||tay.length){
+        var msg='✓ Bút Xanh vừa cập nhật bản mới nhất (sửa lỗi Lịch báo giảng và giáo án).';
+        if(tuGen.length) msg+='\n• Lịch '+lietKe(tuGen)+' do máy tự tạo đã được kiểm và làm mới theo Thời khoá biểu của thầy/cô.';
+        if(tay.length) msg+='\n• '+lietKe(tay)+' thầy/cô đã chỉnh tay nên giữ nguyên. Muốn làm mới tuần nào: mở tuần đó rồi bấm "Sinh LBG từ TKB".';
+        try{ bxAlert(msg); }catch(e){}
+      }
+      console.log('[LBG] làm mới sau cập nhật: '+doi+' tuần sinh lại, '+tay.length+' tuần chỉnh tay giữ nguyên.');
+      return doi>0;
+    }catch(e){ console.warn('[LBG] làm mới sau cập nhật lỗi', e&&e.message); return false; }
   };
 
   /* ---------- trình soạn TKB — LƯỚI chuyên nghiệp (cột Thứ × hàng Tiết) ---------- */
