@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-06 · 127';
+  var PB='2026-09-06 · 128';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -5888,12 +5888,16 @@ function _weekKhbdItems(){
       const key=_bxKhoiCua({lop:r.lop||state.klass})+'|'+_normTxt(r.mon||'')+'|'+_normTxt(bai);   /* (6/9/2026) kèm KHỐI: 4A,4B gộp với nhau, không gộp với 5A */
       if(!bai){ gop.push(it); return; }
       const co=theo[key];
-      if(co){
-        const lop=String(r.lop||state.klass||'').trim();
-        if(lop && co._lops.indexOf(lop)<0) co._lops.push(lop);
+      /* (6/9/2026 tối) CHỈ gộp khi là LỚP KHÁC. Cùng một lớp mà cùng tên bài (bài 2 tiết "Tiết 1+2: ĐỌC" nở thành
+         hai dòng LBG, hoặc bài dạy 2 tiết liền) thì phải giữ đủ hai trang — GV lớp 4 báo "Tạo KHBD tuần thiếu tiết 7
+         Tiếng Việt": 7 dòng LBG chỉ ra 6 trang vì dòng "(tiết 2/2)" bị nuốt vào dòng trước. */
+      const lop=String(r.lop||state.klass||'').trim();
+      if(co && lop && co._lops.indexOf(lop)<0){
+        co._lops.push(lop);
         co.r.lop=co._lops.join(', '); co._gopTu++;
         return;
       }
+      if(co){ gop.push(Object.assign({},it,{_lops:[lop].filter(Boolean),_gopTu:1})); return; }
       const r2=Object.assign({},r); const it2={L:it.L,r:r2,src:it.src,_lops:[String(r.lop||state.klass||'').trim()].filter(Boolean),_gopTu:1};
       theo[key]=it2; gop.push(it2);
     });
