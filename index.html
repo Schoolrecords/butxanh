@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-07 · 134';
+  var PB='2026-09-07 · 135';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -9906,15 +9906,21 @@ window.BX_khgdNen=function(){
   return nen;
 };
 window.BX_khgdCoSGV=function(l,m){ var S=window.BX_KHGD_SGV; return !!(S&&S[String(l)]&&S[String(l)][m]&&S[String(l)][m].length); };
+/* (7/9/2026, thầy Chung chốt) Môn BẮT BUỘC dùng chuẩn SGV cho mọi máy, kể cả máy đang nền tổ: bản tổ Quảng Châu 1 Toán 4 ghi
+   Bài 3 = 3 tiết, Bài 10 = 3 tiết… trong khi mục lục SGV ghi 2 → giáo viên thấy "nhảy tiết". Bản riêng (Excel) vẫn ưu tiên hơn.
+   Muốn thêm môn: ghi vào bảng này; cột 7 của dòng SGV đã chép từ bản tổ (sgv-toan4-cot7.js). */
+window.BX_SGV_BAT_BUOC={'4':['Toán']};
+window.BX_khgdSgvBatBuoc=function(l,m){ try{ var d=(window.BX_SGV_BAT_BUOC||{})[String(l)]||[]; return d.indexOf(m)>=0 && window.BX_khgdCoSGV(l,m); }catch(e){ return false; } };
 window.BX_khgdNguon=function(l,m){
   if(window.BX_khgdRiengMeta(l,m)) return 'rieng';
+  if(window.BX_khgdSgvBatBuoc(l,m)) return 'sgv';
   if(window.BX_khgdNen()==='sgv' && window.BX_khgdCoSGV(l,m)) return 'sgv';
   return 'to';
 };
 /* CỬA ĐỌC DUY NHẤT cho KHGD một môn: bản riêng > nền SGV (nếu có bản SGV môn đó) > bản tổ. */
 window.BX_khgdRows=function(l,m){
   var r=window.BX_khgdRiengMeta(l,m); if(r) return r.rows;
-  if(window.BX_khgdNen()==='sgv' && window.BX_khgdCoSGV(l,m)) return window.BX_KHGD_SGV[String(l)][m];
+  if(window.BX_khgdNguon(l,m)==='sgv') return window.BX_KHGD_SGV[String(l)][m];   /* (7/9/2026) theo NGUỒN môn — có môn bắt buộc SGV */
   return ((window.BX_KHGD_G||{})[String(l)]||{})[m]||[];
 };
 /* Khoá lưu bản sửa ô theo nền: nền SGV đánh số dòng khác bản tổ nên không dùng chung khoá được. */
@@ -9978,6 +9984,7 @@ function veNenBar(){
   };
   var dong=[];
   if(ng==='rieng') dong.push('Môn này đang dùng <b>kế hoạch riêng</b> thầy/cô đã nhập nên nền bên trên tạm không áp dụng.');
+  else if(window.BX_khgdSgvBatBuoc(l,m)) dong.push('Môn này dùng <b>chuẩn theo Sách giáo viên</b> cho mọi trường (số tiết từng bài theo mục lục SGV, cập nhật 7/9/2026), nền bên trên không áp dụng.');
   else if(!coS) dong.push('Môn này <b>chưa có bản chuẩn SGV</b> trong Bút Xanh, đang dùng bản tổ Quảng Châu 1.');
   var so=window.BX_khgdSoSGV(l,m), luuY='';
   if(so&&so.tuanKhac.length){
@@ -12867,7 +12874,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
 <!-- Lớp bản quyền (License) — tách riêng để an toàn, dễ cập nhật.
      ⚠️ Có dấu phiên bản ?v= vì GitHub Pages giữ bản cũ 10 phút — sửa license.js mà
      quên đổi dấu này thì máy thầy cô vẫn chạy bản cũ. (5/8/2026) -->
-<script src="khgd-sgv.js?v=20260905-3"></script>
+<script src="khgd-sgv.js?v=20260907-toan4"></script>
 <script src="license.js?v=20260828-lancuoi"></script>
 
 <!-- ============ MODAL: LỊCH NGHỈ & DẠY BÙ (Phase 2 — con trỏ tiến độ) ============ -->
