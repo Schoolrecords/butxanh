@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-05 · 124';
+  var PB='2026-09-06 · 125';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1016,6 +1016,7 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 .wk-pop{position:absolute;top:calc(100% + 6px);left:0;z-index:90;display:none;width:min(540px,88vw);background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.16);padding:12px}
 .wk-picker.open .wk-pop{display:block}
 .wk-pk-label{display:block;font-size:11px;font-weight:800;color:#8a978f;text-transform:uppercase;letter-spacing:.5px;margin:0 2px 8px}
+.wk-btn.lock{opacity:.38;cursor:not-allowed;background:#f4f6f5;color:#8a948e}
 .wk-btns{display:flex;flex-wrap:wrap;gap:6px}
 .wk-btn{position:relative;min-width:40px;padding:7px 9px;border:1px solid var(--line);border-radius:9px;background:#fff;color:#3a4a42;font-size:13px;font-weight:700;cursor:pointer;transition:.12s}
 .wk-btn:hover{border-color:#bfe7cd;background:#f0f7f3}
@@ -1264,7 +1265,7 @@ window.bxMergeKho = function(){
 (function(){
   /* (4/9/2026) Đổi chuỗi này MỖI KHI sửa nội dung kho-data-*.js — trình duyệt nhớ tệp kho
      theo đúng đường dẫn kèm ?v=, không đổi là thầy cô vẫn mở ra kho cũ. */
-  var V='20260905-bosung';   /* đổi MỖI KHI sửa kho-data-*: không đổi thì trình duyệt giữ bản cũ, thầy cô không thấy dữ liệu vừa vá */
+  var V='20260906-nhan';   /* đổi MỖI KHI sửa kho-data-*: không đổi thì trình duyệt giữ bản cũ, thầy cô không thấy dữ liệu vừa vá */
   window.BX_KHO_FILES={
     '1':['kho-data-lop1.js','kho-data-l1-gdtc.js','kho-data-l1-amnhac.js','kho-data-l1-mithuat.js'],
     '2':['kho-data-lop2.js','kho-data-l2-gdtc.js','kho-data-l2-amnhac.js','kho-data-l2-mithuat.js'],
@@ -3479,7 +3480,7 @@ function bxStemBlocks(tenStem, baiSGK){
 }
 function bxStemKhbdDocx(L,row,tenStem){
   row=row||{};
-  var lop=row.lop||state.klass, tuan=L.tuan||row.tuan||state.week;
+  var lop=row.lop||state.klass, tuan=row.tuan||state.week||L.tuan;
   var sp=String(tenStem||'').replace(/\s*\([^)]*\)\s*$/,'').trim();
   var mon=(/\(([^)]*)\)\s*$/.exec(tenStem)||[])[1]||_bxSubjectFull(L.mon);
   var P=[];
@@ -3853,7 +3854,7 @@ function _bxCanonSubject(s){
     'tinhoc':'Tin học','tin':'Tin học',
     'congnghe':'Công nghệ','cn':'Công nghệ',
     'daoduc':'Đạo đức','dd':'Đạo đức',
-    'tunhienvaxahoi':'Tự nhiên và Xã hội','tnxh':'Tự nhiên và Xã hội','tnvxh':'Tự nhiên và Xã hội',
+    'tunhienvaxahoi':'Tự nhiên và Xã hội','tunhienxahoi':'Tự nhiên và Xã hội','tnxh':'Tự nhiên và Xã hội','tnvxh':'Tự nhiên và Xã hội',
     'hdtn':'HĐTN','hoatdongtrainghiem':'HĐTN','hoatdongtrainghiemhuongnghiep':'HĐTN','hdtnhn':'HĐTN',
     'tienganh':'Tiếng Anh','ta':'Tiếng Anh','anhvan':'Tiếng Anh',
     'amnhac':'Âm nhạc','nhac':'Âm nhạc','an':'Âm nhạc',
@@ -5722,7 +5723,7 @@ function _bxNgayDayFull(row){
 }
 function bxTieuDeTiet(L,row,ctx){
   row=row||{}; ctx=ctx||{};
-  var out=[], tuan=(L&&L.tuan)||row.tuan||state.week;
+  var out=[], tuan=row.tuan||state.week||(L&&L.tuan);   /* (6/9/2026) tuần đang dạy trước, tuần kho sau */
   if(!ctx.daInTuan && tuan){ out.push({t:'Tuần '+tuan, sz:14}); ctx.daInTuan=true; }
   var ngay=_bxNgayDayFull(row);
   if(ngay && ngay!==ctx.ngayTruoc){ out.push({t:ngay, sz:13, thuong:true}); ctx.ngayTruoc=ngay; }
@@ -5780,7 +5781,7 @@ function hoatdongFlat(hd){
 /* dựng nội dung KHBD đầy đủ từ 1 giáo án trong kho + cá nhân hóa nhẹ */
 function bankLessonToText(L,row){
   row=row||{};
-  const lop=row.lop||state.klass, tuan=L.tuan||row.tuan||state.week;
+  const lop=row.lop||state.klass, tuan=row.tuan||state.week||L.tuan;
   const tiet=row.ppct||row.tiet||L.tiet||'', ngay=_ngayFull(row.date);
   const ln=[];
   ln.push('KẾ HOẠCH BÀI DẠY');
@@ -5882,7 +5883,7 @@ function _weekKhbdItems(){
     const gop=[], theo={};
     items.forEach(it=>{
       const r=it.r||{}, bai=String(r.bai||'').replace(/\s*\(tiết\s*\d+\/\d+\)\s*$/i,'').trim();
-      const key=_normTxt(r.mon||'')+'|'+_normTxt(bai);
+      const key=_bxKhoiCua({lop:r.lop||state.klass})+'|'+_normTxt(r.mon||'')+'|'+_normTxt(bai);   /* (6/9/2026) kèm KHỐI: 4A,4B gộp với nhau, không gộp với 5A */
       if(!bai){ gop.push(it); return; }
       const co=theo[key];
       if(co){
@@ -6924,11 +6925,11 @@ window.BX_demLop=BX_demLop; window.BX_doiTenLop=BX_doiTenLop;
        chủ động đẩy giá trị rỗng lên nên đám mây cũng rỗng theo, không trả lại dữ liệu cũ.
      · Bấm "Giữ nguyên": hồ sơ quay về lớp cũ (nút Lưu đã ghi lớp mới trước đó).
      · Không có dữ liệu khối cũ → chuyển êm, không hỏi. */
-function _bxKhoiCua(lop, macDinh){ var k=(window.BX_khoiCuaLop?window.BX_khoiCuaLop(lop):((String(lop||'').match(/\d/)||[''])[0])); return k||macDinh||''; }
+function _bxKhoiCuaLop(lop, macDinh){ var k=(window.BX_khoiCuaLop?window.BX_khoiCuaLop(lop):((String(lop||'').match(/\d/)||[''])[0])); return k||macDinh||''; }
 function BX_demKhoi(k, lopCu){
   k=String(k||''); var n={tkb:0,lbg:0,khbd:0,sua:0,hs:0,khgd:0,tong:0};
   if(!k) return n;
-  function la(lop){ return _bxKhoiCua(lop, k)===k; }        // không ghi lớp → coi là lớp chính (khối cũ)
+  function la(lop){ return _bxKhoiCuaLop(lop, k)===k; }        // không ghi lớp → coi là lớp chính (khối cũ)
   var tkb=_bxDocJSON('butxanh_tkb');
   if(tkb&&Array.isArray(tkb.slots)) tkb.slots.forEach(function(s){ if(s&&la(s.lop)) n.tkb++; });
   var lbg=_bxDocJSON('butxanh_lbg_weeks');
@@ -6945,7 +6946,7 @@ function BX_demKhoi(k, lopCu){
 function BX_xoaDuLieuKhoi(k){
   k=String(k||''); var kq={tkb:0,lbg:0,khbd:0,sua:0,hs:0,khgd:0,loi:[]};
   if(!k) return kq;
-  function la(lop){ return _bxKhoiCua(lop, k)===k; }
+  function la(lop){ return _bxKhoiCuaLop(lop, k)===k; }
   function ghi(key,v,ten){ var ok=BX_luu(key, JSON.stringify(v), ten); if(!ok) kq.loi.push(ten); return ok; }
   /* 1) Thời khoá biểu */
   var tkb=_bxDocJSON('butxanh_tkb');
@@ -7037,7 +7038,7 @@ window.BX_hoiChuyenKhoi=BX_hoiChuyenKhoi;
 function BX_hoiDoiTenLop(cu, moi){
   var C=_bxLopChuan(cu), M=_bxLopChuan(moi);
   if(!C||!M||C===M) return false;
-  var kCu=_bxKhoiCua(cu), kMoi=_bxKhoiCua(moi);
+  var kCu=_bxKhoiCuaLop(cu), kMoi=_bxKhoiCuaLop(moi);
   if(kCu&&kMoi&&kCu!==kMoi) return BX_hoiChuyenKhoi(cu, moi, kCu, kMoi);
   var n=BX_demLop(cu); if(!n.tong) return false;
   cu=String(cu).replace(/^Lớp\s*/i,'').trim(); moi=String(moi).replace(/^Lớp\s*/i,'').trim();
@@ -7592,6 +7593,15 @@ function resolveScheduleRowToCurriculumPeriod(row, context){
 function BX_resolveBankMatch(row){
   if(!row) return {status:'missing', lesson:null, candidates:[]};
   var all=bankAllForRow(row);   // CHỈ giáo án cùng KHỐI với GV/dòng lịch (tránh GV Lớp 4 vớ giáo án Lớp 5)
+  /* 0) (6/9/2026) Dòng máy sinh đã GHIM bản ghi kho (_khoBai/_khoTuan/_khoTiet) → lấy đúng bản ấy, không dò tên nữa.
+     Trước đây đuôi " — Bài học STEM: …" làm khoá tên lệch, và ppct nền SGV (tiết KH cả năm) so với tiết-trong-tuần của kho → "mơ hồ" → mất giáo án. */
+  if(row._khoBai){
+    var kk=bankKey(row.mon,row._khoBai);
+    var ghim=all.filter(function(L){ if(bankKey(L.mon,L.bai)!==kk) return false; if(row._khoTuan!=null&&String(L.tuan)!==String(row._khoTuan)) return false; if(row._khoTiet!=null&&String(L.tiet)!==String(row._khoTiet)) return false; return true; });
+    if(!ghim.length) ghim=all.filter(function(L){ return bankKey(L.mon,L.bai)===kk; });
+    if(ghim.length) return {status:'ok', lesson:ghim[0], candidates:ghim, via:'ghim'};
+  }
+  var baiSach=String(row.bai||'').replace(/\s*[—–-]\s*Bài học STEM:.*$/i,'').replace(/\s*\(tiết\s*\d+\/\d+\)\s*$/i,'').trim();
   // 1) cpid đã ghim trên dòng lịch
   var cp = row.cpid||row.curriculum_period_id;
   if(cp){
@@ -7615,11 +7625,11 @@ function BX_resolveBankMatch(row){
   // 3) Khớp theo tên bài (chuẩn hóa). Khác cách viết → dự phòng: cùng Môn + số "Bài N" + số "Tiết M"
   //    + ưu tiên cùng Tuần, chọn giáo án trùng từ khóa nhất (overlap≥0.6) ⇒ "Bài 1"≈"Bài 01",
   //    tên ngắn ở lịch nằm trong tên kho dài vẫn khớp đúng.
-  var k=bankKey(row.mon,row.bai);
+  var k=bankKey(row.mon,baiSach);
   var _idx=_bxBankIdxOf(row);                       /* chỉ mục theo khối — tra O(1) thay vì lọc cả kho */
   var byName=(_idx.key[k]||[]).slice();
   if(!byName.length){
-    var mon=_normTxt((_bxCanonSubject(row.mon)||row.mon)), bn=_baiNo(row.bai), tn=_tietNo(row.bai), wk0=String(row.tuan||state.week);
+    var mon=_normTxt((_bxCanonSubject(row.mon)||row.mon)), bn=_baiNo(baiSach), tn=_tietNo(baiSach), wk0=String(row.tuan||state.week);
     var pool=(_idx.mon[mon]||[]).filter(function(L){
       if(bn!=null){ var lb=_baiNo(L.bai); if(lb!=null && lb!==bn) return false; }
       if(tn!=null){ var lt=_tietNo(L.bai); if(lt!=null && lt!==tn) return false; }
@@ -7629,7 +7639,7 @@ function BX_resolveBankMatch(row){
     var search=byWk0; // CHỈ khớp dự phòng trong CÙNG TUẦN — không có thì để "Chưa có trong kho",
                       // tránh vớ nhầm bài cùng "Tiết N" ở tuần khác (thà sót còn hơn khớp sai).
     var best=null, bestS=0;
-    search.forEach(function(L){ var s=_simContain(row.bai,L.bai); if(s>bestS){ bestS=s; best=L; } });
+    search.forEach(function(L){ var s=_simContain(baiSach,L.bai); if(s>bestS){ bestS=s; best=L; } });
     if(best && bestS>=0.6) byName=[best];
   }
   if(!byName.length) return {status:'missing', lesson:null, candidates:[]};
@@ -9899,7 +9909,10 @@ window.BX_khgdBang=function(l){
 /* Môn này đang KHÁC bản tổ? (nền SGV / bản riêng / có ô sửa tay) → lịch báo giảng phải đi theo kế hoạch */
 window.BX_khgdTheoKeHoach=function(l,m){
   var ng=window.BX_khgdNguon(l,m); if(ng!=='to') return true;
-  try{ var E=window.BX_khgdEdit, s=E&&E[String(l)]&&E[String(l)][m]; return !!(s&&Object.keys(s).length); }catch(e){ return false; }
+  /* (6/9/2026) Sửa cột "Nội dung điều chỉnh" / ghi chú KHÔNG đổi lịch → giữ lối cũ lấy giáo án theo tuần kho.
+     Trước đây sửa bất kỳ ô nào cũng đẩy cả môn sang lối dò theo tên bài (rà 6/9: Tiếng Việt 1 mất 56% giáo án). */
+  try{ var E=window.BX_khgdEdit, s=E&&E[String(l)]&&E[String(l)][m]; if(!s) return false;
+    return Object.keys(s).some(function(i){ var o=s[i]||{}; return ['0','4','6'].some(function(c){ return o[c]!=null&&String(o[c]).trim()!==''; }); }); }catch(e){ return false; }
 };
 /* So kế hoạch đang dùng (kể cả ô sửa tay) với chuẩn SGV, theo từng tuần. null = môn chưa có bản SGV. */
 window.BX_khgdSoSGV=function(l,m){
@@ -10559,7 +10572,8 @@ function reRender(){
   try{ if(typeof renderFullSchedule==='function') renderFullSchedule(); }catch(e){}
 }
 window.BX_setWeek=function(w){
-  w=parseInt(w,10)||1;
+  w=parseInt(w,10)||1; if(w<1) w=1; if(w>35) w=35;   /* (6/9/2026) kẹp 1..35 */
+  var _gh=(typeof BX_tuanMoToiDa==='function')?BX_tuanMoToiDa():35; if(w>_gh){ w=_gh; try{ BX_baoGioiHan(); }catch(e){} }   /* mở tuần dần (cauhinh.json) */
   var d=BX_weekDates(w);
   state.week=String(w); state.from=d.fromY; state.to=d.toY;
   var saved=(typeof getLBGForWeek==='function')?getLBGForWeek(w):null;
@@ -10581,16 +10595,51 @@ window.BX_setWeek=function(w){
   if(typeof renderBankSchedule==='function'){ try{ renderBankSchedule(); }catch(e){} }
   reRender();
 };
+/* ===== (6/9/2026) MỞ TUẦN DẦN THEO CẤU HÌNH TỪ XA =====
+   Tệp web/cauhinh.json (thầy Chung sửa thẳng trên GitHub, ~1 phút là có hiệu lực, không cần phát hành bản mới):
+     { "tuanMoToiDa": 2, "denNgay": "2026-09-13", "tuanSauDo": 35, "loiNhan": "…" }
+   - tuanMoToiDa: tuần lớn nhất được mở (Lịch báo giảng + giáo án theo tuần). 35 = không giới hạn.
+   - denNgay: hết ngày này thì tự chuyển sang tuanSauDo (mặc định 35). Bỏ trống = giữ mãi tới khi sửa tệp.
+   - Máy thầy/kiểm thử: localStorage butxanh_bo_gioihan = '1' để bỏ giới hạn.
+   Không tải được tệp (mạng, 404) → KHÔNG giới hạn, app chạy như cũ. */
+window.BX_GIOI_HAN=null;
+window.BX_tuanMoToiDa=function(){
+  try{ if(localStorage.getItem('butxanh_bo_gioihan')==='1') return 35; }catch(e){}
+  var g=window.BX_GIOI_HAN; if(!g||typeof g!=='object') return 35;
+  var n=parseInt(g.tuanMoToiDa,10); if(!(n>=1&&n<=35)) return 35;
+  if(g.denNgay){ var d=new Date(String(g.denNgay)+'T23:59:59'); if(!isNaN(d.getTime())&&Date.now()>d.getTime()){ var n2=parseInt(g.tuanSauDo,10); return (n2>=1&&n2<=35)?n2:35; } }
+  return n;
+};
+window.BX_baoGioiHan=function(){
+  if(window.__bxDaBaoGioiHan) return; window.__bxDaBaoGioiHan=true;
+  var g=window.BX_GIOI_HAN||{}, gh=BX_tuanMoToiDa();
+  var msg=g.loiNhan||('Bút Xanh hiện mở Lịch báo giảng và giáo án đến Tuần '+gh+'. Các tuần sau sẽ mở tiếp khi tổ chuyên môn rà soát xong kế hoạch.');
+  try{ if(typeof bxAlert==='function') bxAlert('🔒 '+msg); }catch(e){}
+};
+(function(){
+  try{
+    fetch('cauhinh.json?t='+Math.floor(Date.now()/300000),{cache:'no-store'}).then(function(r){ return r.ok?r.json():null; }).then(function(c){
+      if(!c||typeof c!=='object') return;
+      window.BX_GIOI_HAN=c;
+      var gh=BX_tuanMoToiDa(), cur=parseInt(state.week,10)||1;
+      console.log('[Bút Xanh] cauhinh.json: mở tới tuần '+gh+'.');
+      if(cur>gh){ BX_setWeek(gh); }
+      else if(typeof BX_renderWeekPicker==='function') BX_renderWeekPicker();
+    }).catch(function(){});
+  }catch(e){}
+})();
 function BX_wkPad(w){ return w<10?('0'+w):(''+w); }
 window.BX_renderWeekPicker=function(){
   var boxes=document.querySelectorAll('.wk-picker'); if(!boxes.length) return;
   var cur=parseInt(state.week,10)||1, map=(typeof loadLBGWeeks==='function')?loadLBGWeeks():{};
   var d=(typeof BX_weekDates==='function')?BX_weekDates(cur):{from:'',to:''};
+  var gh=(typeof BX_tuanMoToiDa==='function')?BX_tuanMoToiDa():35;
   var b='';
   for(var w=1;w<=35;w++){
-    var has=map[String(w)]&&map[String(w)].length;
-    b+='<button class="wk-btn'+(w===cur?' active':'')+(has?' has':'')+'" onclick="BX_pickWeek('+w+')" title="Tuần '+w+(has?' — đã có LBG':'')+'">'+BX_wkPad(w)+'</button>';
+    var has=map[String(w)]&&map[String(w)].length, khoa=w>gh;
+    b+='<button class="wk-btn'+(w===cur?' active':'')+(has?' has':'')+(khoa?' lock':'')+'" onclick="'+(khoa?'BX_baoGioiHan()':('BX_pickWeek('+w+')'))+'" title="'+(khoa?('Tuần '+w+' chưa mở'):('Tuần '+w+(has?' — đã có LBG':'')))+'">'+BX_wkPad(w)+'</button>';
   }
+  if(gh<35) b+='<div style="flex-basis:100%;font-size:12px;color:#7a6a3a;margin-top:4px">🔒 Đang mở đến Tuần '+gh+'. Các tuần sau mở tiếp khi tổ chuyên môn rà soát xong.</div>';
   var html=
     '<div class="wk-sel">'+
       '<button class="wk-nav" onclick="BX_stepWeek(-1)" title="Tuần trước"'+(cur<=1?' disabled':'')+'>‹</button>'+
@@ -10599,12 +10648,12 @@ window.BX_renderWeekPicker=function(){
         '<span class="wk-cur-rng">'+d.from+' – '+d.to+'</span>'+
         '<span class="wk-caret">▾</span>'+
       '</button>'+
-      '<button class="wk-nav" onclick="BX_stepWeek(1)" title="Tuần sau"'+(cur>=35?' disabled':'')+'>›</button>'+
+      '<button class="wk-nav" onclick="BX_stepWeek(1)" title="Tuần sau"'+(cur>=Math.min(35,gh)?' disabled':'')+'>›</button>'+
     '</div>'+
     '<div class="wk-pop"><span class="wk-pk-label">Chọn tuần để xem / soạn:</span><div class="wk-btns">'+b+'</div></div>';
   Array.prototype.forEach.call(boxes,function(box){ box.innerHTML=html; });
 };
-window.BX_stepWeek=function(delta){ var w=(parseInt(state.week,10)||1)+delta; if(w<1)w=1; if(w>35)w=35; BX_setWeek(w); };
+window.BX_stepWeek=function(delta){ var w=(parseInt(state.week,10)||1)+delta; if(w<1)w=1; if(w>35)w=35; var gh=(typeof BX_tuanMoToiDa==='function')?BX_tuanMoToiDa():35; if(w>gh){ BX_baoGioiHan(); return; } BX_setWeek(w); };
 window.BX_pickWeek=function(w){ document.querySelectorAll('.wk-picker.open').forEach(function(p){ p.classList.remove('open'); }); BX_setWeek(w); };
 window.BX_toggleWkPop=function(e){ if(e){e.preventDefault();e.stopPropagation();} var p=e&&e.target?e.target.closest('.wk-picker'):null; if(!p) return; var wasOpen=p.classList.contains('open'); document.querySelectorAll('.wk-picker.open').forEach(function(x){ x.classList.remove('open'); }); if(!wasOpen) p.classList.add('open'); };
 if(!window.__bxWkOutside){ window.__bxWkOutside=true; document.addEventListener('click',function(e){ document.querySelectorAll('.wk-picker.open').forEach(function(p){ if(!p.contains(e.target)) p.classList.remove('open'); }); }); }
@@ -10616,7 +10665,7 @@ window.BX_reloadFromStorage=function(){
   try{ if(typeof loadKhoFiles==='function') state.khofiles=loadKhoFiles(); }catch(e){}
   try{ if(typeof applyProfile==='function') applyProfile(JSON.parse(localStorage.getItem('butxanh_profile')||'{}')); }catch(e){}
   var w=BX_realWeek();
-  try{ var m=JSON.parse(localStorage.getItem('butxanh_lbg_meta')||'{}'); if(m.week) w=parseInt(m.week,10)||w; }catch(e){}
+  try{ var m=JSON.parse(localStorage.getItem('butxanh_lbg_meta')||'{}'); if(m.week){ var mw=parseInt(m.week,10); if(mw>=1&&mw<=35) w=mw; } }catch(e){}
   BX_setWeek(w);
   try{ var act=ALLVIEWS.find(function(v){var e=document.getElementById('v-'+v);return e&&e.classList.contains('active');})||'dashboard'; if(typeof showView==='function') showView(act); }catch(e){}
 };
@@ -10706,7 +10755,7 @@ function init(){
   // Mở đúng TUẦN đang xem dở (đã lưu/đồng bộ); chưa có thì lấy tuần thực tế.
   // BX_setWeek tự lấy LBG thật của tuần đó nếu có, không thì hiện bản mẫu.
   var w=BX_realWeek();
-  try{ var m=JSON.parse(localStorage.getItem('butxanh_lbg_meta')||'{}'); if(m.week) w=parseInt(m.week,10)||w; }catch(e){}
+  try{ var m=JSON.parse(localStorage.getItem('butxanh_lbg_meta')||'{}'); if(m.week){ var mw=parseInt(m.week,10); if(mw>=1&&mw<=35) w=mw; } }catch(e){}
   BX_setWeek(w);
   if(typeof BX_renderWeekPicker==='function') BX_renderWeekPicker();
   console.log('[Bút Xanh] Dashboard init: mở tuần '+w+'.');
@@ -13032,7 +13081,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     /* (5/9/2026) Khoá nhớ kèm SỐ TIẾT đang có trong kho: kho nạp lười theo khối, kết quả "không có"
        tính lúc khối 3/4 chưa về mà nhớ mãi thì cả phiên giáo viên bộ môn không bao giờ có tên bài. */
     var k=lopN+'|'+nm+'#'+((window.KHO_DATA||[]).length); if(k in _khoHasCache) return _khoHasCache[k];
-    var has=(window.KHO_DATA||[]).some(function(r){ return String(r.lop)===String(lopN) && (_n(r.mon)===nm||_n(r.mon)===nc); });
+    var has=(window.KHO_DATA||[]).some(function(r){ if(String(r.lop)!==String(lopN)) return false; var rn=_n(r.mon), rc=_n((typeof _bxCanonSubject==='function')?(_bxCanonSubject(r.mon)||r.mon):r.mon); return rn===nm||rn===nc||rc===nm||rc===nc; });
     _khoHasCache[k]=has; return has;
   }
   /* ---------- Lịch nghỉ & dạy bù → CON TRỎ TIẾN ĐỘ PPCT + HÀNG ĐỢI CARRY (Phase 4) ----------
@@ -13064,32 +13113,56 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
        với người đang dùng). window.BX_LBG_KHO_CU=true ép lối cũ (dùng cho kiểm thử đối chiếu). */
     var planCache={};
     function _canonMon(m){ return (typeof _bxCanonSubject==='function')?(_bxCanonSubject(m)||m):m; }
-    function _timGiaoAn(lopN,mon,name,pw,used){
+    /* ---------- (6/9/2026) RÀ SOÁT "THIẾU GIÁO ÁN" — sửa cách dò giáo án theo tên bài kế hoạch ----------
+       Đo trên app thật (_kiemthu/_rasoat-lbg-0906/chu-kehoach-quet.js): lối cũ để trống giáo án
+       Tiếng Việt 4 nền SGV 71% tiết, Âm nhạc 4 nền SGV 51%, Tiếng Việt 1/5 56%, Tiếng Anh 5 82%, Âm nhạc 5 80%…
+       Ba nguyên nhân: (1) tên kế hoạch ngắn "Điều kì diệu" so với tên kho dài "Bài 01: ĐIỀU KÌ DIỆU – Tiết 1: Đọc"
+       bằng Jaccard chỉ được 0,3 (< 0,5) → dùng ĐỘ CHỨA (overlap) sau khi bỏ cụm "Tiết …"; (2) kế hoạch ghi "Bài 1."
+       mà kho không đánh số (Đạo đức 5) → trượt 100%; (3) "Bài 1, 2" nằm GIỮA tên ("LUYỆN TẬP … BÀI 1, 2") bị đọc
+       thành số bài, và tiết kho ghi số thứ tự cả năm "(Tiết 13+14)" bị coi là tiết 13 → loại nhầm bản ghi đúng tuần,
+       rồi vớ bản "Bài 01" của học kì 2 (Tiếng Việt 1 đánh số lại từ 1). Nay: số bài chỉ lấy khi đứng ĐẦU tên, tiết
+       chỉ so khi cả hai bên đều ghi, khoảng cách tuần phạt ×4. Kế hoạch là BẢN TỔ (chỉ có ô sửa tay) thì đi lối cũ:
+       đúng tên → cùng tuần theo thứ tự tiết → mới tới dò tên. */
+    function _lotTiet(x){ return String(x||'').replace(/[\(\[–—-]?\s*ti[eế]t\s*[\d\s+,\-–—\/]*[\)\]]?\s*:?/gi,' ').replace(/\(\s*\d+\s*ti[eế]t\s*\)/gi,' ').replace(/\s+/g,' ').trim(); }
+    function _chua(a,b){ return (typeof _simContain==='function')?_simContain(_lotTiet(a),_lotTiet(b)):0; }
+    function _baiNoDau(x){ var m=/^\s*b[aà]i\s*0*(\d+)/i.exec(String(x||'')); return m?+m[1]:null; }
+    function _soTuNoiDung(x){ return (typeof _words==='function')?_words(_lotTiet(x)).filter(function(w){ return !/^(bai|tiet|\d+|on|tap|luyen|chung|chu|de|hoc|so)$/.test(w); }).length:0; }
+    /* nguon: 'to' (bản tổ có ô sửa) | 'sgv' | 'rieng' */
+    function _timGiaoAn(lopN,mon,name,pw,used,nguon){
       var K=window.KHO_DATA||[], nm=_n(mon), nc=_n(_canonMon(mon));
-      var nn=_n(name), bn=(typeof _baiNo==='function')?_baiNo(name):null, tn=(typeof _tietNo==='function')?_tietNo(name):null;
+      var nn=_n(name), bn=_baiNoDau(name), tn=(typeof _tietNo==='function')?_tietNo(name):null;
       var pool=[];
       K.forEach(function(r){ if(String(r.lop)!==String(lopN)) return; var rn=_n(r.mon), rc=_n(_canonMon(r.mon)); if(rn===nm||rn===nc||rc===nm||rc===nc) pool.push(r); });
       if(!pool.length) return null;
       var sim=function(r){ return (typeof _simTitle==='function')?_simTitle(name,r.bai):0; };
       var gan=function(r){ return Math.abs((+r.tuan||0)-(+pw||0)); };
-      var chonTot=function(ds,diem){ var c=null,b=-Infinity; ds.forEach(function(r){ var sc=diem(r)*100-gan(r); if(sc>b){ b=sc; c=r; } }); return c; };
+      var chonTot=function(ds,diem){ var c=null,b=-Infinity; ds.forEach(function(r){ var sc=diem(r)*100-gan(r)*4; if(sc>b){ b=sc; c=r; } }); return c; };
       var chua=pool.filter(function(r){ return used.indexOf(r)<0; });
-      /* Vòng 1 (chặt): đúng tên, hoặc đúng số bài + đúng số tiết — trong số bản ghi CHƯA dùng */
+      var cungTuan=function(){ return chua.filter(function(r){ return String(r.tuan)===String(pw); }).sort(function(a,b){ return (+a.tiet||0)-(+b.tiet||0); }); };
+      var ghi=function(c){ if(c) used.push(c); return c; };
+      /* Vòng 0: đúng tên (chưa dùng) */
+      var c=chonTot(chua.filter(function(r){ return _n(r.bai)===nn; }),function(){ return 1; });
+      if(c) return ghi(c);
+      var tietKhop=function(r){ var rt=_tietNo(r.bai); return (tn!=null&&rt!=null)?(rt===tn):true; };
+      var tietDung=function(r){ var rt=_tietNo(r.bai); return (tn!=null&&rt!=null&&rt===tn)?0.5:((tn==null&&(rt==null||rt===1))?0.25:0); };
+      var nhieuTu=_soTuNoiDung(name)>=3;
+      /* Vòng 1: đúng số bài (đầu tên) + tiết không mâu thuẫn · hoặc tên kế hoạch NẰM TRONG tên kho (≥ 0,75) · kho dán nhãn
+         sai số bài nhưng tên trùng ≥ 0,9 (Khoa học 5 Bài 4/5) — trong số CHƯA dùng */
       var v1=chua.filter(function(r){
-        if(_n(r.bai)===nn) return true;
-        if(bn==null) return sim(r)>=0.5;
-        var rb=_baiNo(r.bai), rt=_tietNo(r.bai); if(rb!==bn) return false;
-        if(tn!=null&&rt!=null&&rt!==tn) return false;
-        if(tn==null&&rt!=null&&rt!==1) return false;
-        return true;
+        var rb=_baiNoDau(r.bai), cc=_chua(name,r.bai);
+        if(bn!=null&&rb!=null) return (rb===bn)?tietKhop(r):(nhieuTu&&cc>=0.9&&tietKhop(r));
+        return (sim(r)>=0.5||cc>=0.75)&&tietKhop(r);
       });
-      var c=chonTot(v1,function(r){ return _n(r.bai)===nn?3:(1+sim(r)); });
+      c=chonTot(v1,function(r){ return 1+Math.max(sim(r),_chua(name,r.bai))+tietDung(r); });
+      /* Bản tổ chỉ có ô sửa tay (tên kho ≠ tên kế hoạch: Tiếng Anh, Âm nhạc, HĐTN…) → y lối cũ: kho xếp cùng tuần với kế hoạch, lấy theo thứ tự tiết */
+      if(!c&&nguon==='to'){ c=cungTuan()[0]||null; }
       /* Vòng 2: cùng số bài, BỎ QUA số tiết (kho ghi nhầm — vd hai bản Bài 22 cùng "Tiết 2"), chưa dùng */
-      if(!c&&bn!=null){ var v2=chua.filter(function(r){ return _baiNo(r.bai)===bn; }); c=chonTot(v2,function(r){ return 1+sim(r); }); }
+      if(!c&&bn!=null){ c=chonTot(chua.filter(function(r){ return _baiNoDau(r.bai)===bn; }),function(r){ return 1+sim(r); }); }
       /* Vòng 3: cùng số bài, cho DÙNG LẠI bản đã gán (kho ít tiết hơn kế hoạch: Bài 23, 65…) — ưu tiên đúng số tiết */
-      if(!c&&bn!=null){ var v3=pool.filter(function(r){ return _baiNo(r.bai)===bn; }); c=chonTot(v3,function(r){ var rt=_tietNo(r.bai); return (tn!=null&&rt===tn?2:1)+sim(r); }); if(c) return c; }
-      if(c) used.push(c);
-      return c;
+      if(!c&&bn!=null){ c=chonTot(pool.filter(function(r){ return _baiNoDau(r.bai)===bn; }),function(r){ return 1+sim(r)+tietDung(r); }); if(c) return c; }
+      /* Vòng 4: cùng tuần kho, tên còn giống ≥ 0,5 (nền SGV / bản riêng lệch tuần với kho thì KHÔNG vơ bừa) */
+      if(!c){ c=chonTot(cungTuan().filter(function(r){ return _chua(name,r.bai)>=0.5; }),function(r){ return _chua(name,r.bai); }); }
+      return ghi(c);
     }
     function _planWeek(lop,mon,pw){
       if(window.BX_LBG_KHO_CU) return null;
@@ -13101,13 +13174,13 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
           var B=window.BX_khgdBang(lopN), nm=_n(mon), nc=_n(_canonMon(mon)), mk=null;
           Object.keys(B).forEach(function(k){ if(mk) return; var kk=_n(k), kc=_n(_canonMon(k)); if(kk===nm||kk===nc||kc===nm||kc===nc) mk=k; });
           if(mk && window.BX_khgdTheoKeHoach(lopN,mk)){
-            var rows=B[mk], E=[], Kn=[], used=[];
+            var rows=B[mk], E=[], Kn=[], used=[], nguon=(typeof window.BX_khgdNguon==='function')?window.BX_khgdNguon(lopN,mk):'to';
             rows.forEach(function(row,i){
               if(!row) return;
               var w=String(row[0]||'').match(/\d+/); if(!w||parseInt(w[0],10)!==parseInt(pw,10)) return;
               var name=String(((window.BX_khgdVal)?window.BX_khgdVal(lopN,mk,i,4,row[4]):row[4])||'').trim(); if(!name) return;
               var sp=(window.BX_rowPeriods?window.BX_rowPeriods(row):1)||1; if(sp>12) sp=1;
-              var L=_timGiaoAn(lopN,mon,name,pw,used);
+              var L=_timGiaoAn(lopN,mon,name,pw,used,nguon);
               for(var k=0;k<sp;k++){ E.push({L:L,part:k+1,parts:sp,ppct:String(row[6]||'')}); Kn.push(sp>1?(name+' (tiết '+(k+1)+'/'+sp+')'):name); }
             });
             ra={E:E,K:Kn};
@@ -13136,15 +13209,16 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     }
     function _mkRow(s,lop,date,E,opts,khName){
       var L=E&&E.L, bai=L?(L.bai||''):'';
-      if(E&&E.parts>1&&E.part>1) bai=bai+' (tiết '+E.part+'/'+E.parts+')';
+      if(L&&bai&&E.parts>1&&E.part>1) bai=bai+' (tiết '+E.part+'/'+E.parts+')';
       var fromK=false;
-      if(!L && !bai && khName){ bai=String(khName); fromK=true; }   // Kho thiếu → lấy tên bài từ KHDH
+      if(!L && khName){ bai=String(khName); fromK=true; }   // Kho thiếu → lấy tên bài từ KHDH (6/9: kể cả tiết 2/2 — trước đây đuôi "(tiết 2/2)" làm !bai sai)
       /* (4/9/2026) Gắn địa chỉ bài học STEM ngay sau tên bài — xem BX_lbgThemStem. */
       if(bai && typeof window.BX_lbgThemStem==='function') bai=window.BX_lbgThemStem(lop, s.mon, bai);
       var r={day:s.day,date:date,buoi:s.buoi,tiet:s.tiet,mon:s.mon,lop:lop,
         bai:(opts&&opts.bu?('↩️ Dạy bù: '+(bai||(opts.note||''))):bai),
         tbdh:L?shortTBDH(L.dodung):'',ppct:E?(E.ppct||''):'',_gen:true,
         _nokho:!L&&!fromK&&!_subjHasKho(lop,s.mon), _overflow:!L&&!fromK&&_subjHasKho(lop,s.mon)};
+      if(L){ r._khoBai=L.bai; r._khoTuan=L.tuan; r._khoTiet=L.tiet; }   /* (6/9/2026) ghim bản ghi kho đã chọn cho KHBD */
       if(fromK) r._fromkhdh=true;
       if(opts&&opts.bu) r._bu=true;
       return r;
@@ -13172,7 +13246,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
         pendingK[key]=a; return a;
       };
       slots.forEach(function(s){
-        var lop=s.lop||state.klass, key=_n(s.mon)+'|'+_n(lop);
+        var lop=s.lop||state.klass, key=_n(_canonMon(s.mon))+'|'+_n(_bxLopChuan(lop));   /* (6/9/2026) môn chuẩn + lớp chuẩn */
         var arr=_pend(key,lop,s.mon);                 // đảm bảo carry tích luỹ kể cả tuần nghỉ
         var arrK=_pendK(key,lop,s.mon);               // hàng đợi tên bài KHDH (đồng bộ theo ô)
         if(pw===null){ if(isTarget) rows.push({day:s.day,date:_date(s.day),buoi:s.buoi,tiet:s.tiet,mon:s.mon,lop:lop,bai:'🏖️ NGHỈ — '+weekNote,tbdh:'',_gen:true,_nghi:true}); return; }
@@ -13183,7 +13257,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
       });
       if(pw!==null){
         exc.makeup.filter(function(m){return parseInt(m.tuan,10)===w;}).forEach(function(m){
-          var lop=m.lop||state.klass, key=_n(m.mon)+'|'+_n(lop);
+          var lop=m.lop||state.klass, key=_n(_canonMon(m.mon))+'|'+_n(_bxLopChuan(lop));
           var arr=_pend(key,lop,m.mon), arrK=_pendK(key,lop,m.mon), E=arr.shift(), Ek=arrK.shift();
           if(isTarget) rows.push(_mkRow({day:m.day,buoi:m.buoi||'Chiều',tiet:m.tiet||1,mon:m.mon},lop,_date(m.day),E,{bu:true,note:m.note},Ek));
         });
@@ -13233,7 +13307,8 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
        bấm sinh ngay là tiết khối 3/4 trống tên bài rồi LƯU luôn (ca thật 5/9, cô dạy 4 môn ở 15 lớp). */
     _choKhoTKB().then(function(){
       var saved=(typeof getLBGForWeek==='function')?getLBGForWeek(w):null;
-      if(saved && saved.length){ bxConfirm('Tuần '+w+' đã có Lịch báo giảng (có thể đã chỉnh tay).\nSinh lại từ TKB sẽ GHI ĐÈ tuần này. Tiếp tục?',{okText:'Ghi đè',cancelText:'Giữ nguyên'}).then(function(ok){ if(ok) _doGen(); }); }
+      var tuGen=(typeof BX_laTuanTuGen==='function')&&BX_laTuanTuGen(w);   /* (6/9/2026) máy tự sinh → sinh lại luôn, không hỏi */
+      if(saved && saved.length && !tuGen){ bxConfirm('Tuần '+w+' đã có Lịch báo giảng (có thể đã chỉnh tay).\nSinh lại từ TKB sẽ GHI ĐÈ tuần này. Tiếp tục?',{okText:'Ghi đè',cancelText:'Giữ nguyên'}).then(function(ok){ if(ok) _doGen(); }); }
       else _doGen();
     });
   };
@@ -13509,7 +13584,13 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     else lam();
   };
   function _validSlots(){ return (_work||[]).filter(function(s){ return s.mon; }).map(_clone); }
-  function _tkbLuuThat(sl){ saveTKB(sl); renderStatus(); bxAlert('✓ Đã lưu Thời khóa biểu ('+sl.length+' tiết/tuần).\nTừ giờ Bút Xanh tự tạo Lịch báo giảng theo TKB này khi thầy cô chuyển tuần.'); }
+  function _tkbLuuThat(sl){
+    saveTKB(sl); renderStatus();
+    var daLuu=0; try{ var M=loadLBGWeeks(); Object.keys(M).forEach(function(w){ if(Array.isArray(M[w])&&M[w].length&&!(typeof BX_laTuanTuGen==='function'&&BX_laTuanTuGen(w))) daLuu++; }); }catch(e){}
+    bxAlert('✓ Đã lưu Thời khóa biểu ('+sl.length+' tiết/tuần).\n'+
+      (daLuu?('⚠️ '+daLuu+' tuần Lịch báo giảng thầy/cô ĐÃ LƯU hoặc đã chỉnh tay vẫn giữ bản cũ. Muốn tuần nào theo TKB mới: mở tuần đó rồi bấm "Sinh LBG từ TKB".\n'):'')+
+      'Các tuần chưa có lịch sẽ tự sinh theo TKB này khi thầy cô chuyển tuần.');
+  }
   window.bxTKBsave=function(){
     var sl=_validSlots();
     /* (14/8/2026 — rà soát) LƯỚI TRỐNG mà bấm Lưu: trước đây vẫn báo "✓ Đã lưu (0 tiết/tuần)"
@@ -13740,7 +13821,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
   var TIET_TUAN={
     '1':{'Tiếng Việt':12,'Toán':3,'HĐTN':3,'Tự nhiên và Xã hội':2,'GDTC':2,'Đạo đức':1,'Âm nhạc':1},
     '2':{'Tiếng Việt':10,'Toán':5,'HĐTN':3,'Tự nhiên và Xã hội':2,'GDTC':2,'Đạo đức':1,'Âm nhạc':1},
-    '3':{'Tiếng Việt':7,'Toán':5,'HĐTN':3,'Tự nhiên và Xã hội':3,'GDTC':2,'Đạo đức':1,'Âm nhạc':1},
+    '3':{'Tiếng Việt':7,'Toán':5,'HĐTN':3,'Tự nhiên và Xã hội':2,'GDTC':2,'Đạo đức':1,'Âm nhạc':1},
     '4':{'Tiếng Việt':7,'Toán':5,'HĐTN':3,'Khoa học':2,'Lịch sử & Địa lí':2,'GDTC':2,'Đạo đức':1,'Âm nhạc':1},
     '5':{'Tiếng Việt':7,'Toán':5,'HĐTN':3,'Khoa học':2,'Lịch sử & Địa lí':2,'GDTC':2,'Đạo đức':1,'Âm nhạc':1}
   };
