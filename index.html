@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-07 · 133';
+  var PB='2026-09-07 · 134';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -12452,11 +12452,14 @@ var MON_KHOI={
    họ không tự khai được. Vẫn giữ trần TOI_DA_MON_CHUYEN=2 nên không nới quyền: các môn mới
    đều đã có trong MON_KHOI, mở đúng những khối chương trình có môn ấy. */
 var MON_CHUYEN=['Tiếng Anh','Tin học','Công nghệ','Âm nhạc','Mĩ thuật','GDTC',
-  'Đạo đức','Tự nhiên và Xã hội','Khoa học','Lịch sử & Địa lí'];
+  'Đạo đức','Tự nhiên và Xã hội','Khoa học','Lịch sử & Địa lí',
+  /* (7/9/2026) GV2 không chủ nhiệm dạy văn hoá ở nhiều lớp — thầy Chung. Trần 600 tiết vẫn chặn quá một suất chủ nhiệm. */
+  'Toán','Tiếng Việt','HĐTN'];
 /* Số tiết/tuần theo chương trình — nhân 35 tuần ra số tiết cả năm của MỘT khối.
    Dùng để đo phạm vi thầy cô tự khai, KHÔNG dùng để dựng lịch. */
 var TIET_TUAN={'Tiếng Anh':4,'Tin học':1,'Công nghệ':1,'Âm nhạc':1,'Mĩ thuật':1,'GDTC':2,
-  'Đạo đức':1,'Tự nhiên và Xã hội':2,'Khoa học':2,'Lịch sử & Địa lí':2};
+  'Đạo đức':1,'Tự nhiên và Xã hội':2,'Khoa học':2,'Lịch sử & Địa lí':2,
+  'Toán':5,'Tiếng Việt':8,'HĐTN':3};   /* (7/9/2026) chỉ để đo trần phạm vi, lấy mức trung bình các khối */
 function tietCua(m){ return (TIET_TUAN[m]||1)*35; }
 var MON_TATCA=Object.keys(MON_KHOI);
 var KHOI=['1','2','3','4','5'];
@@ -12485,6 +12488,12 @@ var TOI_DA_MON_CHUYEN=2;   /* giữ lại cho bản khai cũ; nay đếm theo C�
    ⚠ ĐỪNG hạ TOI_DA_TIET xuống 500: giáo viên dạy Tiếng Anh + Tin học cả ba khối 3-4-5
    cần 525 tiết, hạ xuống là chặn oan người đang dùng được (đã tính hụt lần đầu 5/9). */
 var TOI_DA_CAP=8, TOI_DA_TIET=600;
+/* (7/9/2026, thầy Chung chốt) GV CHỦ NHIỆM được phân công dạy thêm vài môn ở khối khác (cô N. Huyền: 4A9 + 2 tiết
+   GDTC lớp 1) tự khai được, không phải nhờ quản trị. Vẫn giữ luật "chỉ MỘT khối mở trọn" (hopLe), phần thêm có trần
+   riêng nhỏ: tối đa 3 cặp môn × khối, 280 tiết (Tiếng Anh một khối = 140, GDTC hai khối = 140). */
+var TOI_DA_CAP_THEM=3, TOI_DA_TIET_THEM=280;
+function dsThem(tt){ return (tt&&tt.kieu!=='chuyen'&&Array.isArray(tt.capThem))?tt.capThem.filter(function(c){ return c.split('|')[1]!==String(tt.khoiCN); }):[]; }
+function tongTietThem(tt){ var t=0; dsThem(tt).forEach(function(c){ t+=tietCua(c.split('|')[0]); }); return t; }
 function capHopLe(m,k){ return khoiCuaMon(m).indexOf(String(k))>=0; }
 function dsCap(tt){ return (tt&&tt.capMon)||[]; }
 function tongTietCap(tt){ var s=0; dsCap(tt).forEach(function(c){ s+=tietCua(c.split('|')[0]); }); return s; }
@@ -12531,7 +12540,16 @@ function dungQuyen(tt){
       tong+=tietCua(m); if(tong>TOI_DA_TIET) return;
       q[k]=(q[k]||[]).concat([m]);
     });
-  } else if(tt.khoiCN){ q[tt.khoiCN]='*'; }
+  } else if(tt.khoiCN){
+    q[tt.khoiCN]='*';
+    var tt2=0;
+    dsThem(tt).slice(0,TOI_DA_CAP_THEM).forEach(function(c){
+      var i=c.indexOf('|'), m=c.slice(0,i), k=c.slice(i+1);
+      if(!capHopLe(m,k) || k===String(tt.khoiCN)) return;
+      tt2+=tietCua(m); if(tt2>TOI_DA_TIET_THEM) return;
+      q[k]=(q[k]||[]).concat([m]);
+    });
+  }
   return Object.keys(q).sort().map(function(k){
     var v=q[k];
     if(v==='*') return k+':*';
@@ -12597,7 +12615,16 @@ function goiY(){
       });
       if(cap.length) tt.capMon=cap.slice(0,TOI_DA_CAP);
     }
-    else if(chinh){ tt.khoiCN=chinh; }
+    else if(chinh){
+      tt.khoiCN=chinh;
+      /* (7/9/2026) Cặp môn × khối KHÁC khối chủ nhiệm trong TKB → tick sẵn ở phần "dạy thêm" (trong trần) */
+      var them=[], tThem=0;
+      Object.keys(pc).forEach(function(k){
+        if(!/^[1-5]$/.test(k) || k===chinh) return;
+        (pc[k]||[]).forEach(function(m){ if(!capHopLe(m,k)) return; if(them.length>=TOI_DA_CAP_THEM || tThem+tietCua(m)>TOI_DA_TIET_THEM) return; them.push(m+'|'+k); tThem+=tietCua(m); });
+      });
+      if(them.length) tt.capThem=them;
+    }
   }catch(e){}
   if(tt.kieu==='cn' && !tt.khoiCN){ try{ tt.khoiCN=window.BX_khoiHienTai?window.BX_khoiHienTai():'5'; }catch(e){ tt.khoiCN='5'; } }
   return tt;
@@ -12630,6 +12657,8 @@ function ve(){
     h+='<div style="background:#fff8e6;border:1px solid #ffe2a8;border-radius:10px;padding:10px 12px;color:#7a5b00;margin-bottom:12px">'+
        '🔒 Bản quyền đã kích hoạt nên phạm vi được <b>chốt lại</b>. Thầy/cô cần đổi thì nhắn quản trị giúp em ạ.</div>'+
        '<div style="padding:10px 12px;background:#f2f7f4;border-radius:10px"><b>'+esc(moTa(chuoi))+'</b></div>'+
+       (function(){ var t=thieuSoVoiTKB(); return t.length?('<div style="margin-top:10px;padding:10px 12px;background:#fff8e6;border:1px solid #ffe2a8;border-radius:10px;font-size:12.5px;color:#7a5b00;line-height:1.6">Thời khoá biểu của thầy/cô có <b>'+esc(t.join(', '))+'</b> chưa nằm trong phạm vi đã chốt.</div>'+
+         '<button onclick="BX_pvChepXinMo()" style="display:block;width:100%;margin-top:10px;padding:11px;border:0;border-radius:10px;background:#0b8043;color:#fff;font-size:14px;font-weight:600;cursor:pointer">📋 Chép lời nhắn xin mở thêm (gửi nhóm Zalo)</button>'):''; })()+
        '<button onclick="BX_pvDong()" style="display:block;width:100%;margin-top:14px;padding:12px;border:0;border-radius:10px;background:#eef3f0;color:#334;font-size:15px;cursor:pointer">Đóng</button>'+
        '</div></div>';
     o().innerHTML=h; return;
@@ -12642,6 +12671,28 @@ function ve(){
   if(TT.kieu!=='chuyen'){
     h+='<div style="margin:2px 0 10px 26px"><select onchange="BX_pvSet(\'khoiCN\',this.value)" style="padding:7px 10px;border:1px solid #d6e2da;border-radius:8px">'+
        KHOI.map(function(k){ return '<option value="'+k+'"'+(k===TT.khoiCN?' selected':'')+'>Khối '+k+'</option>'; }).join('')+'</select></div>';
+    /* (7/9/2026) …và được phân công dạy thêm ở khối khác */
+    var _dt=dsThem(TT), _tt=tongTietThem(TT), _tkbThem=[];
+    try{ var _pc=(typeof window.BX_phanCongGVDay==='function')?window.BX_phanCongGVDay():{}; Object.keys(_pc).forEach(function(k){ if(!/^[1-5]$/.test(k)||k===String(TT.khoiCN)) return; (_pc[k]||[]).forEach(function(m){ if(capHopLe(m,k)&&_dt.indexOf(m+'|'+k)<0) _tkbThem.push(m+' – khối '+k); }); }); }catch(e){}
+    h+='<div style="margin:0 0 10px 26px;padding:10px 12px;border:1px dashed #cfe2d5;border-radius:10px;background:#f9fcfa">'+
+      '<div style="font-size:13px;margin-bottom:6px"><b>…và được phân công dạy thêm ở khối khác?</b> <span style="color:#5b6b61">(tuỳ chọn — tick đúng môn nào ở khối nào)</span></div>'+
+      '<div style="overflow-x:auto"><table style="border-collapse:collapse;font-size:12.5px">'+
+      '<tr><th style="text-align:left;padding:2px 8px 4px 0;font-weight:600;color:#5b6b61">Môn</th>'+
+      KHOI.map(function(k){ return '<th style="padding:2px 4px 4px;font-weight:600;color:#5b6b61;width:34px">K'+k+'</th>'; }).join('')+'</tr>'+
+      MON_CHUYEN.map(function(m){
+        return '<tr><td style="padding:2px 8px 2px 0;white-space:nowrap">'+esc(m)+'</td>'+
+          KHOI.map(function(k){
+            if(k===String(TT.khoiCN)) return '<td style="text-align:center;color:#0b8043" title="Khối chủ nhiệm đã mở trọn">●</td>';
+            if(!capHopLe(m,k)) return '<td style="text-align:center;color:#c3ccc7">—</td>';
+            var on=_dt.indexOf(m+'|'+k)>=0;
+            return '<td style="text-align:center;padding:1px"><button type="button" onclick="BX_pvCapThem(\''+esc(m)+'\',\''+k+'\')" title="'+esc(m)+' – khối '+k+'" '+
+              'style="width:28px;height:26px;border-radius:6px;cursor:pointer;font-size:13px;line-height:1;'+
+              (on?'background:#0b8043;color:#fff;border:1px solid #0b8043':'background:#fff;color:#9aa8a1;border:1px solid #d6e2da')+'">'+(on?'✓':'')+'</button></td>';
+          }).join('')+'</tr>';
+      }).join('')+'</table></div>'+
+      '<div style="margin-top:6px;font-size:12.5px;color:'+((_dt.length>TOI_DA_CAP_THEM||_tt>TOI_DA_TIET_THEM)?'#b3261e':'#5b6b61')+'">Dạy thêm: <b>'+_dt.length+'</b> phần việc · <b>'+_tt+'</b> tiết (tối đa '+TOI_DA_CAP_THEM+' phần việc, '+TOI_DA_TIET_THEM+' tiết). ● = khối chủ nhiệm đã mở trọn.</div>'+
+      (_tkbThem.length?('<div style="margin-top:6px;font-size:12.5px;color:#7a5b00">Thời khoá biểu của thầy/cô có <b>'+esc(_tkbThem.join(', '))+'</b> chưa tick — tick vào để Bút Xanh mở giáo án phần đó.</div>'):'')+
+      '</div>';
   }
 
   h+='<label style="display:flex;gap:8px;align-items:flex-start;padding:8px 0;cursor:pointer;border-top:1px dashed #e3e8e5">'+
@@ -12675,8 +12726,8 @@ function ve(){
   /* Ca ngoại lệ do nhóm Bút Xanh mở tay — KHÔNG để thầy cô tự cấp thêm lớp cho mình,
      nếu không thì một bản quyền dùng chung được cho hai giáo viên. */
   h+='<div style="margin-top:10px;padding:10px 12px;background:#fff8e6;border:1px solid #ffe2a8;border-radius:10px;font-size:12.5px;color:#7a5b00;line-height:1.6">'+
-     'Thầy/cô <b>chủ nhiệm một lớp mà được phân công dạy thêm vài môn ở lớp khác</b>? '+
-     'Nhắn giúp em qua '+esc(HOTLINE())+' kèm <b>lớp và môn</b> được phân công — nhóm Bút Xanh sẽ mở thêm cho thầy/cô.</div>';
+     'Thầy/cô <b>chủ nhiệm một lớp mà được phân công dạy thêm vài môn ở lớp khác</b>? Chọn "Tôi chủ nhiệm một lớp" rồi tick thêm ở bảng <b>dạy thêm ở khối khác</b> ngay phía trên. '+
+     'Phân công nhiều hơn mức tự khai thì nhắn '+esc(HOTLINE())+' kèm <b>lớp và môn</b> — nhóm Bút Xanh sẽ mở thêm.</div>';
   h+='<div style="font-size:12.5px;color:#5b6b61;margin-top:8px">Chọn nhầm cũng không sao — sửa lại bất cứ lúc nào ở <b>Cài đặt ▸ Lớp và môn tôi dạy</b>, cho tới khi kích hoạt bản quyền.</div>';
   h+='<button onclick="BX_pvXong()" style="display:block;width:100%;margin-top:12px;padding:12px;border:0;border-radius:10px;background:#0b8043;color:#fff;font-size:15px;font-weight:600;cursor:pointer">Xong</button>'+
      '<button onclick="BX_pvDeSau()" style="display:block;width:100%;margin-top:8px;padding:12px;border:0;border-radius:10px;background:#eef3f0;color:#334;font-size:15px;cursor:pointer">Để sau</button>';
@@ -12697,6 +12748,14 @@ window.BX_pvCap=function(m,k){
     if(window.bxAlert) bxAlert('Thêm '+m+' khối '+k+' thì vượt mức '+TOI_DA_TIET+' tiết một bản quyền ạ.\n\nThầy/cô được phân công nhiều hơn thì nhắn '+HOTLINE()+' để nhóm Bút Xanh mở thêm giúp ạ.');
     return;
   }
+  a.push(key); ve();
+};
+window.BX_pvCapThem=function(m,k){
+  if(String(k)===String(TT.khoiCN)) return;
+  var a=TT.capThem||(TT.capThem=[]), key=m+'|'+k, i=a.indexOf(key);
+  if(i>=0){ a.splice(i,1); ve(); return; }
+  if(dsThem(TT).length>=TOI_DA_CAP_THEM){ if(window.bxAlert) bxAlert('Phần dạy thêm tự khai tối đa '+TOI_DA_CAP_THEM+' phần việc (một môn ở một khối là một phần việc) ạ.\n\nThầy/cô được phân công nhiều hơn thì nhắn '+HOTLINE()+' để nhóm Bút Xanh mở thêm.'); return; }
+  if(tongTietThem(TT)+tietCua(m)>TOI_DA_TIET_THEM){ if(window.bxAlert) bxAlert('Thêm '+m+' khối '+k+' thì phần dạy thêm vượt '+TOI_DA_TIET_THEM+' tiết ạ.\n\nThầy/cô được phân công nhiều hơn thì nhắn '+HOTLINE()+' để nhóm Bút Xanh mở thêm.'); return; }
   a.push(key); ve();
 };
 window.BX_pvDeSau=function(){ try{ localStorage.setItem(KEY_HOAN,'1'); }catch(e){} dong(); };
@@ -12726,10 +12785,28 @@ function capNhat(){
   try{ if(typeof window.renderKhoBrowser==='function') window.renderKhoBrowser(); }catch(e){}
   try{ theSettings(); }catch(e){}
 }
+/* (7/9/2026) Cặp môn × khối có trong TKB mà phạm vi hiện hành chưa mở */
+function thieuSoVoiTKB(){
+  var ra=[];
+  try{
+    var pc=(typeof window.BX_phanCongGVDay==='function')?window.BX_phanCongGVDay():{};
+    Object.keys(pc).forEach(function(k){ if(!/^[1-5]$/.test(k)) return; (pc[k]||[]).forEach(function(m){
+      var ok=true; try{ if(window.BXLIC&&BXLIC.duocPhep) ok=BXLIC.duocPhep(k,m,true); }catch(e){}
+      if(!ok) ra.push(m+' – khối '+k); }); });
+  }catch(e){}
+  return ra;
+}
+window.BX_pvChepXinMo=function(){
+  var t=thieuSoVoiTKB(), ten='', em='';
+  try{ var u=(window.firebase&&firebase.auth)?firebase.auth().currentUser:null; if(u){ ten=u.displayName||''; em=u.email||''; } }catch(e){}
+  var msg='Bút Xanh ơi, xin mở thêm phạm vi giáo án cho '+(ten||'tôi')+(em?(' ('+em+')'):'')+'.\nPhạm vi hiện có: '+moTa(window.BX_quyenDaChon()||'')+'.\nĐược phân công thêm (theo thời khoá biểu đã khai): '+t.join(', ')+'.\nCảm ơn nhóm!';
+  var xong=function(){ if(window.bxAlert) bxAlert('✓ Đã chép lời nhắn. Thầy/cô dán vào nhóm Zalo Bút Xanh giúp em ạ:\n\n'+msg); };
+  try{ if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(msg).then(xong,xong); else xong(); }catch(e){ xong(); }
+};
 window.BX_moChonPhamVi=function(){
   var tt=docTT();
   TT = tt ? JSON.parse(JSON.stringify(tt)) : goiY();
-  if(!TT.them) TT.them=[]; if(!TT.monChuyen) TT.monChuyen=[];
+  if(!TT.them) TT.them=[]; if(!TT.monChuyen) TT.monChuyen=[]; if(!TT.capThem) TT.capThem=[];
   ve(); o().style.display='flex';
 };
 
@@ -13677,8 +13754,13 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
       (daLuu?('⚠️ '+daLuu+' tuần Lịch báo giảng thầy/cô ĐÃ LƯU hoặc đã chỉnh tay vẫn giữ bản cũ. Muốn tuần nào theo TKB mới: mở tuần đó rồi bấm "Sinh LBG từ TKB".\n'):'')+
       'Các tuần chưa có lịch sẽ tự sinh theo TKB này khi thầy cô chuyển tuần.');
   }
+  /* (7/9/2026) Đo ca GV2: hồ sơ không có lớp chủ nhiệm + ô TKB không ghi lớp → app gán "5A" lặng lẽ, tiết thứ hai cùng môn
+     trống bài. Nay chặn ngay lúc lưu và chỉ cách. */
+  function _oThieuLop(sl){ var k=String((state&&state.klass)||'').trim(); return (sl||[]).filter(function(s){ return !String(s.lop||'').trim() && !k; }); }
+  function _baoThieuLop(n){ bxAlert('Có '+n+' ô chưa ghi lớp, mà thầy/cô chưa khai lớp chủ nhiệm nên Bút Xanh không biết tiết đó dạy lớp nào.\n\nThầy/cô ghi lớp vào ô "Lớp mặc định" phía trên lưới (nếu dạy chủ yếu một lớp), hoặc bấm từng ô và ghi lớp (1A, 2B…) rồi lưu lại ạ.'); try{ var e=document.getElementById('tkb-deflop'); if(e) e.focus(); }catch(e){} }
   window.bxTKBsave=function(){
     var sl=_validSlots();
+    var th=_oThieuLop(sl); if(sl.length&&th.length){ _baoThieuLop(th.length); return; }
     /* (14/8/2026 — rà soát) LƯỚI TRỐNG mà bấm Lưu: trước đây vẫn báo "✓ Đã lưu (0 tiết/tuần)"
        rồi ghi đè lịch tuần đang xem thành rỗng — thầy cô mới vào, tò mò bấm thử là gặp ngay,
        thấy Bảng điều khiển trắng trơn mà tưởng app hỏng. Nay: chưa có gì thì chỉ dẫn cách làm;
@@ -13690,7 +13772,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     }
     _tkbLuuThat(sl);
   };
-  window.bxTKBsaveAndGen=function(){ var sl=_validSlots(); saveTKB(sl); bxRegenCurrentWeek(); if(typeof showView==='function') showView('lich'); };
+  window.bxTKBsaveAndGen=function(){ var sl=_validSlots(); var th=_oThieuLop(sl); if(sl.length&&th.length){ _baoThieuLop(th.length); return; } saveTKB(sl); bxRegenCurrentWeek(); if(typeof showView==='function') showView('lich'); };
 
   /* ---------- 📥 Tải mẫu TKB (.xlsx lưới) ---------- */
   function tkbSheetXml(filled){
