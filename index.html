@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-07 · 135';
+  var PB='2026-09-07 · 136';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1265,7 +1265,7 @@ window.bxMergeKho = function(){
 (function(){
   /* (4/9/2026) Đổi chuỗi này MỖI KHI sửa nội dung kho-data-*.js — trình duyệt nhớ tệp kho
      theo đúng đường dẫn kèm ?v=, không đổi là thầy cô vẫn mở ra kho cũ. */
-  var V='20260907-nls249';   /* đổi MỖI KHI sửa kho-data-*: không đổi thì trình duyệt giữ bản cũ, thầy cô không thấy dữ liệu vừa vá */
+  var V='20260907-l1sgv';   /* đổi MỖI KHI sửa kho-data-*: không đổi thì trình duyệt giữ bản cũ, thầy cô không thấy dữ liệu vừa vá */
   window.BX_KHO_FILES={
     '1':['kho-data-lop1.js','kho-data-l1-gdtc.js','kho-data-l1-amnhac.js','kho-data-l1-mithuat.js'],
     '2':['kho-data-lop2.js','kho-data-l2-gdtc.js','kho-data-l2-amnhac.js','kho-data-l2-mithuat.js'],
@@ -1362,7 +1362,7 @@ window.bxMergeKho = function(){
      Trước: khgd-lop1..4 (~500KB) tải cho mọi người + KHGD lớp 5 nhúng ngay trong
      index.html (~160KB). Nay: lớp 5 tách ra khgd-lop5.js, cả 5 file nạp lười.
      Khối 5 luôn nạp kèm (sau khởi động) vì Bản đồ chương trình/dashboard dựa vào. */
-  var VK='20260907-cot7b', ttKHGD={};
+  var VK='20260907-l1sgv', ttKHGD={};
   window.BX_KHGD_FILES={'1':'khgd-lop1.js','2':'khgd-lop2.js','3':'khgd-lop3.js','4':'khgd-lop4.js','5':'khgd-lop5.js'};
   window.BX_ensureKHGD=function(lopHoacKhoi){
     var khoi=window.BX_khoiCuaLop(lopHoacKhoi)||String(lopHoacKhoi||'').replace(/\D/g,'').slice(0,1);
@@ -7977,10 +7977,16 @@ function BX_monTH(mon){
 var BX_STEM_DIACHI={
  '1':{
   toan:[
-   {b:'so sanh so',n:'Dụng cụ so sánh số trong phạm vi 10 (Toán – Mĩ thuật)'},
-   {b:'lap ghep, xep hinh',t:1,n:'Thực hành trang trí lớp học bằng các hình hình học (Toán – Mĩ thuật)'},
-   {b:'bang cac so tu 1 den 100',t:1,n:'Bảng các số từ 1 đến 100 (Toán – Mĩ thuật)'},
-   {b:'xem gio dung tren dong ho',t:1,n:'Đồng hồ tiện ích (Toán – Mĩ thuật)'}
+   /* 7/9/2026: đủ 8 bài học STEM lớp 1 theo bộ bài của Bộ, đúng tiết luyện tập của bài SGV (thầy Chung chốt) */
+   /* khoá dò = tên bài STEM (có sẵn trong tên bài KHGD "… – Bài học STEM: X (tiết k)" và tên kho "… - BÀI HỌC STEM: X (TIẾT k)"), không đặt t: cả 2 tiết đều là STEM */
+   {b:'dung cu so sanh so',n:'Dụng cụ so sánh số (Toán – Mĩ thuật)'},
+   {b:'the hoc toan',n:'Thực hành cùng thẻ học Toán (Toán – Mĩ thuật)'},
+   {b:'trang tri lop hoc',n:'Thực hành trang trí lớp học bằng các hình hình học (Toán – Mĩ thuật)'},
+   {b:'dung cu tinh cong',n:'Dụng cụ tính cộng, tính trừ (Toán – Mĩ thuật)'},
+   {b:'thuc hanh tinh nham',n:'Thực hành tính nhẩm (Toán – Mĩ thuật)'},
+   {b:'bang cac so tu 1 den 100',n:'Bảng các số từ 1 đến 100 (Toán – Mĩ thuật)'},
+   {b:'mo hinh tinh hang doc',n:'Mô hình tính hàng dọc (Toán – Mĩ thuật)'},
+   {b:'dong ho tien ich',n:'Đồng hồ tiện ích (Toán – Mĩ thuật)'}
   ],
   tnxh:[
    {b:'an toan tren duong',t:1,n:'Đèn tín hiệu và biển báo giao thông (TNXH – Mĩ thuật)'},
@@ -12874,7 +12880,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
 <!-- Lớp bản quyền (License) — tách riêng để an toàn, dễ cập nhật.
      ⚠️ Có dấu phiên bản ?v= vì GitHub Pages giữ bản cũ 10 phút — sửa license.js mà
      quên đổi dấu này thì máy thầy cô vẫn chạy bản cũ. (5/8/2026) -->
-<script src="khgd-sgv.js?v=20260907-toan4"></script>
+<script src="khgd-sgv.js?v=20260907-toan1"></script>
 <script src="license.js?v=20260828-lancuoi"></script>
 
 <!-- ============ MODAL: LỊCH NGHỈ & DẠY BÙ (Phase 2 — con trỏ tiến độ) ============ -->
