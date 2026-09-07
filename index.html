@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-08 · 148';
+  var PB='2026-09-08 · 149';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -11449,7 +11449,30 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
   }
   window.bxChuyenKhoaSuaTheoTenMoi=bxChuyenKhoaSuaTheoTenMoi;
   function loadEdits(){try{return JSON.parse(localStorage.getItem('butxanh_khbd_edits')||'{}');}catch(e){return{};}}
-  function saveEditHtml(key,html){var m=loadEdits();m[key]=html;try{localStorage.setItem('butxanh_khbd_edits',JSON.stringify(m));}catch(e){}}
+  /* (7/9/2026) TRẢ VỀ ĐƯỢC/KHÔNG — trước đây `catch(e){}` nuốt trọn lỗi đầy bộ nhớ.
+     Trình duyệt chỉ cho ~5 MB. Đầy rồi thì bản sửa không ghi được, mà localStorage vẫn
+     giữ BẢN CŨ, nên đồng bộ đẩy bản cũ lên mây — mở máy khác cũng không còn.
+     Ai vỡ trước: người dùng nhiều "Kho ▸ Tệp tải lên" (trần 4,5 MB, ăn gần hết ngân sách). */
+  function saveEditHtml(key,html){
+    var m=loadEdits(); m[key]=html;
+    try{ localStorage.setItem('butxanh_khbd_edits',JSON.stringify(m)); return true; }
+    catch(e){ return false; }
+  }
+  /* Báo hỏng — nói rõ chữ CHƯA mất và chỉ đúng ba việc phải làm ngay. */
+  function _bxKhbdBaoDay(){
+    var loi = [
+      "⚠️ CHƯA LƯU ĐƯỢC — bộ nhớ trình duyệt đã đầy.",
+      "",
+      "Chữ thầy/cô vừa gõ VẪN CÒN trên màn hình nhưng chưa được ghi lại.",
+      "Xin ĐỪNG đóng trang.",
+      "",
+      "Làm ngay 3 bước:",
+      "1. Bôi đen phần vừa sửa, bấm Ctrl+C, dán tạm ra Word cho chắc.",
+      "2. Vào Kho ▸ Tệp tải lên, xoá bớt tệp không cần (đây là thứ chiếm chỗ nhiều nhất).",
+      "3. Quay lại bấm “Lưu bản sửa” một lần nữa."
+    ].join("\n");
+    try{ if(window.bxAlert) window.bxAlert(loi); else alert(loi); }catch(e){ try{ alert(loi); }catch(_){} }
+  }
   function safeName(s){return String(s||'').replace(/[^A-Za-zÀ-ỹ0-9]/g,'').slice(0,40);}
   var _cur=null;
   window.KHBD_preview=function(idx){
@@ -11471,7 +11494,12 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
   };
   window.KHBD_edit=function(){var b=document.getElementById('kho-prev-body');if(!b)return;b.contentEditable='true';b.classList.add('editing');b.focus();
     var be=document.getElementById('kho-prev-edit'),bs=document.getElementById('kho-prev-saveedit');if(be)be.style.display='none';if(bs)bs.style.display='';};
-  window.KHBD_saveEdit=function(){var b=document.getElementById('kho-prev-body');if(!b||!_cur)return;saveEditHtml(_cur.key,b.innerHTML);b.contentEditable='false';b.classList.remove('editing');
+  window.KHBD_saveEdit=function(){var b=document.getElementById('kho-prev-body');if(!b||!_cur)return;
+    /* (7/9/2026) Ghi hỏng thì DỪNG NGAY: giữ nguyên contentEditable và giữ nút Lưu, để thầy cô
+       còn bôi đen chép chữ ra ngoài rồi xoá bớt tệp và bấm lại. Trước đây chạy thẳng xuống
+       dòng toast "✅ Đã lưu" bên dưới — báo xanh trong khi chẳng có gì được ghi. */
+    if(!saveEditHtml(_cur.key,b.innerHTML)){ _bxKhbdBaoDay(); return; }
+    b.contentEditable='false';b.classList.remove('editing');
     var be=document.getElementById('kho-prev-edit'),bs=document.getElementById('kho-prev-saveedit');if(bs)bs.style.display='none';if(be)be.style.display='';
     var br=document.getElementById('kho-prev-restore');if(br)br.style.display='';
     _bxToast('✅ Đã lưu bản của bạn (hiển thị & tải Word đều theo bản đã sửa).');};
