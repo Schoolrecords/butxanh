@@ -806,7 +806,7 @@ window.BX_KHGD_SGV["4"]["Toán"] = [
 ["24","Chủ đề 9: Làm quen với yếu tố thống kê, xác suất","","","Bài 49. Dãy số liệu thống kê (Tiết 2)","","118",""],
 ["24","Chủ đề 9: Làm quen với yếu tố thống kê, xác suất","","","Bài 50. Biểu đồ cột (Tiết 1)","2 tiết","119",""],
 ["24","Chủ đề 9: Làm quen với yếu tố thống kê, xác suất","","","Bài 50. Biểu đồ cột (Tiết 2)","","120",""],
-["25","Chủ đề 9: Làm quen với yếu tố thống kê, xác suất","","","Bài 51. Số lần xuất hiện của một sự kiện (Tiết 1)","2 tiết","121","NLS-KT (Cơ bản 2): HS thu thập số liệu thật trong lớp phục vụ “Số lần xuất hiện của một sự kiện” (môn thể thao yêu thích."],
+["25","Chủ đề 9: Làm quen với yếu tố thống kê, xác suất","","","Bài 51. Số lần xuất hiện của một sự kiện (Tiết 1)","2 tiết","121","NLS-KT (Cơ bản 2): HS thu thập số liệu thật trong lớp phục vụ “Số lần xuất hiện của một sự kiện” (môn thể thao yêu thích.."],
 ["25","Chủ đề 9: Làm quen với yếu tố thống kê, xác suất","","","Bài 51. Số lần xuất hiện của một sự kiện (Tiết 2)","","122",""],
 ["25","Chủ đề 9: Làm quen với yếu tố thống kê, xác suất","","","Bài 52. Luyện tập chung","1 tiết","123",""],
 ["25","Chủ đề 10: Phân số","","","Bài 53. Khái niệm phân số (Tiết 1)","2 tiết","124",""],

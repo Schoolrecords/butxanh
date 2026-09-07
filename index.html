@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-07 · 147';
+  var PB='2026-09-08 · 148';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1265,7 +1265,7 @@ window.bxMergeKho = function(){
 (function(){
   /* (4/9/2026) Đổi chuỗi này MỖI KHI sửa nội dung kho-data-*.js — trình duyệt nhớ tệp kho
      theo đúng đường dẫn kèm ?v=, không đổi là thầy cô vẫn mở ra kho cũ. */
-  var V='20260907-nls-t15-16';   /* đổi MỖI KHI sửa kho-data-*: không đổi thì trình duyệt giữ bản cũ, thầy cô không thấy dữ liệu vừa vá */
+  var V='20260908-nls-du';   /* đổi MỖI KHI sửa kho-data-*: không đổi thì trình duyệt giữ bản cũ, thầy cô không thấy dữ liệu vừa vá */
   window.BX_KHO_FILES={
     '1':['kho-data-lop1.js','kho-data-l1-gdtc.js','kho-data-l1-amnhac.js','kho-data-l1-mithuat.js'],
     '2':['kho-data-lop2.js','kho-data-l2-gdtc.js','kho-data-l2-amnhac.js','kho-data-l2-mithuat.js'],
@@ -1362,7 +1362,7 @@ window.bxMergeKho = function(){
      Trước: khgd-lop1..4 (~500KB) tải cho mọi người + KHGD lớp 5 nhúng ngay trong
      index.html (~160KB). Nay: lớp 5 tách ra khgd-lop5.js, cả 5 file nạp lười.
      Khối 5 luôn nạp kèm (sau khởi động) vì Bản đồ chương trình/dashboard dựa vào. */
-  var VK='20260907-nls-t15-16', ttKHGD={};
+  var VK='20260908-nls-du', ttKHGD={};
   window.BX_KHGD_FILES={'1':'khgd-lop1.js','2':'khgd-lop2.js','3':'khgd-lop3.js','4':'khgd-lop4.js','5':'khgd-lop5.js'};
   window.BX_ensureKHGD=function(lopHoacKhoi){
     var khoi=window.BX_khoiCuaLop(lopHoacKhoi)||String(lopHoacKhoi||'').replace(/\D/g,'').slice(0,1);
@@ -7918,7 +7918,7 @@ var BX_SAFE_NOTE='Nội dung AI dùng ở mức trải nghiệm/nhận biết, g
    giáo dục địa phương, chỉ trường vùng biên giới Việt – Lào mới cần. */
 /* gioihan: tối đa 2 nội dung lồng ghép mỗi bài (hướng dẫn Sở GD&ĐT Nghệ An 20/8/2026).
    dinhchinh: in phần đính chính, bổ sung nội dung SGK theo tài liệu tập huấn. */
-var BX_INTG_DEF={digital:true, ai:false, local:false, hskt:false, qpan:true, vietlao:false, kns:true, gioihan:true, dinhchinh:true, stem:true};
+var BX_INTG_DEF={digital:true, ai:false, local:false, hskt:false, qpan:true, vietlao:false, kns:true, atgt:true, qte:true, gioihan:true, dinhchinh:true, stem:true};
 function BX_intgState(){ try{ var v=JSON.parse(localStorage.getItem('butxanh_intg_toggles')||'null'); return (v&&typeof v==='object'&&!Array.isArray(v))?Object.assign({},BX_INTG_DEF,v):Object.assign({},BX_INTG_DEF); }catch(e){ return Object.assign({},BX_INTG_DEF); } }
 /* Phải đưa ra window: buildKHGDMonDocx nằm ở khối script khác, gọi tên trần sẽ ra
    undefined và bản Word cứ in căn cứ pháp lí như thể mọi công tắc đều đang bật. */
@@ -8477,6 +8477,48 @@ var BX_KNS_RULE={
     [/greeting|friend|family|school|unit|lesson/, 'KN giao tiếp: mạnh dạn chào hỏi, giới thiệu bản thân bằng câu đơn giản.']
   ]
 };
+
+/* ============================================================================
+   AN TOÀN GIAO THÔNG và QUYỀN TRẺ EM  (8/9/2026 — thầy Chung giao)
+   Hai nội dung này đã có nhãn trong bảng quy ước mã (QW_THEM) nhưng CHƯA có luật địa chỉ
+   nào, nên chưa một lần nào in ra trong bản Word của thầy cô (đo 7/9: QPAN 6 luật, KNS 5,
+   GDĐP 5, còn ATGT và QTE bằng 0).
+   Căn cứ: tài liệu Giáo dục An toàn giao thông cấp Tiểu học của Bộ GD&ĐT phối hợp Uỷ ban
+   An toàn giao thông Quốc gia; Luật Trẻ em 2016 và Công ước của Liên hợp quốc về quyền trẻ em.
+   ⚠ Luật cố ý viết HẸP — chỉ trúng bài thật sự nói về đi đường, phương tiện, hoặc về quyền và
+   sự an toàn của trẻ em. Rải rộng là lặp lại đúng lỗi giáo viên đã phản ánh với Năng lực số. */
+var BX_ATGT_RULE={
+  daoduc:[
+    [/di bo an toan|an toan giao thong|tin hieu giao thong|qua duong|den giao thong/, 'ATGT: đi bộ trên vỉa hè hoặc sát lề bên phải, qua đường ở vạch kẻ và khi có tín hiệu cho phép; quan sát kĩ hai bên trước khi bước.']
+  ],
+  tnxh:[
+    [/an toan tren duong|giao thong|phuong tien|bien bao|duong bo|di lai/, 'ATGT: nhận biết một số biển báo và phương tiện giao thông quen thuộc; nêu việc cần làm để đi lại an toàn ở nơi mình sống.']
+  ],
+  hdtn:[
+    [/an toan giao thong|di duong|qua duong|lac duong|tham quan|da ngoai|di bo/, 'ATGT: đi thành hàng, bám sát người phụ trách khi ra khỏi trường; đội mũ bảo hiểm cài quai khi ngồi sau xe máy, xe đạp điện.']
+  ],
+  tv:[
+    [/duong pho|giao thong|qua duong|xe co|tau xe|di duong/, 'ATGT: liên hệ việc đi đường an toàn trong bài đọc; nói được điều nên làm khi qua đường và khi ngồi trên phương tiện.']
+  ]
+};
+var BX_QTE_RULE={
+  daoduc:[
+    [/quyen tre em|bon phan|y kien|lang nghe|bay to/, 'QTE: trẻ em có quyền được bày tỏ ý kiến và được người lớn lắng nghe về những việc liên quan đến mình (Luật Trẻ em 2016).'],
+    [/xam hai|nguoi la|tu bao ve|an toan ban than|goi giup/, 'QTE: trẻ em có quyền được bảo vệ, được an toàn; biết nói không, rời khỏi nơi nguy hiểm và kể ngay với người lớn tin cậy.']
+  ],
+  hdtn:[
+    [/xam hai|bat coc|tu bao ve|an toan ban than|goi giup|lac duong/, 'QTE: trẻ em có quyền được bảo vệ khỏi mọi hình thức xâm hại; nhớ số của người thân và Tổng đài quốc gia bảo vệ trẻ em 111.'],
+    [/quyen|lang nghe|y kien|chia se cam xuc|ban be|hoa nhap/, 'QTE: trẻ em có quyền được vui chơi, được kết bạn và được lắng nghe; tôn trọng ý kiến, sự khác biệt của bạn trong lớp.']
+  ],
+  tv:[
+    [/tre em|thieu nhi|quyen|di hoc|den truong/, 'QTE: liên hệ quyền được học tập, vui chơi và được yêu thương của trẻ em qua nhân vật, chi tiết trong bài đọc.']
+  ],
+  tnxh:[
+    /* KHÔNG dùng "cham soc" hay "bao ve" trơ trọi: đo 8/9 thấy trúng nhầm "Chăm sóc và bảo vệ
+       cây trồng", "…vật nuôi" — đúng kiểu lồng ghép sai ngữ cảnh mà giáo viên đã phản ánh. */
+    [/an toan ban than|tu bao ve|nguoi la|phong tranh xam hai|giu an toan cho ban than/, 'QTE: trẻ em có quyền được chăm sóc sức khoẻ và được sống an toàn; biết tìm sự giúp đỡ của người lớn khi thấy không an toàn.']
+  ]
+};
 /* Tìm nội dung khớp trong một bảng quy tắc; trả '' nếu không có địa chỉ phù hợp.
    Quy tắc có phần tử thứ 3 = 'dau' thì soi trên chuỗi CÒN DẤU.
    ⚠ Vì sao cần: bỏ dấu làm "biển" và "biên" thành một. "Chiến dịch Điện Biên Phủ" bị nhận
@@ -8515,6 +8557,14 @@ function BX_intg3(mon, ten, lop, st, tenHep){
     var c=BX_ruleHit(BX_KNS_RULE, mk, ten, lop);
     if(c) out.push(['KNS', c]);
   }
+  if(s.atgt && BX_ATGT_RULE[mk]){
+    var d=BX_ruleHit(BX_ATGT_RULE, mk, ten, lop);
+    if(d) out.push(['ATGT', d]);
+  }
+  if(s.qte && BX_QTE_RULE[mk]){
+    var e=BX_ruleHit(BX_QTE_RULE, mk, ten, lop);
+    if(e) out.push(['QTE', e]);
+  }
   return out;
 }
 window.BX_intg3=BX_intg3;
@@ -8530,7 +8580,9 @@ window.BX_intg3=BX_intg3;
    Thầy cô tắt được giới hạn này bằng công tắc "Tối đa 2 nội dung/bài".
    ⚠ Phần ĐÍNH CHÍNH SGK và điều chỉnh cho HS khuyết tật KHÔNG bị tính vào giới
    hạn — chúng không phải "nội dung tích hợp" mà là điều chỉnh nội dung dạy học. */
-var BX_INTG_UUTIEN=['QPAN','NLS','GDĐP','VN-LÀO','KNS'];
+/* (8/9/2026) ATGT và Quyền trẻ em xếp TRƯỚC Việt–Lào và Kĩ năng sống: đo lần đầu chỉ ra 3
+   dòng ATGT trên 4.326 dòng vì bài "Đi bộ an toàn" đã bị KNS chiếm mất một trong hai chỗ. */
+var BX_INTG_UUTIEN=['QPAN','NLS','GDĐP','ATGT','QTE','VN-LÀO','KNS'];
 var BX_INTG_TRAN=2;
 function BX_gioiHanBat(){ var s=BX_intgState(); return s.gioihan!==false; }
 /* ds = [[mã, nội dung], …] · daCo = số nội dung lồng ghép ĐÃ có sẵn trong dòng đó */
@@ -8809,6 +8861,8 @@ var BX_INTG_DEFS=[
   {k:'qpan',    label:'Tích hợp Quốc phòng – An ninh',  icon:'🇻🇳', hint:'Lồng ghép GDQPAN theo Thông tư 08/2024/TT-BGDĐT'},
   {k:'kns',     label:'Tích hợp Kĩ năng sống',          icon:'🌱', hint:'Kĩ năng sống theo CT GDPT 2018 và TT 04/2014'},
   {k:'vietlao', label:'Tích hợp hữu nghị Việt – Lào',   icon:'🤝', hint:'Nội dung giáo dục địa phương — trường vùng biên giới Việt – Lào'},
+  {k:'atgt',    label:'Tích hợp An toàn giao thông',    icon:'🚦', hint:'Tài liệu Giáo dục An toàn giao thông cấp Tiểu học (Bộ GD&ĐT phối hợp Uỷ ban An toàn giao thông Quốc gia) — chỉ chèn ở bài về đi đường, phương tiện giao thông'},
+  {k:'qte',     label:'Tích hợp Quyền trẻ em',          icon:'🧒', hint:'Luật Trẻ em 2016 và Công ước của Liên hợp quốc về quyền trẻ em — chỉ chèn ở bài về quyền, sự an toàn và tiếng nói của trẻ em'},
   {k:'local',   label:'Tích hợp giáo dục địa phương',   icon:'🏞️', hint:'Liên hệ cảnh vật, di tích, nghề, con người ở địa phương'},
   {k:'stem',    label:'Tích hợp giáo dục STEM',         icon:'🔬', hint:'Bài học STEM trong Toán, TNXH/Khoa học, Tin học, Công nghệ (CV 909/BGDĐT-GDTH; CV 3132/SGD&ĐT Nghệ An 2026-2027: tất cả khối lớp, trải nghiệm STEM tối thiểu 1 lần/học kì)'},
   {k:'hskt',    label:'Tích hợp giáo dục HSKT',         icon:'🧩', hint:'Mục tiêu riêng (Mục I) và biện pháp (Mục IV) cho học sinh khuyết tật học hoà nhập sinh theo TỪNG MÔN, theo dạng tật và mức độ đã khai ở menu "Học sinh cần hỗ trợ"'},
@@ -13078,7 +13132,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
 <!-- Lớp bản quyền (License) — tách riêng để an toàn, dễ cập nhật.
      ⚠️ Có dấu phiên bản ?v= vì GitHub Pages giữ bản cũ 10 phút — sửa license.js mà
      quên đổi dấu này thì máy thầy cô vẫn chạy bản cũ. (5/8/2026) -->
-<script src="khgd-sgv.js?v=20260907-nls-t15-16"></script>
+<script src="khgd-sgv.js?v=20260908-nls-du"></script>
 <script src="license.js?v=20260828-lancuoi"></script>
 
 <!-- ============ MODAL: LỊCH NGHỈ & DẠY BÙ (Phase 2 — con trỏ tiến độ) ============ -->
