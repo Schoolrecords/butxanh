@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-07 · 139';
+  var PB='2026-09-07 · 140';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -2155,6 +2155,12 @@ window.bxMergeKho = function(){
             <option value="never">Luôn ẩn Mục IV</option>
           </select>
         </label>
+        <label class="fld" style="max-width:520px;margin-top:10px"><span>Tên học sinh khuyết tật trong Mục IV</span>
+          <select id="set-khbd-ktten" onchange="bxSaveKhbdIV()">
+            <option value="an">Ẩn tên — ghi “Một học sinh khuyết tật học hoà nhập (dạng tật, mức độ)” (khuyến nghị)</option>
+            <option value="ten">In tên học sinh</option>
+          </select>
+        </label>
         <div class="muted-sm" style="margin-top:8px">💡 Khai báo nhóm HS cần hỗ trợ / khuyết tật hòa nhập ở menu <b>“Học sinh cần hỗ trợ”</b> để Mục IV tự điền nội dung của lớp mình. Bật thêm nút <b>🧩 Tích hợp giáo dục HSKT</b> (màn Kế hoạch bài dạy) thì Mục I có thêm <b>mục tiêu riêng</b> cho HS hòa nhập của lớp.</div>
       </div>
       <div class="card set-card">
@@ -2527,6 +2533,8 @@ window.bxMergeKho = function(){
           </div>
           <div id="hs-kt-preview" class="hs-kt-note" style="margin-top:8px;margin-bottom:0"></div>
         </div>
+        <label class="fld" style="grid-column:1/-1"><span>Lớp áp dụng</span><input id="hs-lop" placeholder="VD: 3B hoặc 3B, 4A (bỏ trống nếu chỉ dạy một lớp)" oninput="bxHsLopGoiY()"></label>
+        <div id="hs-lop-goiy" style="grid-column:1/-1;margin-top:-6px"></div>
         <label class="fld" style="grid-column:1/-1"><span>Môn liên quan</span><input id="hs-subject" placeholder="VD: Tiếng Việt (bỏ trống nếu chung)"></label>
         <label class="fld" style="grid-column:1/-1"><span>Ghi chú / biện pháp (mỗi dòng một ý)</span><textarea id="hs-notes" rows="4" placeholder="Ghi chú chung áp dụng mọi môn. Muốn riêng một môn thì mở đầu dòng bằng tên môn, VD:&#10;Toán: dùng que tính, giảm còn một nửa số bài.&#10;Tiếng Việt: chép 1–2 câu ngắn, đọc theo GV."></textarea></label>
       </div>
@@ -2655,7 +2663,7 @@ window.BX_theAnh = function(url, lop, alt){
 
 /* ---------- 1) DỮ LIỆU LỊCH (mẫu chuẩn Tuần 12 - Lớp 5A) ---------- */
 const state = {
-  klass:"5A", week:"1", khoi:"5", gvcn:"Bút Xanh", xung:"Cô", khbdIV:"auto",
+  klass:"5A", week:"1", khoi:"5", gvcn:"Bút Xanh", xung:"Cô", khbdIV:"auto", khbdKtTen:"an",
   year:"2026 - 2027", from:"07/09/2026", to:"13/09/2026", place:"Nghệ An",
   schedule:[
     {day:"Thứ 2", date:"11/11", buoi:"Sáng", tiet:1, mon:"HĐTN",            ppct:12,  bai:"Sinh hoạt dưới cờ",                    tbdh:"Loa, micro"},
@@ -3140,11 +3148,78 @@ function _bxNorm(s){ return String(s==null?'':s).toLowerCase().normalize('NFD').
    Không thêm thì bốn mục này hiện nhạt như dòng thường. Chỉ nới thêm từ khoá tiếng Anh,
    các môn tiếng Việt giữ nguyên như cũ. */
 function _isYccdHead(s){ return /^\s*\d+\s*[.\)]\s*(năng lực|phẩm chất|phảm chất|tích hợp|nội dung tích hợp|kiến thức|knowledges?|skills?|attributes?|competenc(?:e|y|ies)|digital competenc|specific competenc|the disabled)/i.test(String(s||'')); }
+/* ============================================================================
+   LỌC HỖ TRỢ HỌC SINH THEO LỚP   (7/9/2026 — thầy Chung phát hiện)
+   ----------------------------------------------------------------------------
+   Trước: Mục I và Mục IV chỉ lọc theo MÔN. Giáo viên bộ môn (Âm nhạc, Mĩ thuật,
+   GDTC, Tiếng Anh, Tin học) dạy vài chục lớp, chỉ cần khai một em khuyết tật ở
+   lớp 3B là MỌI giáo án của môn đó, ở MỌI lớp, đều in tên em, dạng tật, mức độ
+   và biện pháp hỗ trợ. Vừa sai hồ sơ chuyên môn (lớp không có HSKT vẫn ghi biện
+   pháp), vừa để lộ thông tin sức khoẻ của trẻ sang giáo án lớp khác.
+   Nay: mỗi nhóm/HS khai thêm "Lớp áp dụng"; Mục I và Mục IV chỉ in khi đúng lớp.
+   Luật khi GV BỎ TRỐNG ô lớp (gồm toàn bộ dữ liệu khai trước ngày 7/9/2026):
+     - Thời khoá biểu chỉ có 1 lớp (GV chủ nhiệm) -> áp dụng lớp đó, không phiền.
+     - Thời khoá biểu có từ 2 lớp (GV bộ môn)     -> KHÔNG in, kèm cảnh báo đỏ ở
+       màn "Học sinh cần hỗ trợ" để thầy cô vào chọn lớp.
+   Không xác định được lớp của giáo án mà nhóm có khai lớp -> KHÔNG in (thà thiếu
+   còn hơn in nhầm sang lớp khác).
+   ========================================================================== */
+/* Chuẩn hoá tên lớp để so khớp: "5 A" / "5a" / "Lớp 5A" -> "5a" */
+function _bxNormLop(s){
+  return String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/d/g,'d').replace(/lop/g,'').replace(/[^a-z0-9]/g,'');
+}
+/* Danh sách lớp thầy cô đang dạy, lấy từ thời khoá biểu (đã chuẩn hoá, bỏ trùng) */
+function bxCacLopDay(){
+  var out=[], seen={};
+  ((typeof state!=='undefined'&&state&&state.schedule)||[]).forEach(function(r){
+    var v=String((r&&r.lop)||'').trim(); if(!v) return;
+    var k=_bxNormLop(v); if(!k||seen[k]) return; seen[k]=1; out.push(v);
+  });
+  return out;
+}
+/* Tách ô "Lớp áp dụng" của một nhóm thành mảng: "3B, 4A" -> ["3B","4A"] */
+function bxLopCuaNhom(g){
+  return String((g&&g.lop)||'').split(/[,;/]+/).map(function(x){ return x.trim(); }).filter(Boolean);
+}
+/* Nhóm g có áp dụng cho lớp `lop` không? lop rỗng = không rõ giáo án thuộc lớp nào. */
+function bxHsApDungLop(g, lop){
+  var ds=bxLopCuaNhom(g);
+  if(ds.length){
+    if(!lop) return false;                 /* có khai lớp mà không rõ lớp giáo án -> không in */
+    var k=_bxNormLop(lop);
+    return ds.some(function(x){ return _bxNormLop(x)===k; });
+  }
+  /* Bỏ trống: chỉ áp dụng khi thầy cô dạy 1 lớp (hoặc chưa khai thời khoá biểu) */
+  return bxCacLopDay().length<=1;
+}
+/* Lớp của giáo án đang dựng: ưu tiên dòng thời khoá biểu, sau đó lớp đang chọn */
+function bxLopCuaGiaoAn(row){
+  var v=(row&&(row.lop||row.lophoc))||'';
+  if(!v && typeof state!=='undefined' && state) v=state.klass||'';
+  return String(v||'').trim();
+}
+/* Số nhóm chưa khai lớp trong khi thầy cô dạy nhiều lớp (để cảnh báo) */
+function bxHsThieuLop(){
+  if(bxCacLopDay().length<2) return [];
+  return ((typeof state!=='undefined'&&state&&state.hocsinh)||[]).filter(function(g){
+    return g && !bxLopCuaNhom(g).length;
+  });
+}
+try{ window.bxCacLopDay=bxCacLopDay; window.bxHsApDungLop=bxHsApDungLop;
+     window.bxLopCuaGiaoAn=bxLopCuaGiaoAn; window.bxHsThieuLop=bxHsThieuLop;
+     window.bxLopCuaNhom=bxLopCuaNhom; }catch(e){}
 /* Một dòng mô tả 1 nhóm HS (cá nhân hóa từ menu "Học sinh cần hỗ trợ") */
 function _bxIVGroupLine(g,L){
   var head=((g.name||'').trim())||hsTypeLabel(g), meta=[], mon=L&&L.mon;
   if(g.count) meta.push(g.count+' HS');
   if(hsIsKT(g)){
+    /* (7/9/2026, thầy Chung) Giáo án được xuất Word, nộp tổ, chuyền tay nhau — tên và
+       dạng tật của trẻ là thông tin sức khoẻ, mặc định KHÔNG in tên. Thầy cô nào cần
+       thì bật ở Cài đặt → "Tên học sinh khuyết tật trong Mục IV". */
+    var inTen=false;
+    try{ inTen=((typeof state!=='undefined'&&state&&state.khbdKtTen)||'an')==='ten'; }catch(e){}
+    if(!inTen) head=(g.count&&g.count>1)?'Học sinh khuyết tật học hoà nhập':'Một học sinh khuyết tật học hoà nhập';
     if(g.disability) meta.push(hsDisabilityLabel(g.disability));
     if(g.severity) meta.push('mức '+(hsSeverityLabel(g.severity)||'').toLowerCase());
   }
@@ -3161,13 +3236,16 @@ function _bxIVGroupLine(g,L){
   return '- '+pre+(ds.length?(': '+ds[0]):'');
 }
 /* Trả {show, items:[{label,lines[]}], note} cho mục IV theo chế độ state.khbdIV (auto|always|never) */
-function bxSectionIV(L){
+function bxSectionIV(L,row){
   var mode=(typeof state!=='undefined'&&state&&state.khbdIV)||'auto';
   if(mode==='never') return {show:false, items:[], note:false};
+  /* (7/9/2026) Lọc thêm theo LỚP của giáo án — xem chú thích ở bxHsApDungLop */
+  var lop=(typeof bxLopCuaGiaoAn==='function')?bxLopCuaGiaoAn(row):'';
   var nm=_bxNorm(L&&L.mon), support=[], kt=[];
   ((typeof state!=='undefined'&&state&&state.hocsinh)||[]).forEach(function(g){
     var gs=_bxNorm(g.subject);
     if(gs && gs!==nm) return;            /* GV khai môn khác -> bỏ; rỗng = áp dụng mọi môn */
+    if(typeof bxHsApDungLop==='function' && !bxHsApDungLop(g,lop)) return;
     if(hsIsKT(g)) kt.push(g); else support.push(g);
   });
   var l1=support.map(function(g){ return _bxIVGroupLine(g,L); }); if(!l1.length && L && L.hotro)   l1=[L.hotro];
@@ -3366,14 +3444,19 @@ var _BX_KT_NOTE='Ghi chú: HS khuyết tật học hòa nhập được đánh g
    Câu chữ theo TT 03/2018/TT-BGDĐT + TT 27/2020: đạt yêu cầu ở mức phù hợp khả năng,
    đánh giá theo KHGDCN. Dòng đầu là tiêu đề con (in đậm ở nơi gọi); dùng dấu "*)" chứ
    KHÔNG đánh số tiếp 4./5. — số mục trong yccd mỗi bản ghi kho một khác, đánh số sẽ trùng. */
-function bxYccdHsktLines(L){
+function bxYccdHsktLines(L,row){
   try{ if(!window.BX_intgState||!window.BX_intgState().hskt) return []; }catch(e){ return []; }
+  /* (7/9/2026) Lọc theo LỚP cùng luật với Mục IV — xem chú thích ở bxHsApDungLop */
+  var lop=(typeof bxLopCuaGiaoAn==='function')?bxLopCuaGiaoAn(row):'';
   var nm=_bxNorm(L&&L.mon), kt=[];
   ((typeof state!=='undefined'&&state&&state.hocsinh)||[]).forEach(function(g){
     if(!g||g.type!=='hoa-nhap') return;           /* = hsIsKT(g), viết thẳng vì hàm ấy nằm khối script khác */
     var gs=_bxNorm(g.subject); if(gs&&gs!==nm) return;
+    if(typeof bxHsApDungLop==='function' && !bxHsApDungLop(g,lop)) return;
     kt.push(g);
   });
+  /* GV đã khai HSKT nhưng không nhóm nào thuộc lớp này -> không in mục tiêu riêng */
+  if(!kt.length && (typeof state!=='undefined'&&state&&(state.hocsinh||[]).some(function(g){ return g&&g.type==='hoa-nhap'; }))) return [];
   var out=['*) Mục tiêu riêng cho học sinh khuyết tật học hòa nhập:'];
   /* (3/9/2026) Mục tiêu sinh theo MÔN × dạng tật × mức độ (bxHsktMucTieu) — trước đây một câu
      chung cho mọi môn, GV phản ánh giáo án môn nào cũng in y hệt. */
@@ -3398,7 +3481,7 @@ function _lessonBodyParas(L,row,ctx){
   P.push(_docP(''));
   P.push(_docP('I. YÊU CẦU CẦN ĐẠT',{bold:true}));
   (L.yccd||'(Thầy cô đối chiếu SGK/SGV)').split('\n').forEach(l=>P.push(_docP(l, _isYccdHead(l)?{bold:true}:undefined)));
-  bxYccdHsktLines(L).forEach((l,i)=>P.push(_docP(l, i?undefined:{bold:true})));
+  bxYccdHsktLines(L,row).forEach((l,i)=>P.push(_docP(l, i?undefined:{bold:true})));
   P.push(_docP(''));
   P.push(_docP('II. ĐỒ DÙNG DẠY HỌC',{bold:true}));
   (L.dodung||'…').split('\n').forEach(l=>P.push(_docP(l)));
@@ -3407,7 +3490,7 @@ function _lessonBodyParas(L,row,ctx){
   if(Array.isArray(L.hoatdong)) P.push(hoatdongTableXml(L.hoatdong));
   else (L.hoatdong||'…').split('\n').forEach(l=>P.push(_docP(l)));
   P.push(_docP(''));
-  const iv=bxSectionIV(L);
+  const iv=bxSectionIV(L,row);
   if(iv.show){
     P.push(_docP('IV. ĐIỀU CHỈNH, HỖ TRỢ HỌC SINH',{bold:true}));
     iv.items.forEach((it,i)=>{
@@ -5807,13 +5890,13 @@ function bankLessonToText(L,row){
   if(ngay) ln.push('Ngày dạy: '+ngay);
   ln.push('');
   ln.push('I. YÊU CẦU CẦN ĐẠT'); ln.push(L.yccd||'(Thầy cô đối chiếu SGK/SGV)');
-  if(typeof bxYccdHsktLines==='function') bxYccdHsktLines(L).forEach(s=>ln.push(s));
+  if(typeof bxYccdHsktLines==='function') bxYccdHsktLines(L,row).forEach(s=>ln.push(s));
   ln.push('');
   ln.push('II. ĐỒ DÙNG DẠY HỌC'); ln.push(L.dodung||'…'); ln.push('');
   ln.push('III. CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU');
   if(Array.isArray(L.hoatdong)) ln.push('(Khi xuất Word sẽ trình bày dạng bảng 2 cột: Hoạt động của GV | Hoạt động của HS)');
   ln.push(hoatdongToText(L.hoatdong)); ln.push('');
-  const iv=bxSectionIV(L);
+  const iv=bxSectionIV(L,row);
   if(iv.show){
     ln.push('IV. ĐIỀU CHỈNH, HỖ TRỢ HỌC SINH');
     iv.items.forEach((it,i)=>{ ln.push((iv.items.length>1?((i+1)+'. '):'')+it.label); it.lines.forEach(s=>ln.push(s)); });
@@ -5973,7 +6056,7 @@ function lessonPreviewHtml(L,row,ctx){
   h+='<h2>I. YÊU CẦU CẦN ĐẠT</h2><div class="ln">'+nlYccd(L.yccd||'(Thầy cô đối chiếu SGK/SGV)')+'</div>';
   /* Mục tiêu riêng HSKT — phải khớp với bản Word tải về (_lessonBodyParas), xem trước
      một đằng tải một nẻo là GV mất tin vào màn xem trước (phản biện 25/8/2026). */
-  const ktI=(typeof bxYccdHsktLines==='function')?bxYccdHsktLines(L):[];
+  const ktI=(typeof bxYccdHsktLines==='function')?bxYccdHsktLines(L,row):[];
   if(ktI.length) h+='<div class="ln">'+ktI.map((s,i)=>{const e2=esc(s);return i?e2:('<b>'+e2+'</b>');}).join('<br>')+'</div>';
   h+='<h2>II. ĐỒ DÙNG DẠY HỌC</h2><div class="ln">'+nl(L.dodung||'…')+'</div>';
   h+='<h2>III. CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU</h2>';
@@ -5985,7 +6068,7 @@ function lessonPreviewHtml(L,row,ctx){
     });
     h+='</tbody></table>';
   }else h+='<div class="ln">'+nl(L.hoatdong||'…')+'</div>';
-  const iv=bxSectionIV(L);
+  const iv=bxSectionIV(L,row);
   if(iv.show){
     h+='<h2>IV. ĐIỀU CHỈNH, HỖ TRỢ HỌC SINH</h2>';
     iv.items.forEach((it,i)=>{ h+='<div class="ln"'+(i?' style="margin-top:6px"':'')+'><b>'+(iv.items.length>1?((i+1)+'. '):'')+esc(it.label)+'</b><br>'+it.lines.map(nl).join('<br>')+'</div>'; });
@@ -6398,7 +6481,27 @@ function hsTypeOf(s){ return HS_TYPES.find(x=>x.key===s.type)||null; }
 function hsTypeLabel(s){ const tp=hsTypeOf(s); return tp?tp.label:'Khác'; }
 function hsColorKey(s){ const tp=hsTypeOf(s); return s.color||(tp&&tp.color)||'blue'; }
 function hsIconOf(s){ const tp=hsTypeOf(s); return s.icon||(tp&&tp.icon)||'👤'; }
-function hsTag(s){ const p=[]; if(s.count) p.push(s.count+' học sinh'); if(s.subject) p.push(s.subject); return p.length?p.join(' · '):(s.tag||''); }
+function hsTag(s){ const p=[]; if(s.count) p.push(s.count+' học sinh'); if(s.lop) p.push('Lớp '+s.lop); if(s.subject) p.push(s.subject); return p.length?p.join(' · '):(s.tag||''); }
+/* Chips gợi ý lớp lấy từ thời khoá biểu — bấm để thêm/bỏ, khỏi gõ tay (7/9/2026) */
+function bxHsLopGoiY(){
+  var box=el('hs-lop-goiy'); if(!box) return;
+  var ds=(typeof bxCacLopDay==='function')?bxCacLopDay():[];
+  if(!ds.length){ box.innerHTML='<div class="muted-sm">Chưa khai thời khoá biểu nên chưa gợi ý được lớp. Thầy cô gõ tay tên lớp, hoặc bỏ trống nếu chỉ dạy một lớp.</div>'; return; }
+  var dang=(typeof bxLopCuaNhom==='function')?bxLopCuaNhom({lop:(el('hs-lop')&&el('hs-lop').value)||''}):[];
+  var co={}; dang.forEach(function(x){ co[_bxNormLop(x)]=1; });
+  box.innerHTML='<div class="muted-sm" style="margin-bottom:4px">Lớp thầy cô đang dạy — bấm để chọn:</div>'+
+    ds.map(function(x){ var an=String(x).replace(/'/g,"&#39;");
+      return '<span class="pill'+(co[_bxNormLop(x)]?' active':'')+'" style="cursor:pointer" onclick="bxHsLopChon(&#39;'+an+'&#39;)">'+x+'</span>'; }).join(' ');
+}
+function bxHsLopChon(x){
+  var inp=el('hs-lop'); if(!inp) return;
+  var ds=(typeof bxLopCuaNhom==='function')?bxLopCuaNhom({lop:inp.value}):[];
+  var k=_bxNormLop(x), con=ds.filter(function(y){ return _bxNormLop(y)!==k; });
+  if(con.length===ds.length) con.push(x);            /* chưa có -> thêm; đã có -> bỏ */
+  inp.value=con.join(', ');
+  bxHsLopGoiY();
+}
+try{ window.bxHsLopGoiY=bxHsLopGoiY; window.bxHsLopChon=bxHsLopChon; }catch(e){}
 let hsFilter='Tất cả';
 function setHsFilter(v){ hsFilter=v; renderHocSinh(); }
 function renderHocSinh(){
@@ -6431,7 +6534,24 @@ function renderHocSinh(){
   } else { hsFilter='Tất cả'; if(pb) pb.innerHTML=''; }
   const list=state.hocsinh.filter(s=> hsFilter==='Tất cả'||hsTypeLabel(s)===hsFilter);
   if(!list.length){ box.innerHTML='<div class="empty-pad">Không tìm thấy nhóm phù hợp.</div>'; return; }
-  box.innerHTML=list.map(s=>{const c=HS_COLORS[hsColorKey(s)]||HS_COLORS.blue;
+  /* (7/9/2026) Cảnh báo nhóm chưa chọn lớp khi thầy cô dạy nhiều lớp — những nhóm này
+     TẠM THỜI KHÔNG được đưa vào giáo án, để khỏi in nhầm sang lớp không có HS đó. */
+  var canhbao='';
+  try{
+    var thieu=(typeof bxHsThieuLop==='function')?bxHsThieuLop():[];
+    if(thieu.length){
+      var soLop=bxCacLopDay().length;
+      canhbao='<div class="card" style="border-left:4px solid #d93025;background:#fff5f5;margin-bottom:12px">'+
+        '<b style="color:#c5221f">⚠ '+thieu.length+' nhóm chưa chọn lớp</b>'+
+        '<div style="margin-top:4px;color:#42514a">Thầy cô đang dạy <b>'+soLop+' lớp</b>. '+
+        'Để không in nhầm thông tin học sinh sang lớp khác, Bút Xanh <b>tạm chưa đưa các nhóm này vào giáo án</b>. '+
+        'Thầy cô mở từng nhóm và chọn <b>Lớp áp dụng</b> nhé.</div>'+
+        '<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">'+
+        thieu.map(function(g){ return '<button class="btn-xs" onclick="openHsEditor(&#39;'+g.id+'&#39;)">Chọn lớp cho: '+(g.name||'nhóm')+'</button>'; }).join('')+
+        '</div></div>';
+    }
+  }catch(e){}
+  box.innerHTML=canhbao+list.map(s=>{const c=HS_COLORS[hsColorKey(s)]||HS_COLORS.blue;
     return `<div class="card hs-card"><div class="hs-top"><span class="hs-ic" style="background:${c[1]};color:${c[0]};font-size:20px">${hsIconOf(s)}</span><div style="flex:1"><div class="hs-name">${s.name}</div><div class="hs-tag">${hsTypeLabel(s)}${hsTag(s)?(' · '+hsTag(s)):''}</div>${hsKtInfoHtml(s)}</div></div><ul>${(s.notes||[]).map(n=>`<li>${n}</li>`).join('')}</ul><div class="kact" style="margin-top:10px"><button class="btn-xs" onclick="openHsEditor('${s.id}')">Sửa</button><button class="btn-xs danger" onclick="delHs('${s.id}')">Xoá</button></div></div>`;
   }).join('');
 }
@@ -6457,6 +6577,8 @@ function openHsEditor(id){
   if(dsel) dsel.value=s?(s.disability||''):'';
   if(vsel) vsel.value=s?(s.severity||''):'';
   if(isel) isel.value=s?(s.iep||'chua'):'chua';
+  if(el('hs-lop')) el('hs-lop').value=s?(s.lop||''):'';
+  if(typeof bxHsLopGoiY==='function') bxHsLopGoiY();
   el('hs-subject').value=s?(s.subject||''):'';
   el('hs-notes').value=s?(s.notes||[]).join('\n'):'';
   hsTypeChanged(); if(typeof bxHsktXemTruoc==='function') bxHsktXemTruoc();
@@ -6467,6 +6589,7 @@ function saveHs(){
   const name=el('hs-name').value.trim(); if(!name){ bxAlert('Thầy cô nhập tên nhóm/học sinh nhé.'); return; }
   const type=el('hs-type').value;
   const obj={name,type,count:parseInt(el('hs-num').value,10)||0,subject:el('hs-subject').value.trim(),
+    lop:((el('hs-lop')&&el('hs-lop').value)||'').trim(),
     notes:el('hs-notes').value.split('\n').map(x=>x.trim()).filter(Boolean)};
   if(type==='hoa-nhap'){ obj.disability=el('hs-disability').value||''; obj.severity=el('hs-severity').value||''; obj.iep=el('hs-iep').value||'chua'; }
   if(hsEditId){ const s=state.hocsinh.find(x=>x.id===hsEditId); if(s){ delete s.tag; delete s.color; delete s.icon; delete s.disability; delete s.severity; delete s.iep; Object.assign(s,obj); } }
@@ -6807,12 +6930,14 @@ function loadSettings(){
   el('set-class').value=p.klass||state.klass; el('set-week').value=p.week||state.week; el('set-place').value=p.place||state.place;
   el('set-from').value=p.from||state.from; el('set-to').value=p.to||state.to;
   if(el('set-khbd-iv')) el('set-khbd-iv').value=p.khbdIV||state.khbdIV||'auto';
+  if(el('set-khbd-ktten')) el('set-khbd-ktten').value=p.khbdKtTen||state.khbdKtTen||'an';
 }
 /* Đổi chế độ Mục IV: lưu ngay + làm mới bản xem KHBD nếu đang mở */
 function bxSaveKhbdIV(){
   var v=(el('set-khbd-iv')&&el('set-khbd-iv').value)||'auto'; state.khbdIV=v;
+  var vt=(el('set-khbd-ktten')&&el('set-khbd-ktten').value)||'an'; state.khbdKtTen=vt;
   var p={}; try{p=JSON.parse(localStorage.getItem('butxanh_profile')||'{}');}catch(e){}
-  p.khbdIV=v; try{localStorage.setItem('butxanh_profile',JSON.stringify(p));}catch(e){}
+  p.khbdIV=v; p.khbdKtTen=vt; try{localStorage.setItem('butxanh_profile',JSON.stringify(p));}catch(e){}
   try{ if(el('v-khbd')&&el('v-khbd').classList.contains('active')&&typeof renderKHBDView==='function') renderKHBDView(); }catch(e){}
 }
 function applyProfile(p){
@@ -6826,6 +6951,7 @@ function applyProfile(p){
   if(p.from) state.from=p.from;
   if(p.to) state.to=p.to;
   if(p.khbdIV) state.khbdIV=p.khbdIV;
+  if(p.khbdKtTen) state.khbdKtTen=p.khbdKtTen;
   const m=String(state.klass).match(/\d+/); if(m) state.khoi=m[0];
   /* Đổi lớp giảng dạy → bảo đảm kho của lớp đó đã nạp (app chỉ nạp lớp đang dạy) */
   try{ if(window.BX_ensureKho) window.BX_ensureKho(state.klass); }catch(e){}
@@ -7103,7 +7229,8 @@ el('set-save').onclick=function(){
     klass:el('set-class').value.trim(),week:el('set-week').value.trim(),place:el('set-place').value.trim(),
     xa:(el('set-xa')?el('set-xa').value.trim():''),hieuTruong:(el('set-hieutruong')?el('set-hieutruong').value.trim():''),
     from:el('set-from').value.trim(),to:el('set-to').value.trim(),
-    khbdIV:(el('set-khbd-iv')&&el('set-khbd-iv').value)||state.khbdIV||'auto'};
+    khbdIV:(el('set-khbd-iv')&&el('set-khbd-iv').value)||state.khbdIV||'auto',
+    khbdKtTen:(el('set-khbd-ktten')&&el('set-khbd-ktten').value)||state.khbdKtTen||'an'};
   try{localStorage.setItem('butxanh_profile',JSON.stringify(p));}catch(e){}
   applyProfile(p);
   el('set-msg').textContent='✓ Đã lưu hồ sơ — đã cập nhật lịch, KHBD, thống kê.'; setTimeout(()=>el('set-msg').textContent='',2800);
@@ -8571,7 +8698,7 @@ function BX_intgLines(ig, L, row){
   /* (3/9/2026) Khối này in ở CUỐI giáo án, ngay sau Mục IV. Khi Mục IV đã có dòng
      "Trong tiết <môn>: …" cho từng HSKT (bxSectionIV(L).note = true) thì dòng chung theo
      môn ở đây gần như lặp lại — bỏ; chỉ giữ khi GV bật tích hợp mà chưa khai HSKT nào. */
-  var _ivCoHskt=false; try{ _ivCoHskt=!!(L&&typeof bxSectionIV==='function'&&bxSectionIV(L).note); }catch(e){}
+  var _ivCoHskt=false; try{ _ivCoHskt=!!(L&&typeof bxSectionIV==='function'&&bxSectionIV(L,row).note); }catch(e){}
   if(s.hskt && !_ivCoHskt) out.push(['hoatdong','• (HSKT) '+(BX_HSKT_RULE[sk]||BX_HSKT_RULE.other)]);
   return out;
 }
@@ -11018,7 +11145,7 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
                       : ('<div class="doc-bai" style="font-size:'+(x.sz===14?17:16)+'px">'+esc(x.t)+'</div>'));
     });
     H.push('<h4>I. YÊU CẦU CẦN ĐẠT</h4>'+yccdPara(L.yccd||'(Thầy cô đối chiếu SGK/SGV)'));
-    var ktI=(typeof window.bxYccdHsktLines==='function')?window.bxYccdHsktLines(L):[];
+    var ktI=(typeof window.bxYccdHsktLines==='function')?window.bxYccdHsktLines(L,row):[];
     if(ktI.length) H.push('<p>'+ktI.map(function(s,i){ var e2=esc(s); return i?e2:('<b>'+e2+'</b>'); }).join('<br>')+'</p>');
     H.push('<h4>II. ĐỒ DÙNG DẠY HỌC</h4>'+para(L.dodung||'…'));
     H.push('<h4>III. CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU</h4>');
@@ -11035,7 +11162,7 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
     } else {
       H.push(para(L.hoatdong||'…'));
     }
-    var iv=(typeof bxSectionIV==='function')?bxSectionIV(L):{show:true,items:[{label:'Học sinh cần hỗ trợ:',lines:[L.hotro||'…']},{label:'Học sinh khuyết tật học hòa nhập:',lines:[L.hoanhap||'…']}],note:false};
+    var iv=(typeof bxSectionIV==='function')?bxSectionIV(L,row):{show:true,items:[{label:'Học sinh cần hỗ trợ:',lines:[L.hotro||'…']},{label:'Học sinh khuyết tật học hòa nhập:',lines:[L.hoanhap||'…']}],note:false};
     if(iv.show){
       H.push('<h4>IV. ĐIỀU CHỈNH, HỖ TRỢ HỌC SINH</h4>');
       iv.items.forEach(function(it,i){
