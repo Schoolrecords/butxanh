@@ -11470,6 +11470,43 @@ function bxEsc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').r
 /* Hộp XÁC NHẬN (thay confirm) — trả về Promise<boolean> */
 window.bxConfirm=function(text,opts){ opts=opts||{}; return new Promise(function(res){ BX_confirm(Object.assign({html:bxEsc(text),okText:'Đồng ý',cancelText:'Hủy'},opts), function(){res(true);}, function(){res(false);}); }); };
 /* Hộp THÔNG BÁO 1 nút (thay alert) — trả về Promise */
+/* ===== Nút "Chép mã lỗi" trong hộp báo lỗi đăng nhập (7/9/2026) =====
+   Trước: hộp lỗi chỉ có một câu chung chung, mã lỗi nằm trong Console. Thầy cô không
+   rành kỹ thuật thì không có gì để gửi, người sửa app không có gì để lần — ca thầy Hồ
+   Bá Trung mất cả buổi mà vẫn chưa biết mã lỗi là gì.
+   Nay: hộp lỗi có nút chép sẵn mã lỗi + phiên bản + trình duyệt để dán vào nhóm Zalo.
+   KHÔNG chép email hay bất cứ dữ liệu bài dạy nào — chỉ thông tin kỹ thuật. */
+window.bxChiTietLoiDN=function(code,msg){
+  var d=[];
+  d.push('Bút Xanh — lỗi đăng nhập');
+  d.push('Mã lỗi   : '+(code||'(không có mã)'));
+  if(msg) d.push('Mô tả    : '+String(msg).slice(0,300));
+  try{ d.push('Phiên bản: '+(window.BX_PHIENBAN||'?')); }catch(e){}
+  try{ d.push('Trang    : '+location.hostname); }catch(e){}
+  try{ d.push('Cookie   : '+(navigator.cookieEnabled?'bật':'ĐANG TẮT')); }catch(e){}
+  try{ d.push('Trình duyệt: '+navigator.userAgent.slice(0,180)); }catch(e){}
+  try{ d.push('Lúc      : '+new Date().toLocaleString('vi-VN')); }catch(e){}
+  return d.join('\n');
+};
+window.bxChepLoiDN=function(code,msg){
+  var vb=window.bxChiTietLoiDN(code,msg);
+  function xong(){ try{ bxAlert('Đã chép mã lỗi. Thầy cô dán vào nhóm Zalo hỗ trợ giúp em nhé!'); }catch(e){} }
+  function tay(){ try{ window.prompt('Thầy cô bôi đen rồi Ctrl+C để chép, gửi vào nhóm Zalo giúp em ạ:', vb); }catch(e){} }
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(vb).then(xong,tay);
+    else tay();
+  }catch(e){ tay(); }
+};
+/* Đoạn HTML gắn vào cuối hộp lỗi: mã lỗi cho thầy cô nhìn + nút chép */
+function bxNutChepLoi(code,e){
+  var msg=(e&&e.message)||'';
+  var an=function(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;').replace(/"/g,'&quot;'); };
+  return '<div style="margin-top:12px;padding:9px 11px;background:#f4f7f5;border-radius:9px;display:flex;align-items:center;gap:9px;flex-wrap:wrap">'+
+    '<span style="flex:1;min-width:150px;color:#42514a;font-size:13px">Mã lỗi: <code>'+an(code||'không có mã')+'</code></span>'+
+    '<button type="button" style="flex:none;background:#1FA45C;color:#fff;border:0;border-radius:8px;padding:6px 11px;font:700 12px system-ui;cursor:pointer" '+
+    'onclick="bxChepLoiDN(&#39;'+an(code)+'&#39;,&#39;'+an(msg).replace(/\n/g,' ')+'&#39;)">📋 Chép mã lỗi</button></div>';
+}
+try{ window.bxNutChepLoi=bxNutChepLoi; }catch(e){}
 window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm(Object.assign({html:bxEsc(text),single:true,okText:'Đã hiểu'},opts||{}), function(){res(true);}, function(){res(true);}); }); };
 </script>
 <!-- ============ ĐĂNG NHẬP GOOGLE + ĐỒNG BỘ ĐÁM MÂY (Firebase) ============
@@ -12475,11 +12512,45 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
           }
         } else if(code==='auth/unauthorized-domain'){
           bxAlert('Tên miền chưa được cho phép đăng nhập. (Mở bằng file:// sẽ không đăng nhập được — cần localhost hoặc trang web chính thức.)');
+        } else if(code==='auth/web-storage-unsupported'||code==='auth/internal-error'||!navigator.cookieEnabled){
+          /* (7/9/2026 — ca thầy Hồ Bá Trung: Chrome máy tính, Gmail cá nhân, vẫn hỏng)
+             butxanh.net chạy trên GitHub Pages còn phiên đăng nhập nằm ở
+             but-xanh.firebaseapp.com. Chrome chặn "cookie của bên thứ ba" là Firebase không
+             dựng nổi khung ẩn tới đó, trả về web-storage-unsupported hoặc internal-error.
+             Trước đây rơi vào nhánh chung nên thầy cô bị chỉ sai đường sang chuyện .edu.vn. */
+          try{ console.warn('[Bút Xanh] đăng nhập lỗi:', code, (e&&e.message)||''); }catch(_){}
+          BX_confirm({title:'Trình duyệt đang chặn cookie',
+            html:'Bút Xanh không mở được phiên đăng nhập vì trình duyệt <b>chặn cookie của bên thứ ba</b>.<br><br>'+
+                 '👉 Chrome: <b>Cài đặt → Quyền riêng tư và bảo mật → Cookie của bên thứ ba</b> → chọn <b>Cho phép</b>;<br>'+
+                 'hoặc bấm <b>Thêm trang web</b> rồi nhập ngoại lệ <code>[*.]firebaseapp.com</code>.<br><br>'+
+                 'Xong thầy cô tải lại trang bằng <b>Ctrl+Shift+R</b> rồi đăng nhập lại ạ.<br><br>'+
+                 '<span style="color:#6b7a72;font-size:13px">Dữ liệu trên máy vẫn nguyên vẹn — đăng nhập chỉ để đồng bộ.</span>'+
+                 (typeof bxNutChepLoi==='function'?bxNutChepLoi(code,e):''),
+            okText:'Đã hiểu',cancelText:'Thử lại'}, null, function(){ FBX.login(); });
+        } else if(code==='auth/network-request-failed'){
+          try{ console.warn('[Bút Xanh] đăng nhập lỗi:', code, (e&&e.message)||''); }catch(_){}
+          BX_confirm({title:'Mạng đang chập chờn',
+            html:'Bút Xanh chưa nối được tới Google để đăng nhập.<br><br>Thầy cô kiểm tra lại mạng rồi bấm <b>Thử lại</b> giúp em ạ.'+(typeof bxNutChepLoi==='function'?bxNutChepLoi(code,e):''),
+            okText:'Thử lại',cancelText:'Để sau'}, function(){ FBX.login(); });
+        } else if(code==='auth/too-many-requests'){
+          try{ console.warn('[Bút Xanh] đăng nhập lỗi:', code, (e&&e.message)||''); }catch(_){}
+          BX_confirm({title:'Google tạm khoá',
+            html:'Google tạm khoá vì thử đăng nhập nhiều lần liền.<br><br>Thầy cô nghỉ vài phút rồi đăng nhập lại giúp em ạ.'+(typeof bxNutChepLoi==='function'?bxNutChepLoi(code,e):''),
+            single:true,okText:'Đã hiểu'});
         } else {
           /* (18/8/2026) KHÔNG ném e.message (tiếng Anh, đầy chữ kỹ thuật) vào mặt thầy cô —
-             mã lỗi vẫn ghi ra Console cho người sửa app xem. */
+             mã lỗi vẫn ghi ra Console cho người sửa app xem.
+             (7/9/2026) Nhưng CÓ hiện mã lỗi ngắn + nút chép: nhánh này trước đây đoán bừa là
+             do tài khoản .edu.vn — thầy cô dùng Gmail cá nhân làm theo cũng không ra, mà
+             người sửa app thì không có gì để lần. */
           try{ console.warn('[Bút Xanh] đăng nhập lỗi:', code, (e&&e.message)||''); }catch(_){}
-          bxAlert('Đăng nhập chưa được, thầy/cô thử lại sau ít phút giúp em.'+'\n\n💡 Nếu thầy cô dùng tài khoản Google của ngành (đuôi .edu.vn), có thể đơn vị đang chặn ứng dụng ngoài — thầy cô thử lại bằng Gmail cá nhân.');
+          BX_confirm({title:'Đăng nhập chưa được',
+            html:'Thầy/cô thử lại sau ít phút giúp em ạ.<br><br>Hai cách hay được việc nhất:<br>'+
+                 '① Cho phép <b>cookie của bên thứ ba</b> trong Cài đặt trình duyệt, rồi tải lại bằng <b>Ctrl+Shift+R</b>.<br>'+
+                 '② Nếu thầy cô dùng tài khoản Google của ngành (đuôi <b>.edu.vn</b>) thì đơn vị có thể đang chặn ứng dụng ngoài — thử lại bằng Gmail cá nhân.<br><br>'+
+                 '<span style="color:#6b7a72;font-size:13px">Dữ liệu trên máy vẫn nguyên vẹn — đăng nhập chỉ để đồng bộ.</span>'+
+                 (typeof bxNutChepLoi==='function'?bxNutChepLoi(code,e):''),
+            okText:'Đã hiểu',cancelText:'Thử lại'}, null, function(){ FBX.login(); });
         }
       });
     },
