@@ -871,7 +871,7 @@ window.BX_KHGD_SGV["4"]["Đạo đức"] = [
 ["6","Chủ đề 2: Cảm thông, giúp đỡ người gặp khó khăn","","","Bài 2. Cảm thông, giúp đỡ người gặp khó khăn (Tiết 2)","","6","Năng lực số 1.2 CB2a: HS nhận ra dấu hiệu của lời kêu gọi từ thiện đáng tin và lời kêu gọi không rõ nguồn."],
 ["7","Chủ đề 2: Cảm thông, giúp đỡ người gặp khó khăn","","","Bài 2. Cảm thông, giúp đỡ người gặp khó khăn (Tiết 3)","","7","Năng lực số 1.2 CB2a: HS nhận ra dấu hiệu của lời kêu gọi từ thiện đáng tin và lời kêu gọi không rõ nguồn."],
 ["8","Chủ đề 2: Cảm thông, giúp đỡ người gặp khó khăn","","","Bài 2. Cảm thông, giúp đỡ người gặp khó khăn (Tiết 4)","","8","Năng lực số 1.2 CB2a: HS nhận ra dấu hiệu của lời kêu gọi từ thiện đáng tin và lời kêu gọi không rõ nguồn."],
-["9","Ôn tập, kiểm tra, đánh giá","","","Thực hành kĩ năng giữa học kì I","1 tiết","9",""],
+["9","Ôn tập, đánh giá","","","Thực hành kĩ năng giữa học kì I","1 tiết","9",""],
 ["10","Chủ đề 3: Yêu lao động","","","Bài 3. Yêu lao động (Tiết 1)","4 tiết","10","NLS-KT (Cơ bản 2): Ở bài “Yêu lao động”, GV chiếu bộ ảnh người lao động ở nhiều nghề."],
 ["11","Chủ đề 3: Yêu lao động","","","Bài 3. Yêu lao động (Tiết 2)","","11",""],
 ["12","Chủ đề 3: Yêu lao động","","","Bài 3. Yêu lao động (Tiết 3)","","12",""],
@@ -879,7 +879,7 @@ window.BX_KHGD_SGV["4"]["Đạo đức"] = [
 ["14","Chủ đề 4: Tôn trọng tài sản của người khác","","","Bài 4. Tôn trọng tài sản của người khác (Tiết 1)","3 tiết","14","Năng lực số 5.2 CB2b: HS nêu được những thứ thuộc tài sản số của người khác và cách ứng xử đúng với chúng."],
 ["15","Chủ đề 4: Tôn trọng tài sản của người khác","","","Bài 4. Tôn trọng tài sản của người khác (Tiết 2)","","15","Năng lực số 5.2 CB2b: HS nêu được những thứ thuộc tài sản số của người khác và cách ứng xử đúng với chúng."],
 ["16","Chủ đề 4: Tôn trọng tài sản của người khác","","","Bài 4. Tôn trọng tài sản của người khác (Tiết 3)","","16","Năng lực số 5.2 CB2b: HS nêu được những thứ thuộc tài sản số của người khác và cách ứng xử đúng với chúng."],
-["17","Ôn tập, kiểm tra, đánh giá","","","Thực hành kĩ năng cuối học kì I","1 tiết","17","NLS-GT (Cơ bản 2): HS cùng xây dựng bản quy ước sử dụng phòng máy và bảng phân công trực nhật, mỗi tổ theo dõi và."],
+["17","Ôn tập, đánh giá","","","Thực hành kĩ năng cuối học kì I","1 tiết","17","NLS-GT (Cơ bản 2): HS cùng xây dựng bản quy ước sử dụng phòng máy và bảng phân công trực nhật, mỗi tổ theo dõi và."],
 ["18","Chủ đề 5: Bảo vệ của công","","","Bài 5. Bảo vệ của công (Tiết 1)","3 tiết","18","Năng lực số 5.2 CB2b: HS kể được tài sản chung là thiết bị số ở trường và cách sử dụng, giữ gìn đúng."],
 ["19","Chủ đề 5: Bảo vệ của công","","","Bài 5. Bảo vệ của công (Tiết 2)","","19","Năng lực số 5.2 CB2b: HS kể được tài sản chung là thiết bị số ở trường và cách sử dụng, giữ gìn đúng."],
 ["20","Chủ đề 5: Bảo vệ của công","","","Bài 5. Bảo vệ của công (Tiết 3)","","20","Năng lực số 5.2 CB2b: HS kể được tài sản chung là thiết bị số ở trường và cách sử dụng, giữ gìn đúng."],
@@ -888,7 +888,7 @@ window.BX_KHGD_SGV["4"]["Đạo đức"] = [
 ["23","Chủ đề 6: Thiết lập và duy trì quan hệ bạn bè","","","Bài 7. Duy trì quan hệ bạn bè (Tiết 1)","3 tiết","23","Năng lực số 2.5 CB2a: HS nêu và thực hiện được cách nhắn tin, trao đổi lịch sự để giữ tình bạn."],
 ["24","Chủ đề 6: Thiết lập và duy trì quan hệ bạn bè","","","Bài 7. Duy trì quan hệ bạn bè (Tiết 2)","","24","Năng lực số 2.5 CB2a: HS nêu và thực hiện được cách nhắn tin, trao đổi lịch sự để giữ tình bạn."],
 ["25","Chủ đề 6: Thiết lập và duy trì quan hệ bạn bè","","","Bài 7. Duy trì quan hệ bạn bè (Tiết 3)","","25","Năng lực số 2.5 CB2a: HS nêu và thực hiện được cách nhắn tin, trao đổi lịch sự để giữ tình bạn."],
-["26","Ôn tập, kiểm tra, đánh giá","","","Thực hành kĩ năng giữa học kì II","1 tiết","26","NLS-GQVĐ (Cơ bản 2): Cho HS quan sát các cách tiêu tiền trên môi trường số: mua hàng qua mạng, nạp tiền vào trò chơi, mua."],
+["26","Ôn tập, đánh giá","","","Thực hành kĩ năng giữa học kì II","1 tiết","26","NLS-GQVĐ (Cơ bản 2): Cho HS quan sát các cách tiêu tiền trên môi trường số: mua hàng qua mạng, nạp tiền vào trò chơi, mua."],
 ["27","Chủ đề 7: Quý trọng đồng tiền","","","Bài 8. Quý trọng đồng tiền (Tiết 1)","4 tiết","27","Năng lực số 5.2 CB2b: HS lập được bảng thu – chi đơn giản và phân biệt khoản cần thiết với khoản chỉ là muốn."],
 ["28","Chủ đề 7: Quý trọng đồng tiền","","","Bài 8. Quý trọng đồng tiền (Tiết 2)","","28","Năng lực số 5.2 CB2b: HS lập được bảng thu – chi đơn giản và phân biệt khoản cần thiết với khoản chỉ là muốn."],
 ["29","Chủ đề 7: Quý trọng đồng tiền","","","Bài 8. Quý trọng đồng tiền (Tiết 3)","","29","Năng lực số 5.2 CB2b: HS lập được bảng thu – chi đơn giản và phân biệt khoản cần thiết với khoản chỉ là muốn."],
@@ -897,7 +897,7 @@ window.BX_KHGD_SGV["4"]["Đạo đức"] = [
 ["32","Chủ đề 8: Quyền và bổn phận của trẻ em","","","Bài 9. Quyền và bổn phận của trẻ em (Tiết 2)","","32","Năng lực số 1.1 CB2c: HS chỉ ra được quyền của trẻ em bị xâm phạm trong tình huống trên môi trường mạng."],
 ["33","Chủ đề 8: Quyền và bổn phận của trẻ em","","","Bài 9. Quyền và bổn phận của trẻ em (Tiết 3)","","33","Năng lực số 1.1 CB2c: HS chỉ ra được quyền của trẻ em bị xâm phạm trong tình huống trên môi trường mạng."],
 ["34","Chủ đề 8: Quyền và bổn phận của trẻ em","","","Bài 9. Quyền và bổn phận của trẻ em (Tiết 4)","","34","Năng lực số 1.1 CB2c: HS chỉ ra được quyền của trẻ em bị xâm phạm trong tình huống trên môi trường mạng."],
-["35","Ôn tập, kiểm tra, đánh giá","","","Thực hành kĩ năng cuối năm học","1 tiết","35",""]
+["35","Ôn tập, đánh giá","","","Thực hành kĩ năng cuối năm học","1 tiết","35",""]
 ];
 window.BX_KHGD_SGV["4"]["Âm nhạc"] = [
 ["1","Chủ đề 1: Âm thanh ngày mới","","","Lí thuyết âm nhạc: Một số kí hiệu ghi nhạc; Đọc nhạc: Bài số 1","1 tiết","1","Năng lực số 1.1 CB2c: HS đọc và ghi được kí hiệu về Làm quen với kí hiệu ghi nhạc nhờ đối chiếu hình vẽ trên màn hình với âm thanh nghe được."],
@@ -916,8 +916,8 @@ window.BX_KHGD_SGV["4"]["Âm nhạc"] = [
 ["14","Chủ đề 4: Vui đón Tết","","","Ôn bài hát: Tết là Tết; Nhạc cụ: Thể hiện nhạc cụ gõ hoặc nhạc cụ giai điệu","1 tiết","14",""],
 ["15","Chủ đề 4: Vui đón Tết","","","Thường thức âm nhạc: Pi-tơ (Peter) và chó sói","1 tiết","15","Năng lực số 5.1 CB2a: HS nêu được đặc điểm nổi bật của “Câu chuyện âm nhạc Pi-tơ và chó sói (Phỏng theo: Séc-gây Pơ-rô-cô-phi-ép)” nhờ quan sát tư liệu số và nghe bản thu."],
 ["16","Chủ đề 4: Vui đón Tết","","","Tổ chức hoạt động Vận dụng – Sáng tạo","1 tiết","16",""],
-["17","Ôn tập, kiểm tra, đánh giá","","","Ôn tập cuối học kì I (Tiết 1)","1 tiết","17",""],
-["18","Ôn tập, kiểm tra, đánh giá","","","Ôn tập cuối học kì I (Tiết 2)","1 tiết","18","Năng lực số 3.3 CB2a: HS giới thiệu sản phẩm của tổ đúng phép lịch sự, có ghi tên tác giả và xin phép bạn trước khi chia sẻ."],
+["17","Ôn tập, đánh giá","","","Ôn tập cuối học kì I (Tiết 1)","1 tiết","17",""],
+["18","Ôn tập, đánh giá","","","Ôn tập cuối học kì I (Tiết 2)","1 tiết","18","Năng lực số 3.3 CB2a: HS giới thiệu sản phẩm của tổ đúng phép lịch sự, có ghi tên tác giả và xin phép bạn trước khi chia sẻ."],
 ["19","Chủ đề 5: Thiên nhiên tươi đẹp","","","Lí thuyết âm nhạc: Dấu lặng; Đọc nhạc: Bài số 3","1 tiết","19","Năng lực số 1.1 CB2c: HS đọc và ghi được kí hiệu về Dấu lặng nhờ đối chiếu hình vẽ trên màn hình với âm thanh nghe được."],
 ["20","Chủ đề 5: Thiên nhiên tươi đẹp","","","Hát: Hạt mưa kể chuyện; Ôn đọc nhạc: Bài số 3","1 tiết","20","Năng lực số 1.1 CB2c: HS nghe bản thu mẫu, hát đúng cao độ và biết xin mở lại đúng câu mình còn sai."],
 ["21","Chủ đề 5: Thiên nhiên tươi đẹp","","","Nghe nhạc: Không gian xanh; Ôn bài hát: Hạt mưa kể chuyện","1 tiết","21","Năng lực số 1.2 CB2a: HS chỉ ra được điểm khác giữa đoạn nhạc do máy tạo và đoạn do nghệ sĩ trình bày."],
@@ -933,8 +933,8 @@ window.BX_KHGD_SGV["4"]["Âm nhạc"] = [
 ["31","Chủ đề 8: Chào mùa hè","","","Hát: Em yêu mùa hè quê em","1 tiết","31","Năng lực số 1.1 CB2c: HS nghe bản thu mẫu, hát đúng cao độ và biết xin mở lại đúng câu mình còn sai."],
 ["32","Chủ đề 8: Chào mùa hè","","","Ôn bài hát: Em yêu mùa hè quê em; Nhạc cụ: Thể hiện nhạc cụ gõ hoặc nhạc cụ giai điệu","1 tiết","32",""],
 ["33","Chủ đề 8: Chào mùa hè","","","Nghe nhạc: Khúc ca vào hè; Tổ chức hoạt động Vận dụng – Sáng tạo","1 tiết","33","Năng lực số 1.2 CB2a: HS chỉ ra được điểm khác giữa đoạn nhạc do máy tạo và đoạn do nghệ sĩ trình bày."],
-["34","Ôn tập, kiểm tra, đánh giá","","","Ôn tập cuối năm (Tiết 1)","1 tiết","34",""],
-["35","Ôn tập, kiểm tra, đánh giá","","","Ôn tập cuối năm (Tiết 2)","1 tiết","35","Năng lực số 3.3 CB2a: HS giới thiệu sản phẩm của tổ đúng phép lịch sự, có ghi tên tác giả và xin phép bạn trước khi chia sẻ."]
+["34","Ôn tập, đánh giá","","","Ôn tập cuối năm (Tiết 1)","1 tiết","34",""],
+["35","Ôn tập, đánh giá","","","Ôn tập cuối năm (Tiết 2)","1 tiết","35","Năng lực số 3.3 CB2a: HS giới thiệu sản phẩm của tổ đúng phép lịch sự, có ghi tên tác giả và xin phép bạn trước khi chia sẻ."]
 ];
 window.BX_KHGD_SGV["4"]["Tiếng Việt"] = [
 ["1","Chủ điểm 1: Mỗi người một vẻ","Bài 1 (3 tiết)","Đọc","Điều kì diệu","1","1","Năng lực số 1.1 CB2c: HS xem video bài hát “Vui đến trường” trên tivi rồi nói được cảm xúc của mình trong ngày đầu năm học."],
