@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-08 · 153';
+  var PB='2026-09-08 · 154';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1265,7 +1265,7 @@ window.bxMergeKho = function(){
 (function(){
   /* (4/9/2026) Đổi chuỗi này MỖI KHI sửa nội dung kho-data-*.js — trình duyệt nhớ tệp kho
      theo đúng đường dẫn kèm ?v=, không đổi là thầy cô vẫn mở ra kho cũ. */
-  var V='20260908-nls-t12c';   /* đổi MỖI KHI sửa kho-data-*: không đổi thì trình duyệt giữ bản cũ, thầy cô không thấy dữ liệu vừa vá */
+  var V='20260908-gdtc-boi';   /* đổi MỖI KHI sửa kho-data-*: không đổi thì trình duyệt giữ bản cũ, thầy cô không thấy dữ liệu vừa vá */
   window.BX_KHO_FILES={
     '1':['kho-data-lop1.js','kho-data-l1-gdtc.js','kho-data-l1-amnhac.js','kho-data-l1-mithuat.js'],
     '2':['kho-data-lop2.js','kho-data-l2-gdtc.js','kho-data-l2-amnhac.js','kho-data-l2-mithuat.js'],
@@ -9541,6 +9541,35 @@ function buildKHGDPhuLuc2(LOP,dsMon){
   var mucCB=(['1','2','3'].indexOf(String(LOP))>=0)
     ? '“Cơ bản 1” (lớp 1–3: nhiệm vụ đơn giản, thực hiện dưới sự hướng dẫn của giáo viên)'
     : '“Cơ bản 2” (lớp 4–5: nhiệm vụ quen thuộc, tự chủ một phần và có hướng dẫn khi cần thiết)';
+  /* (8/9/2026) Mục V Hướng dẫn "Căn cứ pháp lý xây dựng KHGD môn học và lựa chọn nội dung thể thao
+     tự chọn" (trường ký 7/9/2026): bản Kế hoạch dạy học môn Giáo dục thể chất phải có một mục ghi rõ
+     phần được vận dụng theo điều kiện từng địa điểm — khác nhau thì ghi vào ĐÂY, không tách thành
+     nhiều bản kế hoạch. App dùng chung nhiều trường nên chỉ in khuôn bảng, KHÔNG ghi cứng tên phân hiệu;
+     trường một điểm để trống hai dòng dưới. */
+  var mucGDTC='';
+  try{
+    if(coDL.indexOf('GDTC')>=0){
+      var _gd=KH['GDTC']||[], _monTC='', _soTC=0;
+      _gd.forEach(function(r){
+        var s7=String(r[1]||''); if(!/tự chọn/i.test(s7)) return; _soTC++;
+        var mm=s7.match(/tự chọn\s*\(([^)]+)\)/i); if(mm&&!_monTC) _monTC=mm[1].trim();
+      });
+      var _W5=[3000,1500,3200,1300,5400];
+      var _hd5=['Địa điểm','Khối lớp','Môn thể thao tự chọn','Số tiết','Địa điểm tổ chức, thiết bị'];
+      var _dg5=[['Điểm trường chính','Lớp '+LOP,_monTC||'………',_soTC?String(_soTC):'',''],
+                ['Phân hiệu ………………','Lớp '+LOP,'','',''],
+                ['Phân hiệu ………………','Lớp '+LOP,'','','']];
+      var _tr5='<w:tr>'+_hd5.map(function(c,i){return bxTc(c,_W5[i],{b:true,jc:'center',sz:20});}).join('')+'</w:tr>'+
+        _dg5.map(function(r){return '<w:tr>'+r.map(function(c,i){return bxTc(c,_W5[i],{jc:(i===1||i===3)?'center':'left',sz:20});}).join('')+'</w:tr>';}).join('');
+      mucGDTC=bxPara('',{})+
+        bxPara('ĐIỀU CHỈNH THEO ĐIỀU KIỆN CƠ SỞ VẬT CHẤT CỦA TỪNG ĐỊA ĐIỂM (môn Giáo dục thể chất)',{b:true,jc:'left',sz:20,sp:80})+
+        bxPara('Nội dung thể thao tự chọn, địa điểm tổ chức và thiết bị dạy học được vận dụng phù hợp với điều kiện thực tế của từng địa điểm, bảo đảm không thay đổi tổng số 70 tiết, tỉ lệ thời lượng các mạch nội dung, tiến độ chương trình và yêu cầu cần đạt. Mỗi khối lớp tại mỗi địa điểm chỉ thực hiện 01 môn thể thao tự chọn. Cụ thể:',{jc:'both',sz:20,sp:80})+
+        '<w:tbl><w:tblPr><w:tblW w:w="14400" w:type="dxa"/><w:jc w:val="center"/>'+bxBorders(false)+'<w:tblLayout w:type="fixed"/></w:tblPr>'+
+        '<w:tblGrid>'+_W5.map(function(w){return '<w:gridCol w:w="'+w+'"/>';}).join('')+'</w:tblGrid>'+_tr5+'</w:tbl>'+
+        bxPara('Môn thể thao tự chọn phải thuộc hệ thống môn thể thao của Hội khoẻ Phù Đổng, giải thi đấu quốc gia, quốc tế hoặc môn thể thao truyền thống của địa phương; nếu môn được chọn không có trong sách giáo khoa đang sử dụng thì tổ chuyên môn xây dựng tài liệu dạy học trước khi kế hoạch được phê duyệt. Trong quá trình thực hiện, nếu phát sinh điều chỉnh do thời tiết, sân bãi hoặc thiết bị, giáo viên ghi vào sổ điều chỉnh chuyên môn và báo cáo tổ trưởng; không tự ý sửa bản kế hoạch đã được phê duyệt.',{i:true,jc:'both',sz:18,sp:120});
+    }
+  }catch(_e){ try{console.warn('[Bút Xanh] mục điều chỉnh GDTC lỗi: '+_e.message);}catch(__e){} }
+
   var after=
     bxPara('',{})+
     bxPara('QUY ƯỚC MÃ NỘI DUNG TÍCH HỢP, LỒNG GHÉP',{b:true,jc:'left',sz:20,sp:80})+qwTbl+
@@ -9551,6 +9580,7 @@ function buildKHGDPhuLuc2(LOP,dsMon){
     (_ts.vietlao?bxPara('Nội dung giáo dục truyền thống hữu nghị Việt Nam – Lào là nội dung giáo dục địa phương, thực hiện theo kế hoạch giáo dục của nhà trường và hướng dẫn của cấp có thẩm quyền.',{i:true,jc:'both',sz:18,sp:120}):'')+
     (_ts.gioihan?bxPara('Mỗi bài học chỉ bố trí 1 – 2 hoạt động có tích hợp, ưu tiên các nội dung giáo dục địa phương, năng lực số, quốc phòng và an ninh; bảo đảm không làm ảnh hưởng đến thời lượng và cấu trúc bài dạy.',{i:true,jc:'both',sz:18,sp:120}):'')+
     (_ts.dinhchinh?bxPara('Phần “ĐÍNH CHÍNH SGK” là nội dung điều chỉnh, bổ sung sách giáo khoa theo tài liệu tập huấn của cơ quan quản lí giáo dục, không tính là nội dung tích hợp.',{i:true,jc:'both',sz:18,sp:120}):'')+
+    mucGDTC+
     mucIV+
     signTbl;
 
