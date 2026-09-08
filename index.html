@@ -10188,11 +10188,16 @@ function coDuLieuCu(){
   var k=d('butxanh_khbd'); if(Array.isArray(k)&&k.length) return true;
   return false;
 }
+/* (8/9/2026, thầy Chung chốt "lấy SGV làm trục") Nền MẶC ĐỊNH là chuẩn SGV cho mọi máy; chỉ trường Quảng Châu 1
+   (chủ bản tổ) mặc định nền tổ. Máy đã tự nhận nền tổ hồi bản 120 (vì có dữ liệu cũ) được chuyển sang SGV một lần
+   (cờ khgdNenTruc); thầy cô đã TỰ CHỌN nền (khgdNenChon) thì giữ nguyên lựa chọn. */
+var laQC1=function(p){ return /qu[aả]ng\s*ch[aâ]u\s*1\b/i.test(String((p||{}).school||'')); };
 window.BX_khgdNen=function(){
   var p=docHoSo();
-  if(p.khgdNen==='sgv'||p.khgdNen==='to') return p.khgdNen;
-  var nen=(/qu[aả]ng\s*ch[aâ]u\s*1\b/i.test(String(p.school||'')) || coDuLieuCu())?'to':'sgv';
-  p.khgdNen=nen; ghiHoSo(p);
+  if((p.khgdNen==='sgv'||p.khgdNen==='to') && p.khgdNenTruc==='sgv-0908') return p.khgdNen;
+  var nen=laQC1(p)?'to':'sgv';
+  if(p.khgdNenChon && (p.khgdNen==='sgv'||p.khgdNen==='to')) nen=p.khgdNen;
+  p.khgdNen=nen; p.khgdNenTruc='sgv-0908'; ghiHoSo(p);
   return nen;
 };
 window.BX_khgdCoSGV=function(l,m){ var S=window.BX_KHGD_SGV; return !!(S&&S[String(l)]&&S[String(l)][m]&&S[String(l)][m].length); };
@@ -10258,7 +10263,7 @@ window.BX_khgdSoSGV=function(l,m){
 window.BX_khgdDoiNen=function(nen){
   if(nen!=='sgv'&&nen!=='to') return false;
   var p=docHoSo(); if(p.khgdNen===nen) return false;
-  p.khgdNen=nen; ghiHoSo(p);
+  p.khgdNen=nen; p.khgdNenChon=true; p.khgdNenTruc='sgv-0908'; ghiHoSo(p);
   veLai();
   try{ if(window.bxAlert) bxAlert((nen==='sgv'?'✓ Đang dùng KẾ HOẠCH CHUẨN THEO SÁCH GIÁO VIÊN.':'✓ Đang dùng kế hoạch của tổ chuyên môn Quảng Châu 1.')+
     '\n\nLịch báo giảng các tuần ĐÃ LƯU giữ nguyên. Tuần sinh mới sẽ theo kế hoạch này; muốn tuần đang xem đổi theo, thầy/cô bấm "Sinh LBG từ TKB".'); }catch(e){}
@@ -10275,7 +10280,8 @@ function veNenBar(){
   var dong=[];
   if(ng==='rieng') dong.push('Môn này đang dùng <b>kế hoạch riêng</b> thầy/cô đã nhập nên nền bên trên tạm không áp dụng.');
   else if(window.BX_khgdSgvBatBuoc(l,m)) dong.push('Môn này dùng <b>chuẩn theo Sách giáo viên</b> cho mọi trường (số tiết từng bài theo mục lục SGV, cập nhật 7/9/2026), nền bên trên không áp dụng.');
-  else if(!coS) dong.push('Môn này <b>chưa có bản chuẩn SGV</b> trong Bút Xanh, đang dùng bản tổ Quảng Châu 1.');
+  else if(!coS&&/^(GDTC|Giáo dục thể chất)$/i.test(String(m||''))) dong.push('GDTC: bản tổ Quảng Châu 1 đã <b>đúng khung SGV</b> (Đội hình đội ngũ 14 · Bài tập thể dục 7 · Tư thế và KNVĐCB 24 · Thể thao tự chọn 18 · Ôn tập, đánh giá 7), nên dùng chung làm nền.');
+  else if(!coS) dong.push('Môn này <b>chưa có bản chuẩn SGV</b> trong Bút Xanh (SGV không ghi số tiết từng bài, hoặc sách không thuộc bộ Kết nối tri thức), đang dùng bản tổ Quảng Châu 1.');
   var so=window.BX_khgdSoSGV(l,m), luuY='';
   if(so&&so.tuanKhac.length){
     var ds=so.tuanKhac.map(function(w){return 'T'+w;}), hien=ds.slice(0,12).join(', ')+(ds.length>12?'…':'');
@@ -10286,8 +10292,8 @@ function veNenBar(){
   }
   box.innerHTML='<div style="margin:6px 0;padding:8px 10px;background:#f6fbf7;border:1px solid #cfe2d5;border-radius:8px;font-size:13px;color:#233">'+
     '<span style="margin-right:10px;color:#2c6b48;font-weight:700">Kế hoạch nền:</span>'+
-    radio('sgv','Chuẩn theo Sách giáo viên','(mốc chung mọi trường)')+
-    radio('to','Tổ chuyên môn Quảng Châu 1','(bản Bút Xanh dựng sẵn)')+
+    radio('sgv','Chuẩn theo Sách giáo viên','(nền mặc định — số tiết từng bài theo SGV Kết nối tri thức)')+
+    radio('to','Tổ chuyên môn Quảng Châu 1','(biến thể của một tổ, chỉ nên dùng ở Quảng Châu 1)')+
     (dong.length?('<div style="margin-top:5px;color:#5b6b61">'+dong.join(' ')+'</div>'):'')+luuY+
     '<div style="margin-top:5px;font-size:12px;color:#6b7b71">Lịch báo giảng và giáo án tuần mới sinh đi theo kế hoạch đang dùng; tổ mình xếp khác thì sửa đúng ô đó (✏️ Chỉnh sửa KHDH) hoặc 📥 nhập kế hoạch của tổ.</div>'+
   '</div>';
@@ -13263,7 +13269,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
 <!-- Lớp bản quyền (License) — tách riêng để an toàn, dễ cập nhật.
      ⚠️ Có dấu phiên bản ?v= vì GitHub Pages giữ bản cũ 10 phút — sửa license.js mà
      quên đổi dấu này thì máy thầy cô vẫn chạy bản cũ. (5/8/2026) -->
-<script src="khgd-sgv.js?v=20260908-nls-du"></script>
+<script src="khgd-sgv.js?v=20260908-trucsgv"></script>
 <script src="license.js?v=20260828-lancuoi"></script>
 
 <!-- ============ MODAL: LỊCH NGHỈ & DẠY BÙ (Phase 2 — con trỏ tiến độ) ============ -->
@@ -13657,6 +13663,10 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
       c=chonTot(v1,function(r){ return 1+Math.max(sim(r),_chua(name,r.bai))+tietDung(r); });
       /* Bản tổ chỉ có ô sửa tay (tên kho ≠ tên kế hoạch: Tiếng Anh, Âm nhạc, HĐTN…) → y lối cũ: kho xếp cùng tuần với kế hoạch, lấy theo thứ tự tiết */
       if(!c&&nguon==='to'){ c=cungTuan()[0]||null; }
+      /* (8/9/2026, trục SGV) HĐTN nền SGV: SGV và kho cùng xếp 35 tuần × 3 tiết (SHDC · HĐGD theo chủ đề · SHL) nên tiết thứ k của tuần
+         trong kế hoạch = bản ghi thứ k của tuần trong kho, dù kho ghi tên chủ đề chung ("HĐGD chủ đề: NHẬN DIỆN BẢN THÂN") — đo 8/9:
+         HĐTN 4 mất 28/105 tiết nếu chỉ dò theo tên. */
+      if(!c&&/hdtn|hđtn|hoat\s*dong\s*trai\s*nghiem|hoạt động trải nghiệm/i.test(String(mon)+'|'+_n(mon)+'|'+_n(_canonMon(mon)))){ c=cungTuan()[0]||null; }
       /* Vòng 2: cùng số bài, BỎ QUA số tiết (kho ghi nhầm — vd hai bản Bài 22 cùng "Tiết 2"), chưa dùng */
       if(!c&&bn!=null){ c=chonTot(chua.filter(function(r){ return _baiNoDau(r.bai)===bn; }),function(r){ return 1+sim(r); }); }
       /* Vòng 3: cùng số bài, cho DÙNG LẠI bản đã gán (kho ít tiết hơn kế hoạch: Bài 23, 65…) — ưu tiên đúng số tiết */
