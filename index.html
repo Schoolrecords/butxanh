@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-08 · 157';
+  var PB='2026-09-09 · 166';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1655,13 +1655,15 @@ window.bxMergeKho = function(){
       <!-- 8/9/2026 (thầy Chung): ẨN "Kho giáo án" khỏi menu, thay bằng "Vở bài tập". Màn #kho vẫn còn
            (Bảng điều khiển và địa chỉ #kho vẫn mở được) — chỉ không bày trên menu. -->
       <a data-view="kho" style="display:none"><svg class="icn ic" viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg> Kho giáo án</a>
-      <a data-view="ppt"><svg class="icn ic" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/><path d="M7 11l3-2 2 2 4-4"/></svg> Bài giảng trình chiếu</a>
       <a data-view="vbt"><svg class="icn ic" viewBox="0 0 24 24"><path d="M4 4.5A2.5 2.5 0 016.5 2H20v17H6.5A2.5 2.5 0 004 21.5z"/><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M9 7h7M9 10.5h7"/></svg> Vở bài tập</a>
-      <!-- 17/8/2026 (thầy Chung): chuyển "Phiếu bài tập cuối tuần" lên ngay sau Bài giảng
-           trình chiếu — cùng nhóm "tài nguyên dạy học sẵn có", tìm theo thói quen dễ hơn. -->
+      <!-- 17/8/2026 (thầy Chung): "Phiếu bài tập cuối tuần" cùng nhóm "tài nguyên dạy học sẵn có";
+           9/9/2026: Bài giảng trình chiếu chuyển xuống SAU phiếu. -->
       <!-- Menu ghi TẮT "Phiếu BT cuối tuần" để nằm gọn MỘT dòng (thầy Chung 17/8/2026);
            tên đầy đủ vẫn dùng ở tiêu đề màn và thẻ Bảng điều khiển. -->
       <a data-view="phieu"><svg class="icn ic" viewBox="0 0 24 24"><path d="M6 2.5h8l4 4V21a1 1 0 01-1 1H6a1 1 0 01-1-1V3.5a1 1 0 011-1z"/><path d="M13 2.5V7h5"/><path d="M8 12.5h8M8 16h5"/></svg> Phiếu BT cuối tuần</a>
+      <!-- 9/9/2026 (thầy Chung): "Bài giảng trình chiếu" dời XUỐNG dưới "Phiếu BT cuối tuần";
+           thứ tự nhóm Soạn giảng nay là TKB · LBG · KHBD · Vở bài tập · Phiếu · Bài giảng. -->
+      <a data-view="ppt"><svg class="icn ic" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/><path d="M7 11l3-2 2 2 4-4"/></svg> Bài giảng trình chiếu</a>
       <div class="nav-grp">Chương trình</div>
       <a data-view="khdh"><svg class="icn ic" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg> KHDH môn học</a>
       <a data-view="map"><svg class="icn ic" viewBox="0 0 24 24"><path d="M9 4l6 2 6-2v14l-6 2-6-2-6 2V6z"/><path d="M9 4v14M15 6v14"/></svg> Bản đồ chương trình</a>
@@ -2076,22 +2078,21 @@ window.bxMergeKho = function(){
     </section>
 
     <!-- ============ VIEW: PHIẾU BÀI TẬP CUỐI TUẦN ============ -->
-    <!-- Chỉ 2 môn (Toán, Tiếng Việt) nên KHÔNG đi 2 cấp như Bài giảng trình chiếu:
-         chọn lớp xong là thấy ngay cả hai môn, khỏi phải chạm thêm một nhịp. -->
-    <section class="view" id="v-phieu">
+    <!-- 9/9/2026 (thầy Chung): giao diện làm GIỐNG màn Vở bài tập — lớp "vb-man" là phạm vi CSS dùng
+         chung cho cả hai màn (xem BX_vbtStyleOnce). Đi 2 nấc: băng tiêu đề + hai khối môn (5 thẻ lớp)
+         → lưới 35 tuần; bấm ô tuần là MỞ PHIẾU luôn (vẫn một chạm ở nấc cuối). -->
+    <section class="view vb-man" id="v-phieu">
       <div class="page-head">
         <div><h2 class="ph-title" id="pw-title">Phiếu bài tập cuối tuần</h2>
-          <div class="ph-sub">Phiếu ôn luyện <b>Toán</b> và <b>Tiếng Việt</b> theo từng tuần — bấm ô tuần là mở ra, in được ngay</div></div>
+          <div class="ph-sub">Phiếu ôn luyện <b>Toán</b> và <b>Tiếng Việt</b> lớp 1–5 theo từng tuần — chọn môn · lớp → tuần là mở phiếu, tải PDF in được ngay</div></div>
       </div>
-      <!-- 17/8/2026: bỏ hàng chip khối lớp ở đây — chọn lớp nay nằm trong thanh điều khiển
-           của #pw-body (một ô chọn duy nhất thay cho 15 nút lớp trước kia). -->
       <div id="pw-body"></div>
     </section>
 
     <!-- ============ VIEW: VỞ BÀI TẬP (8/9/2026 — thầy Chung) ============
          10 ô (Toán 1–5 · Tiếng Việt 1–5) → 35 tuần → các tiết (bài giảng HTML dựng từ trang vở bài tập).
          Dữ liệu ở web/vbt/vbt-danhsach.js, tệp bài giảng ở web/vbt/ — xem chú thích ở khối JS "VỞ BÀI TẬP". -->
-    <section class="view" id="v-vbt">
+    <section class="view vb-man" id="v-vbt">
       <div class="page-head">
         <div><h2 class="ph-title">Vở bài tập</h2>
           <div class="ph-sub">Bài giảng trình chiếu từ <b>Vở bài tập Toán</b> và <b>Tiếng Việt</b> lớp 1–5 — chọn môn · lớp → tuần → tiết, đáp án hiện theo từng lần bấm</div></div>
@@ -4429,7 +4430,10 @@ var BX_PHIEU_MON=['Toán','Tiếng Việt'];
 var BX_PHIEU_WEEKS=35;
 /* Màu nhận diện hai môn ở màn Phiếu. Toán dùng CAM (--org) chứ không dùng đỏ:
    thầy Chung 17/8/2026 — đỏ trên thẻ tuần trông như báo lỗi, cam nhìn dịu hơn. */
-var BX_PHIEU_META={'Toán':{ic:'🔢',c:'#E0871C'},'Tiếng Việt':{ic:'📖',c:'#2C7BD6'}};
+/* 9/9/2026: thêm c2 (nền nhạt của thẻ lớp) và mo (dòng mô tả dưới tên khối) — cùng khuôn BX_VBT_META
+   vì màn Phiếu nay dựng bằng đúng bộ thẻ của màn Vở bài tập. Bảng điều khiển chỉ đọc ic và c. */
+var BX_PHIEU_META={'Toán':{ic:'🔢',c:'#E0871C',c2:'#FFF4E3',mo:'Phiếu ôn luyện Toán cuối tuần, lớp 1–5'},
+                   'Tiếng Việt':{ic:'📖',c:'#2C7BD6',c2:'#EAF3FF',mo:'Phiếu ôn luyện Tiếng Việt cuối tuần, lớp 1–5'}};
 /* ===== KHO PHIẾU = TỆP TĨNH TRONG APP =====
    Tên tệp theo ĐÚNG một khuôn, khỏi phải chép 350 đường dẫn vào đây:
        web/phieu/Phieu_<Toan|TiengViet><lớp>_Tuan<tuần>.html
@@ -4546,18 +4550,21 @@ function BX_phieuNgayTuan(w){
     return dm(mon)+' – '+dm(cn);
   }catch(e){ return ''; }
 }
-/* Đổi lớp: nhớ luôn lựa chọn để lần sau mở màn là đúng lớp thầy cô hay xem.
-   (17/8/2026 — các hàm lọc môn / xem nhanh tuần của bản cũ đã bỏ cùng thanh lọc.) */
-/* ===== MÀN PHIẾU BÀI TẬP CUỐI TUẦN — bản chốt 17/8/2026 (lần thứ tư) =====
-   Thầy Chung chốt: BỎ ô "Năm học" trên thanh lọc và BỎ hẳn panel "Chi tiết phiếu" — mọi thứ
-   hiển thị đầy đủ ngay trên từng ô tuần, mỗi ô là một KHỐI NỔI bấm thẳng là mở phiếu.
+/* ===== MÀN PHIẾU BÀI TẬP CUỐI TUẦN — bản 9/9/2026 (thầy Chung): GIỐNG MÀN VỞ BÀI TẬP =====
    Lịch sử để người sau khỏi đi lại đường cũ:
-     bản 1 — 15 nút "Lớp" lặp ba chỗ                → thầy trả lại
-     bản 2 — mỗi thẻ tuần nhét 2 nút môn, chữ gãy   → thầy trả lại
-     bản 3 — có panel chi tiết bên phải             → thầy trả lại (phải chạm 2 nhịp mới mở được)
-   Nay: thanh lọc (khối lớp · môn học) → hàng chỉ số → LƯỚI TUẦN, mỗi ô tự nói đủ:
-   số tuần thật to, ngày dạy, trạng thái, và "Mở phiếu →" khi đã có. Một chạm là xong. */
-/* (17/8/2026: bỏ chia học kỳ trên màn này — 35 tuần chạy liền một mạch cho gọn một trang.) */
+     bản 1 (8/2026) — 15 nút "Lớp" lặp ba chỗ                → thầy trả lại
+     bản 2          — mỗi thẻ tuần nhét 2 nút môn, chữ gãy   → thầy trả lại
+     bản 3          — có panel chi tiết bên phải             → thầy trả lại (phải chạm 2 nhịp mới mở được)
+     bản 4 (17/8)   — thanh lọc môn · lớp trên một hàng + lưới 35 ô tuần, bấm ô là mở phiếu
+     bản 5 (9/9)    — thầy Chung: "làm giống màn Vở bài tập" → đi 2 NẤC như màn ấy:
+        nấc 1: băng tiêu đề + HAI KHỐI môn (Toán · Tiếng Việt), mỗi khối 5 thẻ lớp có số lớp to,
+               số tuần đã có phiếu và mũi tên (đúng bộ thẻ .vb-card của Vở bài tập);
+        nấc 2: nút "← Chọn lớp khác" + dòng dẫn + LƯỚI 35 ô tuần (.vb-wk), bấm ô là MỞ PHIẾU luôn
+               (không có nấc 3 như Vở bài tập vì mỗi tuần chỉ có MỘT phiếu); dưới lưới là dải tờ rời
+               "Thử sức" và các ghi chú pháp lý (không chấm điểm, không bắt buộc — TT 27).
+   CSS dùng CHUNG với màn Vở bài tập qua lớp .vb-man (xem BX_vbtStyleOnce) — không chép hai bản.
+   Vào màn luôn bắt đầu ở nấc 1 (như Vở bài tập); lớp + môn xem lần trước vẫn được nhớ để các
+   lối gọi cũ BX_phieuLop()/BX_phieuMon() (bộ bấm thử _bam-thu-phieu.js) nhảy thẳng tới nấc 2. */
 var PHIEU_LOP_KEY='butxanh_phieu_lop';                     /* nhớ lớp + môn thầy cô xem lần trước */
 var PHIEU_MON_KEY='butxanh_phieu_mon';
 function BX_phieuLopMacDinh(){
@@ -4568,18 +4575,28 @@ function BX_phieuMonMacDinh(){
   try{ var v=localStorage.getItem(PHIEU_MON_KEY); if(BX_PHIEU_MON.indexOf(v)>=0) return v; }catch(e){}
   return BX_PHIEU_MON[0];
 }
+function _phieuNho(){
+  try{ localStorage.setItem(PHIEU_LOP_KEY,String(_phieuSel.lop||'')); localStorage.setItem(PHIEU_MON_KEY,String(_phieuSel.mon||'')); }catch(e){}
+}
 /* (17/8/2026 — đã bỏ BX_phieuDriveId / BX_phieuLinkTai: phiếu không còn nằm trên Drive nên
-   không phải bóc id tệp để dựng đường tải. Muốn có bản PDF thì mở phiếu rồi bấm Ctrl+P.) */
+   không phải bóc id tệp để dựng đường tải. Muốn có bản PDF thì mở phiếu rồi bấm nút Tải PDF.) */
+/* Bấm THẺ LỚP ở nấc 1 → sang nấc 2 (cùng khuôn BX_vbtChon) */
+window.BX_phieuChon=function(lop,mon){
+  if(BX_PHIEU_MON.indexOf(mon)<0) return;
+  _phieuSel.lop=String(lop); _phieuSel.mon=mon; _phieuNho();
+  renderPhieu(); try{ window.scrollTo({top:0}); }catch(e){}
+};
+/* "← Chọn lớp khác" → về nấc 1 */
+window.BX_phieuVeDau=function(){ _phieuSel.lop=null; _phieuSel.mon=''; renderPhieu(); };
+/* Hai hàm cũ giữ nguyên tên vì bộ bấm thử gọi: đặt một nửa, nửa kia lấy từ lần xem trước. */
 window.BX_phieuLop=function(l){
-  _phieuSel.lop=String(l);
-  try{ localStorage.setItem(PHIEU_LOP_KEY,String(l)); }catch(e){}
-  renderPhieu();
+  _phieuSel.lop=String(l); if(!_phieuSel.mon) _phieuSel.mon=BX_phieuMonMacDinh();
+  _phieuNho(); renderPhieu();
 };
 window.BX_phieuMon=function(m){
   if(BX_PHIEU_MON.indexOf(m)<0) return;
-  _phieuSel.mon=m;
-  try{ localStorage.setItem(PHIEU_MON_KEY,m); }catch(e){}
-  renderPhieu();
+  _phieuSel.mon=m; if(!_phieuSel.lop) _phieuSel.lop=BX_phieuLopMacDinh();
+  _phieuNho(); renderPhieu();
 };
 /* ===== XEM PHIẾU NGAY TRONG APP (17/8/2026 — thầy Chung báo các cô bị kẹt) =====
    Phiếu là trang A4 rộng cố định 794px. Nhét vào khung xem trên điện thoại phải TỰ THU NHỎ
@@ -4775,140 +4792,67 @@ window.BX_phieuTTMo=function(lop,mon,ma){
 };
 /* Dải "Ôn luyện tựu trường" đặt NGAY TRÊN lưới 35 tuần. Chỉ dựng khi lớp+môn đang chọn
    thật sự có phiếu tựu trường — hết mùa tựu trường, xoá mã ngày trong BX_PHIEU_TT là dải
-   tự biến mất, không phải sửa giao diện. */
+   tự biến mất, không phải sửa giao diện. (9/9/2026: dựng bằng ô .vb-wk của màn Vở bài tập.) */
 function BX_phieuTTKhoi(lop,mon){
   var co=BX_PHIEU_TT_NGAY.filter(function(n){ return BX_phieuTTCo(lop,mon,n.ma); });
   if(!co.length) return '';
   var m=BX_PHIEU_META[mon]||{ic:'📘',c:'#1FA45C'};
   var q=function(s){ return "'"+String(s).replace(/'/g,"\\'")+"'"; };
   var o=co.map(function(n){
-    return '<div class="pw-wk co" onclick="BX_phieuTTMo('+q(lop)+','+q(mon)+','+q(n.ma)+')"'+
+    return '<div class="vb-wk co" onclick="BX_phieuTTMo('+q(lop)+','+q(mon)+','+q(n.ma)+')"'+
       ' title="Mở phiếu ôn luyện tựu trường ngày '+n.ten+'">'+
-      '<div class="pw-wk-lb">'+(n.thu||'Tựu trường')+'</div>'+
-      '<div class="pw-wk-n">'+n.ten+'</div>'+
-      '<div class="pw-wk-d">'+BX_phieuTTPhu(lop)+'</div>'+
+      '<div class="vb-wk-lb">'+(n.thu||'Tựu trường')+'</div>'+
+      '<div class="vb-wk-n">'+n.ten+'</div>'+
+      '<div class="vb-wk-d">'+BX_phieuTTPhu(lop)+'</div>'+
       '</div>';
   }).join('');
-  return '<div class="pw-panel" style="--mc:'+m.c+';margin-bottom:14px">'+
-    '<div class="pw-ph"><span class="pw-ph-t">🎒 Ôn luyện tựu trường · '+mon+' · Lớp '+lop+'</span>'+
-      '<span class="pw-ph-dem">'+(parseInt(lop,10)>1
+  return '<div class="vb-panel" style="--mc:'+m.c+';margin-bottom:14px">'+
+    '<div class="vb-crumb" style="margin-bottom:10px"><span class="vb-mc">🎒 Ôn luyện tựu trường</span>'+
+      '<span class="vb-dem">'+(parseInt(lop,10)>1
         ? ('ôn lại kiến thức <b>lớp '+(parseInt(lop,10)-1)+'</b>')
-        : 'làm quen – <b>sẵn sàng vào lớp 1</b>')+'</span>'+
-    '</div>'+
-    '<div class="pw-weeks">'+o+'</div></div>';
+        : 'làm quen – <b>sẵn sàng vào lớp 1</b>')+'</span></div>'+
+    '<div class="vb-weeks">'+o+'</div></div>';
 }
-/* Dải tờ Thử sức — đặt dưới lưới 35 tuần vì đây là phần LÀM THÊM, không phải phiếu chính. */
+/* Dải tờ Thử sức — đặt dưới lưới 35 tuần vì đây là phần LÀM THÊM, không phải phiếu chính.
+   (9/9/2026: cùng khung .vb-panel + ô .vb-wk như lưới tuần; ghi chú nằm trong dải .vb-foot.) */
 function BX_phieuTSKhoi(lop,mon){
   var ds=(BX_PHIEU_TS[BX_phieuKey(lop,mon)]||[]).slice().sort(function(a,b){ return a-b; });
   if(!ds.length) return '';
   var m=BX_PHIEU_META[mon]||{ic:'📘',c:'#1FA45C'};
-  var q=function(s){ return "'"+String(s).replace(/'/g,"\'")+"'"; };
+  var q=function(s){ return "'"+String(s).replace(/'/g,"\\'")+"'"; };
   var o=ds.map(function(w){
-    return '<div class="pw-wk co" onclick="BX_phieuTSMo('+q(lop)+','+q(mon)+','+w+')"'+
+    return '<div class="vb-wk co" onclick="BX_phieuTSMo('+q(lop)+','+q(mon)+','+w+')"'+
       ' title="Mở tờ Thử sức '+mon+' tuần '+w+' — in riêng cho nhóm học sinh làm thêm">'+
-      '<div class="pw-wk-lb">Tuần</div><div class="pw-wk-n">'+w+'</div>'+
-      '<div class="pw-wk-d">Thử sức</div></div>';
+      '<div class="vb-wk-lb">Tuần</div><div class="vb-wk-n">'+w+'</div>'+
+      '<div class="vb-wk-d">⭐ Thử sức</div></div>';
   }).join('');
-  return '<div class="pw-panel" style="--mc:'+m.c+';margin-top:14px">'+
-    '<div class="pw-ph"><span class="pw-ph-t">⭐ Thử sức · '+mon+' · Lớp '+lop+'</span>'+
-      '<span class="pw-ph-dem">tờ rời — <b>in riêng</b> cho em nào muốn làm thêm</span></div>'+
-    '<div class="pw-weeks">'+o+'</div>'+
-    '<div class="pw-note" style="margin:10px 12px 12px"><span>⭐</span><span>Mỗi tờ có <b>2 bài khó hơn một chút</b>, '+
-      'vẫn trong bài của tuần đó — <b>không dạy trước chương trình</b>. Tờ ghi rõ <i>không bắt buộc</i>, '+
-      'chấm để động viên, không lấy điểm. Trang 2 là <b>đáp án và gợi ý chữa</b> của thầy cô, bấm in thì trang đó tự ẩn.</span></div>'+
+  return '<div class="vb-panel" style="--mc:'+m.c+';margin-top:14px">'+
+    '<div class="vb-crumb" style="margin-bottom:10px"><span class="vb-mc">⭐ Thử sức · '+mon+' · Lớp '+lop+'</span>'+
+      '<span class="vb-dem">tờ rời — <b>in riêng</b> cho em nào muốn làm thêm</span></div>'+
+    '<div class="vb-weeks">'+o+'</div>'+
+    '<div class="vb-foot" style="margin-top:12px"><span>⭐ Mỗi tờ có <b>2 bài khó hơn một chút</b>, vẫn trong bài của tuần đó — <b>không dạy trước chương trình</b>.</span>'+
+      '<span>Tờ ghi rõ <i>không bắt buộc</i>, chấm để động viên, không lấy điểm.</span>'+
+      '<span>Trang 2 là <b>đáp án và gợi ý chữa</b> của thầy cô, bấm in thì trang đó tự ẩn.</span></div>'+
     '</div>';
 }
+/* 9/9/2026: màn Phiếu KHÔNG còn bộ CSS riêng — dùng chung bộ .vb-man của màn Vở bài tập
+   (BX_vbtStyleOnce). Giữ tên hàm vì renderPhieu và mã cũ gọi. */
 function BX_phieuStyleOnce(){
-  if(el('pw-style')) return;
-  var s=document.createElement('style'); s.id='pw-style';
-  s.textContent=
-   /* ----- thanh lọc: khối lớp · môn học ----- */
-   '#v-phieu .pw-bar{display:flex;align-items:center;gap:0;flex-wrap:wrap;background:#fff;border:1px solid #e6ecf1;'+
-     'border-radius:14px;padding:12px 8px;margin:2px 0 14px}'+
-   '#v-phieu .pw-grp{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:0 16px;border-right:1px solid #eef2f0}'+
-   '#v-phieu .pw-grp:last-child{border-right:0}'+
-   '#v-phieu .pw-glb{font-size:11.5px;font-weight:700;color:#8aa093;letter-spacing:.3px;text-transform:uppercase}'+
-   '#v-phieu .pw-chip{border:1px solid #dde5e0;background:#fff;color:#42544a;font-family:inherit;font-size:13.5px;'+
-     'font-weight:700;border-radius:9px;padding:8px 15px;cursor:pointer;transition:.15s}'+
-   '#v-phieu .pw-chip:hover{border-color:var(--green);color:var(--green-dark)}'+
-   '#v-phieu .pw-chip.on{background:var(--green-dark);border-color:var(--green-dark);color:#fff;'+
-     'box-shadow:0 2px 8px rgba(31,164,92,.28)}'+
-   '#v-phieu .pw-mchip{border:1px solid #dde5e0;background:#fff;color:#5b6b61;font-family:inherit;font-size:13.5px;'+
-     'font-weight:700;border-radius:9px;padding:8px 15px;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:7px}'+
-   '#v-phieu .pw-mchip:hover{border-color:var(--mc);color:var(--mc)}'+
-   '#v-phieu .pw-mchip.on{background:color-mix(in srgb,var(--mc) 10%,#fff);border-color:var(--mc);color:var(--mc)}'+
-   /* (17/8/2026: đã bỏ hàng chỉ số "Tổng số tuần / Đã có / Chưa có / Tiến độ" và dải chú giải —
-      thầy Chung muốn vào thẳng lưới tuần, đọc trạng thái bằng MÀU của ô là đủ.
-      Số phiếu đã có nay ghi gọn một dòng cạnh tên môn ở đầu khung.) */
-   /* ----- khung danh sách tuần ----- */
-   '#v-phieu .pw-panel{background:#fff;border:1px solid #e6ecf1;border-radius:14px;padding:14px 16px 18px}'+
-   '#v-phieu .pw-ph{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}'+
-   '#v-phieu .pw-ph-t{font-size:15.5px;font-weight:800;color:#243}'+
-   '#v-phieu .pw-ph-btn{margin-left:auto;display:inline-flex;align-items:center;gap:7px;border:1px solid #dde5e0;background:#fff;'+
-     'color:#42544a;font-family:inherit;font-size:13px;font-weight:700;border-radius:9px;padding:8px 13px;cursor:pointer;transition:.15s}'+
-   '#v-phieu .pw-ph-btn:hover{border-color:var(--mc);color:var(--mc)}'+
-   '#v-phieu .pw-ph-dem{font-size:12.5px;color:#8aa093;font-weight:600}'+
-   '#v-phieu .pw-ph-dem b{color:var(--mc)}'+
-   /* ----- Ô TUẦN: khối nhỏ nhưng nổi, cả 35 tuần vừa một trang (17/8/2026) -----
-      Ô cũ cao 139px × 6 hàng = phải cuộn. Nay ~68px × 4 hàng là hết 35 tuần.
-      Trạng thái đọc bằng MÀU, không cần dòng chữ "chưa có phiếu" nữa. */
-   /* Kiểu thẻ giống màn "Bài giảng trình chiếu": nền trắng, bo góc, bóng nhẹ và
-      DẢI MÀU BÊN TRÁI theo màu môn (thầy Chung chọn mẫu này 17/8/2026). */
-   '#v-phieu .pw-weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}'+
-   '#v-phieu .pw-wk{position:relative;border-radius:13px;padding:9px 8px 10px 12px;cursor:pointer;text-align:left;'+
-     'border:1px solid #e9eeeb;border-left:4px solid #d7dedb;background:#f7faf8;'+
-     'box-shadow:0 1px 3px rgba(16,40,26,.07);transition:transform .14s,box-shadow .14s,border-color .14s,background .14s}'+
-   '#v-phieu .pw-wk:hover{background:#fff}'+
-   '#v-phieu .pw-wk:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(16,40,26,.13)}'+
-   '#v-phieu .pw-wk:active{transform:translateY(0) scale(.97)}'+
-   '#v-phieu .pw-wk-lb{font-size:8.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#a8b5ad;line-height:1}'+
-   '#v-phieu .pw-wk-n{font-size:19px;font-weight:800;line-height:1.15;color:#243}'+
-   '#v-phieu .pw-wk-d{font-size:9.5px;color:#9aa8a0;line-height:1.2;margin-top:1px}'+
-   /* đã có phiếu → dải màu bên trái đậm màu môn, chữ mang màu môn */
-   '#v-phieu .pw-wk.co{border-left-color:var(--mc);background:color-mix(in srgb,var(--mc) 7%,#fff)}'+
-   '#v-phieu .pw-wk.co:hover{background:color-mix(in srgb,var(--mc) 12%,#fff)}'+
-   '#v-phieu .pw-wk.co .pw-wk-lb{color:color-mix(in srgb,var(--mc) 72%,#fff)}'+
-   '#v-phieu .pw-wk.co .pw-wk-n{color:var(--mc)}'+
-   '#v-phieu .pw-wk.co .pw-wk-d{color:color-mix(in srgb,var(--mc) 60%,#fff)}'+
-   '#v-phieu .pw-wk.co:hover{box-shadow:0 10px 20px color-mix(in srgb,var(--mc) 22%,transparent)}'+
-   /* tuần hiện tại → vòng xanh + chấm nhỏ, không cần chữ */
-   '#v-phieu .pw-wk.nay{box-shadow:0 0 0 2px #1FA45C,0 2px 5px rgba(16,40,26,.08)}'+
-   '#v-phieu .pw-wk.nay:hover{box-shadow:0 0 0 2px #1FA45C,0 8px 16px rgba(16,40,26,.14)}'+
-   '#v-phieu .pw-wk-now{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:#1FA45C;'+
-     'box-shadow:0 0 0 2px #fff}'+
-   /* ----- chân trang ----- */
-   '#v-phieu .pw-note{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;color:#5b6b61;background:#f6faf7;'+
-     'border:1px solid #e1ece5;border-radius:12px;padding:11px 14px;margin-top:14px}'+
-   /* ----- điện thoại ----- */
-   '@media(max-width:560px){'+
-     '#v-phieu .pw-bar{padding:10px 4px;gap:4px}'+
-     '#v-phieu .pw-grp{padding:8px 10px;border-right:0;border-bottom:1px solid #eef2f0;width:100%;gap:6px}'+
-     '#v-phieu .pw-grp:last-child{border-bottom:0}'+
-     '#v-phieu .pw-glb{flex:0 0 100%}'+
-     '#v-phieu .pw-chip{flex:1;padding:9px 2px;font-size:13px;white-space:nowrap}'+
-     '#v-phieu .pw-mchip{flex:1;justify-content:center;padding:9px 6px}'+
-     '#v-phieu .pw-panel{padding:12px 10px 14px}'+
-     '#v-phieu .pw-weeks{grid-template-columns:repeat(4,1fr);gap:7px}'+
-     '#v-phieu .pw-wk{padding:7px 3px 8px;border-radius:11px}'+
-     '#v-phieu .pw-wk-n{font-size:17px}'+
-     '#v-phieu .pw-wk-d{font-size:9px}'+
-     '#v-phieu .pw-ph-btn{margin-left:0;width:100%;justify-content:center}}';
-  document.head.appendChild(s);
+  if(typeof BX_vbtStyleOnce==='function') BX_vbtStyleOnce();
 }
-/* Một ô tuần = một khối nổi, tự nói đủ: tuần · ngày · trạng thái. Bấm vào khối là MỞ PHIẾU
-   (chưa có thì BX_phieuMo báo rõ "chưa có phiếu" — đừng để bấm mà im lặng). Nút ⬇ ở góc chỉ
-   hiện khi phiếu là tệp Drive, và phải chặn nổi bọt kẻo bấm tải lại mở luôn cả phiếu. */
+/* Một ô tuần = một khối .vb-wk (đúng ô tuần của màn Vở bài tập): tuần · ngày · trạng thái đọc bằng
+   MÀU. Bấm vào ô là MỞ PHIẾU (chưa có thì BX_phieuMo báo rõ "chưa có phiếu" — đừng để bấm mà im lặng). */
 function BX_phieuWeekCell(lop,mon,w,tuanNay){
   var co=BX_phieuCoTuan(lop,mon,w), ngay=BX_phieuNgayTuanNgan(w);
   var q=function(s){ return "'"+String(s).replace(/'/g,"\\'")+"'"; };
-  return '<div class="pw-wk'+(co?' co':'')+(w===tuanNay?' nay':'')+'"'+
+  return '<div class="vb-wk'+(co?' co':'')+(w===tuanNay?' nay':'')+'"'+
     ' onclick="BX_phieuMo('+q(lop)+','+q(mon)+','+w+')"'+
     ' title="'+(co?('Mở phiếu '+mon+' tuần '+w):('Tuần '+w+' chưa có phiếu'))+
     (w===tuanNay?' — tuần này':'')+'">'+
-    (w===tuanNay?'<span class="pw-wk-now"></span>':'')+
-    '<div class="pw-wk-lb">Tuần</div>'+
-    '<div class="pw-wk-n">'+w+'</div>'+
-    (ngay?'<div class="pw-wk-d">'+ngay+'</div>':'')+
+    (w===tuanNay?'<span class="vb-wk-now"></span>':'')+
+    '<div class="vb-wk-lb">Tuần</div>'+
+    '<div class="vb-wk-n">'+w+'</div>'+
+    '<div class="vb-wk-d">'+(co?('có phiếu'+(ngay?' · '+ngay:'')):(ngay||'chưa có'))+'</div>'+
     '</div>';
 }
 /* Ngày tuần rút gọn cho ô nhỏ: cùng tháng thì "07–12/09", khác tháng thì "28/09–03/10" */
@@ -4918,44 +4862,56 @@ function BX_phieuNgayTuanNgan(w){
   if(!m) return s.replace(/\s/g,'');
   return (m[2]===m[4]) ? (m[1]+'–'+m[3]+'/'+m[2]) : (m[1]+'/'+m[2]+'–'+m[3]+'/'+m[4]);
 }
+/* Dải ghi chú pháp lý dưới cùng — in ở CẢ HAI nấc (thầy cô đứng ở nấc nào cũng thấy). */
+function BX_phieuChanTrang(){
+  return '<div class="vb-foot" style="margin-top:14px">'+
+    '<span>📄 Phiếu để thầy cô <b>tự chọn</b> giao cho học sinh ôn luyện cuối tuần — <b>không chấm điểm</b>, không bắt buộc nộp</span>'+
+    '<span>⬇ Mở phiếu rồi bấm <b>Tải PDF</b> (hoặc Ctrl + P để in)</span>'+
+    '<span>⭐ Tờ <b>Thử sức</b>: in riêng, <i>không bắt buộc</i>, không lấy điểm — theo Thông tư 27/2020</span>'+
+    '<span>📱 Điện thoại mở ngay trong app</span></div>';
+}
 function renderPhieu(){
   BX_phieuStyleOnce();
   var body=el('pw-body'); if(!body) return;
-  if(!_phieuSel.lop) _phieuSel.lop=BX_phieuLopMacDinh();
-  if(!_phieuSel.mon) _phieuSel.mon=BX_phieuMonMacDinh();
-  var lop=_phieuSel.lop, mon=_phieuSel.mon, tuanNay=BX_phieuTuanNay();
-  var m=BX_PHIEU_META[mon]||{ic:'📘',c:'#1FA45C'};
   var t=el('pw-title'); if(t) t.textContent=BX_PHIEU_TEN;
-
-  /* --- Thanh lọc: khối lớp · môn học (ô "Năm học" đã bỏ theo yêu cầu 17/8) --- */
-  var chipLop=['1','2','3','4','5'].map(function(l){
-    return '<button class="pw-chip'+(l===lop?' on':'')+'" onclick="BX_phieuLop(\''+l+'\')">Lớp '+l+'</button>'; }).join('');
-  var chipMon=BX_PHIEU_MON.map(function(mn){
-    var mm=BX_PHIEU_META[mn]||{ic:'📘',c:'#1FA45C'};
-    return '<button class="pw-mchip'+(mn===mon?' on':'')+'" style="--mc:'+mm.c+'" onclick="BX_phieuMon(\''+BX_escAttr(mn).replace(/'/g,"\\'")+'\')">'+
-      '<span>'+mm.ic+'</span>'+mn+'</button>'; }).join('');
-  /* Thứ tự MÔN HỌC trước rồi mới tới KHỐI LỚP — thầy Chung chốt 17/8/2026:
-     chọn môn là việc đầu tiên thầy cô nghĩ tới, chọn lớp là bước sau. */
-  var bar='<div class="pw-bar">'+
-    '<div class="pw-grp"><span class="pw-glb">Môn học</span>'+chipMon+'</div>'+
-    '<div class="pw-grp"><span class="pw-glb">Khối lớp</span>'+chipLop+'</div></div>';
-
-  /* --- Lưới 35 tuần chạy liền một mạch: bỏ tiêu đề học kỳ để cả năm nằm gọn một trang --- */
-  var g='';
+  var q=function(s){ return "'"+String(s).replace(/'/g,"\\'")+"'"; };
+  var lop=_phieuSel.lop, mon=_phieuSel.mon, tuanNay=BX_phieuTuanNay();
+  var h='';
+  /* ===== NẤC 1: băng tiêu đề + hai khối môn, mỗi khối 5 thẻ lớp (đúng khuôn màn Vở bài tập) =====
+     Băng tiêu đề đổi sang sắc XANH LÁ (--h1/--h2/--h3) để không lẫn với băng xanh dương của Vở bài tập. */
+  if(!lop||!mon){
+    h+='<div class="vb-hero" style="--h1:#0f8a5f;--h2:#23b57e;--h3:#7fdcb5"><h3>'+String(BX_PHIEU_TEN).toUpperCase()+'</h3>'+
+       '<p>Phiếu ôn luyện Toán và Tiếng Việt lớp 1–5 theo từng tuần: chọn lớp → bấm ô tuần là mở phiếu, tải PDF in được ngay. '+
+       'Thầy cô tự chọn giao cho học sinh — không chấm điểm, không bắt buộc.</p>'+
+       '<div class="vb-hero-ic"><span>📝</span><span>✏️</span></div></div>';
+    BX_PHIEU_MON.forEach(function(mn){
+      var m=BX_PHIEU_META[mn]||{ic:'📘',c:'#1FA45C',c2:'#f0f7f3',mo:''}, tong=0, tongTS=0, cards='';
+      ['1','2','3','4','5'].forEach(function(l){
+        var nt=BX_phieuDemTuan(l,mn), nts=(BX_PHIEU_TS[BX_phieuKey(l,mn)]||[]).length; tong+=nt; tongTS+=nts;
+        cards+='<button class="vb-card'+(nt?' co':'')+'" style="--mc:'+m.c+';--mc2:'+m.c2+'" onclick="BX_phieuChon('+q(l)+','+q(mn)+')" title="Phiếu '+mn+' lớp '+l+'">'+
+          '<span class="vb-num">'+l+'</span><span class="vb-info"><span class="vb-lop">Lớp '+l+'</span>'+
+          '<span class="vb-dem">'+(nt?('<b>'+nt+'</b>/'+BX_PHIEU_WEEKS+' tuần có phiếu'):'chưa có phiếu')+'</span></span>'+
+          '<span class="vb-book">'+m.ic+'</span><span class="vb-arr">›</span></button>';
+      });
+      h+='<div class="vb-sec" style="--mc:'+m.c+';--mc2:'+m.c2+'"><div class="vb-sec-h"><span class="vb-sec-ic">'+m.ic+'</span>'+
+         '<div><div class="vb-sec-t">Phiếu '+mn+'</div><div class="vb-sec-s">'+(m.mo||'')+' · <b>'+tong+'</b> phiếu đã có'+(tongTS?' · '+tongTS+' tờ Thử sức':'')+'</div></div></div>'+
+         '<div class="vb-grid">'+cards+'</div></div>';
+    });
+    h+=BX_phieuChanTrang();
+    body.innerHTML=h; return;
+  }
+  /* ===== NẤC 2: "← Chọn lớp khác" + dòng dẫn + lưới 35 tuần (bấm ô là mở phiếu) + Thử sức + ghi chú ===== */
+  var m=BX_PHIEU_META[mon]||{ic:'📘',c:'#1FA45C'};
+  var daCo=BX_phieuDemTuan(lop,mon), g='';
   for(var w=1; w<=BX_PHIEU_WEEKS; w++) g+=BX_phieuWeekCell(lop,mon,w,tuanNay);
-  /* 17/8/2026: bỏ nút "📁 Mở cả thư mục môn" — phiếu nằm trong app, không còn thư mục Drive. */
-  var daCo=BX_phieuDemTuan(lop,mon);
-  var khung='<div class="pw-panel" style="--mc:'+m.c+'">'+
-    '<div class="pw-ph"><span class="pw-ph-t">'+m.ic+' '+mon+' · Lớp '+lop+'</span>'+
-      '<span class="pw-ph-dem"><b>'+daCo+'</b>/'+BX_PHIEU_WEEKS+' tuần đã có phiếu</span>'+
-    '</div>'+
-    '<div class="pw-weeks">'+g+'</div></div>';
-
-  body.innerHTML=bar+BX_phieuTTKhoi(lop,mon)+khung+BX_phieuTSKhoi(lop,mon)+
-    '<div class="pw-note"><span>ℹ️</span><span>Phiếu để thầy cô <b>tự chọn</b> giao cho học sinh ôn luyện cuối tuần — '+
-      'không chấm điểm, không bắt buộc nộp. Mở phiếu ra bấm <b>Ctrl + P</b> là in được ngay hoặc lưu thành PDF.</span></div>';
+  h+='<div class="vb-head" style="--mc:'+m.c+'"><button class="vb-back" onclick="BX_phieuVeDau()">← Chọn lớp khác</button>'+
+     '<div class="vb-crumb"><span class="vb-mc">'+m.ic+' '+mon+' · Lớp '+lop+'</span><span class="vb-dem"><b>'+daCo+'</b>/'+BX_PHIEU_WEEKS+' tuần đã có phiếu</span></div></div>'+
+     BX_phieuTTKhoi(lop,mon)+
+     '<div class="vb-panel" style="--mc:'+m.c+'"><div class="vb-weeks">'+g+'</div></div>'+
+     BX_phieuTSKhoi(lop,mon)+
+     BX_phieuChanTrang();
+  body.innerHTML=h;
 }
-
 /* ================= VỞ BÀI TẬP — 8–9/9/2026 (thầy Chung) =================
    Mục "Kho giáo án" trên menu trái ẨN đi (màn #kho vẫn dựng được khi mở thẳng địa chỉ, Bảng điều
    khiển vẫn trỏ tới được — không xoá gì); thêm mục "Vở bài tập" đứng sau Bài giảng trình chiếu.
@@ -5063,76 +5019,79 @@ function BX_vbtStyleOnce(){
   if(el('vbt-style')) return;
   var s=document.createElement('style'); s.id='vbt-style';
   s.textContent=
+   /* 9/9/2026 (thầy Chung): bộ CSS này DÙNG CHUNG cho màn Vở bài tập và màn Phiếu bài tập cuối tuần —
+      phạm vi là lớp .vb-man gắn trên <section> của cả hai màn, không chép hai bản. Băng tiêu đề nhận
+      ba biến --h1/--h2/--h3 để màn Phiếu đổi sắc (xanh lá) mà vẫn cùng khuôn. */
    /* ----- băng tiêu đề (theo ảnh mẫu) ----- */
-   '#v-vbt .vb-hero{position:relative;overflow:hidden;border-radius:18px;padding:22px 28px;margin-bottom:16px;color:#fff;'+
-     'background:linear-gradient(100deg,#1e6fd9 0%,#3aa0f5 55%,#7cc6ff 100%);box-shadow:0 10px 26px rgba(30,111,217,.25)}'+
-   '#v-vbt .vb-hero h3{margin:0;font-size:30px;font-weight:900;letter-spacing:.5px;text-shadow:0 2px 6px rgba(0,0,0,.18)}'+
-   '#v-vbt .vb-hero p{margin:6px 0 0;font-size:14px;opacity:.95;max-width:640px}'+
-   '#v-vbt .vb-hero .vb-hero-ic{position:absolute;right:26px;top:50%;transform:translateY(-50%);font-size:64px;line-height:1;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25))}'+
-   '#v-vbt .vb-hero .vb-hero-ic span{display:inline-block;margin-left:6px}'+
+   '.vb-man .vb-hero{position:relative;overflow:hidden;border-radius:18px;padding:22px 28px;margin-bottom:16px;color:#fff;'+
+     'background:linear-gradient(100deg,var(--h1,#1e6fd9) 0%,var(--h2,#3aa0f5) 55%,var(--h3,#7cc6ff) 100%);box-shadow:0 10px 26px color-mix(in srgb,var(--h1,#1e6fd9) 25%,transparent)}'+
+   '.vb-man .vb-hero h3{margin:0;font-size:30px;font-weight:900;letter-spacing:.5px;text-shadow:0 2px 6px rgba(0,0,0,.18)}'+
+   '.vb-man .vb-hero p{margin:6px 0 0;font-size:14px;opacity:.95;max-width:640px}'+
+   '.vb-man .vb-hero .vb-hero-ic{position:absolute;right:26px;top:50%;transform:translateY(-50%);font-size:64px;line-height:1;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25))}'+
+   '.vb-man .vb-hero .vb-hero-ic span{display:inline-block;margin-left:6px}'+
    /* ----- hai khối môn ----- */
-   '#v-vbt .vb-sec{background:#fff;border:2px solid var(--mc);border-radius:18px;padding:16px 18px 18px;margin-bottom:16px;box-shadow:0 4px 14px rgba(16,40,26,.06)}'+
-   '#v-vbt .vb-sec-h{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px dashed color-mix(in srgb,var(--mc) 40%,#fff)}'+
-   '#v-vbt .vb-sec-ic{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:25px;background:var(--mc2);border:1.5px solid color-mix(in srgb,var(--mc) 35%,#fff)}'+
-   '#v-vbt .vb-sec-t{font-size:20px;font-weight:900;color:var(--mc);line-height:1.15;text-transform:uppercase;letter-spacing:.3px}'+
-   '#v-vbt .vb-sec-s{font-size:12.5px;color:#6b7c72;font-weight:600;margin-top:3px}'+
-   '#v-vbt .vb-sec-s b{color:#243}'+
-   '#v-vbt .vb-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}'+
-   '#v-vbt .vb-card{position:relative;display:flex;align-items:center;gap:10px;min-height:96px;padding:12px 12px 12px 14px;'+
+   '.vb-man .vb-sec{background:#fff;border:2px solid var(--mc);border-radius:18px;padding:16px 18px 18px;margin-bottom:16px;box-shadow:0 4px 14px rgba(16,40,26,.06)}'+
+   '.vb-man .vb-sec-h{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px dashed color-mix(in srgb,var(--mc) 40%,#fff)}'+
+   '.vb-man .vb-sec-ic{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:25px;background:var(--mc2);border:1.5px solid color-mix(in srgb,var(--mc) 35%,#fff)}'+
+   '.vb-man .vb-sec-t{font-size:20px;font-weight:900;color:var(--mc);line-height:1.15;text-transform:uppercase;letter-spacing:.3px}'+
+   '.vb-man .vb-sec-s{font-size:12.5px;color:#6b7c72;font-weight:600;margin-top:3px}'+
+   '.vb-man .vb-sec-s b{color:#243}'+
+   '.vb-man .vb-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}'+
+   '.vb-man .vb-card{position:relative;display:flex;align-items:center;gap:10px;min-height:96px;padding:12px 12px 12px 14px;'+
      'border-radius:16px;border:1.5px solid color-mix(in srgb,var(--mc) 35%,#fff);background:linear-gradient(180deg,#fff,var(--mc2));'+
      'cursor:pointer;text-align:left;font-family:inherit;transition:.16s;min-width:0;overflow:hidden}'+
-   '#v-vbt .vb-card:hover{transform:translateY(-3px);box-shadow:0 12px 22px color-mix(in srgb,var(--mc) 28%,transparent);border-color:var(--mc)}'+
-   '#v-vbt .vb-card:active{transform:scale(.97)}'+
-   '#v-vbt .vb-num{flex:none;width:54px;height:54px;border-radius:14px;background:var(--mc);color:#fff;font-size:30px;font-weight:900;display:flex;align-items:center;justify-content:center;'+
+   '.vb-man .vb-card:hover{transform:translateY(-3px);box-shadow:0 12px 22px color-mix(in srgb,var(--mc) 28%,transparent);border-color:var(--mc)}'+
+   '.vb-man .vb-card:active{transform:scale(.97)}'+
+   '.vb-man .vb-num{flex:none;width:54px;height:54px;border-radius:14px;background:var(--mc);color:#fff;font-size:30px;font-weight:900;display:flex;align-items:center;justify-content:center;'+
      'box-shadow:0 6px 12px color-mix(in srgb,var(--mc) 40%,transparent)}'+
-   '#v-vbt .vb-info{flex:1;min-width:0;display:flex;flex-direction:column}'+
-   '#v-vbt .vb-lop{display:block;font-size:16px;font-weight:800;color:#243;line-height:1.1}'+
-   '#v-vbt .vb-dem{display:block;font-size:12px;color:#6b7c72;font-weight:600;margin-top:4px;white-space:normal;line-height:1.25}'+
-   '#v-vbt .vb-dem b{color:var(--mc)}'+
-   '#v-vbt .vb-arr{flex:none;width:26px;height:26px;border-radius:50%;background:#fff;border:1.5px solid color-mix(in srgb,var(--mc) 40%,#fff);color:var(--mc);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px}'+
-   '#v-vbt .vb-card.co{border-color:var(--mc)}'+
-   '#v-vbt .vb-card.co .vb-arr{background:var(--mc);color:#fff;border-color:var(--mc)}'+
-   '#v-vbt .vb-book{position:absolute;right:38px;top:8px;font-size:15px;opacity:.55}'+
+   '.vb-man .vb-info{flex:1;min-width:0;display:flex;flex-direction:column}'+
+   '.vb-man .vb-lop{display:block;font-size:16px;font-weight:800;color:#243;line-height:1.1}'+
+   '.vb-man .vb-dem{display:block;font-size:12px;color:#6b7c72;font-weight:600;margin-top:4px;white-space:normal;line-height:1.25}'+
+   '.vb-man .vb-dem b{color:var(--mc)}'+
+   '.vb-man .vb-arr{flex:none;width:26px;height:26px;border-radius:50%;background:#fff;border:1.5px solid color-mix(in srgb,var(--mc) 40%,#fff);color:var(--mc);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px}'+
+   '.vb-man .vb-card.co{border-color:var(--mc)}'+
+   '.vb-man .vb-card.co .vb-arr{background:var(--mc);color:#fff;border-color:var(--mc)}'+
+   '.vb-man .vb-book{position:absolute;right:38px;top:8px;font-size:15px;opacity:.55}'+
    /* ----- chân trang ----- */
-   '#v-vbt .vb-foot{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center;font-size:12.5px;color:#42544a;background:#f3f8f5;border:1px solid #dfe9e3;border-radius:14px;padding:12px 16px}'+
-   '#v-vbt .vb-foot span{display:inline-flex;align-items:center;gap:6px}'+
-   '#v-vbt .vb-foot b{color:#1a6b41}'+
+   '.vb-man .vb-foot{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center;font-size:12.5px;color:#42544a;background:#f3f8f5;border:1px solid #dfe9e3;border-radius:14px;padding:12px 16px}'+
+   '.vb-man .vb-foot span{display:inline-flex;align-items:center;gap:6px}'+
+   '.vb-man .vb-foot b{color:#1a6b41}'+
    /* ----- nấc 2, 3 ----- */
-   '#v-vbt .vb-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}'+
-   '#v-vbt .vb-back{border:1px solid #dde5e0;background:#fff;color:#42544a;font-family:inherit;font-size:13.5px;font-weight:700;border-radius:9px;padding:8px 14px;cursor:pointer}'+
-   '#v-vbt .vb-back:hover{border-color:var(--green);color:var(--green-dark)}'+
-   '#v-vbt .vb-crumb{font-size:15.5px;font-weight:800;color:#243;display:flex;align-items:center;gap:8px}'+
-   '#v-vbt .vb-crumb .vb-mc{color:var(--mc)}'+
-   '#v-vbt .vb-panel{background:#fff;border:1px solid #e6ecf1;border-radius:14px;padding:14px 16px 18px}'+
-   '#v-vbt .vb-weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}'+
-   '#v-vbt .vb-wk{position:relative;border-radius:13px;padding:9px 8px 10px 12px;cursor:pointer;text-align:left;border:1px solid #e9eeeb;border-left:4px solid #d7dedb;'+
+   '.vb-man .vb-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}'+
+   '.vb-man .vb-back{border:1px solid #dde5e0;background:#fff;color:#42544a;font-family:inherit;font-size:13.5px;font-weight:700;border-radius:9px;padding:8px 14px;cursor:pointer}'+
+   '.vb-man .vb-back:hover{border-color:var(--green);color:var(--green-dark)}'+
+   '.vb-man .vb-crumb{font-size:15.5px;font-weight:800;color:#243;display:flex;align-items:center;gap:8px}'+
+   '.vb-man .vb-crumb .vb-mc{color:var(--mc)}'+
+   '.vb-man .vb-panel{background:#fff;border:1px solid #e6ecf1;border-radius:14px;padding:14px 16px 18px}'+
+   '.vb-man .vb-weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}'+
+   '.vb-man .vb-wk{position:relative;border-radius:13px;padding:9px 8px 10px 12px;cursor:pointer;text-align:left;border:1px solid #e9eeeb;border-left:4px solid #d7dedb;'+
      'background:#f7faf8;box-shadow:0 1px 3px rgba(16,40,26,.07);transition:transform .14s,box-shadow .14s}'+
-   '#v-vbt .vb-wk:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(16,40,26,.13);background:#fff}'+
-   '#v-vbt .vb-wk-lb{font-size:8.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#a8b5ad;line-height:1}'+
-   '#v-vbt .vb-wk-n{font-size:19px;font-weight:800;line-height:1.15;color:#243}'+
-   '#v-vbt .vb-wk-d{font-size:9.5px;color:#9aa8a0;line-height:1.2;margin-top:1px}'+
-   '#v-vbt .vb-wk.co{border-left-color:var(--mc);background:color-mix(in srgb,var(--mc) 7%,#fff)}'+
-   '#v-vbt .vb-wk.co .vb-wk-n,#v-vbt .vb-wk.co .vb-wk-d{color:var(--mc)}'+
-   '#v-vbt .vb-wk.co .vb-wk-lb{color:color-mix(in srgb,var(--mc) 72%,#fff)}'+
-   '#v-vbt .vb-wk.nay{box-shadow:0 0 0 2px #1FA45C,0 2px 5px rgba(16,40,26,.08)}'+
-   '#v-vbt .vb-wk-now{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:#1FA45C;box-shadow:0 0 0 2px #fff}'+
-   '#v-vbt .vb-tiet{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:14px;border:1px solid #e6ecf1;border-left:5px solid var(--mc);background:#fff;margin-bottom:10px;flex-wrap:wrap}'+
-   '#v-vbt .vb-thu{flex:none;width:64px;text-align:center;border-radius:12px;padding:8px 4px;background:color-mix(in srgb,var(--mc) 10%,#fff);color:var(--mc);font-weight:800;font-size:12px;line-height:1.2}'+
-   '#v-vbt .vb-thu b{display:block;font-size:20px}'+
-   '#v-vbt .vb-tt{flex:1;min-width:200px}'+
-   '#v-vbt .vb-tt-ten{font-size:15px;font-weight:800;color:#243}'+
-   '#v-vbt .vb-tt-sub{font-size:12.5px;color:#8aa093;margin-top:3px}'+
-   '#v-vbt .vb-btns{display:flex;gap:8px;flex-wrap:wrap}'+
-   '#v-vbt .vb-btn{border:1px solid #dde5e0;background:#fff;color:#42544a;font-family:inherit;font-size:13px;font-weight:700;border-radius:9px;padding:9px 14px;cursor:pointer}'+
-   '#v-vbt .vb-btn.solid{background:var(--mc);border-color:var(--mc);color:#fff}'+
-   '#v-vbt .vb-btn:hover{filter:brightness(.95)}'+
-   '#v-vbt .vb-empty{padding:22px;text-align:center;color:#8aa093;font-size:14px;background:#f7faf8;border-radius:12px}'+
-   '@media(max-width:1000px){#v-vbt .vb-grid{gap:8px}#v-vbt .vb-card{min-height:84px;padding:10px 8px 10px 10px;gap:8px}#v-vbt .vb-num{width:44px;height:44px;font-size:24px}#v-vbt .vb-lop{font-size:14px}#v-vbt .vb-dem{font-size:11px}#v-vbt .vb-arr{display:none}#v-vbt .vb-book{display:none}}'+
-   '@media(max-width:560px){#v-vbt .vb-hero{padding:16px 18px}#v-vbt .vb-hero h3{font-size:22px}#v-vbt .vb-hero .vb-hero-ic{display:none}'+
-     '#v-vbt .vb-grid{grid-template-columns:repeat(5,1fr);gap:5px}#v-vbt .vb-card{flex-direction:column;min-height:88px;padding:8px 2px;gap:4px;text-align:center;border-radius:11px}'+
-     '#v-vbt .vb-num{width:36px;height:36px;font-size:20px;border-radius:10px}#v-vbt .vb-lop{font-size:12px}#v-vbt .vb-dem{font-size:9.5px;white-space:normal}#v-vbt .vb-sec{padding:12px 8px}'+
-     '#v-vbt .vb-sec-t{font-size:15px}#v-vbt .vb-weeks{grid-template-columns:repeat(4,1fr);gap:7px}#v-vbt .vb-wk{padding:7px 3px 8px}#v-vbt .vb-wk-n{font-size:17px}'+
-     '#v-vbt .vb-btns{width:100%}#v-vbt .vb-btn{flex:1;text-align:center}}';
+   '.vb-man .vb-wk:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(16,40,26,.13);background:#fff}'+
+   '.vb-man .vb-wk-lb{font-size:8.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#a8b5ad;line-height:1}'+
+   '.vb-man .vb-wk-n{font-size:19px;font-weight:800;line-height:1.15;color:#243}'+
+   '.vb-man .vb-wk-d{font-size:9.5px;color:#9aa8a0;line-height:1.2;margin-top:1px}'+
+   '.vb-man .vb-wk.co{border-left-color:var(--mc);background:color-mix(in srgb,var(--mc) 7%,#fff)}'+
+   '.vb-man .vb-wk.co .vb-wk-n,.vb-man .vb-wk.co .vb-wk-d{color:var(--mc)}'+
+   '.vb-man .vb-wk.co .vb-wk-lb{color:color-mix(in srgb,var(--mc) 72%,#fff)}'+
+   '.vb-man .vb-wk.nay{box-shadow:0 0 0 2px #1FA45C,0 2px 5px rgba(16,40,26,.08)}'+
+   '.vb-man .vb-wk-now{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:#1FA45C;box-shadow:0 0 0 2px #fff}'+
+   '.vb-man .vb-tiet{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:14px;border:1px solid #e6ecf1;border-left:5px solid var(--mc);background:#fff;margin-bottom:10px;flex-wrap:wrap}'+
+   '.vb-man .vb-thu{flex:none;width:64px;text-align:center;border-radius:12px;padding:8px 4px;background:color-mix(in srgb,var(--mc) 10%,#fff);color:var(--mc);font-weight:800;font-size:12px;line-height:1.2}'+
+   '.vb-man .vb-thu b{display:block;font-size:20px}'+
+   '.vb-man .vb-tt{flex:1;min-width:200px}'+
+   '.vb-man .vb-tt-ten{font-size:15px;font-weight:800;color:#243}'+
+   '.vb-man .vb-tt-sub{font-size:12.5px;color:#8aa093;margin-top:3px}'+
+   '.vb-man .vb-btns{display:flex;gap:8px;flex-wrap:wrap}'+
+   '.vb-man .vb-btn{border:1px solid #dde5e0;background:#fff;color:#42544a;font-family:inherit;font-size:13px;font-weight:700;border-radius:9px;padding:9px 14px;cursor:pointer}'+
+   '.vb-man .vb-btn.solid{background:var(--mc);border-color:var(--mc);color:#fff}'+
+   '.vb-man .vb-btn:hover{filter:brightness(.95)}'+
+   '.vb-man .vb-empty{padding:22px;text-align:center;color:#8aa093;font-size:14px;background:#f7faf8;border-radius:12px}'+
+   '@media(max-width:1000px){.vb-man .vb-grid{gap:8px}.vb-man .vb-card{min-height:84px;padding:10px 8px 10px 10px;gap:8px}.vb-man .vb-num{width:44px;height:44px;font-size:24px}.vb-man .vb-lop{font-size:14px}.vb-man .vb-dem{font-size:11px}.vb-man .vb-arr{display:none}.vb-man .vb-book{display:none}}'+
+   '@media(max-width:560px){.vb-man .vb-hero{padding:16px 18px}.vb-man .vb-hero h3{font-size:22px}.vb-man .vb-hero .vb-hero-ic{display:none}'+
+     '.vb-man .vb-grid{grid-template-columns:repeat(5,1fr);gap:5px}.vb-man .vb-card{flex-direction:column;min-height:88px;padding:8px 2px;gap:4px;text-align:center;border-radius:11px}'+
+     '.vb-man .vb-num{width:36px;height:36px;font-size:20px;border-radius:10px}.vb-man .vb-lop{font-size:12px}.vb-man .vb-dem{font-size:9.5px;white-space:normal}.vb-man .vb-sec{padding:12px 8px}'+
+     '.vb-man .vb-sec-t{font-size:15px}.vb-man .vb-weeks{grid-template-columns:repeat(4,1fr);gap:7px}.vb-man .vb-wk{padding:7px 3px 8px}.vb-man .vb-wk-n{font-size:17px}'+
+     '.vb-man .vb-btns{width:100%}.vb-man .vb-btn{flex:1;text-align:center}}';
   document.head.appendChild(s);
 }
 function _vbtNgayTuan(w){ try{ return (typeof BX_phieuNgayTuanNgan==='function')?BX_phieuNgayTuanNgan(w):''; }catch(e){ return ''; } }
