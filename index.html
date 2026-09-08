@@ -4584,7 +4584,7 @@ window.BX_phieuXem=function(url, ten){
          các cô xem phiếu trên điện thoại rồi mới in ở máy tính, để đó chỉ tổ chật thanh. */
       '<div class="pwd-bar">'+
         '<div class="pwd-ten" id="pwd-ten"></div>'+
-        '<button class="pwd-in" onclick="BX_phieuInKhung()">🖨 In</button>'+
+        '<button class="pwd-in" onclick="BX_phieuInKhung()" title="Tải phiếu về máy dưới dạng PDF">⬇ Tải PDF</button>'+
         '<button class="pwd-x" onclick="BX_phieuDong()" aria-label="Đóng phiếu">✕ Đóng</button>'+
       '</div>'+
       '<div class="pwd-scroll" id="pwd-scroll"><div class="pwd-inner" id="pwd-inner"></div></div>';
@@ -4606,7 +4606,8 @@ window.BX_phieuXem=function(url, ten){
       '#pw-doc .pwd-in:active{background:#157040}'+
       /* Điện thoại/máy tính bảng: giấu nút In (thầy Chung 17/8/2026). Máy tính chạy app cài
          sẵn cũng dùng lớp phủ này — ở đó vẫn giữ nút In vì in ngay được. */
-      '@media(pointer:coarse){#pw-doc .pwd-in{display:none}}'+
+      /* (8/9/2026) nút nay là TẢI PDF nên điện thoại cũng dùng được → không giấu nữa */
+      '@media(pointer:coarse){#pw-doc .pwd-in{padding:11px 14px}}'+
       '#pw-doc .pwd-scroll{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:10px 0 24px}'+
       '#pw-doc .pwd-inner{margin:0 auto;position:relative}'+
       '#pw-doc iframe{border:0;display:block;width:794px;transform-origin:top left;background:#eef2f0}';
@@ -4662,8 +4663,21 @@ window.addEventListener('popstate', function(){
 /* In từ lớp phủ: in ĐÚNG tờ phiếu trong khung, không dính giao diện app.
    Trình duyệt nào không cho in khung nhúng thì mở phiếu ra thẻ riêng để in — thà thêm một
    bước còn hơn bấm In mà không thấy gì. */
+/* (8/9/2026, thầy Chung) "Nút tải về chứ không in — tải PDF luôn": mỗi phiếu có sẵn tệp .pdf cùng tên
+   (dựng bằng _lam-pdf-phieu.js, giống hệt bản in). Nút tải thẳng tệp đó; không có PDF mới lùi về hộp In. */
 window.BX_phieuInKhung=function(){
   var kh=el('pwd-khung'); if(!kh) return;
+  var src=String(kh.src||''), pdf=src.replace(/\.html?(\?.*)?$/i,'.pdf');
+  if(pdf!==src){
+    try{
+      var x=new XMLHttpRequest(); x.open('HEAD',pdf,false); x.send();
+      if(x.status<400){
+        var a=document.createElement('a'); a.href=pdf; a.download=pdf.split('/').pop().split('?')[0];
+        document.body.appendChild(a); a.click(); setTimeout(function(){ try{ a.remove(); }catch(e){} },1000);
+        return;
+      }
+    }catch(e){}
+  }
   try{
     kh.contentWindow.focus();
     kh.contentWindow.print();

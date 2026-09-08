@@ -45,7 +45,10 @@
   + '.bx-ve{top:auto;bottom:18px;left:18px;font-size:26px;padding:20px 30px;gap:14px;border-width:2.5px;'
   + 'box-shadow:0 6px 20px rgba(16,60,36,.26)}'
   + '.bx-ve svg{width:30px;height:30px;stroke-width:2.6}}'
-  + '@media print{.bx-in,.bx-ve{display:none!important}}';
+  + '@media print{.bx-in,.bx-ve{display:none!important}}'
+  /* (8/9/2026) Thầy Chung: bỏ dòng "TRỢ LÝ CỦA THẦY CÔ" dưới chữ BÚT XANH trên phiếu — đã gỡ trong 120 tệp,
+     chốt thêm ở đây để phiếu soạn sau theo khuôn cũ cũng không hiện. */
+  + '.hieu .phu{display:none!important}';
 
   var st = document.createElement('style');
   st.textContent = css;
@@ -61,13 +64,23 @@
   ve.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Quay lại</span>';
   ve.onclick = bxVeApp;
 
-  var inn = document.createElement('button');
+  /* (8/9/2026, thầy Chung) "Tạo nút TẢI VỀ chứ không in — tải về tệp PDF luôn." Mỗi phiếu đã có sẵn tệp PDF
+     cùng tên (dựng bằng _lam-pdf-phieu.js, đúng như bản in), nút này tải thẳng tệp đó. Chỉ khi chưa có PDF
+     (phiếu vừa soạn, chưa chạy script) mới lùi về hộp In của trình duyệt. */
+  var inn = document.createElement('a');
   inn.className = 'bx-in';
-  inn.title = 'In phiếu hoặc lưu thành tệp PDF';
-  inn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 9.5V3.5h11v6"/>'
-    + '<path d="M6.5 18.5h-2a1 1 0 01-1-1v-5a2 2 0 012-2h13a2 2 0 012 2v5a1 1 0 01-1 1h-2"/>'
-    + '<path d="M6.5 14.5h11v6h-11z"/></svg><span class="bx-in-chu">In / Lưu PDF</span>';
-  inn.onclick = function () { window.print(); };
+  inn.title = 'Tải phiếu về máy dưới dạng tệp PDF';
+  var pdfUrl = location.pathname.replace(/\.html?$/i, '.pdf');
+  inn.href = pdfUrl;
+  inn.setAttribute('download', pdfUrl.split('/').pop());
+  inn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/>'
+    + '<path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg><span class="bx-in-chu">Tải PDF</span>';
+  inn.onclick = function (ev) {
+    try {
+      var x = new XMLHttpRequest(); x.open('HEAD', pdfUrl, false); x.send();
+      if (x.status >= 400) { ev.preventDefault(); window.print(); }
+    } catch (e) { ev.preventDefault(); window.print(); }
+  };
 
   document.body.appendChild(ve);
   document.body.appendChild(inn);
