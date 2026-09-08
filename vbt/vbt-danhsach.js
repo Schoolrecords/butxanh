@@ -6,10 +6,16 @@
    👉 Thêm tiết mới: tải tệp HTML lên bucket rồi thêm một dòng vào đúng ô lớp·môn·tuần.
    Lớp 1 Tiếng Việt tuần 1 = tuần "Làm quen" (chưa có bài trong vở) → để trống. */
 window.BX_VBT_DS={
+  /* 9/9/2026 (thầy Chung): Toán 1 dùng bản TỰ DỰNG (SVG + emoji, ~80 KB/tiết, không cắt ảnh vở) làm mẫu —
+     tệp ở thư mục con tu-dung/ trên bucket; bản cắt cũ VBT_Toan1_Tuan1_Tiet2/3.html vẫn còn trên bucket để đối chiếu.
+     Vị trí tiết theo KHGD Toán 1: tuần 1 tiết 1 là "Tiết học đầu tiên" nên Bài 1 tiết 1 → tuần 1 tiết 2. */
   'L1|Toán':{
     1:[
-      {tiet:2, ten:"Bài 1. Các số 0, 1, 2, 3, 4, 5 – Tiết 1", trang:"4–5", tep:"VBT_Toan1_Tuan1_Tiet2.html", soSlide:5},
-      {tiet:3, ten:"Bài 1. Các số 0, 1, 2, 3, 4, 5 – Tiết 2", trang:"6–7", tep:"VBT_Toan1_Tuan1_Tiet3.html", soSlide:5},
+      {tiet:2, ten:"Bài 1. Các số 0, 1, 2, 3, 4, 5 – Tiết 1", trang:"4–5", tep:"tu-dung/VBT_Toan1_Tuan1_Tiet2.html", soSlide:5},
+      {tiet:3, ten:"Bài 1. Các số 0, 1, 2, 3, 4, 5 – Tiết 2", trang:"6–7", tep:"tu-dung/VBT_Toan1_Tuan1_Tiet3.html", soSlide:5},
+    ],
+    2:[
+      {tiet:1, ten:"Bài 1. Các số 0, 1, 2, 3, 4, 5 – Tiết 3", trang:"8–9", tep:"tu-dung/VBT_Toan1_Tuan2_Tiet1.html", soSlide:5},
     ],
   },
   'L2|Toán':{
