@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-08 · 155';
+  var PB='2026-09-08 · 156';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1362,7 +1362,7 @@ window.bxMergeKho = function(){
      Trước: khgd-lop1..4 (~500KB) tải cho mọi người + KHGD lớp 5 nhúng ngay trong
      index.html (~160KB). Nay: lớp 5 tách ra khgd-lop5.js, cả 5 file nạp lười.
      Khối 5 luôn nạp kèm (sau khởi động) vì Bản đồ chương trình/dashboard dựa vào. */
-  var VK='20260908-tt27-gdtc', ttKHGD={};
+  var VK='20260908-sgv-toan3', ttKHGD={};
   window.BX_KHGD_FILES={'1':'khgd-lop1.js','2':'khgd-lop2.js','3':'khgd-lop3.js','4':'khgd-lop4.js','5':'khgd-lop5.js'};
   window.BX_ensureKHGD=function(lopHoacKhoi){
     var khoi=window.BX_khoiCuaLop(lopHoacKhoi)||String(lopHoacKhoi||'').replace(/\D/g,'').slice(0,1);
@@ -4945,7 +4945,9 @@ function scheduleRows(){
   }
   return out;
 }
-function placeStr(){ const p=(state.to||'').split('/'); return p.length===3?`${state.place}, ngày ${p[0]} tháng ${p[1]} năm ${p[2]}`:`${state.place}, ngày … tháng … năm ……`; }
+/* (8/9/2026 — thầy Chung) NGÀY KÝ Lịch báo giảng lấy NGÀY ĐẦU TUẦN (state.from), không phải ngày
+   cuối tuần: lịch báo giảng ký trước khi dạy để tổ chuyên môn duyệt, ký ngày cuối tuần là ký lùi. */
+function placeStr(){ const p=(state.from||'').split('/'); return p.length===3?`${state.place}, ngày ${p[0]} tháng ${p[1]} năm ${p[2]}`:`${state.place}, ngày … tháng … năm ……`; }
 function renderFullSchedule(){
   fillScheduleDates();
   el('lbg-year').textContent=state.year;
@@ -7577,6 +7579,13 @@ function BX_doiBaiChon(idx){
   try{ r.tbdh=(typeof window.BX_ddTbdh==='function')?window.BX_ddTbdh(L.dodung||''):String(L.dodung||'').split('\n')[0].slice(0,56); }catch(e){ r.tbdh=''; }
   r.ppct=_dbPpct(lopN, r.mon, L.bai)||'';
   r._doiBai=true; delete r._nokho; delete r._overflow; delete r._fromkhdh;
+  /* (8/9/2026) GHIM LẠI bản ghi kho vừa chọn. Trước đây chỉ đổi r.bai mà giữ nguyên _khoBai/_khoTuan/
+     _khoTiet của bài CŨ, trong khi BX_resolveBankMatch ưu tiên tuyệt đối mấy trường ghim đó (bước 0)
+     — nên đổi bài xong, Kế hoạch bài dạy vẫn in giáo án BÀI CŨ, dù hộp báo nói "giáo án đi theo bài mới".
+     Bắt buộc phải ghim chứ không thể dò theo tên: r.bai có thể đã được thêm đuôi " — Bài học STEM: …".
+     Xoá luôn cpid cũ (bước 1) kẻo nó lại kéo về đúng bài cũ. */
+  r._khoBai=L.bai; r._khoTuan=(L.tuan!=null?L.tuan:null); r._khoTiet=(L.tiet!=null?L.tiet:null);
+  delete r.cpid; delete r.curriculum_period_id;
   _dbDong();
   _seEdit=-1; refreshSchedule();
   try{ BX_confirm({title:'Đã đổi bài', html:'Dòng '+bxEsc(r.day||'')+' tiết '+bxEsc(String(r.tiet||''))+' nay là:<br><b>'+bxEsc(L.bai||'')+'</b>'+(r.ppct?(' <span style="color:#6b7b71">(tiết PPCT '+bxEsc(r.ppct)+')</span>'):'')+'<br><br>Giáo án ở mục Kế hoạch bài dạy đi theo bài mới. Tuần này đã được đánh dấu là thầy/cô sửa tay nên lần dựng lại lịch sẽ hỏi trước.', okText:'Đã hiểu', single:true, autoClose:3500}); }catch(e){}
