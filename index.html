@@ -1265,7 +1265,7 @@ window.bxMergeKho = function(){
 (function(){
   /* (4/9/2026) Đổi chuỗi này MỖI KHI sửa nội dung kho-data-*.js — trình duyệt nhớ tệp kho
      theo đúng đường dẫn kèm ?v=, không đổi là thầy cô vẫn mở ra kho cũ. */
-  var V='20260908-gdtc-boi';   /* đổi MỖI KHI sửa kho-data-*: không đổi thì trình duyệt giữ bản cũ, thầy cô không thấy dữ liệu vừa vá */
+  var V='20260908-trucsgv';   /* đổi MỖI KHI sửa kho-data-*: không đổi thì trình duyệt giữ bản cũ, thầy cô không thấy dữ liệu vừa vá */
   window.BX_KHO_FILES={
     '1':['kho-data-lop1.js','kho-data-l1-gdtc.js','kho-data-l1-amnhac.js','kho-data-l1-mithuat.js'],
     '2':['kho-data-lop2.js','kho-data-l2-gdtc.js','kho-data-l2-amnhac.js','kho-data-l2-mithuat.js'],
@@ -10204,16 +10204,15 @@ function coDuLieuCu(){
   var k=d('butxanh_khbd'); if(Array.isArray(k)&&k.length) return true;
   return false;
 }
-/* (8/9/2026, thầy Chung chốt "lấy SGV làm trục") Nền MẶC ĐỊNH là chuẩn SGV cho mọi máy; chỉ trường Quảng Châu 1
-   (chủ bản tổ) mặc định nền tổ. Máy đã tự nhận nền tổ hồi bản 120 (vì có dữ liệu cũ) được chuyển sang SGV một lần
-   (cờ khgdNenTruc); thầy cô đã TỰ CHỌN nền (khgdNenChon) thì giữ nguyên lựa chọn. */
-var laQC1=function(p){ return /qu[aả]ng\s*ch[aâ]u\s*1\b/i.test(String((p||{}).school||'')); };
+/* (8/9/2026, thầy Chung chốt "lấy SGV làm trục"; tối 8/9 chốt thêm: app dùng chung MỌI trường, bản tổ CHỈ để tham khảo)
+   Nền MẶC ĐỊNH là chuẩn SGV cho MỌI máy, kể cả Quảng Châu 1. Máy đã tự nhận nền tổ hồi bản 120 (vì có dữ liệu cũ)
+   được chuyển sang SGV một lần (cờ khgdNenTruc); thầy cô đã TỰ CHỌN nền (khgdNenChon) thì giữ nguyên lựa chọn. */
 window.BX_khgdNen=function(){
   var p=docHoSo();
-  if((p.khgdNen==='sgv'||p.khgdNen==='to') && p.khgdNenTruc==='sgv-0908') return p.khgdNen;
-  var nen=laQC1(p)?'to':'sgv';
+  if((p.khgdNen==='sgv'||p.khgdNen==='to') && p.khgdNenTruc==='sgv-0908b') return p.khgdNen;
+  var nen='sgv';
   if(p.khgdNenChon && (p.khgdNen==='sgv'||p.khgdNen==='to')) nen=p.khgdNen;
-  p.khgdNen=nen; p.khgdNenTruc='sgv-0908'; ghiHoSo(p);
+  p.khgdNen=nen; p.khgdNenTruc='sgv-0908b'; ghiHoSo(p);
   return nen;
 };
 window.BX_khgdCoSGV=function(l,m){ var S=window.BX_KHGD_SGV; return !!(S&&S[String(l)]&&S[String(l)][m]&&S[String(l)][m].length); };
@@ -10279,7 +10278,7 @@ window.BX_khgdSoSGV=function(l,m){
 window.BX_khgdDoiNen=function(nen){
   if(nen!=='sgv'&&nen!=='to') return false;
   var p=docHoSo(); if(p.khgdNen===nen) return false;
-  p.khgdNen=nen; p.khgdNenChon=true; p.khgdNenTruc='sgv-0908'; ghiHoSo(p);
+  p.khgdNen=nen; p.khgdNenChon=true; p.khgdNenTruc='sgv-0908b'; ghiHoSo(p);
   veLai();
   try{ if(window.bxAlert) bxAlert((nen==='sgv'?'✓ Đang dùng KẾ HOẠCH CHUẨN THEO SÁCH GIÁO VIÊN.':'✓ Đang dùng kế hoạch của tổ chuyên môn Quảng Châu 1.')+
     '\n\nLịch báo giảng các tuần ĐÃ LƯU giữ nguyên. Tuần sinh mới sẽ theo kế hoạch này; muốn tuần đang xem đổi theo, thầy/cô bấm "Sinh LBG từ TKB".'); }catch(e){}
@@ -10309,7 +10308,7 @@ function veNenBar(){
   box.innerHTML='<div style="margin:6px 0;padding:8px 10px;background:#f6fbf7;border:1px solid #cfe2d5;border-radius:8px;font-size:13px;color:#233">'+
     '<span style="margin-right:10px;color:#2c6b48;font-weight:700">Kế hoạch nền:</span>'+
     radio('sgv','Chuẩn theo Sách giáo viên','(nền mặc định — số tiết từng bài theo SGV Kết nối tri thức)')+
-    radio('to','Tổ chuyên môn Quảng Châu 1','(biến thể của một tổ, chỉ nên dùng ở Quảng Châu 1)')+
+    radio('to','Tổ chuyên môn Quảng Châu 1','(bản tham khảo của một tổ — không phải chuẩn)')+
     (dong.length?('<div style="margin-top:5px;color:#5b6b61">'+dong.join(' ')+'</div>'):'')+luuY+
     '<div style="margin-top:5px;font-size:12px;color:#6b7b71">Lịch báo giảng và giáo án tuần mới sinh đi theo kế hoạch đang dùng; tổ mình xếp khác thì sửa đúng ô đó (✏️ Chỉnh sửa KHDH) hoặc 📥 nhập kế hoạch của tổ.</div>'+
   '</div>';
