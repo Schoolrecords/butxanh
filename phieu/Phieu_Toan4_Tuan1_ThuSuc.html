@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=794">
+<title>Phiếu Thử sức — Toán 4 — Tuần 1</title>
+<style>
+:root { --ch:#1FA45C; --dam:#0f5a34; }
+
+@page { size: A4 portrait; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; background:#eef2f0; }
+body { font-family:"Times New Roman", Times, serif; font-size:12.8pt; line-height:1.4; color:#101c15; }
+.trang { width:210mm; height:297mm; margin:0 auto 8mm; padding:10mm 12mm 12mm; background:#fff;
+  position:relative; z-index:0; page-break-after:always; overflow:hidden; }
+.trang:last-child { page-break-after:auto; margin-bottom:0; }
+.dau { display:flex; align-items:center; gap:10mm; border-bottom:2.4pt solid var(--ch); padding-bottom:3mm; }
+.hieu { flex:0 0 auto; text-align:center; line-height:1.15; }
+.hieu .la { font-size:22pt; color:var(--ch); }
+.hieu .ten { font-family:Arial, Helvetica, sans-serif; font-size:10pt; font-weight:bold; color:var(--dam); letter-spacing:.3pt; }
+.hieu .phu { font-family:Arial, Helvetica, sans-serif; font-size:6.6pt; color:#6b7f73; letter-spacing:.2pt; }
+.tieu { flex:1; text-align:center; }
+.tieu h1 { margin:0; font-size:19pt; font-weight:bold; color:var(--dam); letter-spacing:.4pt; }
+.tieu .mon { margin-top:1.2mm; font-size:13.5pt; font-weight:bold; }
+.tieu .tuan { display:inline-block; margin-top:1.6mm; padding:.6mm 5mm; border-radius:20pt;
+  border:1.1pt solid var(--ch); color:var(--dam); background:#fff;
+  font-family:Arial, Helvetica, sans-serif; font-size:10.5pt; font-weight:bold; letter-spacing:.5pt; }
+.ngay { flex:0 0 auto; text-align:right; font-size:10pt; color:#55665c; line-height:1.5; }
+.hoten { display:flex; gap:6mm; margin:4mm 0; font-size:12.5pt; }
+.hoten > div { display:flex; align-items:flex-end; gap:2mm; }
+.hoten .o { flex:1; border-bottom:1pt dotted #7d8f85; min-height:6.2mm; }
+.hoten .o.hep { flex:0 0 26mm; }
+/* khung lời dẫn — viền, không tô nền đậm */
+.moi { border:1.1pt solid var(--ch); border-radius:2.5mm; padding:2.6mm 4mm; margin-bottom:4mm;
+  font-size:11.8pt; line-height:1.36; background:#fff; }
+.moi b { color:var(--dam); }
+.bam { font-style:italic; font-size:10.6pt; color:#55665c; margin-top:1.2mm; }
+.bai { margin-bottom:4mm; break-inside:avoid; }
+.bai .de { font-weight:bold; }
+.bai .de b { color:var(--dam); }
+.bai .de i { font-weight:normal; }
+.bai .y { margin-top:1mm; }
+.bai .y i { font-style:italic; }
+.ke { margin-top:2mm; }
+.ke .d { border-bottom:1pt dotted #90a297; height:8.4mm; }
+.giai { margin-top:2mm; }
+.giai .nhan { font-style:italic; text-align:center; font-weight:bold; color:var(--dam); margin-bottom:1mm; }
+.oli { margin-top:2mm; }
+.oli .hli { height:11mm; border-bottom:1pt solid #cfe3d7; border-top:1pt dotted #e3ece7; }
+.o4 { display:flex; gap:6mm; margin-top:2.5mm; }
+.o4 .ov { flex:1; height:13mm; border:1.2pt solid #6f8579; border-radius:1.6mm; }
+.nhomhinh { display:flex; gap:5mm; margin-top:2.5mm; }
+.nhomhinh .ro { flex:1; border:1.1pt solid #6f8579; border-radius:2mm; padding:2mm; text-align:center; }
+.nhomhinh .vat { font-size:15pt; letter-spacing:1.5pt; line-height:1.5; min-height:14mm; }
+.nhomhinh .ov { height:12mm; border:1.2pt solid #6f8579; border-radius:1.6mm; margin-top:2mm; }
+.hanghinh .hg, .netve .hg { display:flex; align-items:center; gap:4mm; margin-top:3mm; }
+.hanghinh .vat { font-size:16pt; letter-spacing:2pt; }
+.hanghinh .khungve { flex:1; border:1.2pt dashed #9db3a7; border-radius:2mm; height:13mm; }
+.netve .nt { font-size:20pt; width:16mm; text-align:center; border:1pt dotted #cfe3d7; border-radius:1.5mm; }
+.dayky { font-size:17pt; letter-spacing:4pt; margin-top:3mm; text-align:center; }
+.dayky span { padding:0 1.5mm; }
+table.bl { border-collapse:collapse; width:100%; margin:2.5mm 0 1mm; }
+table.bl th, table.bl td { border:1pt solid #6f8579; padding:2.1mm; text-align:center; font-size:12pt; }
+table.bl th { background:#f8fbf9; font-family:Arial, Helvetica, sans-serif; font-size:11pt; color:var(--dam); }
+.ps { display:inline-block; text-align:center; vertical-align:-.55em; margin:0 1pt; }
+.ps .tu { display:block; padding:0 2pt; }
+.ps .mau { display:block; padding:0 2pt; border-top:1.2pt solid #101c15; }
+.chan { position:absolute; left:13mm; right:13mm; bottom:7mm; display:flex; align-items:center; gap:4mm;
+  border-top:1pt solid #d6e3db; padding-top:2mm; font-family:Arial, Helvetica, sans-serif; font-size:8.4pt; color:#6b7f73; }
+.chan .b { margin-left:auto; }
+.dapan { --ch:#E0871C; --dam:#b3480f; }
+.bang-da { border-collapse:collapse; width:100%; margin:2mm 0 4mm; }
+.bang-da th, .bang-da td { border:1pt solid #6f8579; padding:2.4mm; }
+.bang-da th { background:#fdfaf6; font-family:Arial, Helvetica, sans-serif; font-size:10.5pt; color:#b3480f; width:26mm; text-align:center; }
+.luuy { border:1pt solid #e6d3b8; border-radius:2mm; padding:3mm 4mm; margin-top:2mm; font-size:11pt; line-height:1.4; }
+.luuy b { color:#b3480f; }
+.chim { position:absolute; inset:0; z-index:-1; display:flex; align-items:center; justify-content:center;
+  pointer-events:none; overflow:hidden; }
+.chim .cx { transform:rotate(-27deg); text-align:center; color:var(--dam); opacity:.09;
+  -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.chim .cx .la { font-size:60pt; line-height:.9; }
+.chim .cx .tn { font-family:Arial, Helvetica, sans-serif; font-size:44pt; font-weight:bold; letter-spacing:7pt; line-height:1.1; margin-top:2mm; }
+.chim .cx .ph { font-family:Arial, Helvetica, sans-serif; font-size:12.5pt; letter-spacing:4pt; margin-top:1.5mm; }
+@media print { html, body { background:#fff; } .trang { margin:0; box-shadow:none; } .an-khi-in { display:none !important; } }
+@media screen { .trang { box-shadow:0 2px 14px rgba(16,40,26,.14); } }
+</style>
+</head>
+<body>
+<section class="trang"><div class="chim" aria-hidden="true"><div class="cx"><div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div><div class="dau"><div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div><div class="tieu"><h1>PHIẾU THỬ SỨC</h1><div class="mon">MÔN TOÁN — LỚP 4</div><div class="tuan">TUẦN 1</div></div><div class="ngay">Ngày …… / …… / 20……<br>Tờ rời — làm thêm<br>Trang 1/1</div></div><div class="hoten"><div style="flex:1"><span>Họ và tên:</span><span class="o"></span></div><div><span>Lớp:</span><span class="o hep"></span></div></div><div class="moi"><b>Gửi em:</b> Đây là mấy bài khó hơn một chút để em thử sức. <b>Không bắt buộc</b> — em nào thích thì làm thêm, làm được đến đâu quý đến đó. Sai cũng không sao, quan trọng là em đã nghĩ.<div class="bam">Em đọc kĩ đề rồi làm. Bài nào khó, em cứ thử — nghĩ được đến đâu viết đến đó.</div></div><div class="bai"><div class="de"><b>Bài 1.</b> Viết <b>số lớn nhất có năm chữ số khác nhau</b> mà tổng các chữ số của nó bằng 30.</div><div class="ke"><div class="d"></div><div class="d"></div><div class="d"></div><div class="d"></div><div class="d"></div></div></div><div class="bai"><div class="de"><b>Bài 2.</b> Tính bằng cách thuận tiện nhất:</div><div class="y">a) 4 × 25 × 17 &nbsp;&nbsp;&nbsp; b) 2 × 36 × 50</div><div class="giai"><div class="nhan">Bài giải</div><div class="ke"><div class="d"></div><div class="d"></div><div class="d"></div><div class="d"></div><div class="d"></div></div></div></div><div class="chan"><span>🌿 Bút Xanh — trợ lý của thầy cô</span><span class="b">© 2026 Nhóm Bút Xanh · butxanh.net · Phiếu Thử sức · Toán 4 · Tuần 1</span></div></section>
+<section class="trang dapan an-khi-in"><div class="chim" aria-hidden="true"><div class="cx"><div class="la">🌿</div><div class="tn">BÚT XANH</div><div class="ph">DỰ ÁN BÚT XANH · butxanh.net</div></div></div><div class="dau"><div class="hieu"><div class="la">🌿</div><div class="ten">BÚT XANH</div><div class="phu">TRỢ LÝ CỦA THẦY CÔ</div></div><div class="tieu"><h1>ĐÁP ÁN &amp; GỢI Ý CHỮA</h1><div class="mon">MÔN TOÁN — LỚP 4</div><div class="tuan">TUẦN 1</div></div><div class="ngay">Bản của thầy cô<br>Không phát cho học sinh<br>Trang 1/1</div></div><div class="moi"><b>Bám bài:</b> Ôn tập các số đến 100 000 · Các phép tính trong phạm vi 100 000<br><b>Cách dùng:</b> in tờ này một bản để thầy cô cầm; tờ trang trước in theo số em muốn làm thêm.</div><table class="bang-da"><tr><th>Bài 1</th><td>98 760 (9 + 8 + 7 + 6 + 0 = 30)</td></tr><tr><th>Bài 2</th><td>a) (4 × 25) × 17 = 100 × 17 = 1 700 · b) (2 × 50) × 36 = 100 × 36 = 3 600</td></tr></table><div class="luuy"><b>Vì sao bài này là “thử sức”:</b> Bài 1: muốn số lớn nhất thì chữ số hàng cao phải lớn nhất có thể — thử 9, 8, 7 rồi tìm hai chữ số còn lại cho đủ tổng 30. Bài 2 rèn thói quen <b>nhìn ra cặp nhân tròn trăm</b> trước khi đặt tính.<br><br><b>Nhắc:</b> các bài trên đều nằm trong yêu cầu cần đạt của tuần 1, không dùng kiến thức lớp trên. Chấm để động viên, <b>không lấy điểm</b>, không so sánh giữa các em (Thông tư 27/2020/TT-BGDĐT).</div><div class="chan"><span>🌿 Bút Xanh — trợ lý của thầy cô</span><span class="b">© 2026 Nhóm Bút Xanh · butxanh.net · Đáp án · Toán 4 · Tuần 1</span></div></section>
+</body>
+</html>

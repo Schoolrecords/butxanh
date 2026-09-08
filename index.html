@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-08 · 154';
+  var PB='2026-09-08 · 155';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -4433,6 +4433,29 @@ var BX_PHIEU_CO={
   'L4|Toán':[1,2,3,4,5], 'L4|Tiếng Việt':[1,2,3,4,5],
   'L5|Toán':[1,2,3,4,5], 'L5|Tiếng Việt':[1,2,3,4,5]
 };
+/* ===== TỜ RỜI "THỬ SỨC" (8/9/2026 — các cô đề xuất, thầy Chung chốt phương án B) =====
+   Không gộp vào phiếu cuối tuần: phiếu chính vẫn 2 trang = 1 tờ in hai mặt, thêm trang nữa là
+   tốn gấp đôi giấy cho cả lớp trong khi phần lớn học sinh không dùng tới. Tờ này in RIÊNG theo
+   nhóm em nào muốn làm thêm. Mỗi tệp 2 trang: trang 1 phát cho học sinh, trang 2 đáp án và gợi ý
+   chữa của thầy cô (có class "an-khi-in" nên bấm in chỉ ra trang của học sinh).
+   ⚠ KHÔNG ghi "dành cho học sinh năng khiếu": Thông tư 27/2020 đánh giá vì sự tiến bộ của từng em,
+   không so sánh và không dán nhãn học sinh. Tờ ghi rõ "không bắt buộc — em nào thích thì làm thêm".
+   👉 THÊM TUẦN MỚI: sinh tệp bằng phieu-bai-tap/_lam-phieu-thusuc.js rồi thêm số tuần vào đây. */
+var BX_PHIEU_TS={
+  'L1|Toán':[1,2], 'L1|Tiếng Việt':[1,2],
+  'L2|Toán':[1,2], 'L2|Tiếng Việt':[1,2],
+  'L3|Toán':[1,2], 'L3|Tiếng Việt':[1,2],
+  'L4|Toán':[1,2], 'L4|Tiếng Việt':[1,2],
+  'L5|Toán':[1,2], 'L5|Tiếng Việt':[1,2]
+};
+function BX_phieuTSTep(lop,mon,w){
+  var ma=BX_PHIEU_MA[mon]; if(!ma) return '';
+  return BX_PHIEU_THUMUC+'Phieu_'+ma+String(lop)+'_Tuan'+String(w)+'_ThuSuc.html';
+}
+function BX_phieuTSCo(lop,mon,w){
+  var ds=BX_PHIEU_TS[BX_phieuKey(lop,mon)]||[];
+  return ds.indexOf(parseInt(w,10))>=0;
+}
 /* ===== PHIẾU ÔN LUYỆN TỰU TRƯỜNG (23/8/2026 — thầy Chung đặt) =====
    Khác phiếu cuối tuần ở chỗ xếp theo NGÀY chứ không theo tuần: những ngày tựu trường trước
    khai giảng, học sinh đến trường nhưng chưa vào chương trình mới.
@@ -4678,6 +4701,26 @@ window.BX_phieuMo=function(lop,mon,w){
   if(trongApp){ BX_phieuXem(url, mon+' '+lop+' · Tuần '+w); return; }
   BX_moLink(url,'phiếu bài tập');
 };
+/* MỞ TỜ THỬ SỨC — cùng lối mở với phiếu tuần: lớp phủ trên điện thoại, thẻ mới trên máy tính. */
+window.BX_phieuTSMo=function(lop,mon,w){
+  if(!BX_phieuTSCo(lop,mon,w)){
+    if(typeof bxAlert==='function') bxAlert('⭐ Tuần '+w+' môn '+mon+' lớp '+lop+' chưa có tờ Thử sức.');
+    return;
+  }
+  var url=BX_phieuTSTep(lop,mon,w); if(!url) return;
+  var trongApp=false;
+  try{
+    trongApp=(typeof window.bxLaCamTay==='function') ? window.bxLaCamTay()
+        : (/Android|iPhone|iPod|iPad|IEMobile|Opera Mini|Mobile|Tablet/i.test(navigator.userAgent||'')
+           && !/Windows NT/i.test(navigator.userAgent||''));
+    if(!trongApp && window.matchMedia){
+      if(matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches) trongApp=true;
+    }
+    if(!trongApp && navigator.standalone) trongApp=true;
+  }catch(e){}
+  if(trongApp){ BX_phieuXem(url, 'Thử sức · '+mon+' '+lop+' · Tuần '+w); return; }
+  BX_moLink(url,'tờ Thử sức');
+};
 /* MỞ PHIẾU ÔN LUYỆN TỰU TRƯỜNG — cùng lối mở với phiếu tuần (lớp phủ trên điện thoại,
    thẻ mới trên máy tính), chỉ khác đường dẫn tệp và tên hiện trên thanh. */
 window.BX_phieuTTMo=function(lop,mon,ma){
@@ -4725,6 +4768,27 @@ function BX_phieuTTKhoi(lop,mon){
         : 'làm quen – <b>sẵn sàng vào lớp 1</b>')+'</span>'+
     '</div>'+
     '<div class="pw-weeks">'+o+'</div></div>';
+}
+/* Dải tờ Thử sức — đặt dưới lưới 35 tuần vì đây là phần LÀM THÊM, không phải phiếu chính. */
+function BX_phieuTSKhoi(lop,mon){
+  var ds=(BX_PHIEU_TS[BX_phieuKey(lop,mon)]||[]).slice().sort(function(a,b){ return a-b; });
+  if(!ds.length) return '';
+  var m=BX_PHIEU_META[mon]||{ic:'📘',c:'#1FA45C'};
+  var q=function(s){ return "'"+String(s).replace(/'/g,"\'")+"'"; };
+  var o=ds.map(function(w){
+    return '<div class="pw-wk co" onclick="BX_phieuTSMo('+q(lop)+','+q(mon)+','+w+')"'+
+      ' title="Mở tờ Thử sức '+mon+' tuần '+w+' — in riêng cho nhóm học sinh làm thêm">'+
+      '<div class="pw-wk-lb">Tuần</div><div class="pw-wk-n">'+w+'</div>'+
+      '<div class="pw-wk-d">Thử sức</div></div>';
+  }).join('');
+  return '<div class="pw-panel" style="--mc:'+m.c+';margin-top:14px">'+
+    '<div class="pw-ph"><span class="pw-ph-t">⭐ Thử sức · '+mon+' · Lớp '+lop+'</span>'+
+      '<span class="pw-ph-dem">tờ rời — <b>in riêng</b> cho em nào muốn làm thêm</span></div>'+
+    '<div class="pw-weeks">'+o+'</div>'+
+    '<div class="pw-note" style="margin:10px 12px 12px"><span>⭐</span><span>Mỗi tờ có <b>2 bài khó hơn một chút</b>, '+
+      'vẫn trong bài của tuần đó — <b>không dạy trước chương trình</b>. Tờ ghi rõ <i>không bắt buộc</i>, '+
+      'chấm để động viên, không lấy điểm. Trang 2 là <b>đáp án và gợi ý chữa</b> của thầy cô, bấm in thì trang đó tự ẩn.</span></div>'+
+    '</div>';
 }
 function BX_phieuStyleOnce(){
   if(el('pw-style')) return;
@@ -4859,7 +4923,7 @@ function renderPhieu(){
     '</div>'+
     '<div class="pw-weeks">'+g+'</div></div>';
 
-  body.innerHTML=bar+BX_phieuTTKhoi(lop,mon)+khung+
+  body.innerHTML=bar+BX_phieuTTKhoi(lop,mon)+khung+BX_phieuTSKhoi(lop,mon)+
     '<div class="pw-note"><span>ℹ️</span><span>Phiếu để thầy cô <b>tự chọn</b> giao cho học sinh ôn luyện cuối tuần — '+
       'không chấm điểm, không bắt buộc nộp. Mở phiếu ra bấm <b>Ctrl + P</b> là in được ngay hoặc lưu thành PDF.</span></div>';
 }
