@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-09 · 167';
+  var PB='2026-09-09 · 168';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -4974,24 +4974,19 @@ window.BX_vbtVeTuan=function(){ _vbtSel.tuan=0; renderVbt(); };
 window.BX_vbtMoTuan=function(w){ _vbtSel.tuan=parseInt(w,10)||0; renderVbt(); window.scrollTo({top:0}); };
 /* MỞ BÀI GIẢNG — máy tính: thẻ mới; điện thoại / app đã cài: lớp phủ ngay trong app (như phiếu cuối tuần). */
 window.BX_vbtMo=function(lop,mon,w,i){
+  /* 9/9/2026 (thầy Chung): bấm "Trình chiếu" là RỘNG MÀN HÌNH NGAY trên mọi thiết bị (khung nhúng + requestFullscreen
+     trong chính cú bấm), không mở thẻ mới, không phải bấm thêm nút nào; chỉ còn một nút "Thoát" của app
+     (tệp được mở với ?app=1 nên tự giấu nút THOÁT riêng của nó). */
   var ds=BX_vbtTiet(lop,mon,w), t=ds[i]; if(!t) return;
   var url=BX_vbtTep(lop,mon,w,t); if(!url) return;
-  var trongApp=false;
-  try{
-    trongApp=(typeof window.bxLaCamTay==='function') ? window.bxLaCamTay()
-        : (/Android|iPhone|iPod|iPad|IEMobile|Opera Mini|Mobile|Tablet/i.test(navigator.userAgent||'') && !/Windows NT/i.test(navigator.userAgent||''));
-    if(!trongApp && window.matchMedia){ if(matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches) trongApp=true; }
-    if(!trongApp && navigator.standalone) trongApp=true;
-  }catch(e){}
   var nhan=(t.tiet!=null)?((mon==='Toán'?'Tiết ':'Bài ')+t.tiet):(BX_VBT_THU[t.thu]||t.thu||'');
-  if(trongApp){ BX_vbtXem(url, mon+' '+lop+' · Tuần '+w+' · '+nhan); return; }
-  BX_moLink(url,'bài giảng vở bài tập');
+  BX_vbtXem(url+(url.indexOf('?')<0?'?':'&')+'app=1', mon+' '+lop+' · Tuần '+w+' · '+nhan);
 };
 window.BX_vbtXem=function(url,ten){
   var o=el('vbt-doc');
   if(!o){
     o=document.createElement('div'); o.id='vbt-doc';
-    o.innerHTML='<div class="vbtd-bar"><div class="vbtd-ten" id="vbtd-ten"></div><button class="vbtd-x" onclick="BX_vbtDong()" aria-label="Đóng">✕ Đóng</button></div><div class="vbtd-inner" id="vbtd-inner"></div>';
+    o.innerHTML='<div class="vbtd-bar"><div class="vbtd-ten" id="vbtd-ten"></div><button class="vbtd-x" onclick="BX_vbtDong()" aria-label="Thoát">✕ Thoát</button></div><div class="vbtd-inner" id="vbtd-inner"></div>';
     document.body.appendChild(o);
     var st=document.createElement('style');
     st.textContent='#vbt-doc{position:fixed;inset:0;z-index:9998;background:#111827;display:none;flex-direction:column}'+
@@ -5007,10 +5002,14 @@ window.BX_vbtXem=function(url,ten){
   var inn=el('vbtd-inner'); inn.innerHTML='';
   var kh=document.createElement('iframe'); kh.title=BX_VBT_TEN; kh.setAttribute('allowfullscreen','true'); kh.setAttribute('allow','fullscreen'); kh.src=url; inn.appendChild(kh);
   o.classList.add('on'); document.body.style.overflow='hidden';
+  try{ var p=o.requestFullscreen?o.requestFullscreen():(o.webkitRequestFullscreen?o.webkitRequestFullscreen():null); if(p&&p.catch) p.catch(function(){}); }catch(e){}
   try{ history.pushState({bxVbt:1},'', location.href); }catch(e){}
 };
+/* thoát toàn màn hình (Esc) thì đóng luôn khung nhúng */
+document.addEventListener('fullscreenchange', function(){ var o=el('vbt-doc'); if(o&&o.classList.contains('on')&&!document.fullscreenElement) BX_vbtDong(); });
 window.BX_vbtDong=function(quaLichSu){
   var o=el('vbt-doc'); if(!o||!o.classList.contains('on')) return;
+  try{ if(document.fullscreenElement&&document.exitFullscreen){ var q=document.exitFullscreen(); if(q&&q.catch) q.catch(function(){}); } }catch(e){}
   o.classList.remove('on'); var inn=el('vbtd-inner'); if(inn) inn.innerHTML=''; document.body.style.overflow='';
   if(!quaLichSu){ try{ history.back(); }catch(e){} }
 };

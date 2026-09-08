@@ -6,16 +6,16 @@
    👉 Thêm tiết mới: tải tệp HTML lên bucket rồi thêm một dòng vào đúng ô lớp·môn·tuần.
    Lớp 1 Tiếng Việt tuần 1 = tuần "Làm quen" (chưa có bài trong vở) → để trống. */
 window.BX_VBT_DS={
-  /* 9/9/2026 (thầy Chung): Toán 1 dùng bản TỰ DỰNG (SVG + emoji, ~80 KB/tiết, không cắt ảnh vở) làm mẫu —
-     tệp ở thư mục con tu-dung/ trên bucket; bản cắt cũ VBT_Toan1_Tuan1_Tiet2/3.html vẫn còn trên bucket để đối chiếu.
-     Vị trí tiết theo KHGD Toán 1: tuần 1 tiết 1 là "Tiết học đầu tiên" nên Bài 1 tiết 1 → tuần 1 tiết 2. */
+  /* 9/9/2026 tối (thầy Chung): BỎ hẳn bản tự dựng — giữ ảnh vở cắt từ PDF, chỉ sửa cách ghi đáp án (phân số dọc,
+     gạch ngang đặt tính, Đáp số, chữ ≥24px), bỏ PLAY/TẠM DỪNG. Toán 1: tên tệp trên bucket theo VỊ TRÍ tiết trong KHGD
+     (tuần 1 tiết 1 là "Tiết học đầu tiên" nên Bài 1 tiết 1 → Tuan1_Tiet2, tiết 2 → Tuan1_Tiet3, tiết 3 → Tuan2_Tiet1). */
   'L1|Toán':{
     1:[
-      {tiet:2, ten:"Bài 1. Các số 0, 1, 2, 3, 4, 5 – Tiết 1", trang:"4–5", tep:"tu-dung/VBT_Toan1_Tuan1_Tiet2.html", soSlide:5},
-      {tiet:3, ten:"Bài 1. Các số 0, 1, 2, 3, 4, 5 – Tiết 2", trang:"6–7", tep:"tu-dung/VBT_Toan1_Tuan1_Tiet3.html", soSlide:5},
+      {tiet:2, ten:"Bài 1. Các số 0, 1, 2, 3, 4, 5 – Tiết 1", trang:"4–5", tep:"VBT_Toan1_Tuan1_Tiet2.html", soSlide:5},
+      {tiet:3, ten:"Bài 1. Các số 0, 1, 2, 3, 4, 5 – Tiết 2", trang:"6–7", tep:"VBT_Toan1_Tuan1_Tiet3.html", soSlide:5},
     ],
     2:[
-      {tiet:1, ten:"Bài 1. Các số 0, 1, 2, 3, 4, 5 – Tiết 3", trang:"8–9", tep:"tu-dung/VBT_Toan1_Tuan2_Tiet1.html", soSlide:5},
+      {tiet:1, ten:"Bài 1. Các số 0, 1, 2, 3, 4, 5 – Tiết 3", trang:"8–9", tep:"VBT_Toan1_Tuan2_Tiet1.html", soSlide:5},
     ],
   },
   'L2|Toán':{
@@ -54,7 +54,13 @@ window.BX_VBT_DS={
       {tiet:5, ten:"Bài 3. Ôn tập phân số – Tiết 1", trang:"11–12", tep:"VBT_Toan5_Tuan1_Tiet5.html", soSlide:7},
     ],
   },
-  'L1|Tiếng Việt':{},
+  /* Tiếng Việt 1: tuần 1 là tuần Làm quen (chưa có bài trong vở); Bài 1 A a, Bài 2 B b thuộc TUẦN 2 (KHGD tiết 13–16). */
+  'L1|Tiếng Việt':{
+    2:[
+      {tiet:1, ten:"Bài 1. A a", trang:"5", tep:"VBT_TiengViet1_Tuan2_Bai1.html", soSlide:3},
+      {tiet:2, ten:"Bài 2. B b (dấu huyền)", trang:"6", tep:"VBT_TiengViet1_Tuan2_Bai2.html", soSlide:4},
+    ],
+  },
   'L2|Tiếng Việt':{
     1:[
       {tiet:1, ten:"Bài 1. Tôi là học sinh lớp 2", trang:"4–5", tep:"VBT_TiengViet2_Tuan1_Bai1.html", soSlide:4},
