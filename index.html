@@ -5906,7 +5906,7 @@ function bxTieuDeTiet(L,row,ctx){
   if(luot.length>1){
     var ke=luot.map(function(x){ var d=String(x.day||'').replace(/^Thứ\s*/i,'T'); var b=String(x.buoi||'').toLowerCase(); return (x.lop?('Lớp '+x.lop):'')+(d||b||x.tiet?(' ('+[d,b?('buổi '+b):'',x.tiet?('tiết '+x.tiet):''].filter(Boolean).join(', ')+')'):''); });
     out.push({t:'Dạy chung một giáo án ở '+luot.length+' lớp: '+ke.join(' · '), sz:12, thuong:true});
-  } else if(String(row.lop||'').trim() && String(row.lop||'').trim()!==String(state.klass||'').trim()){
+  } else if(String(row.lop||'').trim()){   /* (8/9/2026) luôn ghi lớp — GV bộ môn cần định vị đúng lớp của từng tiết */
     out.push({t:'Lớp '+String(row.lop).trim(), sz:12, thuong:true});
   }
   return out;
@@ -6055,7 +6055,10 @@ function _weekKhbdItems(){
   /* (5/9/2026) GIÁO VIÊN BỘ MÔN dạy một bài ở nhiều lớp (Đạo đức 4 ở 4B, 4D, 4E, 4H, 4K…): một giáo án
      ghi đủ các lớp, không in lặp 5 lần. Gộp theo môn + tên bài (bỏ phần "(tiết k/n)" máy nở); lớp liệt
      kê ở dòng "Lớp:" của tiêu đề, giữ Thứ/ngày/tiết của lượt dạy đầu. Tắt bằng window.BX_KHBD_KHONG_GOP=true. */
-  if(!window.BX_KHBD_KHONG_GOP){
+  /* (8/9/2026, thầy Chung chốt) KHÔNG GỘP nữa: "dù cùng một giáo án, mỗi tiết phải định vị đúng Thứ/ngày/tiết; giáo án
+     điện tử không sợ tốn giấy". Mỗi dòng lịch = một trang giáo án, tiêu đề ghi đúng lớp của tiết đó (bxTieuDeTiet in "Lớp X").
+     Gộp chỉ còn khi bật tay window.BX_KHBD_GOP_LOP=true (giữ mã để dùng lại nếu cần). */
+  if(window.BX_KHBD_GOP_LOP && !window.BX_KHBD_KHONG_GOP){
     const gop=[], theo={};
     items.forEach(it=>{
       const r=it.r||{}, bai=String(r.bai||'').replace(/\s*\(tiết\s*\d+\/\d+\)\s*$/i,'').trim();
