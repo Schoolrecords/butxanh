@@ -16,14 +16,19 @@ window.BX_VBT_DS={
       {tiet:3, ten:"Bài 1. Các số 0, 1, 2, 3, 4, 5 – Tiết 2", trang:"6–7", tep:"VBT_Toan1_Tuan1_Tiet3.html", soSlide:5},
     ],
     2:[
-      {tiet:1, ten:"Bài 1. Các số 0, 1, 2, 3, 4, 5 – Tiết 3", trang:"8–9", tep:"VBT_Toan1_Tuan2_Tiet1.html", soSlide:5},
       {tiet:2, ten:"Bài 2. Các số 6, 7, 8, 9, 10 – Tiết 1", trang:"10, 11", tep:"VBT_Toan1_Tuan2_Tiet2.html", soSlide:5},
       {tiet:3, ten:"Bài 2. Các số 6, 7, 8, 9, 10 – Tiết 2", trang:"12, 13", tep:"VBT_Toan1_Tuan2_Tiet3.html", soSlide:5},
+      {tiet:1, ten:"Bài 1. Các số 0, 1, 2, 3, 4, 5 – Tiết 3", trang:"8–9", tep:"VBT_Toan1_Tuan2_Tiet1.html", soSlide:5},
     ],
     3:[
       {tiet:1, ten:"Bài 2. Các số 6, 7, 8, 9, 10 – Tiết 3", trang:"14, 15", tep:"VBT_Toan1_Tuan3_Tiet1.html", soSlide:4},
       {tiet:2, ten:"Bài 3. Nhiều hơn, ít hơn, bằng nhau – Tiết 1", trang:"16", tep:"VBT_Toan1_Tuan3_Tiet2.html", soSlide:3},
       {tiet:3, ten:"Bài 3. Nhiều hơn, ít hơn, bằng nhau – Tiết 2", trang:"17, 18", tep:"VBT_Toan1_Tuan3_Tiet3.html", soSlide:5},
+    ],
+    4:[
+      {tiet:1, ten:"Bài 4. So sánh số – Tiết 1", trang:"19, 20", tep:"VBT_Toan1_Tuan4_Tiet1.html", soSlide:5},
+      {tiet:2, ten:"Bài 4. So sánh số – Tiết 2", trang:"21, 22", tep:"VBT_Toan1_Tuan4_Tiet2.html", soSlide:5},
+      {tiet:3, ten:"Bài 4. So sánh số – Tiết 3", trang:"23, 24", tep:"VBT_Toan1_Tuan4_Tiet3.html", soSlide:5},
     ],
   },
   'L2|Toán':{
@@ -48,6 +53,13 @@ window.BX_VBT_DS={
       {tiet:4, ten:"Bài 6. Luyện tập chung – Tiết 1", trang:"26, 27", tep:"VBT_Toan2_Tuan3_Tiet4.html", soSlide:6},
       {tiet:5, ten:"Bài 6. Luyện tập chung – Tiết 2", trang:"27, 28", tep:"VBT_Toan2_Tuan3_Tiet5.html", soSlide:6},
     ],
+    4:[
+      {tiet:1, ten:"Bài 7. Phép cộng (qua 10) trong phạm vi 20 – Tiết 1", trang:"29", tep:"VBT_Toan2_Tuan4_Tiet1.html", soSlide:4},
+      {tiet:2, ten:"Bài 7. Phép cộng (qua 10) trong phạm vi 20 – Tiết 2", trang:"30, 31", tep:"VBT_Toan2_Tuan4_Tiet2.html", soSlide:5},
+      {tiet:3, ten:"Bài 7. Phép cộng (qua 10) trong phạm vi 20 – Tiết 3", trang:"31, 32", tep:"VBT_Toan2_Tuan4_Tiet3.html", soSlide:6},
+      {tiet:4, ten:"Bài 7. Phép cộng (qua 10) trong phạm vi 20 – Tiết 4", trang:"32, 33", tep:"VBT_Toan2_Tuan4_Tiet4.html", soSlide:5},
+      {tiet:5, ten:"Bài 7. Phép cộng (qua 10) trong phạm vi 20 – Tiết 5", trang:"33, 34", tep:"VBT_Toan2_Tuan4_Tiet5.html", soSlide:6},
+    ],
   },
   'L3|Toán':{
     1:[
@@ -70,6 +82,13 @@ window.BX_VBT_DS={
       {tiet:3, ten:"Bài 7. Ôn tập hình học và đo lường – Tiết 1", trang:"17–19", tep:"VBT_Toan3_Tuan3_Tiet3.html", soSlide:7},
       {tiet:4, ten:"Bài 7. Ôn tập hình học và đo lường – Tiết 2", trang:"19–20", tep:"VBT_Toan3_Tuan3_Tiet4.html", soSlide:6},
       {tiet:5, ten:"Bài 8. Luyện tập chung – Tiết 1", trang:"21–22", tep:"VBT_Toan3_Tuan3_Tiet5.html", soSlide:8},
+    ],
+    4:[
+      {tiet:1, ten:"Bài 8. Luyện tập chung – Tiết 2", trang:"23–24", tep:"VBT_Toan3_Tuan4_Tiet1.html", soSlide:6},
+      {tiet:2, ten:"Bài 8. Luyện tập chung – Tiết 3", trang:"24–25", tep:"VBT_Toan3_Tuan4_Tiet2.html", soSlide:6},
+      {tiet:3, ten:"Bài 9. Bảng nhân 6, bảng chia 6 – Tiết 1", trang:"26–27", tep:"VBT_Toan3_Tuan4_Tiet3.html", soSlide:6},
+      {tiet:4, ten:"Bài 9. Bảng nhân 6, bảng chia 6 – Tiết 2", trang:"27", tep:"VBT_Toan3_Tuan4_Tiet4.html", soSlide:4},
+      {tiet:5, ten:"Bài 10. Bảng nhân 7, bảng chia 7 – Tiết 1", trang:"28", tep:"VBT_Toan3_Tuan4_Tiet5.html", soSlide:5},
     ],
   },
   'L4|Toán':{
@@ -94,6 +113,13 @@ window.BX_VBT_DS={
       {tiet:4, ten:"Bài 6. Luyện tập chung – Tiết 1", trang:"20 – 21", tep:"VBT_Toan4_Tuan3_Tiet4.html", soSlide:6},
       {tiet:5, ten:"Bài 6. Luyện tập chung – Tiết 2", trang:"22 – 23", tep:"VBT_Toan4_Tuan3_Tiet5.html", soSlide:7},
     ],
+    4:[
+      {tiet:1, ten:"Bài 7. Đo góc, đơn vị đo góc – Tiết 1", trang:"24 – 25", tep:"VBT_Toan4_Tuan4_Tiet1.html", soSlide:5},
+      {tiet:2, ten:"Bài 7. Đo góc, đơn vị đo góc – Tiết 2", trang:"25 – 26", tep:"VBT_Toan4_Tuan4_Tiet2.html", soSlide:5},
+      {tiet:3, ten:"Bài 8. Góc nhọn, góc tù, góc bẹt – Tiết 1", trang:"27 – 28", tep:"VBT_Toan4_Tuan4_Tiet3.html", soSlide:6},
+      {tiet:4, ten:"Bài 8. Góc nhọn, góc tù, góc bẹt – Tiết 2", trang:"29", tep:"VBT_Toan4_Tuan4_Tiet4.html", soSlide:3},
+      {tiet:5, ten:"Bài 8. Góc nhọn, góc tù, góc bẹt – Tiết 3", trang:"30", tep:"VBT_Toan4_Tuan4_Tiet5.html", soSlide:3},
+    ],
   },
   'L5|Toán':{
     1:[
@@ -117,20 +143,33 @@ window.BX_VBT_DS={
       {tiet:4, ten:"Bài 7. Hỗn số – Tiết 2", trang:"25, 26", tep:"VBT_Toan5_Tuan3_Tiet4.html", soSlide:5},
       {tiet:5, ten:"Bài 8. Ôn tập hình học và đo lường – Tiết 1", trang:"27, 28", tep:"VBT_Toan5_Tuan3_Tiet5.html", soSlide:6},
     ],
+    4:[
+      {tiet:1, ten:"Bài 8. Ôn tập hình học và đo lường – Tiết 2", trang:"28, 29", tep:"VBT_Toan5_Tuan4_Tiet1.html", soSlide:6},
+      {tiet:2, ten:"Bài 9. Luyện tập chung – Tiết 1", trang:"30, 31, 32", tep:"VBT_Toan5_Tuan4_Tiet2.html", soSlide:8},
+      {tiet:3, ten:"Bài 9. Luyện tập chung – Tiết 2", trang:"32, 33", tep:"VBT_Toan5_Tuan4_Tiet3.html", soSlide:7},
+      {tiet:4, ten:"Bài 9. Luyện tập chung – Tiết 3", trang:"34, 35", tep:"VBT_Toan5_Tuan4_Tiet4.html", soSlide:7},
+      {tiet:5, ten:"Bài 10. Khái niệm số thập phân – Tiết 1", trang:"36, 37", tep:"VBT_Toan5_Tuan4_Tiet5.html", soSlide:5},
+    ],
   },
   /* Tiếng Việt 1: tuần 1 là tuần Làm quen (chưa có bài trong vở); Bài 1 A a, Bài 2 B b thuộc TUẦN 2 (KHGD tiết 13–16). */
   'L1|Tiếng Việt':{
     2:[
-      {tiet:1, ten:"Bài 1. A a", trang:"5", tep:"VBT_TiengViet1_Tuan2_Bai1.html", soSlide:3},
-      {tiet:2, ten:"Bài 2. B b (dấu huyền)", trang:"6", tep:"VBT_TiengViet1_Tuan2_Bai2.html", soSlide:4},
       {tiet:3, ten:"Bài 3. C c (dấu sắc)", trang:"7", tep:"VBT_TiengViet1_Tuan2_Bai3.html", soSlide:4},
       {tiet:4, ten:"Bài 4. E e Ê ê", trang:"8", tep:"VBT_TiengViet1_Tuan2_Bai4.html", soSlide:4},
+      {tiet:1, ten:"Bài 1. A a", trang:"5", tep:"VBT_TiengViet1_Tuan2_Bai1.html", soSlide:3},
+      {tiet:2, ten:"Bài 2. B b (dấu huyền)", trang:"6", tep:"VBT_TiengViet1_Tuan2_Bai2.html", soSlide:4},
     ],
     3:[
       {tiet:6, ten:"Bài 6. O o (dấu hỏi)", trang:"9", tep:"VBT_TiengViet1_Tuan3_Bai6.html", soSlide:4},
       {tiet:7, ten:"Bài 7. Ô ô (dấu nặng)", trang:"10", tep:"VBT_TiengViet1_Tuan3_Bai7.html", soSlide:4},
       {tiet:8, ten:"Bài 8. D d Đ đ", trang:"11", tep:"VBT_TiengViet1_Tuan3_Bai8.html", soSlide:4},
       {tiet:9, ten:"Bài 9. Ơ ơ (dấu ngã)", trang:"12", tep:"VBT_TiengViet1_Tuan3_Bai9.html", soSlide:4},
+    ],
+    4:[
+      {tiet:11, ten:"Bài 11. I i K k", trang:"13", tep:"VBT_TiengViet1_Tuan4_Bai11.html", soSlide:4},
+      {tiet:12, ten:"Bài 12. H h L l", trang:"14", tep:"VBT_TiengViet1_Tuan4_Bai12.html", soSlide:4},
+      {tiet:13, ten:"Bài 13. U u Ư ư", trang:"15", tep:"VBT_TiengViet1_Tuan4_Bai13.html", soSlide:4},
+      {tiet:14, ten:"Bài 14. Ch ch Kh kh", trang:"16", tep:"VBT_TiengViet1_Tuan4_Bai14.html", soSlide:4},
     ],
   },
   'L2|Tiếng Việt':{
@@ -146,6 +185,10 @@ window.BX_VBT_DS={
       {tiet:5, ten:"Bài 5. Em có xinh không?", trang:"12, 13", tep:"VBT_TiengViet2_Tuan3_Bai5.html", soSlide:6},
       {tiet:6, ten:"Bài 6. Một giờ học", trang:"13, 14, 15", tep:"VBT_TiengViet2_Tuan3_Bai6.html", soSlide:11},
     ],
+    4:[
+      {tiet:7, ten:"Bài 7. Cây xấu hổ", trang:"16, 17", tep:"VBT_TiengViet2_Tuan4_Bai7.html", soSlide:6},
+      {tiet:8, ten:"Bài 8. Cầu thủ dự bị", trang:"17, 18, 19", tep:"VBT_TiengViet2_Tuan4_Bai8.html", soSlide:10},
+    ],
   },
   'L3|Tiếng Việt':{
     1:[
@@ -159,6 +202,10 @@ window.BX_VBT_DS={
     3:[
       {tiet:5, ten:"Bài 5. Nhật kí tập bơi", trang:"12–13", tep:"VBT_TiengViet3_Tuan3_Bai5.html", soSlide:6},
       {tiet:6, ten:"Bài 6. Tập nấu ăn", trang:"14–15", tep:"VBT_TiengViet3_Tuan3_Bai6.html", soSlide:6},
+    ],
+    4:[
+      {tiet:7, ten:"Bài 7. Mùa hè lấp lánh", trang:"16–17", tep:"VBT_TiengViet3_Tuan4_Bai7.html", soSlide:8},
+      {tiet:8, ten:"Bài 8. Tạm biệt mùa hè", trang:"18–19", tep:"VBT_TiengViet3_Tuan4_Bai8.html", soSlide:8},
     ],
   },
   'L4|Tiếng Việt':{
@@ -174,6 +221,10 @@ window.BX_VBT_DS={
       {tiet:5, ten:"Bài 5. Thằn lằn xanh và tắc kè", trang:"17 – 19", tep:"VBT_TiengViet4_Tuan3_Bai5.html", soSlide:10},
       {tiet:6, ten:"Bài 6. Nghệ sĩ trống", trang:"20 – 22", tep:"VBT_TiengViet4_Tuan3_Bai6.html", soSlide:9},
     ],
+    4:[
+      {tiet:7, ten:"Bài 7. Những bức chân dung", trang:"23 – 25", tep:"VBT_TiengViet4_Tuan4_Bai7.html", soSlide:9},
+      {tiet:8, ten:"Bài 8. Đò ngang", trang:"25 – 27", tep:"VBT_TiengViet4_Tuan4_Bai8.html", soSlide:8},
+    ],
   },
   'L5|Tiếng Việt':{
     1:[
@@ -187,6 +238,10 @@ window.BX_VBT_DS={
     3:[
       {tiet:5, ten:"Bài 5. Tiếng hạt nảy mầm", trang:"18, 19, 20, 21", tep:"VBT_TiengViet5_Tuan3_Bai5.html", soSlide:9},
       {tiet:6, ten:"Bài 6. Ngôi sao sân cỏ", trang:"21, 22, 23", tep:"VBT_TiengViet5_Tuan3_Bai6.html", soSlide:7},
+    ],
+    4:[
+      {tiet:7, ten:"Bài 7. Bộ sưu tập độc đáo", trang:"25, 26, 27, 28, 29", tep:"VBT_TiengViet5_Tuan4_Bai7.html", soSlide:13},
+      {tiet:8, ten:"Bài 8. Hành tinh kì lạ", trang:"30, 31", tep:"VBT_TiengViet5_Tuan4_Bai8.html", soSlide:6},
     ],
   },
 };
