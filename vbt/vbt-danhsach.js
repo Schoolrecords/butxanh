@@ -66,4 +66,20 @@ window.BX_VBT_DS={
       {tiet:5, ten:"Bài 4. Biểu thức chứa chữ – Tiết 2", trang:"15", tep:"VBT_Toan4_Tuan2_Tiet5.html", soSlide:7},
     ],
   },
+  "L5|Toán":{
+    1:[
+      {tiet:1, ten:"Bài 1. Ôn tập số tự nhiên – Tiết 1", trang:"5–6", tep:"VBT_Toan5_Tuan1_Tiet1.html", soSlide:5},
+      {tiet:2, ten:"Bài 1. Ôn tập số tự nhiên – Tiết 2", trang:"6–7", tep:"VBT_Toan5_Tuan1_Tiet2.html", soSlide:7},
+      {tiet:3, ten:"Bài 2. Ôn tập các phép tính với số tự nhiên – Tiết 1", trang:"8–9", tep:"VBT_Toan5_Tuan1_Tiet3.html", soSlide:6},
+      {tiet:4, ten:"Bài 2. Ôn tập các phép tính với số tự nhiên – Tiết 2", trang:"9–10", tep:"VBT_Toan5_Tuan1_Tiet4.html", soSlide:6},
+      {tiet:5, ten:"Bài 3. Ôn tập phân số – Tiết 1", trang:"11–12", tep:"VBT_Toan5_Tuan1_Tiet5.html", soSlide:7},
+    ],
+    2:[
+      {tiet:1, ten:"Bài 3. Ôn tập phân số – Tiết 2", trang:"12–13", tep:"VBT_Toan5_Tuan2_Tiet1.html", soSlide:7},
+      {tiet:2, ten:"Bài 4. Phân số thập phân", trang:"14", tep:"VBT_Toan5_Tuan2_Tiet2.html", soSlide:6},
+      {tiet:3, ten:"Bài 5. Ôn tập các phép tính với phân số – Tiết 1", trang:"15–16", tep:"VBT_Toan5_Tuan2_Tiet3.html", soSlide:6},
+      {tiet:4, ten:"Bài 5. Ôn tập các phép tính với phân số – Tiết 2", trang:"16–17", tep:"VBT_Toan5_Tuan2_Tiet4.html", soSlide:6},
+      {tiet:5, ten:"Bài 5. Ôn tập các phép tính với phân số – Tiết 3", trang:"18–19", tep:"VBT_Toan5_Tuan2_Tiet5.html", soSlide:7},
+    ],
+  },
 };
