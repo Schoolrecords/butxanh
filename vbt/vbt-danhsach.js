@@ -34,4 +34,20 @@ window.BX_VBT_DS={
       {tiet:5, ten:"Bài 4. Hơn, kém nhau bao nhiêu – Tiết 2 (Luyện tập)", trang:"20–21", tep:"VBT_Toan2_Tuan2_Tiet5.html", soSlide:10},
     ],
   },
+  "L3|Toán":{
+    1:[
+      {tiet:1, ten:"Bài 1. Ôn tập các số đến 1 000 – Tiết 1", trang:"5–6", tep:"VBT_Toan3_Tuan1_Tiet1.html", soSlide:6},
+      {tiet:2, ten:"Bài 1. Ôn tập các số đến 1 000 – Tiết 2", trang:"6–7", tep:"VBT_Toan3_Tuan1_Tiet2.html", soSlide:5},
+      {tiet:3, ten:"Bài 2. Ôn tập phép cộng, phép trừ trong phạm vi 1 000 – Tiết 1", trang:"7", tep:"VBT_Toan3_Tuan1_Tiet3.html", soSlide:5},
+      {tiet:4, ten:"Bài 2. Ôn tập phép cộng, phép trừ trong phạm vi 1 000 – Tiết 2", trang:"8", tep:"VBT_Toan3_Tuan1_Tiet4.html", soSlide:5},
+      {tiet:5, ten:"Bài 3. Tìm thành phần trong phép cộng, phép trừ – Tiết 1", trang:"9", tep:"VBT_Toan3_Tuan1_Tiet5.html", soSlide:5},
+    ],
+    2:[
+      {tiet:1, ten:"Bài 3. Tìm thành phần trong phép cộng, phép trừ – Tiết 2", trang:"10", tep:"VBT_Toan3_Tuan2_Tiet1.html", soSlide:6},
+      {tiet:2, ten:"Bài 4. Ôn tập bảng nhân 2; 5, bảng chia 2; 5 – Tiết 1", trang:"11", tep:"VBT_Toan3_Tuan2_Tiet2.html", soSlide:6},
+      {tiet:3, ten:"Bài 4. Ôn tập bảng nhân 2; 5, bảng chia 2; 5 – Tiết 2", trang:"12", tep:"VBT_Toan3_Tuan2_Tiet3.html", soSlide:6},
+      {tiet:4, ten:"Bài 5. Bảng nhân 3, bảng chia 3 – Tiết 1", trang:"13", tep:"VBT_Toan3_Tuan2_Tiet4.html", soSlide:5},
+      {tiet:5, ten:"Bài 5. Bảng nhân 3, bảng chia 3 – Tiết 2", trang:"14", tep:"VBT_Toan3_Tuan2_Tiet5.html", soSlide:5},
+    ],
+  },
 };
