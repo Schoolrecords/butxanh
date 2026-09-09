@@ -7,6 +7,12 @@
    bản quyền). Bản mới giữ nguyên đề và số của vở, mọi hình do Bút Xanh tự vẽ
    bằng SVG. Đang dựng dần theo khối — bản cũ lưu ở vbt-danhsach.js.backup-*. */
 window.BX_VBT_DS={
+  "L1|Toán":{
+    1:[
+      {tiet:2, ten:"Bài 1. Các số 0, 1, 2, 3, 4, 5 – Tiết 1", trang:"4–5", tep:"VBT_Toan1_Tuan1_Tiet2.html", soSlide:7},
+      {tiet:3, ten:"Bài 1. Các số 0, 1, 2, 3, 4, 5 – Tiết 2", trang:"6–7", tep:"VBT_Toan1_Tuan1_Tiet3.html", soSlide:5},
+    ],
+  },
   "L2|Toán":{
     1:[
       {tiet:1, ten:"Bài 1. Ôn tập các số đến 100 – Tiết 1", trang:"5–6", tep:"VBT_Toan2_Tuan1_Tiet1.html", soSlide:6},

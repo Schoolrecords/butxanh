@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-10 · 177';
+  var PB='2026-09-10 · 178';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -4986,7 +4986,13 @@ window.BX_vbtMo=function(lop,mon,w,i){
   var ds=BX_vbtTiet(lop,mon,w), t=ds[i]; if(!t) return;
   var url=BX_vbtTep(lop,mon,w,t); if(!url) return;
   var nhan=(t.tiet!=null)?((mon==='Toán'?'Tiết ':'Bài ')+t.tiet):(BX_VBT_THU[t.thu]||t.thu||'');
-  BX_vbtXem(url+(url.indexOf('?')<0?'?':'&')+'app=1', mon+' '+lop+' · Tuần '+w+' · '+nhan);
+  /* 9/9/2026 (thầy Chung: "tiết 1, 2, 3 đang cũ"): GẮN SỐ BẢN vào đường dẫn.
+     GitHub Pages đặt Cache-Control 10 phút, trình duyệt lại còn giữ lâu hơn, nên
+     sửa xong một tiết mà thầy cô mở ra vẫn thấy bản cũ — mỗi tệp bài giảng là một
+     địa chỉ riêng, Ctrl+F5 ở trang app KHÔNG làm mới được chúng. Thêm ?v=<số bản>
+     thì mỗi lần phát hành là một địa chỉ mới, bản mới hiện ngay. */
+  var pb=encodeURIComponent(String(window.BX_PHIENBAN||'').replace(/[^0-9]/g,''));
+  BX_vbtXem(url+(url.indexOf('?')<0?'?':'&')+'app=1&v='+pb, mon+' '+lop+' · Tuần '+w+' · '+nhan);
 };
 window.BX_vbtXem=function(url,ten){
   var o=el('vbt-doc');
