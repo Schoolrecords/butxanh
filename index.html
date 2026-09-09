@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-10 · 174';
+  var PB='2026-09-10 · 175';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1655,7 +1655,11 @@ window.bxMergeKho = function(){
       <!-- 8/9/2026 (thầy Chung): ẨN "Kho giáo án" khỏi menu, thay bằng "Vở bài tập". Màn #kho vẫn còn
            (Bảng điều khiển và địa chỉ #kho vẫn mở được) — chỉ không bày trên menu. -->
       <a data-view="kho" style="display:none"><svg class="icn ic" viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg> Kho giáo án</a>
-      <a data-view="vbt"><svg class="icn ic" viewBox="0 0 24 24"><path d="M4 4.5A2.5 2.5 0 016.5 2H20v17H6.5A2.5 2.5 0 004 21.5z"/><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M9 7h7M9 10.5h7"/></svg> Vở bài tập</a>
+      <!-- 9/9/2026 (thầy Chung): TẠM ẨN "Vở bài tập" — các tiết đang dựng từ ẢNH QUÉT Vở bài tập
+           của nhà xuất bản, chưa có phép dùng trong sản phẩm có thu phí. Ẩn cả menu LẪN màn
+           (xem ALLVIEWS ~dòng 4061) cho tới khi thay xong bằng hình tự vẽ (vbt/tu-dung/).
+           MỞ LẠI: bỏ style="display:none" ở đây + thêm 'vbt' vào ALLVIEWS. -->
+      <a data-view="vbt" style="display:none"><svg class="icn ic" viewBox="0 0 24 24"><path d="M4 4.5A2.5 2.5 0 016.5 2H20v17H6.5A2.5 2.5 0 004 21.5z"/><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M9 7h7M9 10.5h7"/></svg> Vở bài tập</a>
       <!-- 17/8/2026 (thầy Chung): "Phiếu bài tập cuối tuần" cùng nhóm "tài nguyên dạy học sẵn có";
            9/9/2026: Bài giảng trình chiếu chuyển xuống SAU phiếu. -->
       <!-- Menu ghi TẮT "Phiếu BT cuối tuần" để nằm gọn MỘT dòng (thầy Chung 17/8/2026);
@@ -4058,7 +4062,10 @@ function el(id){return document.getElementById(id);}
 /* 'hoclieu' và 'thongke' đã gỡ khỏi menu (16/8/2026) nhưng GIỮ trong danh sách này:
    thầy cô nào đang mở app ở địa chỉ #hoclieu / #thongke thì màn cũ vẫn dựng được,
    không rơi về Bảng điều khiển giữa chừng. */
-const ALLVIEWS=['dashboard','tkb','lich','khbd','kho','vbt','nhac','hocsinh','hoclieu','phieu','ppt','thongke','caidat'];
+/* 9/9/2026: 'vbt' ĐÃ GỠ khỏi danh sách (khác với 'hoclieu'/'thongke' ở trên) — ai mở địa chỉ
+   #vbt sẽ rơi về Bảng điều khiển, KHÔNG dựng màn. Cố ý: màn Vở bài tập nạp tệp dựng từ ảnh
+   quét của nhà xuất bản, tạm đóng tới khi thay xong bằng hình tự vẽ. Mã màn giữ nguyên. */
+const ALLVIEWS=['dashboard','tkb','lich','khbd','kho','nhac','hocsinh','hoclieu','phieu','ppt','thongke','caidat'];
 function showView(v){
   if(!ALLVIEWS.includes(v)) v='dashboard';
   document.querySelectorAll('.view').forEach(s=>s.classList.toggle('active', s.id==='v-'+v));
