@@ -12,6 +12,11 @@ window.BX_VBT_DS={
       {tiet:2, ten:"Bài 1. Các số 0, 1, 2, 3, 4, 5 – Tiết 1", trang:"4–5", tep:"VBT_Toan1_Tuan1_Tiet2.html", soSlide:7},
       {tiet:3, ten:"Bài 1. Các số 0, 1, 2, 3, 4, 5 – Tiết 2", trang:"6–7", tep:"VBT_Toan1_Tuan1_Tiet3.html", soSlide:5},
     ],
+    2:[
+      {tiet:1, ten:"Bài 1. Các số 0, 1, 2, 3, 4, 5 – Tiết 3", trang:"8–9", tep:"VBT_Toan1_Tuan2_Tiet1.html", soSlide:4},
+      {tiet:2, ten:"Bài 2. Các số 6, 7, 8, 9, 10 – Tiết 1", trang:"10–11", tep:"VBT_Toan1_Tuan2_Tiet2.html", soSlide:8},
+      {tiet:3, ten:"Bài 2. Các số 6, 7, 8, 9, 10 – Tiết 2", trang:"12–13", tep:"VBT_Toan1_Tuan2_Tiet3.html", soSlide:7},
+    ],
   },
   "L2|Toán":{
     1:[
