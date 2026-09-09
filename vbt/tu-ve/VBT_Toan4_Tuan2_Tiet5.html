@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<!-- BẢN TỰ VẼ 9/9/2026: toàn bộ hình trong tệp này do Bút Xanh dựng bằng SVG/HTML.
+     Không dùng ảnh quét của nhà xuất bản. Sinh bởi _vbt-tu-dung/tu-ve/sinh.js -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Toán 4 - Tuần 2 - Tiết 5 - Bài 4. Biểu thức chứa chữ – Tiết 2</title>
+<style>
+:root{--ui:#1f2937;--ui2:#374151;--acc:#f59e0b;--txt:#f9fafb;}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#111827;font-family:Segoe UI,Arial,sans-serif;color:var(--txt);overflow:hidden}
+#app{display:flex;flex-direction:column;height:100%}
+#bar{display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--ui);flex-wrap:wrap;border-bottom:1px solid #374151;user-select:none}
+#bar .grp{display:flex;align-items:center;gap:4px;padding:0 6px;border-right:1px solid #4b5563}
+#bar .grp:last-child{border-right:0}
+#bar button,#bar select,#bar input[type=number]{background:var(--ui2);color:var(--txt);border:1px solid #4b5563;border-radius:6px;padding:5px 9px;font-size:13px;cursor:pointer;line-height:1.2}
+#bar button:hover{background:#4b5563}
+#bar button.on{background:var(--acc);color:#111;border-color:var(--acc);font-weight:600}
+#bar button:disabled{opacity:.4;cursor:default}
+#bar input[type=color]{width:34px;height:28px;border:1px solid #4b5563;border-radius:6px;background:var(--ui2);padding:2px;cursor:pointer}
+#bar input[type=number]{width:56px}
+#bar .lbl{font-size:12px;opacity:.85}
+#bar .title{font-weight:700;font-size:14px;max-width:340px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#bar .edit-only{display:none}
+body.editing #bar .edit-only{display:flex}
+#main{flex:1;display:flex;min-height:0}
+#thumbs{width:190px;overflow-y:auto;background:#0f172a;padding:8px;display:flex;flex-direction:column;gap:8px;border-right:1px solid #374151}
+#thumbs .th{position:relative;width:170px;height:96px;border:2px solid #334155;border-radius:6px;overflow:hidden;cursor:pointer;background:#fff;flex:none}
+#thumbs .th.cur{border-color:var(--acc)}
+#thumbs .th .num{position:absolute;left:4px;top:3px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;padding:1px 6px;border-radius:8px;z-index:2}
+#thumbs .th .tc{position:absolute;left:0;top:0;width:1280px;height:720px;transform:scale(0.1296);transform-origin:0 0;pointer-events:none}
+#thumbs .th .tc .el.hid{visibility:visible}
+#view{flex:1;min-width:0;min-height:0;position:relative;overflow:hidden;background:#111827}
+body.show #thumbs,body.show #bar,body.show #hint{display:none}
+body.show #view{background:#000}
+#stage{position:absolute;left:50%;top:50%;width:1280px;height:720px;transform:translate(-50%,-50%);transform-origin:center center;overflow:hidden;background:#fff;box-shadow:0 0 0 1px #374151,0 10px 40px rgba(0,0,0,.6)}
+.slide{position:absolute;inset:0;display:none;background:#fff;overflow:hidden}
+.slide.active{display:block}
+.slide .panel{position:absolute;left:0;top:0;pointer-events:none}
+.el{position:absolute;transform-origin:center center}
+.el.pic{overflow:hidden}
+.el.pic img{position:absolute;left:0;top:0;width:100%;height:100%;display:block;object-fit:fill;user-select:none;-webkit-user-drag:none}
+.el.line svg{display:block;overflow:visible}
+.el.shape.oval{border-radius:50%}
+.el.shape.rrect{border-radius:12px}
+.el.txt{white-space:normal}
+.tb{display:flex;flex-direction:column;width:100%;min-height:100%;line-height:1.2;font-family:Arial,Helvetica,sans-serif;outline:none;word-wrap:break-word}
+.tb .p{margin:0;min-height:1em}
+.el.hid{visibility:hidden}
+body.editing .el.hid{visibility:visible;animation:none!important;-webkit-mask-image:none!important;mask-image:none!important;clip-path:none!important}
+body.editing .el{cursor:move}
+body.editing .el.txt .tb[contenteditable=true]{cursor:text}
+body.editing .el:hover{outline:1px dashed #38bdf8}
+body.editing .el.sel{outline:2px solid #f59e0b;z-index:5}
+body.editing .el.sel .tb{min-height:1.2em}
+#rh{position:absolute;width:14px;height:14px;background:#f59e0b;border:2px solid #fff;border-radius:3px;cursor:nwse-resize;display:none;z-index:20;transform:translate(-50%,-50%)}
+body.editing #rh.on{display:block}
+#hint{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#fff;padding:6px 12px;border-radius:20px;font-size:12px;pointer-events:none;white-space:nowrap}
+#toast{position:fixed;left:50%;top:60px;transform:translateX(-50%);background:#065f46;color:#fff;padding:10px 18px;border-radius:8px;font-size:14px;display:none;z-index:50;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+#counter{position:absolute;right:14px;bottom:10px;background:rgba(0,0,0,.45);color:#fff;padding:3px 10px;border-radius:12px;font-size:12px;pointer-events:none}
+body.show #counter{opacity:.5}
+
+/* ---------- animations (entrance effects) ---------- */
+@property --rb{syntax:'<length>';inherits:false;initial-value:0px}
+@property --wh{syntax:'<angle>';inherits:false;initial-value:0deg}
+.el.play{animation-duration:var(--dur,500ms);animation-delay:var(--delay,0ms);animation-fill-mode:both;animation-timing-function:ease-out}
+.el.play.fx-appear{animation-name:fxAppear;animation-duration:1ms}
+.el.play.fx-fade{animation-name:fxFade}
+.el.play.fx-zoom{animation-name:fxZoom}
+.el.play.fx-fly{animation-name:fxFly}
+.el.play.fx-wipe-up{animation-name:fxWipeUp;animation-timing-function:linear}
+.el.play.fx-wipe-down{animation-name:fxWipeDown;animation-timing-function:linear}
+.el.play.fx-wipe-left{animation-name:fxWipeLeft;animation-timing-function:linear}
+.el.play.fx-wipe-right{animation-name:fxWipeRight;animation-timing-function:linear}
+.el.play.fx-randombar{animation-name:fxRb;animation-timing-function:linear;-webkit-mask-image:repeating-linear-gradient(to bottom,#000 0,#000 var(--rb),transparent var(--rb),transparent 7px);mask-image:repeating-linear-gradient(to bottom,#000 0,#000 var(--rb),transparent var(--rb),transparent 7px)}
+.el.play.fx-wheel{animation-name:fxWheel;animation-timing-function:linear;-webkit-mask-image:conic-gradient(#000 var(--wh),transparent var(--wh));mask-image:conic-gradient(#000 var(--wh),transparent var(--wh))}
+.el.play.fx-pulse{animation-name:fxPulse}
+.el.play.fx-exit{animation-name:fxExit;animation-fill-mode:forwards}
+@keyframes fxAppear{from{opacity:0}to{opacity:1}}
+@keyframes fxFade{from{opacity:0}to{opacity:1}}
+@keyframes fxZoom{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:scale(1)}}
+@keyframes fxFly{from{transform:translateY(760px)}to{transform:translateY(0)}}
+@keyframes fxWipeUp{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes fxWipeDown{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes fxWipeLeft{from{clip-path:inset(0 0 0 100%)}to{clip-path:inset(0 0 0 0)}}
+@keyframes fxWipeRight{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes fxRb{from{--rb:0px;opacity:.3}to{--rb:7px;opacity:1}}
+@keyframes fxWheel{from{--wh:0deg}to{--wh:360deg}}
+@keyframes fxPulse{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes fxExit{from{opacity:1}to{opacity:0;visibility:hidden}}
+/* chế độ CHỈ XEM (vở bài tập): không có Chỉnh sửa / Lưu / toàn màn hình rời — chỉ Trình chiếu và Thoát */
+body.xem #bEdit,body.xem #bSave,body.xem #bFull,body.xem .edit-only{display:none!important}
+#bExit{display:none;position:absolute;right:14px;top:12px;z-index:30;background:rgba(0,0,0,.55);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:8px 16px;font-size:14px;font-weight:600;cursor:pointer;opacity:.35;transition:opacity .2s}
+#bExit:hover{opacity:1;background:rgba(220,38,38,.85)}
+body.show #bExit{display:block}
+/* màn hẹp (điện thoại / khung nhúng): giấu cột thumbnail, gọn thanh nút, giấu dòng gợi ý */
+@media(max-width:760px){#thumbs{display:none}#bar{padding:4px 6px;gap:4px}#bar .grp{padding:0 4px}#bar button,#bar select{padding:5px 7px;font-size:12px}#bar .title{max-width:160px;font-size:12px}#hint{display:none}#bar .lbl{font-size:11px}}
+@media print{#bar,#thumbs,#hint,#counter,#rh{display:none!important}#view{display:block;overflow:visible}#stage{transform:none!important;box-shadow:none}.slide{display:block;position:relative;page-break-after:always}}
+/* ---------- nút trình chiếu: PLAY / TẠM DỪNG (giữa, phía dưới) + THOÁT (góc trên trái, luôn hiển thị) ---------- */
+#ctl{display:flex;position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:40;gap:12px;opacity:.8;transition:opacity .25s}
+#ctl:hover{opacity:1}
+#ctl button{background:rgba(17,24,39,.85);color:#fff;border:1px solid rgba(255,255,255,.45);border-radius:28px;padding:10px 24px;font-size:16px;font-weight:700;cursor:pointer;letter-spacing:.5px;box-shadow:0 4px 14px rgba(0,0,0,.4);font-family:Segoe UI,Arial,sans-serif}
+#ctl button:hover,#ctl button.on{background:#f59e0b;color:#111;border-color:#f59e0b}
+#xExit{position:absolute;left:14px;top:12px;z-index:41;background:#1AC9FF;color:#fff;border:2px solid #fff;border-radius:24px;padding:9px 22px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.35);font-family:Segoe UI,Arial,sans-serif;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+#xExit:hover{background:#0EA5E9}
+body.editing #ctl{display:none}
+#bExit{display:none!important}
+#hint{bottom:70px}
+@media(max-width:760px){#ctl{bottom:8px;gap:6px}#ctl button{padding:8px 14px;font-size:13px}#xExit{padding:6px 12px;font-size:13px}}
+#ctl{display:none!important}
+#xExit{left:auto;right:14px}
+#hint{bottom:14px}
+</style>
+<link rel="stylesheet" href="font-utmavo.css"><style>
+body{font-family:'UTM Avo',Arial,Helvetica,sans-serif}
+.el,.tb,.tb .p{font-family:'UTM Avo',Arial,Helvetica,sans-serif}
+</style>
+</head>
+<body class="xem">
+<div id="app">
+ <div id="bar">
+  <div class="grp"><span class="title" title="Toán 1 - Tuần 1 - Tiết 2 - Bài 1. Các số 0, 1, 2, 3, 4, 5 – Tiết 1">Toán 1 - Tuần 1 - Tiết 2 - Bài 1. Các số 0, 1, 2, 3, 4, 5 – Tiết 1</span></div>
+  <div class="grp">
+   <button id="bPrev" title="Slide trước (←)">◀</button>
+   <span class="lbl"><span id="cur">1</span>/<span id="tot">5</span></span>
+   <button id="bNext" title="Slide sau (→)">▶</button>
+  </div>
+  <div class="grp">
+   <button id="bShow" title="Trình chiếu toàn màn hình (F5)">▶ Trình chiếu</button>
+   <button id="bEdit" title="Bật/tắt chế độ chỉnh sửa">✎ Chỉnh sửa</button>
+   <button id="bSave" title="Tải xuống tệp HTML đã sửa (Ctrl+S)">💾 Lưu</button>
+  </div>
+  <div class="grp edit-only">
+   <button id="bAddText" title="Thêm ô chữ mới">+ Chữ</button>
+   <button id="bDup" title="Nhân đôi (Ctrl+D)">⧉</button>
+   <button id="bDel" title="Xóa đối tượng đã chọn (Delete)">🗑 Xóa</button>
+   <button id="bUndo" title="Hoàn tác (Ctrl+Z)">↶</button>
+  </div>
+  <div class="grp edit-only">
+   <span class="lbl">Cỡ</span>
+   <button id="bSmaller" title="Giảm cỡ chữ">A−</button>
+   <button id="bBigger" title="Tăng cỡ chữ">A+</button>
+   <button id="bBold" title="Đậm"><b>B</b></button>
+   <input type="color" id="iColor" value="#ff0000" title="Màu chữ">
+   <button id="bAlL" title="Căn trái">☰</button><button id="bAlC" title="Căn giữa">☷</button><button id="bAlR" title="Căn phải">☰</button>
+  </div>
+  <div class="grp edit-only">
+   <span class="lbl">Hiệu ứng</span>
+   <select id="sFx" title="Hiệu ứng xuất hiện của đối tượng đã chọn">
+    <option value="">Không</option><option value="fade">Mờ dần</option><option value="randombar">Thanh ngẫu nhiên</option>
+    <option value="wipe-up">Quét lên</option><option value="wipe-right">Quét sang phải</option><option value="wheel">Bánh xe</option>
+    <option value="zoom">Phóng to</option><option value="fly">Bay vào</option><option value="appear">Xuất hiện</option>
+   </select>
+   <span class="lbl">Bước</span><input type="number" id="iStep" min="1" max="99" value="1" title="Thứ tự nhấp chuột">
+  </div>
+  <div class="grp"><button id="bFull" title="Toàn màn hình (không trình chiếu hiệu ứng lại từ đầu)">⛶</button></div>
+ </div>
+ <div id="main">
+  <div id="thumbs"></div>
+  <div id="view">
+   <div id="stage">
+
+<section class="slide" data-n="1" data-steps="0"><svg class="panel" viewBox="0 0 1280 720" width="1280" height="720"><rect width="1280" height="720" fill="#0f766e"/><circle cx="1130" cy="110" r="150" fill="#ffffff" opacity=".07"/><circle cx="150" cy="640" r="185" fill="#ffffff" opacity=".06"/><rect x="0" y="0" width="1280" height="10" fill="#ffd34d"/></svg><div class="el" data-id="e1" style="left:100px;top:176px;width:1080px;height:auto;"><div style="font:700 40px 'UTM Avo',Arial,Helvetica,sans-serif;color:#ffd34d;text-align:center;letter-spacing:.5px">Toán 4 · Tuần 2 · Tiết 5</div></div><div class="el" data-id="e2" style="left:510px;top:236px;width:260px;height:5px;"><div style="height:5px;background:#ffd34d;border-radius:3px"></div></div><div class="el" data-id="e3" style="left:80px;top:300px;width:1120px;height:auto;"><div style="font:800 70px 'UTM Avo',Arial,Helvetica,sans-serif;color:#fff;line-height:1.25;text-align:center">Bài 4. Biểu thức chứa chữ – Tiết 2</div></div><div class="el" data-id="e4" style="left:100px;top:596px;width:1080px;height:auto;"><div style="font:600 30px 'UTM Avo',Arial,Helvetica,sans-serif;color:#cdeeea;text-align:center">Vở bài tập trang 15</div></div></section>
+<section class="slide" data-n="2" data-steps="4"><svg class="panel" viewBox="0 0 1280 720" width="1280" height="720"><rect width="1280" height="720" fill="#eef6f5"/><rect x="18" y="16" width="1244" height="688" rx="28" ry="28" fill="#fff" stroke="#0f766e" stroke-width="3"/></svg><div class="el" data-id="e26" style="left:746px;top:30px;width:470px;height:auto;"><div style="font:700 22px 'UTM Avo',Arial,Helvetica,sans-serif;color:#0f766e;text-align:right">Bài 4. Biểu thức chứa chữ – Tiết 2</div></div><div class="el" data-id="e27" style="left:64px;top:127px;width:46px;height:46px;"><div style="display:flex;align-items:center;justify-content:center;height:100%;background:#0f766e;color:#fff;border-radius:10px;font:800 26px 'UTM Avo',Arial,Helvetica,sans-serif">1</div></div><div class="el" data-id="e28" style="left:124px;top:131px;width:1092px;height:auto;"><div style="font:700 30px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;line-height:1.3">Số ?  Chu vi P của hình chữ nhật: P = (a + b) × 2</div></div><div class="el" data-id="e29" style="left:64px;top:197px;width:1152px;height:auto;"><div style="font:400 26px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;line-height:1.35">Hãy tính chu vi mảnh đất hình chữ nhật theo kích thước như bảng sau:</div></div><div class="el" data-id="e30" style="left:170px;top:264px;width:300px;height:56px;"><div style="display:flex;align-items:center;justify-content:center;height:100%;background:#d7efec;border:2px solid #99d6cf;font:700 26px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;text-align:center">Chiều dài (m)</div></div><div class="el" data-id="e31" style="left:470px;top:264px;width:300px;height:56px;"><div style="display:flex;align-items:center;justify-content:center;height:100%;background:#d7efec;border:2px solid #99d6cf;font:700 26px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;text-align:center">Chiều rộng (m)</div></div><div class="el" data-id="e32" style="left:770px;top:264px;width:340px;height:56px;"><div style="display:flex;align-items:center;justify-content:center;height:100%;background:#d7efec;border:2px solid #99d6cf;font:700 26px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;text-align:center">Chu vi mảnh đất (m)</div></div><div class="el" data-id="e33" style="left:170px;top:320px;width:300px;height:62px;"><div style="display:flex;align-items:center;justify-content:center;height:100%;background:#fff;border:2px solid #99d6cf;font:400 27px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;text-align:center;padding:0 6px">16</div></div><div class="el" data-id="e34" style="left:470px;top:320px;width:300px;height:62px;"><div style="display:flex;align-items:center;justify-content:center;height:100%;background:#fff;border:2px solid #99d6cf;font:400 27px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;text-align:center;padding:0 6px">9</div></div><div class="el" data-id="e35" style="left:770px;top:320px;width:340px;height:62px;"><div style="display:flex;align-items:center;justify-content:center;height:100%;background:#fff;border:2px solid #99d6cf;font:400 27px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;text-align:center;padding:0 6px"></div></div><div data-step="1" class="el hid" data-id="e36" style="left:770px;top:320px;width:340px;height:62px;"><div style="display:flex;align-items:center;justify-content:center;height:100%"><div style="font:800 28px 'UTM Avo',Arial,Helvetica,sans-serif;color:#c62828;text-align:center;line-height:1.15">50</div></div></div><div class="el" data-id="e37" style="left:170px;top:382px;width:300px;height:62px;"><div style="display:flex;align-items:center;justify-content:center;height:100%;background:#fff;border:2px solid #99d6cf;font:400 27px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;text-align:center;padding:0 6px">42</div></div><div class="el" data-id="e38" style="left:470px;top:382px;width:300px;height:62px;"><div style="display:flex;align-items:center;justify-content:center;height:100%;background:#fff;border:2px solid #99d6cf;font:400 27px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;text-align:center;padding:0 6px">29</div></div><div class="el" data-id="e39" style="left:770px;top:382px;width:340px;height:62px;"><div style="display:flex;align-items:center;justify-content:center;height:100%;background:#fff;border:2px solid #99d6cf;font:400 27px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;text-align:center;padding:0 6px"></div></div><div data-step="2" class="el hid" data-id="e40" style="left:770px;top:382px;width:340px;height:62px;"><div style="display:flex;align-items:center;justify-content:center;height:100%"><div style="font:800 28px 'UTM Avo',Arial,Helvetica,sans-serif;color:#c62828;text-align:center;line-height:1.15">142</div></div></div><div class="el" data-id="e41" style="left:170px;top:444px;width:300px;height:62px;"><div style="display:flex;align-items:center;justify-content:center;height:100%;background:#fff;border:2px solid #99d6cf;font:400 27px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;text-align:center;padding:0 6px">75</div></div><div class="el" data-id="e42" style="left:470px;top:444px;width:300px;height:62px;"><div style="display:flex;align-items:center;justify-content:center;height:100%;background:#fff;border:2px solid #99d6cf;font:400 27px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;text-align:center;padding:0 6px">50</div></div><div class="el" data-id="e43" style="left:770px;top:444px;width:340px;height:62px;"><div style="display:flex;align-items:center;justify-content:center;height:100%;background:#fff;border:2px solid #99d6cf;font:400 27px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;text-align:center;padding:0 6px"></div></div><div data-step="3" class="el hid" data-id="e44" style="left:770px;top:444px;width:340px;height:62px;"><div style="display:flex;align-items:center;justify-content:center;height:100%"><div style="font:800 28px 'UTM Avo',Arial,Helvetica,sans-serif;color:#c62828;text-align:center;line-height:1.15">250</div></div></div><div class="el" data-id="e45" style="left:64px;top:581.5px;width:1152px;height:4px;"><div style="border-bottom:3px dotted #9bb;height:0"></div></div><div data-step="4" class="el hid" data-id="e46" style="left:84px;top:540px;width:auto;height:auto;"><div style="font:800 28px 'UTM Avo',Arial,Helvetica,sans-serif;color:#c62828;white-space:pre">(16 + 9) × 2 = 50 · (42 + 29) × 2 = 142 · (75 + 50) × 2 = 250</div></div></section>
+<section class="slide" data-n="3" data-steps="3"><svg class="panel" viewBox="0 0 1280 720" width="1280" height="720"><rect width="1280" height="720" fill="#eef6f5"/><rect x="18" y="16" width="1244" height="688" rx="28" ry="28" fill="#fff" stroke="#0f766e" stroke-width="3"/></svg><div class="el" data-id="e61" style="left:746px;top:30px;width:470px;height:auto;"><div style="font:700 22px 'UTM Avo',Arial,Helvetica,sans-serif;color:#0f766e;text-align:right">Bài 4. Biểu thức chứa chữ – Tiết 2</div></div><div class="el" data-id="e62" style="left:64px;top:176px;width:46px;height:46px;"><div style="display:flex;align-items:center;justify-content:center;height:100%;background:#0f766e;color:#fff;border-radius:10px;font:800 26px 'UTM Avo',Arial,Helvetica,sans-serif">2</div></div><div class="el" data-id="e63" style="left:124px;top:180px;width:1092px;height:auto;"><div style="font:700 30px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;line-height:1.3">a) Tính giá trị của biểu thức a + b : 2 với a = 34, b = 16.</div></div><div class="el" data-id="e64" style="left:194px;top:276px;width:549px;height:62px;"><div style="display:flex;align-items:center;height:100%;font:400 28px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;white-space:pre">Với a = 34, b = 16 thì a + b : 2 = </div></div><div class="el" data-id="e65" style="left:743px;top:284px;width:200px;height:46px;"><div style="height:100%;border:2.5px solid #7aa7c7;border-radius:8px;background:#fff"></div></div><div data-step="1" class="el hid" data-id="e66" style="left:743px;top:284px;width:200px;height:46px;"><div style="display:flex;align-items:center;justify-content:center;height:100%"><div style="font:800 28px 'UTM Avo',Arial,Helvetica,sans-serif;color:#c62828;text-align:center;line-height:1.15">34</div></div></div><div class="el" data-id="e67" style="left:943px;top:276px;width:142px;height:62px;"><div style="display:flex;align-items:center;height:100%;font:400 28px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;white-space:pre"> + 16 : 2</div></div><div class="el" data-id="e68" style="left:492px;top:338px;width:32px;height:62px;"><div style="display:flex;align-items:center;height:100%;font:400 28px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;white-space:pre">= </div></div><div class="el" data-id="e69" style="left:524px;top:346px;width:200px;height:46px;"><div style="height:100%;border:2.5px solid #7aa7c7;border-radius:8px;background:#fff"></div></div><div data-step="2" class="el hid" data-id="e70" style="left:524px;top:346px;width:200px;height:46px;"><div style="display:flex;align-items:center;justify-content:center;height:100%"><div style="font:800 28px 'UTM Avo',Arial,Helvetica,sans-serif;color:#c62828;text-align:center;line-height:1.15">34</div></div></div><div class="el" data-id="e71" style="left:724px;top:338px;width:63px;height:62px;"><div style="display:flex;align-items:center;height:100%;font:400 28px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;white-space:pre"> + 8</div></div><div class="el" data-id="e72" style="left:524px;top:400px;width:32px;height:62px;"><div style="display:flex;align-items:center;height:100%;font:400 28px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;white-space:pre">= </div></div><div class="el" data-id="e73" style="left:556px;top:408px;width:200px;height:46px;"><div style="height:100%;border:2.5px solid #7aa7c7;border-radius:8px;background:#fff"></div></div><div data-step="3" class="el hid" data-id="e74" style="left:556px;top:408px;width:200px;height:46px;"><div style="display:flex;align-items:center;justify-content:center;height:100%"><div style="font:800 28px 'UTM Avo',Arial,Helvetica,sans-serif;color:#c62828;text-align:center;line-height:1.15">42</div></div></div></section>
+<section class="slide" data-n="4" data-steps="3"><svg class="panel" viewBox="0 0 1280 720" width="1280" height="720"><rect width="1280" height="720" fill="#eef6f5"/><rect x="18" y="16" width="1244" height="688" rx="28" ry="28" fill="#fff" stroke="#0f766e" stroke-width="3"/></svg><div class="el" data-id="e89" style="left:746px;top:30px;width:470px;height:auto;"><div style="font:700 22px 'UTM Avo',Arial,Helvetica,sans-serif;color:#0f766e;text-align:right">Bài 4. Biểu thức chứa chữ – Tiết 2</div></div><div class="el" data-id="e90" style="left:64px;top:176px;width:46px;height:46px;"><div style="display:flex;align-items:center;justify-content:center;height:100%;background:#0f766e;color:#fff;border-radius:10px;font:800 26px 'UTM Avo',Arial,Helvetica,sans-serif">2</div></div><div class="el" data-id="e91" style="left:124px;top:180px;width:1092px;height:auto;"><div style="font:700 30px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;line-height:1.3">b) Tính giá trị của biểu thức (a + b) × 2 với a = 28, b = 42.</div></div><div class="el" data-id="e92" style="left:171px;top:276px;width:581px;height:62px;"><div style="display:flex;align-items:center;height:100%;font:400 28px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;white-space:pre">Với a = 28, b = 42 thì (a + b) × 2 = </div></div><div class="el" data-id="e93" style="left:752px;top:284px;width:200px;height:46px;"><div style="height:100%;border:2.5px solid #7aa7c7;border-radius:8px;background:#fff"></div></div><div data-step="1" class="el hid" data-id="e94" style="left:752px;top:284px;width:200px;height:46px;"><div style="display:flex;align-items:center;justify-content:center;height:100%"><div style="font:800 28px 'UTM Avo',Arial,Helvetica,sans-serif;color:#c62828;text-align:center;line-height:1.15">(28</div></div></div><div class="el" data-id="e95" style="left:952px;top:276px;width:157px;height:62px;"><div style="display:flex;align-items:center;height:100%;font:400 28px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;white-space:pre"> + 42) × 2</div></div><div class="el" data-id="e96" style="left:492px;top:338px;width:32px;height:62px;"><div style="display:flex;align-items:center;height:100%;font:400 28px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;white-space:pre">= </div></div><div class="el" data-id="e97" style="left:524px;top:346px;width:200px;height:46px;"><div style="height:100%;border:2.5px solid #7aa7c7;border-radius:8px;background:#fff"></div></div><div data-step="2" class="el hid" data-id="e98" style="left:524px;top:346px;width:200px;height:46px;"><div style="display:flex;align-items:center;justify-content:center;height:100%"><div style="font:800 28px 'UTM Avo',Arial,Helvetica,sans-serif;color:#c62828;text-align:center;line-height:1.15">70</div></div></div><div class="el" data-id="e99" style="left:724px;top:338px;width:63px;height:62px;"><div style="display:flex;align-items:center;height:100%;font:400 28px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;white-space:pre"> × 2</div></div><div class="el" data-id="e100" style="left:524px;top:400px;width:32px;height:62px;"><div style="display:flex;align-items:center;height:100%;font:400 28px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;white-space:pre">= </div></div><div class="el" data-id="e101" style="left:556px;top:408px;width:200px;height:46px;"><div style="height:100%;border:2.5px solid #7aa7c7;border-radius:8px;background:#fff"></div></div><div data-step="3" class="el hid" data-id="e102" style="left:556px;top:408px;width:200px;height:46px;"><div style="display:flex;align-items:center;justify-content:center;height:100%"><div style="font:800 28px 'UTM Avo',Arial,Helvetica,sans-serif;color:#c62828;text-align:center;line-height:1.15">140</div></div></div></section>
+<section class="slide" data-n="5" data-steps="0"><svg class="panel" viewBox="0 0 1280 720" width="1280" height="720"><rect width="1280" height="720" fill="#eef6f5"/><rect x="18" y="16" width="1244" height="688" rx="28" ry="28" fill="#fff" stroke="#0f766e" stroke-width="3"/></svg><div class="el" data-id="e107" style="left:746px;top:30px;width:470px;height:auto;"><div style="font:700 22px 'UTM Avo',Arial,Helvetica,sans-serif;color:#0f766e;text-align:right">Bài 4. Biểu thức chứa chữ – Tiết 2</div></div><div class="el" data-id="e108" style="left:64px;top:176px;width:46px;height:46px;"><div style="display:flex;align-items:center;justify-content:center;height:100%;background:#0f766e;color:#fff;border-radius:10px;font:800 26px 'UTM Avo',Arial,Helvetica,sans-serif">3</div></div><div class="el" data-id="e109" style="left:124px;top:180px;width:1092px;height:auto;"><div style="font:700 30px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;line-height:1.3">Độ dài quãng đường ABCD được tính theo công thức S = m + n + p. Hãy tính độ dài quãng đường ABCD biết độ dài đoạn CD bằng 2 lần độ dài đoạn AB, m = 5 km, n = 8 km.</div></div><div class="el" data-id="e110" style="left:290px;top:310px;width:700px;height:190px;"><svg viewBox="0 0 700 190" width="700" height="190" style="display:block"><polyline points='40,160 220,60 460,50 660,150' fill='none' stroke='#123' stroke-width='4' stroke-linejoin='round'/><circle cx='40' cy='160' r='7' fill='#123'/><circle cx='220' cy='60' r='7' fill='#123'/><circle cx='460' cy='50' r='7' fill='#123'/><circle cx='660' cy='150' r='7' fill='#123'/><text x='24' y='188' font-size='26' fill='#123'>A</text><text x='206' y='42' font-size='26' fill='#123'>B</text><text x='448' y='34' font-size='26' fill='#123'>C</text><text x='648' y='182' font-size='26' fill='#123'>D</text><text x='108' y='96' font-size='26' fill='#0f766e'>m</text><text x='330' y='38' font-size='26' fill='#0f766e'>n</text><text x='568' y='90' font-size='26' fill='#0f766e'>p</text></svg></div></section>
+<section class="slide" data-n="6" data-steps="3"><svg class="panel" viewBox="0 0 1280 720" width="1280" height="720"><rect width="1280" height="720" fill="#eef6f5"/><rect x="18" y="16" width="1244" height="688" rx="28" ry="28" fill="#fff" stroke="#0f766e" stroke-width="3"/></svg><div class="el" data-id="e125" style="left:746px;top:30px;width:470px;height:auto;"><div style="font:700 22px 'UTM Avo',Arial,Helvetica,sans-serif;color:#0f766e;text-align:right">Bài 4. Biểu thức chứa chữ – Tiết 2</div></div><div class="el" data-id="e126" style="left:64px;top:127px;width:46px;height:46px;"><div style="display:flex;align-items:center;justify-content:center;height:100%;background:#0f766e;color:#fff;border-radius:10px;font:800 26px 'UTM Avo',Arial,Helvetica,sans-serif">3</div></div><div class="el" data-id="e127" style="left:124px;top:131px;width:1092px;height:auto;"><div style="font:700 30px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;line-height:1.3">Bài giải</div></div><div class="el" data-id="e128" style="left:64px;top:207px;width:1152px;height:auto;"><div style="font:400 26px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;line-height:1.35">Biết CD = 2 × AB;  m = 5 km,  n = 8 km.</div></div><div class="el" data-id="e129" style="left:104px;top:319px;width:1072px;height:4px;"><div style="border-bottom:3px dotted #9bb;height:0"></div></div><div class="el" data-id="e130" style="left:104px;top:376px;width:1072px;height:4px;"><div style="border-bottom:3px dotted #9bb;height:0"></div></div><div class="el" data-id="e131" style="left:120px;top:280px;width:1052px;height:auto;"><div style="font:400 27px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;line-height:1.3">Độ dài đoạn CD là:</div></div><div data-step="1" class="el hid" data-id="e132" style="left:120px;top:337px;width:auto;height:auto;"><div style="font:800 27px 'UTM Avo',Arial,Helvetica,sans-serif;color:#c62828;white-space:pre;line-height:1.3">p = 5 × 2 = 10 (km)</div></div><div class="el" data-id="e133" style="left:104px;top:459px;width:1072px;height:4px;"><div style="border-bottom:3px dotted #9bb;height:0"></div></div><div class="el" data-id="e134" style="left:104px;top:516px;width:1072px;height:4px;"><div style="border-bottom:3px dotted #9bb;height:0"></div></div><div class="el" data-id="e135" style="left:104px;top:573px;width:1072px;height:4px;"><div style="border-bottom:3px dotted #9bb;height:0"></div></div><div class="el" data-id="e136" style="left:120px;top:420px;width:1052px;height:auto;"><div style="font:400 27px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;line-height:1.3">Độ dài quãng đường ABCD là:</div></div><div data-step="2" class="el hid" data-id="e137" style="left:120px;top:477px;width:auto;height:auto;"><div style="font:800 27px 'UTM Avo',Arial,Helvetica,sans-serif;color:#c62828;white-space:pre;line-height:1.3">S = 5 + 8 + 10 = 23 (km)</div></div><div data-step="3" class="el hid" data-id="e138" style="left:120px;top:534px;width:auto;height:auto;"><div style="font:800 27px 'UTM Avo',Arial,Helvetica,sans-serif;color:#c62828;white-space:pre;line-height:1.3">Đáp số: 23 km</div></div></section>
+<section class="slide" data-n="7" data-steps="2"><svg class="panel" viewBox="0 0 1280 720" width="1280" height="720"><rect width="1280" height="720" fill="#eef6f5"/><rect x="18" y="16" width="1244" height="688" rx="28" ry="28" fill="#fff" stroke="#0f766e" stroke-width="3"/></svg><div class="el" data-id="e149" style="left:746px;top:30px;width:470px;height:auto;"><div style="font:700 22px 'UTM Avo',Arial,Helvetica,sans-serif;color:#0f766e;text-align:right">Bài 4. Biểu thức chứa chữ – Tiết 2</div></div><div class="el" data-id="e150" style="left:64px;top:176px;width:46px;height:46px;"><div style="display:flex;align-items:center;justify-content:center;height:100%;background:#0f766e;color:#fff;border-radius:10px;font:800 26px 'UTM Avo',Arial,Helvetica,sans-serif">4</div></div><div class="el" data-id="e151" style="left:124px;top:180px;width:1092px;height:auto;"><div style="font:700 30px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;line-height:1.3">Khoanh vào chữ đặt trước câu trả lời đúng.</div></div><div class="el" data-id="e152" style="left:64px;top:256px;width:1152px;height:auto;"><div style="font:400 26px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;line-height:1.35">Với giá trị nào của m dưới đây thì biểu thức 12 : (3 – m) có giá trị bé nhất?</div></div><div class="el" data-id="e153" style="left:64px;top:343px;width:384px;height:45.9px;"><div style="display:flex;align-items:center;height:100%;font:400 27px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;padding-left:34px">A. m = 2</div></div><div class="el" data-id="e154" style="left:448px;top:343px;width:384px;height:45.9px;"><div style="display:flex;align-items:center;height:100%;font:400 27px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;padding-left:34px">B. m = 1</div></div><div class="el" data-id="e155" style="left:832px;top:343px;width:384px;height:45.9px;"><div style="display:flex;align-items:center;height:100%;font:400 27px 'UTM Avo',Arial,Helvetica,sans-serif;color:#123;padding-left:34px">C. m = 0</div></div><div data-step="1" class="el hid" data-id="e156" style="left:856px;top:341px;width:50px;height:46px;"><svg width="50" height="46" viewBox="0 0 50 46" style="display:block"><ellipse cx="25" cy="23" rx="22" ry="21" fill="none" stroke="#c62828" stroke-width="3.5"/></svg></div><div class="el" data-id="e157" style="left:64px;top:483.5px;width:1152px;height:4px;"><div style="border-bottom:3px dotted #9bb;height:0"></div></div><div data-step="2" class="el hid" data-id="e158" style="left:84px;top:442px;width:auto;height:auto;"><div style="font:800 28px 'UTM Avo',Arial,Helvetica,sans-serif;color:#c62828;white-space:pre">m = 2 → 12 : 1 = 12 · m = 1 → 12 : 2 = 6 · m = 0 → 12 : 3 = 4 (bé nhất)</div></div></section>
+    <div id="rh"></div>
+   </div>
+   <button id="bExit" title="Thoát trình chiếu (Esc)">✕ Thoát</button>
+   <button id="xExit" title="Thoát trình chiếu (Esc)">✕ THOÁT</button>
+   <div id="ctl"><button id="cPlay" title="Trình chiếu toàn màn hình (F5)">▶ PLAY</button><button id="cPause" title="Tạm dừng: thu về cửa sổ, giữ nguyên trang đang chiếu">❚❚ TẠM DỪNG</button></div>
+   <div id="hint">Nhấp chuột / Space / → : hiệu ứng tiếp theo · ← : quay lại · F5: trình chiếu · Esc: thoát</div>
+   <div id="counter"></div>
+  </div>
+ </div>
+</div>
+<div id="toast"></div>
+<script>
+(function(){
+'use strict';
+var stage=document.getElementById('stage'), view=document.getElementById('view'), thumbs=document.getElementById('thumbs');
+var slides=Array.prototype.slice.call(stage.querySelectorAll('.slide'));
+var cur=0, step=0, editing=false, sel=null, undoStack=[], scale=1;
+var $=function(id){return document.getElementById(id);};
+var K=window.localStorage;
+function toast(msg,ms){var t=$('toast');t.textContent=msg;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(function(){t.style.display='none';},ms||2500);}
+
+/* ---------- layout ---------- */
+function fit(){var r=view.getBoundingClientRect();scale=Math.min(r.width/1280,r.height/720)||1;stage.style.transform='translate(-50%,-50%) scale('+scale+')';}
+window.addEventListener('resize',fit);
+document.addEventListener('fullscreenchange',function(){/* rời toàn màn hình = tạm dừng, vẫn giữ chế độ trình chiếu và vị trí đang chiếu */setTimeout(fit,50);});
+
+/* ---------- steps / animation ---------- */
+function stepsOf(s){return parseInt(s.dataset.steps||'0',10);}
+function elsOfStep(s,k){return Array.prototype.filter.call(s.querySelectorAll('.el[data-step]'),function(e){return parseInt(e.dataset.step,10)===k;});}
+function resetSlide(s,showAll){
+  Array.prototype.forEach.call(s.querySelectorAll('.el'),function(e){
+    e.classList.remove('play');
+    Array.prototype.slice.call(e.classList).forEach(function(c){if(c.indexOf('fx-')===0)e.classList.remove(c);});
+    if(e.dataset.step&&!showAll)e.classList.add('hid');else e.classList.remove('hid');
+  });
+}
+function recomputeSteps(s){var m=0;Array.prototype.forEach.call(s.querySelectorAll('.el[data-step]'),function(e){m=Math.max(m,parseInt(e.dataset.step,10)||0);});s.dataset.steps=m;}
+function goto(i,atEnd){
+  if(i<0||i>=slides.length)return;
+  slides[cur].classList.remove('active');
+  cur=i;var s=slides[cur];s.classList.add('active');
+  recomputeSteps(s);
+  if(atEnd){resetSlide(s,true);step=stepsOf(s);}else{resetSlide(s,false);step=0;}
+  $('cur').textContent=cur+1;$('counter').textContent=(cur+1)+' / '+slides.length;
+  Array.prototype.forEach.call(thumbs.children,function(t,j){t.classList.toggle('cur',j===cur);});
+  var t=thumbs.children[cur];if(t)t.scrollIntoView({block:'nearest'});
+  select(null);
+}
+function playStep(k){
+  var s=slides[cur];
+  elsOfStep(s,k).forEach(function(e){
+    e.classList.remove('hid');
+    var fx=e.dataset.fx||'fade';
+    if(fx==='exit'){e.classList.add('fx-exit','play');return;}
+    e.classList.add('fx-'+fx);
+    void e.offsetWidth; e.classList.add('play');
+  });
+}
+function unplayStep(k){
+  var s=slides[cur];
+  elsOfStep(s,k).forEach(function(e){
+    e.classList.remove('play');
+    Array.prototype.slice.call(e.classList).forEach(function(c){if(c.indexOf('fx-')===0)e.classList.remove(c);});
+    e.classList.add('hid');
+  });
+}
+function next(){
+  if(editing)return goto(cur+1);
+  var n=stepsOf(slides[cur]);
+  if(step<n){step++;playStep(step);}else if(cur<slides.length-1)goto(cur+1);else toast('Đã hết bài.');
+}
+function prev(){
+  if(editing)return goto(cur-1);
+  if(step>0){unplayStep(step);step--;}else if(cur>0)goto(cur-1,true);
+}
+
+/* ---------- thumbnails ---------- */
+function buildThumbs(){
+  thumbs.innerHTML='';
+  slides.forEach(function(s,i){
+    var t=document.createElement('div');t.className='th'+(i===cur?' cur':'');
+    var c=s.cloneNode(true);c.classList.add('active');c.removeAttribute('data-n');c.className='slide active tc';
+    Array.prototype.forEach.call(c.querySelectorAll('[contenteditable]'),function(e){e.removeAttribute('contenteditable');});
+    t.appendChild(c);
+    var n=document.createElement('span');n.className='num';n.textContent=i+1;t.appendChild(n);
+    t.addEventListener('click',function(){goto(i,editing);});
+    thumbs.appendChild(t);
+  });
+}
+var thumbTimer=null;
+function refreshThumb(){clearTimeout(thumbTimer);thumbTimer=setTimeout(function(){
+  var t=thumbs.children[cur];if(!t)return;var old=t.querySelector('.tc');
+  var c=slides[cur].cloneNode(true);c.className='slide active tc';
+  Array.prototype.forEach.call(c.querySelectorAll('[contenteditable]'),function(e){e.removeAttribute('contenteditable');});
+  Array.prototype.forEach.call(c.querySelectorAll('.sel'),function(e){e.classList.remove('sel');});
+  var rh=c.querySelector('#rh');if(rh)rh.remove();
+  t.replaceChild(c,old);
+},400);}
+
+/* ---------- modes ---------- */
+function setEditing(on){
+  editing=on;document.body.classList.toggle('editing',on);$('bEdit').classList.toggle('on',on);
+  Array.prototype.forEach.call(stage.querySelectorAll('.el.txt .tb'),function(tb){tb.setAttribute('contenteditable',on?'true':'false');});
+  if(on){resetSlide(slides[cur],true);step=stepsOf(slides[cur]);$('hint').textContent='Nhấp để chọn · kéo để di chuyển · nhấp đúp vào chữ để sửa · Delete: xóa · Ctrl+Z: hoàn tác · Ctrl+S: lưu';}
+  else{select(null);resetSlide(slides[cur],false);step=0;$('hint').textContent='Nhấp chuột / Space / → : hiệu ứng tiếp theo · ← : quay lại · F5: trình chiếu · Esc: thoát';}
+}
+function startShow(){
+  if(editing)setEditing(false);
+  document.body.classList.add('show');
+  resetSlide(slides[cur],false);step=0;
+  var p=view.requestFullscreen?view.requestFullscreen():Promise.resolve();
+  if(p&&p.catch)p.catch(function(){});
+  setTimeout(fit,100);
+}
+
+/* ---------- selection / editing ---------- */
+var rh=$('rh');
+function select(el){
+  if(sel)sel.classList.remove('sel');
+  sel=el;
+  if(sel){sel.classList.add('sel');updateRH();$('sFx').value=sel.dataset.fx||'';$('iStep').value=sel.dataset.step||1;
+    var sp=sel.querySelector('.tb span');if(sp&&sp.style.color)$('iColor').value=rgb2hex(sp.style.color);}
+  else{rh.classList.remove('on');}
+}
+function updateRH(){if(!sel)return;rh.classList.add('on');rh.style.left=(sel.offsetLeft+sel.offsetWidth)+'px';rh.style.top=(sel.offsetTop+sel.offsetHeight)+'px';}
+function rgb2hex(c){var m=c.match(/\d+/g);if(!m)return c;return '#'+m.slice(0,3).map(function(v){return ('0'+parseInt(v,10).toString(16)).slice(-2);}).join('');}
+function snap(){undoStack.push({i:cur,h:slides[cur].innerHTML});if(undoStack.length>60)undoStack.shift();}
+function undo(){var u=undoStack.pop();if(!u)return toast('Không còn gì để hoàn tác');if(u.i!==cur)goto(u.i,true);slides[cur].innerHTML=u.h;select(null);
+  Array.prototype.forEach.call(slides[cur].querySelectorAll('.el.txt .tb'),function(tb){tb.setAttribute('contenteditable','true');});refreshThumb();}
+
+var drag=null;
+stage.addEventListener('mousedown',function(ev){
+  if(!editing)return;
+  if(ev.target===rh){ev.preventDefault();snap();drag={mode:'resize',x:ev.clientX,y:ev.clientY,w:sel.offsetWidth,h:sel.offsetHeight,el:sel};return;}
+  var el=ev.target.closest('.el');
+  if(!el||!stage.contains(el)){select(null);return;}
+  if(el!==sel){select(el);}
+  if(document.activeElement&&document.activeElement.classList&&document.activeElement.classList.contains('tb')&&el.contains(document.activeElement))return; /* editing text: let caret work */
+  ev.preventDefault();
+  snap();
+  drag={mode:'move',x:ev.clientX,y:ev.clientY,l:el.offsetLeft,t:el.offsetTop,el:el,moved:false};
+});
+window.addEventListener('mousemove',function(ev){
+  if(!drag)return;
+  var dx=(ev.clientX-drag.x)/scale,dy=(ev.clientY-drag.y)/scale;
+  if(drag.mode==='move'){if(Math.abs(dx)+Math.abs(dy)>1)drag.moved=true;drag.el.style.left=Math.round(drag.l+dx)+'px';drag.el.style.top=Math.round(drag.t+dy)+'px';}
+  else{var w=Math.max(10,drag.w+dx),h=Math.max(10,drag.h+dy);drag.el.style.width=Math.round(w)+'px';
+    if(!drag.el.classList.contains('txt'))drag.el.style.height=Math.round(h)+'px';}
+  updateRH();
+});
+window.addEventListener('mouseup',function(){if(drag){if(drag.mode==='move'&&!drag.moved)undoStack.pop();drag=null;refreshThumb();}});
+stage.addEventListener('dblclick',function(ev){
+  if(!editing)return;var el=ev.target.closest('.el.txt');if(!el)return;
+  var tb=el.querySelector('.tb');tb.focus();
+});
+stage.addEventListener('focusin',function(ev){if(editing&&ev.target.classList.contains('tb'))snap();});
+stage.addEventListener('input',function(ev){if(editing)refreshThumb();});
+stage.addEventListener('paste',function(ev){
+  if(!editing)return;ev.preventDefault();var t=(ev.clipboardData||window.clipboardData).getData('text/plain');document.execCommand('insertText',false,t);
+});
+
+function spansOf(el){return el?el.querySelectorAll('.tb span'):[];}
+function fontSize(delta){
+  if(!sel)return;snap();
+  Array.prototype.forEach.call(spansOf(sel),function(sp){var v=parseFloat(sp.style.fontSize)||24;sp.style.fontSize=Math.max(8,v+delta)+'px';});
+  Array.prototype.forEach.call(sel.querySelectorAll('.tb .p'),function(p){p.style.whiteSpace='';});
+  updateRH();refreshThumb();
+}
+function newTextBox(){
+  snap();
+  var d=document.createElement('div');d.className='el txt';d.dataset.id='n'+Date.now();
+  d.style.cssText='left:440px;top:320px;width:400px;height:auto;min-height:40px';
+  d.innerHTML='<div class="tb" contenteditable="true" style="padding:0"><div class="p" style="text-align:center"><span style="font-size:37.33px;color:#FF0000;font-weight:bold">Nhập chữ…</span></div></div>';
+  slides[cur].appendChild(d);select(d);d.querySelector('.tb').focus();document.execCommand('selectAll',false,null);refreshThumb();
+}
+function dup(){if(!sel)return;snap();var c=sel.cloneNode(true);c.classList.remove('sel');c.style.left=(sel.offsetLeft+20)+'px';c.style.top=(sel.offsetTop+20)+'px';c.dataset.id='n'+Date.now();slides[cur].appendChild(c);select(c);refreshThumb();}
+function del(){if(!sel)return;snap();sel.remove();select(null);refreshThumb();}
+function setFx(v){if(!sel)return;snap();
+  if(!v){delete sel.dataset.fx;delete sel.dataset.step;sel.style.removeProperty('--delay');sel.style.removeProperty('--dur');}
+  else{sel.dataset.fx=v;if(!sel.dataset.step){recomputeSteps(slides[cur]);sel.dataset.step=stepsOf(slides[cur])+1;$('iStep').value=sel.dataset.step;}
+    if(!sel.style.getPropertyValue('--dur'))sel.style.setProperty('--dur','500ms');}
+  recomputeSteps(slides[cur]);}
+function setStep(v){if(!sel)return;v=Math.max(1,parseInt(v,10)||1);snap();sel.dataset.step=v;if(!sel.dataset.fx)sel.dataset.fx='fade';$('sFx').value=sel.dataset.fx;recomputeSteps(slides[cur]);}
+function align(a){if(!sel)return;snap();Array.prototype.forEach.call(sel.querySelectorAll('.tb .p'),function(p){p.style.textAlign=a;});refreshThumb();}
+function bold(){if(!sel)return;snap();var sp=spansOf(sel);if(!sp.length)return;var on=sp[0].style.fontWeight!=='bold';Array.prototype.forEach.call(sp,function(s){s.style.fontWeight=on?'bold':'normal';});refreshThumb();}
+function color(c){if(!sel)return;snap();Array.prototype.forEach.call(spansOf(sel),function(s){s.style.color=c;});refreshThumb();}
+
+/* ---------- save ---------- */
+function serialize(){
+  var root=document.documentElement.cloneNode(true);
+  var b=root.querySelector('body');b.className=document.body.classList.contains('xem')?'xem':'';
+  var th=root.querySelector('#thumbs');if(th)th.innerHTML='';
+  var st=root.querySelector('#stage');st.style.transform='translate(-50%,-50%)';
+  Array.prototype.forEach.call(st.querySelectorAll('.el'),function(e){
+    e.classList.remove('sel','play','hid');
+    Array.prototype.slice.call(e.classList).forEach(function(c){if(c.indexOf('fx-')===0)e.classList.remove(c);});
+  });
+  Array.prototype.forEach.call(st.querySelectorAll('[contenteditable]'),function(e){e.removeAttribute('contenteditable');});
+  Array.prototype.forEach.call(st.querySelectorAll('.slide'),function(s,i){s.classList.toggle('active',i===0);});
+  var r=root.querySelector('#rh');if(r)r.className='';
+  root.querySelector('#toast').style.display='none';
+  return '<!DOCTYPE html>\n'+root.outerHTML;
+}
+function save(){
+  var html=serialize();
+  var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=document.title+'.html';document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},2000);
+  toast('Đã tải xuống "'+document.title+'.html" (thư mục Tải xuống). Hãy thay thế tệp cũ bằng tệp này.',5000);
+}
+
+/* ---------- events ---------- */
+$('bPrev').onclick=function(){goto(cur-1,editing);};
+$('bNext').onclick=function(){goto(cur+1,editing);};
+$('bShow').onclick=startShow;
+$('bEdit').onclick=function(){setEditing(!editing);};
+$('bSave').onclick=save;
+$('bExit').onclick=function(ev){ev.stopPropagation();quit();};
+$('bFull').onclick=function(){if(document.fullscreenElement)document.exitFullscreen();else{var p=view.requestFullscreen();if(p&&p.catch)p.catch(function(){});}};
+$('bAddText').onclick=newTextBox;$('bDup').onclick=dup;$('bDel').onclick=del;$('bUndo').onclick=undo;
+$('bSmaller').onclick=function(){fontSize(-2.67);};$('bBigger').onclick=function(){fontSize(2.67);};
+$('bBold').onclick=bold;$('iColor').oninput=function(){color(this.value);};
+$('bAlL').onclick=function(){align('left');};$('bAlC').onclick=function(){align('center');};$('bAlR').onclick=function(){align('right');};
+$('sFx').onchange=function(){setFx(this.value);};$('iStep').onchange=function(){setStep(this.value);};
+view.addEventListener('click',function(ev){
+  if(editing)return;
+  if(ev.target.closest('#stage')||ev.target===view){next();}
+});
+view.addEventListener('contextmenu',function(ev){if(!editing){ev.preventDefault();prev();}});
+document.addEventListener('keydown',function(ev){
+  var inText=document.activeElement&&(document.activeElement.isContentEditable||/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName));
+  if(ev.key==='F5'){ev.preventDefault();startShow();return;}
+  if((ev.ctrlKey||ev.metaKey)&&ev.key.toLowerCase()==='s'){ev.preventDefault();save();return;}
+  if(ev.key==='Escape'){if(document.fullscreenElement){fsExit();}else{document.body.classList.remove('show');}if(editing){if(inText)document.activeElement.blur();else select(null);}fit();return;}
+  if(editing){
+    if((ev.ctrlKey||ev.metaKey)&&ev.key.toLowerCase()==='z'&&!inText){ev.preventDefault();undo();return;}
+    if((ev.ctrlKey||ev.metaKey)&&ev.key.toLowerCase()==='d'&&sel){ev.preventDefault();dup();return;}
+    if(inText)return;
+    if(ev.key==='Delete'||ev.key==='Backspace'){if(sel){ev.preventDefault();del();}return;}
+    if(sel&&/^Arrow/.test(ev.key)){ev.preventDefault();var d=ev.shiftKey?10:1;
+      if(ev.key==='ArrowLeft')sel.style.left=(sel.offsetLeft-d)+'px';if(ev.key==='ArrowRight')sel.style.left=(sel.offsetLeft+d)+'px';
+      if(ev.key==='ArrowUp')sel.style.top=(sel.offsetTop-d)+'px';if(ev.key==='ArrowDown')sel.style.top=(sel.offsetTop+d)+'px';updateRH();refreshThumb();return;}
+    if(ev.key==='PageDown')goto(cur+1,true);if(ev.key==='PageUp')goto(cur-1,true);
+    return;
+  }
+  if(inText)return;
+  switch(ev.key){
+    case ' ':case 'ArrowRight':case 'ArrowDown':case 'PageDown':case 'Enter':ev.preventDefault();next();break;
+    case 'ArrowLeft':case 'ArrowUp':case 'PageUp':case 'Backspace':ev.preventDefault();prev();break;
+    case 'Home':goto(0);break;case 'End':goto(slides.length-1,true);break;
+  }
+});
+
+/* ---------- PLAY (toàn màn hình) / TẠM DỪNG (thu nhỏ, giữ chỗ) / THOÁT ---------- */
+function fsReq(){var p=view.requestFullscreen?view.requestFullscreen():null;if(p&&p.catch)p.catch(function(){});}
+function fsExit(){if(document.fullscreenElement){var p=document.exitFullscreen();if(p&&p.catch)p.catch(function(){});}}
+function play(){if(editing)setEditing(false);if(!document.body.classList.contains('show')){document.body.classList.add('show');resetSlide(slides[cur],false);step=0;}fsReq();setTimeout(fit,150);}
+function pause(){fsExit();setTimeout(fit,150);}
+function quit(){fsExit();document.body.classList.remove('show');setTimeout(fit,100);}
+function ctlUI(){var fs=!!document.fullscreenElement;$('cPlay').classList.toggle('on',fs);$('cPause').classList.remove('on');}
+$('cPlay').onclick=function(ev){ev.stopPropagation();play();};
+$('cPause').onclick=function(ev){ev.stopPropagation();pause();};
+$('xExit').onclick=function(ev){ev.stopPropagation();quit();};
+document.addEventListener('fullscreenchange',ctlUI);ctlUI();
+
+/* ---------- init ---------- */
+slides.forEach(function(s){s.classList.remove('active');Array.prototype.forEach.call(s.querySelectorAll('.el.txt .tb'),function(tb){tb.setAttribute('contenteditable','false');});});
+buildThumbs();
+goto(0);
+fit();
+/* Mở tệp là vào chế độ trình chiếu (cửa sổ); bấm PLAY để mở rộng toàn màn hình */
+document.body.classList.add('show');setTimeout(fit,50);
+/* URL options: ?slide=3  ?all=1 (show every element)  ?edit=1 */
+try{
+  var q={};location.search.replace(/^\?/,'').split('&').forEach(function(kv){var p=kv.split('=');if(p[0])q[decodeURIComponent(p[0])]=decodeURIComponent(p[1]||'');});
+  var sn=parseInt(q.slide||location.hash.replace('#',''),10);
+  if(sn>=1&&sn<=slides.length)goto(sn-1,!!q.all);
+  else if(q.all)goto(0,true);
+  if(q.edit){document.body.classList.remove('show');fit();setEditing(true);}
+  if(q.step){var k=parseInt(q.step,10);for(var i=1;i<=k;i++){step=i;playStep(i);}}
+}catch(e){}
+})();
+</script>
+</body>
+</html>

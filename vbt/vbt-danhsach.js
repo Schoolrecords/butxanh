@@ -50,4 +50,20 @@ window.BX_VBT_DS={
       {tiet:5, ten:"Bài 5. Bảng nhân 3, bảng chia 3 – Tiết 2", trang:"14", tep:"VBT_Toan3_Tuan2_Tiet5.html", soSlide:5},
     ],
   },
+  "L4|Toán":{
+    1:[
+      {tiet:1, ten:"Bài 1. Ôn tập các số đến 100 000 – Tiết 1", trang:"5–6", tep:"VBT_Toan4_Tuan1_Tiet1.html", soSlide:7},
+      {tiet:2, ten:"Bài 1. Ôn tập các số đến 100 000 – Tiết 2", trang:"6–7", tep:"VBT_Toan4_Tuan1_Tiet2.html", soSlide:8},
+      {tiet:3, ten:"Bài 2. Ôn tập các phép tính trong phạm vi 100 000 – Tiết 1", trang:"8–9", tep:"VBT_Toan4_Tuan1_Tiet3.html", soSlide:6},
+      {tiet:4, ten:"Bài 2. Ôn tập các phép tính trong phạm vi 100 000 – Tiết 2", trang:"9–10", tep:"VBT_Toan4_Tuan1_Tiet4.html", soSlide:6},
+      {tiet:5, ten:"Bài 2. Ôn tập các phép tính trong phạm vi 100 000 – Tiết 3", trang:"10–11", tep:"VBT_Toan4_Tuan1_Tiet5.html", soSlide:7},
+    ],
+    2:[
+      {tiet:1, ten:"Bài 3. Số chẵn, số lẻ – Tiết 1", trang:"12", tep:"VBT_Toan4_Tuan2_Tiet1.html", soSlide:5},
+      {tiet:2, ten:"Bài 3. Số chẵn, số lẻ – Tiết 2", trang:"12–13", tep:"VBT_Toan4_Tuan2_Tiet2.html", soSlide:4},
+      {tiet:3, ten:"Bài 3. Số chẵn, số lẻ – Tiết 3", trang:"13", tep:"VBT_Toan4_Tuan2_Tiet3.html", soSlide:5},
+      {tiet:4, ten:"Bài 4. Biểu thức chứa chữ – Tiết 1", trang:"14", tep:"VBT_Toan4_Tuan2_Tiet4.html", soSlide:5},
+      {tiet:5, ten:"Bài 4. Biểu thức chứa chữ – Tiết 2", trang:"15", tep:"VBT_Toan4_Tuan2_Tiet5.html", soSlide:7},
+    ],
+  },
 };
