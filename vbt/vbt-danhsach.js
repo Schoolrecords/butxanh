@@ -18,6 +18,16 @@ window.BX_VBT_DS={
       {tiet:3, ten:"Bài 2. Các số 6, 7, 8, 9, 10 – Tiết 2", trang:"12–13", tep:"VBT_Toan1_Tuan2_Tiet3.html", soSlide:7},
     ],
   },
+  "L2|Tiếng Việt":{
+    1:[
+      {tiet:1, ten:"Bài 1. Tôi là học sinh lớp 2", trang:"4–5", tep:"VBT_TiengViet2_Tuan1_Bai1.html", soSlide:6},
+      {tiet:2, ten:"Bài 2. Ngày hôm qua đâu rồi?", trang:"5–7", tep:"VBT_TiengViet2_Tuan1_Bai2.html", soSlide:10},
+    ],
+    2:[
+      {tiet:3, ten:"Bài 3. Niềm vui của Bi và Bống", trang:"8", tep:"VBT_TiengViet2_Tuan2_Bai3.html", soSlide:6},
+      {tiet:4, ten:"Bài 4. Làm việc thật là vui", trang:"9–11", tep:"VBT_TiengViet2_Tuan2_Bai4.html", soSlide:10},
+    ],
+  },
   "L2|Toán":{
     1:[
       {tiet:1, ten:"Bài 1. Ôn tập các số đến 100 – Tiết 1", trang:"5–6", tep:"VBT_Toan2_Tuan1_Tiet1.html", soSlide:6},
@@ -32,6 +42,16 @@ window.BX_VBT_DS={
       {tiet:3, ten:"Bài 3. Các thành phần của phép cộng, phép trừ – Tiết 3 (Luyện tập)", trang:"15–17", tep:"VBT_Toan2_Tuan2_Tiet3.html", soSlide:9},
       {tiet:4, ten:"Bài 4. Hơn, kém nhau bao nhiêu – Tiết 1", trang:"18–19", tep:"VBT_Toan2_Tuan2_Tiet4.html", soSlide:7},
       {tiet:5, ten:"Bài 4. Hơn, kém nhau bao nhiêu – Tiết 2 (Luyện tập)", trang:"20–21", tep:"VBT_Toan2_Tuan2_Tiet5.html", soSlide:10},
+    ],
+  },
+  "L3|Tiếng Việt":{
+    1:[
+      {tiet:1, ten:"Bài 1. Ngày gặp lại", trang:"4–5", tep:"VBT_TiengViet3_Tuan1_Bai1.html", soSlide:7},
+      {tiet:2, ten:"Bài 2. Về thăm quê", trang:"6–7", tep:"VBT_TiengViet3_Tuan1_Bai2.html", soSlide:6},
+    ],
+    2:[
+      {tiet:3, ten:"Bài 3. Cánh rừng trong nắng", trang:"8–9", tep:"VBT_TiengViet3_Tuan2_Bai3.html", soSlide:6},
+      {tiet:4, ten:"Bài 4. Lần đầu ra biển", trang:"10–11", tep:"VBT_TiengViet3_Tuan2_Bai4.html", soSlide:7},
     ],
   },
   "L3|Toán":{
