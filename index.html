@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-10 · 188';
+  var PB='2026-09-10 · 189';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1269,7 +1269,7 @@ window.bxMergeKho = function(){
 (function(){
   /* (4/9/2026) Đổi chuỗi này MỖI KHI sửa nội dung kho-data-*.js — trình duyệt nhớ tệp kho
      theo đúng đường dẫn kèm ?v=, không đổi là thầy cô vẫn mở ra kho cũ. */
-  var V='20260909-khop-giaoan-2';   /* đổi MỖI KHI sửa kho-data-*: không đổi thì trình duyệt giữ bản cũ, thầy cô không thấy dữ liệu vừa vá */
+  var V='20260910-chebang';   /* đổi MỖI KHI sửa kho-data-*: không đổi thì trình duyệt giữ bản cũ, thầy cô không thấy dữ liệu vừa vá */
   window.BX_KHO_FILES={
     '1':['kho-data-lop1.js','kho-data-l1-gdtc.js','kho-data-l1-amnhac.js','kho-data-l1-mithuat.js'],
     '2':['kho-data-lop2.js','kho-data-l2-gdtc.js','kho-data-l2-amnhac.js','kho-data-l2-mithuat.js'],
@@ -11646,12 +11646,58 @@ if(document.readyState!=='loading') init(); else document.addEventListener('DOMC
   /* Dựng giáo án dạng trang A4 (HTML phẳng) — khớp bố cục bản Word */
   var KHO_MEDIA_BASE=(window.KHO_MEDIA_BASE||'kho-media/');   // đổi sang URL Firebase Storage khi lên production
   function _khoImg(p){ return window.BX_theAnh(KHO_MEDIA_BASE+p,'kho-img','Hình minh hoạ trong giáo án'); }
-  function _richSeg(line){ return String(line).split(/(〖IMG:[^〗]+〗)/).map(function(part){ var m=part.match(/^〖IMG:(.+)〗$/); return m?_khoImg(m[1]):esc(part); }).join(''); }
+  /* ===== (10/9/2026) PHÂN SỐ CHỒNG trong giáo án Toán lớp 3–5 =====
+     GV báo: "môn Toán các công thức hoặc phân số không có định dạng, GV phải cắt tiết đó tìm giáo án khác".
+     Giáo án gốc ghi phân số bằng công thức Word <m:f>; bộ bóc cũ dẹt thành chữ "tử/mẫu" (kho Toán 5 có 59 tiết,
+     Toán 4 có 31 tiết như vậy), lại mơ hồ: "3×2/5×2" là (3×2) trên (5×2), đoán mò sẽ vẽ thành 3 × ²⁄₅ × 2.
+     Nên KHÔNG đoán: chỉ vẽ chồng đúng các chuỗi "tử/mẫu" có trong công thức của tệp gốc (window.BX_PS_GOC,
+     web/ps-goc.js); lớp 4–5 thêm phân số đơn giản "số/số" đứng tách rời (bỏ ngày tháng, số trang, năm).
+     Kho KHÔNG đổi chữ — tìm kiếm, KHGD, quét NLS vẫn đọc "3/4" như cũ. Word: span.bxps → <m:f> (inlineRuns). */
+  var _psLop=0, _psRe={};
+  function _psVe(a,b){ return '<span class="bxps"><span class="bxps-t">'+a+'</span><span class="bxps-m">'+b+'</span></span>'; }
+  function _psReCua(lop){
+    if(_psRe.hasOwnProperty(lop)) return _psRe[lop];
+    var ds=(window.BX_PS_GOC||{})[lop]||[];
+    var rx=function(s){ return esc(s).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); };
+    var alt=ds.map(function(p){ return rx(p[0])+'\\/'+rx(p[1]); });
+    /* trước không được là chữ số, "/", ".", ",", dấu nhân/chia dính liền; sau không được là chữ số, "/", dấu nhân dính liền */
+    _psRe[lop]=alt.length?new RegExp('(^|[^\\d\\/.,×*·:])('+alt.join('|')+')(?![\\d\\/×*·])','g'):null;
+    if(!window.BX_PS_GOC) delete _psRe[lop];   /* tệp dữ liệu chưa về → lần sau dựng lại */
+    return _psRe[lop]||null;
+  }
+  var _PS_TRANH=/(ngày|tháng|năm|bài|trang|tiết|lúc)\s*$/i;
+  function _psChung(s){   /* phân số đơn giản "số/số" đứng tách rời — chỉ Toán 4, 5 */
+    return s.replace(/(^|[\s(\[“"'=])(\d{1,6})\/(\d{1,6})(?=$|[\s)\].,;:!?”"'])/g,function(m0,p,a,b,off,all){
+      if(_PS_TRANH.test(all.slice(Math.max(0,off-8),off+p.length))) return m0;   /* ngày 10/9, tháng 10/2023, Bài 1/123 */
+      if(b.length===4 && +b>=1900) return m0;                                   /* năm */
+      return p+_psVe(a,b);
+    });
+  }
+  function bxPhanSo(s,lop){   /* s: chữ ĐÃ esc */
+    if(!(lop>=3&&lop<=5)) return s;
+    var re=_psReCua(lop), chung=(lop>=4)?_psChung:function(x){ return x; }, out='', i=0, m;
+    if(re){
+      re.lastIndex=0;
+      while((m=re.exec(s))){
+        var st=m.index+m[1].length, k=m[2].split('/');
+        out+=chung(s.slice(i,st))+_psVe(k[0],k[1]); i=st+m[2].length;
+        if(!m[0].length) re.lastIndex++;
+      }
+    }
+    return out+chung(s.slice(i));
+  }
+  window.bxPhanSo=bxPhanSo;
+  function _richSeg(line){ return String(line).split(/(〖IMG:[^〗]+〗)/).map(function(part){ var m=part.match(/^〖IMG:(.+)〗$/); return m?_khoImg(m[1]):(_psLop?bxPhanSo(esc(part),_psLop):esc(part)); }).join(''); }
   function mline(t){ return String(t==null?'':t).replace(/\r/g,'').split('\n').map(_richSeg).join('<br>'); }
   function para(t){ return '<p>'+mline(t)+'</p>'; }
   /* Mục I: tô đậm các tiêu đề con "1. Năng lực đặc thù / 2. Năng lực chung / 3. Phẩm chất" */
   function yccdPara(t){ return '<p>'+String(t==null?'':t).replace(/\r/g,'').split('\n').map(function(line){ var seg=_richSeg(line); return _isYccdHead(line)?('<b>'+seg+'</b>'):seg; }).join('<br>')+'</p>'; }
   function khoLessonToHtml(L,row,ctx){
+    /* (10/9/2026) bật vẽ phân số chồng cho giáo án Toán trong lúc dựng tiết này — xem bxPhanSo */
+    var cu=_psLop; _psLop=(L&&/^to[aá]n$/i.test(String(L.mon||'').trim()))?(parseInt(L.lop,10)||0):0;
+    try{ return _khoLessonToHtml(L,row,ctx); } finally { _psLop=cu; }
+  }
+  function _khoLessonToHtml(L,row,ctx){
     row=row||{};
     var H=[];
     /* Tiêu đề tiết dùng chung bxTieuDeTiet — đây CHÍNH LÀ bản đi vào tệp Word có ảnh
@@ -11749,11 +11795,14 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
   function rpr(o){o=o||{};var s='<w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>';if(o.bold)s+='<w:b/>';if(o.italic)s+='<w:i/>';s+='<w:sz w:val="'+((o.size||13)*2)+'"/><w:szCs w:val="'+((o.size||13)*2)+'"/></w:rPr>';return s;}
   function runT(text,o){if(text==='')return'';return '<w:r>'+rpr(o)+'<w:t xml:space="preserve">'+xe(text)+'</w:t></w:r>';}
   function runImg(ctx,src){var im=ctx.map[src];if(!im)return runT('【Hình minh hoạ】',{});return drawingXml(im.rId,im.w,im.h,ctx.did++);}
+  /* (10/9/2026) phân số chồng (span.bxps, dựng ở bxPhanSo) → công thức Word <m:f> như giáo án gốc (Cambria Math) */
+  function omFrac(a,b,o){o=o||{};var sz=(o.size||13)*2;var mr=function(t){return '<m:r><w:rPr><w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/>'+(o.bold?'<w:b/>':'')+'<w:sz w:val="'+sz+'"/><w:szCs w:val="'+sz+'"/></w:rPr><m:t xml:space="preserve">'+xe(t)+'</m:t></m:r>';};return '<m:oMath><m:f><m:num>'+mr(a)+'</m:num><m:den>'+mr(b)+'</m:den></m:f></m:oMath>';}
   function inlineRuns(node,ctx,base){var s='';node.childNodes.forEach(function(ch){
     if(ch.nodeType===3){s+=runT(ch.nodeValue,base);}
     else if(ch.nodeType===1){var t=ch.tagName.toLowerCase();
       if(t==='img'){s+=runImg(ctx,ch.getAttribute('data-goc')||ch.getAttribute('src'));}   /* data-goc = anh GOC: Word khong doc duoc WebP */
       else if(t==='br'){s+='<w:r>'+rpr(base)+'<w:br/></w:r>';}
+      else if(t==='span'&&/\bbxps\b/.test(ch.className||'')){var tu=ch.querySelector('.bxps-t'),mau=ch.querySelector('.bxps-m');s+=omFrac(tu?tu.textContent:'',mau?mau.textContent:'',base);}
       else if(t==='b'||t==='strong'){var b2={size:base.size,bold:true,italic:base.italic};s+=inlineRuns(ch,ctx,b2);}
       else if(t==='i'||t==='em'){s+=inlineRuns(ch,ctx,{size:base.size,bold:base.bold,italic:true});}
       /* (6/9/2026 tối) KHỐI (div/p/li…) trong một ô bảng phải XUỐNG DÒNG. Trước đây ô "tên hoạt động + Mục tiêu"
@@ -11787,7 +11836,7 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
   });return out;}
   function wrapMedia(body,imgs){
     var enc=new TextEncoder();
-    var NS='xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"';
+    var NS='xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"';   /* m: phân số <m:f> (10/9/2026) */
     var sect='<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1418"/></w:sectPr>';
     var doc='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document '+NS+'><w:body>'+body+sect+'</w:body></w:document>';
     var relImgs=imgs.map(function(im){return '<Relationship Id="'+im.rId+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="'+im.media+'"/>';}).join('');
@@ -13623,6 +13672,8 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
      ⚠️ Có dấu phiên bản ?v= vì GitHub Pages giữ bản cũ 10 phút — sửa license.js mà
      quên đổi dấu này thì máy thầy cô vẫn chạy bản cũ. (5/8/2026) -->
 <script src="khgd-sgv.js?v=20260909d-trucsgv"></script>
+<!-- (10/9/2026) phân số đã xác minh trong giáo án Toán gốc 3–5 — sinh bởi giaoan-goc/_ps-lam-js.js; sinh lại thì đổi ?v= -->
+<script src="ps-goc.js?v=20260910a"></script>
 <script src="license.js?v=20260828-lancuoi"></script>
 
 <!-- ============ MODAL: LỊCH NGHỈ & DẠY BÙ (Phase 2 — con trỏ tiến độ) ============ -->
