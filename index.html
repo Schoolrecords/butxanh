@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-10 · 189';
+  var PB='2026-09-10 · 190';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1269,7 +1269,7 @@ window.bxMergeKho = function(){
 (function(){
   /* (4/9/2026) Đổi chuỗi này MỖI KHI sửa nội dung kho-data-*.js — trình duyệt nhớ tệp kho
      theo đúng đường dẫn kèm ?v=, không đổi là thầy cô vẫn mở ra kho cũ. */
-  var V='20260910-chebang';   /* đổi MỖI KHI sửa kho-data-*: không đổi thì trình duyệt giữ bản cũ, thầy cô không thấy dữ liệu vừa vá */
+  var V='20260910-tichhopt1';   /* đổi MỖI KHI sửa kho-data-*: không đổi thì trình duyệt giữ bản cũ, thầy cô không thấy dữ liệu vừa vá */
   window.BX_KHO_FILES={
     '1':['kho-data-lop1.js','kho-data-l1-gdtc.js','kho-data-l1-amnhac.js','kho-data-l1-mithuat.js'],
     '2':['kho-data-lop2.js','kho-data-l2-gdtc.js','kho-data-l2-amnhac.js','kho-data-l2-mithuat.js'],
@@ -11911,7 +11911,7 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
      thầy cô mất công đã soạn mà không hề được báo. Lớp - tuần - tiết - môn thì KHÔNG đổi,
      nên chuyển khoá cũ sang tên bài hiện hành theo bốn phần đó. Chạy một lần, ghi dấu lại. */
   function bxChuyenKhoaSuaTheoTenMoi(){
-    var DAU='butxanh_khbd_edits_dabatlai';
+    var DAU='butxanh_khbd_edits_dabatlai_0910';   /* (10/9/2026) đổi mã: 8 tên bài Toán 5 vừa sửa lỗi chữ ("– – – LUYỆN TẬP", "THƠI GIAN"…) → mỗi máy chuyển khoá lại một lần */
     try{
       if(localStorage.getItem(DAU)) return;
       var m=loadEdits(), khoa=Object.keys(m);
