@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-10 · 187';
+  var PB='2026-09-10 · 188';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -947,6 +947,10 @@ table.sched.lbg tr.lesson:hover td:not(.thu):not(.buoi){background:var(--green-s
 .a4page .dotline{border-bottom:1px dotted #666;height:20px}
 .kho-img{max-width:100%;height:auto;display:block;margin:6px auto;border:1px solid #e3e3e3;border-radius:4px}
 .a4page table.hd td .kho-img{max-width:97%}
+/* (10/9/2026) PHÂN SỐ CHỒNG trong giáo án Toán (tử trên, gạch ngang, mẫu dưới) — dựng ở bxPhanSo, Word ra công thức <m:f> */
+.bxps{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 .14em;font-size:.95em}
+.bxps>.bxps-t{border-bottom:1px solid currentColor;padding:0 .18em}
+.bxps>.bxps-m{padding:0 .18em}
 .a4page.editing{outline:2px dashed #0f7a44;outline-offset:4px;background:#fffdf5}
 .a4page.editing:focus{outline:2px solid #0f7a44}
 @media(max-width:560px){
@@ -3826,7 +3830,7 @@ async function lbgRead(input){
     _lbgPending=r;
     const warns=(typeof BX_validateLBG==='function')?BX_validateLBG(r.sch,r.meta):[];
     r.warns=warns;
-    let html='<div class="notice" style="margin:0;background:var(--green-soft);border-color:#cdeed9;color:var(--green-dark)">✓ Đã đọc <b>'+r.sch.length+' tiết</b>'+(r.meta.week?(' · Tuần '+r.meta.week):'')+' từ <b>'+_xe(file.name)+'</b>.</div>';
+    let html='<div class="notice" style="margin:0;background:var(--green-soft);border-color:#cdeed9;color:var(--green-dark)">✓ Đã đọc <b>'+r.sch.length+' tiết</b>'+(r.meta.week?(' · Tuần '+r.meta.week):(' · tệp không ghi số tuần → sẽ lưu vào <b>Tuần '+_xe(String(state.week))+'</b> đang mở'))+' từ <b>'+_xe(file.name)+'</b>.</div>';
     if(warns.length){
       html+='<div class="notice" style="margin:10px 0 0;background:#fff7e6;border-color:#f0d9a8;color:#8a5a00"><b>⚠ '+warns.length+' điểm cần thầy cô rà lại</b> <span style="font-weight:400">(chỉ soi dòng có dữ liệu — tiết trống được bỏ qua):</span><ul style="margin:6px 0 0;padding-left:18px">'+warns.map(w=>'<li style="margin:3px 0">'+_xe(w)+'</li>').join('')+'</ul><div style="margin-top:8px;font-size:12.5px">Thầy cô có thể sửa file rồi bấm <b>“📂 Chọn file khác”</b>, hoặc vẫn <b>“✓ Cập nhật LBG”</b> nếu đã chắc chắn.</div></div>';
     } else {
@@ -3846,7 +3850,7 @@ function lbgApply(){
   _lbgPending=null;
   closeModal('lbg-overlay');
   if(typeof showView==='function') showView('lich');
-  try{ const cov=khbdCoverage(); bxAlert('✓ Đã cập nhật Lịch báo giảng: '+n+' tiết'+(wk?(' · Tuần '+wk):'')+'.'+(cov&&cov.todo?('\nCòn '+cov.todo.length+' bài cần soạn giáo án.'):'')); }catch(e){}
+  try{ const cov=khbdCoverage(); bxAlert('✓ Đã cập nhật Lịch báo giảng: '+n+' tiết · Tuần '+(wk||state.week)+'.'+(cov&&cov.todo?('\nCòn '+cov.todo.length+' bài cần soạn giáo án.'):'')); }catch(e){}
 }
 /* ====================================================================
    MÔN THẦY CÔ TỰ THÊM — ngoài Chương trình GDPT 2018  (18/8/2026)
@@ -3967,6 +3971,7 @@ function _bxCanonSubject(s){
     'tiengviet':'Tiếng Việt','tv':'Tiếng Việt',
     'khoahoc':'Khoa học','kh':'Khoa học',
     'lichsuvadiali':'Lịch sử & Địa lí','lichsudiali':'Lịch sử & Địa lí','lsdl':'Lịch sử & Địa lí','sudia':'Lịch sử & Địa lí','lichsudia':'Lịch sử & Địa lí',
+    'lichsuvadialy':'Lịch sử & Địa lí','lichsudialy':'Lịch sử & Địa lí',   /* "Địa lý" y dài — _normTxt không đổi y→i (10/9/2026) */
     'tinhoc':'Tin học','tin':'Tin học',
     'congnghe':'Công nghệ','cn':'Công nghệ',
     'daoduc':'Đạo đức','dd':'Đạo đức',
@@ -7246,7 +7251,7 @@ function loadSettings(){
   if(p.school)el('set-school').value=p.school; if(p.year)el('set-year').value=p.year;
   if(el('set-xa')) el('set-xa').value=p.xa||''; if(el('set-hieutruong')) el('set-hieutruong').value=p.hieuTruong||'';
   if(p.team)el('set-team').value=p.team;
-  el('set-class').value=p.klass||state.klass; el('set-week').value=p.week||state.week; el('set-place').value=p.place||state.place;
+  el('set-class').value=p.klass||state.klass; el('set-week').value=state.week||p.week;   /* (10/9/2026) tuần ĐANG XEM, không phải số lưu từ lần trước */ el('set-place').value=p.place||state.place;
   el('set-from').value=p.from||state.from; el('set-to').value=p.to||state.to;
   if(el('set-khbd-iv')) el('set-khbd-iv').value=p.khbdIV||state.khbdIV||'auto';
   if(el('set-khbd-ktten')) el('set-khbd-ktten').value=p.khbdKtTen||state.khbdKtTen||'an';
@@ -7264,7 +7269,12 @@ function applyProfile(p){
   if(p.xung) state.xung=p.xung;
   if(p.name) state.gvcn=p.name;
   if(p.klass) state.klass=p.klass;
-  if(p.week) state.week=p.week;
+  /* (10/9/2026) Tuần đang xem KHÔNG lấy từ hồ sơ nữa khi app đã mở một tuần (cờ đặt trong BX_setWeek).
+     Trước đây mọi lần applyProfile (bấm "Lưu hồ sơ", khôi phục sao lưu) kéo state.week về ô "Tuần hiện tại"
+     lưu từ hôm nào mà KHÔNG nạp lại lịch → nhãn "Tuần 2" nhưng ruột là bài tuần 1, "Tạo KHBD Tuần 2" in giáo
+     án tuần 1, và lần sửa dòng LBG kế tiếp ghi hẳn lịch tuần 1 vào ô tuần 2 (GV lớp 4–5 báo 10/9: LS&ĐL,
+     Khoa học tuần 2 lặp bài tuần 1 — đo _kiemthu/kiem-luu-hoso-tuan.js). Đổi tuần phải qua BX_setWeek. */
+  if(p.week && !window.__bxDaMoTuan) state.week=p.week;
   if(p.year) state.year=p.year;
   if(p.place) state.place=p.place;
   if(p.from) state.from=p.from;
@@ -7551,7 +7561,11 @@ el('set-save').onclick=function(){
     khbdIV:(el('set-khbd-iv')&&el('set-khbd-iv').value)||state.khbdIV||'auto',
     khbdKtTen:(el('set-khbd-ktten')&&el('set-khbd-ktten').value)||state.khbdKtTen||'an'};
   try{localStorage.setItem('butxanh_profile',JSON.stringify(p));}catch(e){}
+  var _tuanDangXem=String(state.week);
   applyProfile(p);
+  /* (10/9/2026) Thầy cô tự gõ tuần khác ở ô "Tuần hiện tại" → chuyển tuần ĐÚNG CÁCH (nạp lịch của tuần đó),
+     đừng chỉ đổi nhãn như trước — xem ghi chú trong applyProfile. */
+  try{ var _tw=parseInt(p.week,10); if(_tw>=1&&_tw<=35&&String(_tw)!==_tuanDangXem&&typeof BX_setWeek==='function') BX_setWeek(_tw); }catch(e){}
   el('set-msg').textContent='✓ Đã lưu hồ sơ — đã cập nhật lịch, KHBD, thống kê.'; setTimeout(()=>el('set-msg').textContent='',2800);
   /* Lớp đổi (3A → 3B1) → mời đổi luôn trong TKB, LBG, giáo án, bản sửa (xem 16a) */
   try{ BX_hoiDoiTenLop(_pCu.klass, p.klass); }catch(e){ console.warn('[Bút Xanh] đổi tên lớp', e&&e.message); }
@@ -7629,6 +7643,8 @@ function reloadAllState(){
   const savedSch=loadSchedule(); state.schedule = savedSch || JSON.parse(JSON.stringify(SCHEDULE_SEED));
   state.khbd=loadKHBD(); state.hocsinh=loadHocSinh(); state.hoclieu=loadHocLieu(); state.khofiles=loadKhoFiles();
   try{ applyProfile(JSON.parse(localStorage.getItem('butxanh_profile')||'{}')); }catch(e){}
+  /* (10/9/2026) Lịch vừa nạp theo butxanh_lbg_meta còn tuần thì theo hồ sơ → cho cả hai đi qua một cửa. */
+  try{ if(typeof BX_setWeek==='function') BX_setWeek((typeof window.BX_tuanMoApp==='function')?window.BX_tuanMoApp():state.week); }catch(e){}
   syncStaticLabels();
   const active=(ALLVIEWS.find(v=>el('v-'+v)&&el('v-'+v).classList.contains('active')))||'dashboard';
   showView(active);
@@ -11147,11 +11163,51 @@ function reRender(){
   try{ if(typeof renderDashboard==='function') renderDashboard(); }catch(e){}
   try{ if(typeof renderFullSchedule==='function') renderFullSchedule(); }catch(e){}
 }
+/* ===== (10/9/2026) TUẦN LƯU Y HỆT MỘT TUẦN KHÁC → HỎI TẠO LẠI =====
+   Dấu vết của lỗi bản ≤187 (xem applyProfile): "Lưu hồ sơ" đổi nhãn tuần mà không đổi lịch, lần sửa dòng
+   LBG kế tiếp chép nguyên lịch tuần 1 vào ô tuần 2. Gốc đã chặn, nhưng máy nào đã dính thì tuần hỏng vẫn
+   nằm trong butxanh_lbg_weeks — nên khi mở một tuần có lịch lưu TRÙNG TỪNG TIẾT (môn · lớp · tên bài) với
+   tuần khác thì hỏi thầy cô. Tuần nào là tuần sai: đếm bản ghi kho máy đã ghim (_khoTuan) — lịch sinh cho
+   tuần nào thì ghim giáo án của tuần đó; không có ghim thì coi tuần SAU là tuần bị chép đè. */
+function _bxVanTayTuan(rows){
+  var ds=[];
+  (rows||[]).forEach(function(r){
+    if(!r||r._nghi) return;
+    var b=String(r.bai||'').trim(); if(!b||b==='(theo PPCT)') return;
+    ds.push(_normTxt(r.mon)+'|'+_normTxt(r.lop||'')+'|'+_normTxt(b));
+  });
+  return ds.length>=2?ds.sort().join('\n'):'';
+}
+window.BX_tuanTrungVoi=function(w){
+  var map=(typeof loadLBGWeeks==='function')?loadLBGWeeks():{}, ws=String(w), vt=_bxVanTayTuan(map[ws]);
+  if(!vt) return null;
+  var khac=Object.keys(map).filter(function(x){ return x!==ws && _bxVanTayTuan(map[x])===vt; }).map(Number).sort(function(a,b){ return a-b; });
+  if(!khac.length) return null;
+  var dem={}; (map[ws]||[]).forEach(function(r){ if(r&&r._khoTuan!=null&&r._khoTuan!==''){ var k=String(r._khoTuan); dem[k]=(dem[k]||0)+1; } });
+  var x=khac[0]; khac.forEach(function(k){ if((dem[String(k)]||0)>(dem[String(x)]||0)) x=k; });
+  var nW=dem[ws]||0, nX=dem[String(x)]||0;
+  return {w:+w, voi:x, sai:(nX||nW)?(nX>nW):(+w>x)};
+};
+var _bxDaHoiTrung={};
+window.BX_soiTuanTrung=function(w){
+  if(window.BX_CHIXEM||_bxDaHoiTrung[w]||String(state.week)!==String(w)) return;
+  var t=window.BX_tuanTrungVoi(w); if(!t||!t.sai) return;
+  _bxDaHoiTrung[w]=1;
+  if(typeof bxConfirm!=='function') return;
+  bxConfirm('⚠️ Lịch báo giảng Tuần '+w+' đang lưu Y HỆT Tuần '+t.voi+' (trùng tên bài từng tiết), nên giáo án Tuần '+w+' đang in lại bài Tuần '+t.voi+'.\n\n'+
+    'Nguyên nhân: bản Bút Xanh trước 10/9 lưu nhầm tuần khi thầy cô bấm "Lưu hồ sơ" ở Cài đặt (đã sửa).\n\n'+
+    'Tạo lại Lịch báo giảng Tuần '+w+' từ Thời khoá biểu để lấy đúng bài?',{okText:'Tạo lại Tuần '+w,cancelText:'Để sau'}).then(function(ok){
+    if(!ok) return;
+    try{ if(typeof BX_ghiDauTuGen==='function') BX_ghiDauTuGen(w); }catch(e){}   // đã đồng ý rồi — khỏi hỏi "Ghi đè" lần nữa
+    try{ if(typeof window.bxRegenCurrentWeek==='function') window.bxRegenCurrentWeek(); }catch(e){}
+  });
+};
 window.BX_setWeek=function(w){
   w=parseInt(w,10)||1; if(w<1) w=1; if(w>35) w=35;   /* (6/9/2026) kẹp 1..35 */
   var _gh=(typeof BX_tuanMoToiDa==='function')?BX_tuanMoToiDa():35; if(w>_gh){ w=_gh; try{ BX_baoGioiHan(); }catch(e){} }   /* mở tuần dần (cauhinh.json) */
   var d=BX_weekDates(w);
   state.week=String(w); state.from=d.fromY; state.to=d.toY;
+  window.__bxDaMoTuan=true;   /* (10/9/2026) từ đây applyProfile không được đổi tuần nữa */
   var saved=(typeof getLBGForWeek==='function')?getLBGForWeek(w):null;
   /* 🛑 PHẢI gọi qua window (vá 16/8/2026). Khối script này có một hàm BX_weekSchedule
      CỤC BỘ dựng lịch MẪU lớp 5; bản dựng theo Thời khoá biểu thật của thầy cô lại gán vào
@@ -11173,6 +11229,7 @@ window.BX_setWeek=function(w){
   [['khbd-week',w],['khbd-week-btn',w]].forEach(function(p){ var e=document.getElementById(p[0]); if(e)e.textContent=p[1]; });
   if(typeof renderBankSchedule==='function'){ try{ renderBankSchedule(); }catch(e){} }
   reRender();
+  if(saved) setTimeout(function(){ try{ window.BX_soiTuanTrung(w); }catch(e){} }, 900);   /* (10/9/2026) tuần lưu trùng tuần khác */
 };
 /* ===== (6/9/2026) MỞ TUẦN DẦN THEO CẤU HÌNH TỪ XA =====
    Tệp web/cauhinh.json (thầy Chung sửa thẳng trên GitHub, ~1 phút là có hiệu lực, không cần phát hành bản mới):
@@ -14898,6 +14955,26 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
 @media (prefers-reduced-motion: reduce){
   #bxZalo, #bxZalo::before{ animation:none }
 }
+/* (10/9/2026) BẢNG CHỌN 2 NHÓM — nhóm 1 chạm mốc 1.000 thành viên nên mở nhóm 2; thầy Chung muốn thầy cô
+   vào được cả hai nhóm. Bấm nút nổi → bảng hiện ngay phía trên nút. Không đặt `display` ở đây để thuộc
+   tính [hidden] còn tác dụng. */
+#bxZaloDs{
+  position:fixed; right:18px; bottom:66px; z-index:56; width:min(290px, calc(100vw - 28px)); box-sizing:border-box;
+  background:#fff; border:1px solid #d6e4f5; border-radius:14px; padding:12px;
+  box-shadow:0 14px 34px rgba(0,50,120,.22); font-size:13px; color:#1d2b3a;
+}
+#bxZaloDs .bxz-tieu{ font-weight:700; font-size:13.5px; margin:0 2px 4px }
+#bxZaloDs a{ display:flex; align-items:center; gap:10px; margin-top:6px; padding:9px 10px; border-radius:10px;
+  text-decoration:none; color:inherit; border:1px solid #e3ecf7; background:#f7fbff }
+#bxZaloDs a:hover, #bxZaloDs a:focus-visible{ background:#e8f2ff; border-color:#9cc3f5 }
+#bxZaloDs .so{ flex:none; width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg,#0068FF,#0091FF);
+  color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center }
+#bxZaloDs b{ display:block; font-size:13px }
+#bxZaloDs small{ display:block; color:#5b6b7c; font-size:11.5px; margin-top:2px; line-height:1.35 }
+#bxZaloDs .bxz-nhac{ margin:9px 2px 0; font-size:11.5px; color:#5b6b7c; line-height:1.4 }
+@media(max-width:768px){
+  #bxZaloDs{ right:14px; bottom:126px; bottom:calc(126px + env(safe-area-inset-bottom)); }
+}
 /* (19/8/2026 — agent đóng vai thầy Nam tìm ra) BẢN IN Ctrl+P.
    Trước đây cả tệp chỉ có đúng một dòng in (ẩn nút Zalo), nên thầy cô nhấn Ctrl+P ở màn
    Lịch báo giảng là ra kèm **cột menu trái, đầu trang "Xin chào thầy/cô", nút Đăng nhập và
@@ -14908,7 +14985,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
 .bx-doibai-nut{margin-left:6px;border:1px solid #cfe2d5;background:#f6fbf7;color:#2c6b48;border-radius:8px;font-size:11px;line-height:1.2;padding:1px 6px;cursor:pointer;vertical-align:middle}
 .bx-doibai-nut:hover{background:#e6f5ea}
 @media print{.bx-doibai-nut{display:none!important}
-  #bxZalo{ display:none }
+  #bxZalo, #bxZaloDs{ display:none !important }
   .sidebar, .header, #mnav{ display:none !important }
   .main{ margin:0 !important; padding:0 !important; width:auto !important; max-width:none !important }
   .view:not(.active){ display:none !important }
@@ -14919,9 +14996,14 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
 }
 </style>
 
-<!-- 10/9/2026: nhóm Zalo cũ (fazifdg2xasiajb623uj) đã chạm mốc 1.000 thành viên → đổi sang nhóm mới. -->
+<!-- 10/9/2026: nhóm Zalo 1 (fazifdg2xasiajb623uj) chạm mốc 1.000 thành viên → mở nhóm 2 (v9ainyawuu9n0kscn29w).
+     Tối 10/9 thầy Chung: "cùng vào 2 nhóm thì tốt" → nút mở BẢNG CHỌN cả hai nhóm (#bxZaloDs).
+     Đổi link trong app KHÔNG khoá được nhóm cũ: link mời của nhóm 1 vẫn sống trên Zalo, ai còn giữ link
+     (tin nhắn cũ, tệp hướng dẫn…) vẫn vào được — muốn khoá phải tắt "tham gia bằng link" trong cài đặt nhóm.
+     href giữ nhóm 2: lỡ đoạn mã bảng chọn lỗi thì nút vẫn đưa vào nhóm đang nhận thành viên. -->
 <a id="bxZalo" href="https://zalo.me/g/v9ainyawuu9n0kscn29w" target="_blank" rel="noopener noreferrer"
-   title="Vào nhóm Zalo để được hỗ trợ sử dụng Bút Xanh" aria-label="Nhóm Zalo hỗ trợ Bút Xanh">
+   title="Vào nhóm Zalo để được hỗ trợ sử dụng Bút Xanh" aria-label="Nhóm Zalo hỗ trợ Bút Xanh"
+   aria-haspopup="true" aria-expanded="false" aria-controls="bxZaloDs">
   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
     <path d="M12 3C6.9 3 2.8 6.5 2.8 10.9c0 2.5 1.3 4.7 3.4 6.1-.1.8-.6 2.3-.7 2.7 0 0-.1.3.1.4.2.1.4 0 .4 0 .5-.1 2.5-1.2 3.4-1.7.8.2 1.7.3 2.6.3 5.1 0 9.2-3.5 9.2-7.8S17.1 3 12 3z"
           fill="#fff"/>
@@ -14930,6 +15012,26 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
   </svg>
   <span class="bxz-chu">Nhóm Zalo hỗ trợ</span>
 </a>
+<div id="bxZaloDs" role="menu" aria-label="Chọn nhóm Zalo Bút Xanh" hidden>
+  <div class="bxz-tieu">Nhóm Zalo hỗ trợ Bút Xanh</div>
+  <a role="menuitem" href="https://zalo.me/g/v9ainyawuu9n0kscn29w" target="_blank" rel="noopener noreferrer">
+    <span class="so">2</span><span><b>Nhóm 2 — nhóm mới</b><small>Đang nhận thành viên</small></span></a>
+  <a role="menuitem" href="https://zalo.me/g/fazifdg2xasiajb623uj" target="_blank" rel="noopener noreferrer">
+    <span class="so">1</span><span><b>Nhóm 1 — nhóm đầu tiên</b><small>Nếu Zalo báo nhóm đã đầy, thầy cô vào Nhóm 2</small></span></a>
+  <div class="bxz-nhac">Thầy cô có thể vào cả hai nhóm.</div>
+</div>
+<script>
+/* (10/9/2026) Nút nổi Zalo → bật/tắt bảng chọn 2 nhóm. Bấm ra ngoài hoặc Esc thì đóng. */
+(function(){
+  var nut=document.getElementById('bxZalo'), ds=document.getElementById('bxZaloDs');
+  if(!nut||!ds) return;
+  function dong(){ ds.hidden=true; nut.setAttribute('aria-expanded','false'); }
+  nut.addEventListener('click',function(e){ e.preventDefault(); ds.hidden=!ds.hidden; nut.setAttribute('aria-expanded',String(!ds.hidden)); });
+  ds.addEventListener('click',function(e){ if(e.target.closest('a')) setTimeout(dong,0); });
+  document.addEventListener('click',function(e){ if(!ds.hidden && !ds.contains(e.target) && !nut.contains(e.target)) dong(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape' && !ds.hidden){ dong(); try{ nut.focus(); }catch(_){} } });
+})();
+</script>
 
 <script>
 /* ===== Màn chào có lời giới thiệu ===== */
