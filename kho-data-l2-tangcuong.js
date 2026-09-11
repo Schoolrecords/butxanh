@@ -1,4 +1,4 @@
-/* Toán tăng cường / Tiếng Việt tăng cường — Lớp 2 (buổi 2). THÍ ĐIỂM tuần 1–4, MÁY SOẠN 12/9/2026 — chờ tổ soát.
+/* Toán tăng cường / Tiếng Việt tăng cường — Lớp 2 (lồng trong 30 tiết/tuần; KHÔNG gọi "buổi 2" — xếp được cả buổi sáng). THÍ ĐIỂM tuần 1–4, MÁY SOẠN 12/9/2026 — chờ tổ soát.
    Mỗi tuần mỗi môn 2 tiết: tiết 1 giữa tuần, tiết 2 gần cuối tuần; chỉ ôn kiến thức tuần trước + bài thứ 2–3 của tuần.
    Dựng bằng _tangcuong/kho.js — sửa bài soạn rồi chạy lại. */
 window.KHO_DATA_L2_TANGCUONG = [

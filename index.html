@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-12 · 200';
+  var PB='2026-09-12 · 201';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1271,7 +1271,7 @@ window.bxMergeKho = function(){
 (function(){
   /* (4/9/2026) Đổi chuỗi này MỖI KHI sửa nội dung kho-data-*.js — trình duyệt nhớ tệp kho
      theo đúng đường dẫn kèm ?v=, không đổi là thầy cô vẫn mở ra kho cũ. */
-  var V='20260912-tangcuong';   /* đổi MỖI KHI sửa kho-data-*: không đổi thì trình duyệt giữ bản cũ, thầy cô không thấy dữ liệu vừa vá */
+  var V='20260912-tangcuong2';   /* đổi MỖI KHI sửa kho-data-*: không đổi thì trình duyệt giữ bản cũ, thầy cô không thấy dữ liệu vừa vá */
   window.BX_KHO_FILES={
     '1':['kho-data-lop1.js','kho-data-l1-gdtc.js','kho-data-l1-amnhac.js','kho-data-l1-mithuat.js','kho-data-l1-tienganh.js','kho-data-l1-tangcuong.js'],   /* (12/9/2026) Tiếng Anh 1–2 máy soạn, chờ tổ soát */
     '2':['kho-data-lop2.js','kho-data-l2-gdtc.js','kho-data-l2-amnhac.js','kho-data-l2-mithuat.js','kho-data-l2-tienganh.js','kho-data-l2-tangcuong.js'],
@@ -4199,7 +4199,7 @@ var BX_MON_THEM_TOI_DA=12, BX_MON_THEM_DAI_TOI_DA=30;
    danh sách tự thêm — hỏng cả giáo án tuần. Danh sách này phải trùng SUBJ_ORDER. */
 var _BX_MON_CHINH=['Tiếng Việt','Toán','Khoa học','Lịch sử & Địa lí','Tự nhiên và Xã hội',
   'Đạo đức','Tin học','Công nghệ','HĐTN','Âm nhạc','Mĩ thuật','GDTC','Tiếng Anh',
-  /* (12/9/2026) Tiết tăng cường buổi 2 CÓ giáo án trong kho (kho-data-l*-tangcuong.js) → không phải "môn tự thêm"
+  /* (12/9/2026) Tiết tăng cường (lồng trong 30 tiết/tuần, sáng hay chiều đều được) CÓ giáo án trong kho (kho-data-l*-tangcuong.js) → không phải "môn tự thêm"
      (môn tự thêm bị bỏ khỏi chip giáo án, giáo án tuần, tự điền tên bài LBG). Bản quyền đi theo môn mẹ (license.js khoaMon). */
   'Toán tăng cường','Tiếng Việt tăng cường'];
 /* Gợi ý bấm một chạm trong hộp "Thêm môn khác" — thầy cô vẫn tự gõ được tên riêng.
@@ -15247,10 +15247,12 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
   function monOpts(val){
     var h='<option value="">'+(val?'— Bỏ trống —':'Chọn môn')+'</option>';
     SUBJECTS.forEach(function(o){ h+='<option'+(o===val?' selected':'')+'>'+_escOpt(o)+'</option>'; });
-    /* (12/9/2026) Tiết tăng cường buổi 2 (có giáo án trong kho) — thí điểm lớp 1–2; ô đang mang môn này thì luôn hiện */
+    /* (12/9/2026) Tiết tăng cường (có giáo án trong kho) — thí điểm lớp 1–2; ô đang mang môn này thì luôn hiện.
+       ⚠ KHÔNG gọi là "buổi 2": thầy Chung nhắc 12/9 — tiết tăng cường LỒNG trong 30 tiết/tuần của lớp 1, 2, xếp
+       được cả buổi sáng. Ô nào (sáng/chiều) cũng chọn được; lịch báo giảng đi theo đúng ô thầy cô xếp. */
     var _TC=['Toán tăng cường','Tiếng Việt tăng cường'], _k0=String((state&&state.klass)||'').replace(/\D/g,'').slice(0,1);
     if(_k0==='1'||_k0==='2'||_TC.indexOf(val)>=0){
-      h+='<optgroup label="Tăng cường (buổi 2)">';
+      h+='<optgroup label="Tiết tăng cường">';
       _TC.forEach(function(o){ h+='<option'+(o===val?' selected':'')+'>'+_escOpt(o)+'</option>'; });
       h+='</optgroup>';
     }
