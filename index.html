@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-11 · 193';
+  var PB='2026-09-11 · 194';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -9690,6 +9690,8 @@ function BX_mapNorm(s){ return String(s==null?'':s).replace(/\s+/g,' ').trim(); 
    🛑 KHÔNG gán đè window.BX_KHGD — ba nơi khác đang giả định nó là lớp 5. */
 function BX_mapLop(){ return String(window.BX_curLop||state.khoi||'5'); }
 function BX_mapKho(){
+  /* (11/9/2026) cùng cửa với màn KHDH: bản riêng > nền SGV > bản tổ */
+  if(typeof window.BX_khgdBang==='function') return window.BX_khgdBang(BX_mapLop());
   var K=(window.BX_KHGD_G&&window.BX_KHGD_G[BX_mapLop()])||{};
   try{ if(window.BX_khgdRiengCua) K=Object.assign({},K,window.BX_khgdRiengCua(BX_mapLop())); }catch(e){}
   return K;
@@ -10199,12 +10201,19 @@ function bxKiemKHGD(LOP,dsMon,KH){
   return canh;
 }
 window.bxKiemKHGD=bxKiemKHGD; /* expose để kiểm thử */
+/* (11/9/2026) Bảng KHGD {môn: dòng} để IN (Word Phụ lục 2, Excel, bản đồ chương trình) — đi qua
+   CÙNG cửa với màn hình (BX_khgdBang: bản riêng > nền SGV > bản tổ). Trước đây ba nơi này đọc thẳng
+   BX_KHGD_G (bản tổ Quảng Châu 1) → màn hình Toán 4 ghi Bài 3 "2 tiết" (SGV) mà Word tải về ghi
+   "3 tiết" (tổ), các cô hỏi 11/9. Bản sửa ô (BX_khgdVal) đã theo khoá nền "<môn>§sgv" nên khớp dòng. */
+function bxKHGDBangIn(LOP){
+  if(typeof window.BX_khgdBang==='function') return window.BX_khgdBang(LOP);
+  var KH=(window.BX_KHGD_G||{'5':window.BX_KHGD})[LOP]||{};
+  try{ if(window.BX_khgdRiengCua) KH=Object.assign({},KH,window.BX_khgdRiengCua(LOP)); }catch(e){}
+  return KH;
+}
 /* Văn bản Phụ lục 2 cho khối LOP, gồm các môn trong dsMon (theo thứ tự truyền vào). */
 function buildKHGDPhuLuc2(LOP,dsMon){
-  var GROOT=window.BX_KHGD_G||{'5':window.BX_KHGD};
-  var KH=GROOT[LOP]||{};
-  /* Bản Word Phụ lục 2 phải in KẾ HOẠCH RIÊNG thầy cô đã nhập từ Excel, nếu môn đó có. */
-  try{ if(window.BX_khgdRiengCua) KH=Object.assign({},KH,window.BX_khgdRiengCua(LOP)); }catch(e){}
+  var KH=bxKHGDBangIn(LOP);
   var coDL=dsMon.filter(function(m){ return KH[m]&&KH[m].length; });
   if(!coDL.length) throw new Error('Khối '+LOP+' chưa có dữ liệu Kế hoạch dạy học.');
   /* (3/9/2026) Tự kiểm trước khi dựng — chỉ cảnh báo, văn bản vẫn được tạo. */
@@ -10456,8 +10465,7 @@ var _KHGDX_STYLES='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
 '<xf numFmtId="0" fontId="5" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>'+ /* 12 nghiêng nhỏ */
 '</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
 function buildKHGDMonXlsx(LOP,SUBJ){
-  var KH=(window.BX_KHGD_G||{'5':window.BX_KHGD})[LOP]||{};
-  try{ if(window.BX_khgdRiengCua) KH=Object.assign({},KH,window.BX_khgdRiengCua(LOP)); }catch(e){}
+  var KH=bxKHGDBangIn(LOP);
   var DATA=KH[SUBJ]||[];
   if(!DATA.length) throw new Error('Môn '+SUBJ+' lớp '+LOP+' chưa có dữ liệu Kế hoạch dạy học.');
   var _pf={}; try{ _pf=JSON.parse(localStorage.getItem('butxanh_profile')||'{}'); }catch(e){}
