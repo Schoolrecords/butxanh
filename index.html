@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-12 · 197';
+  var PB='2026-09-12 · 198';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1368,7 +1368,7 @@ window.bxMergeKho = function(){
      Trước: khgd-lop1..4 (~500KB) tải cho mọi người + KHGD lớp 5 nhúng ngay trong
      index.html (~160KB). Nay: lớp 5 tách ra khgd-lop5.js, cả 5 file nạp lười.
      Khối 5 luôn nạp kèm (sau khởi động) vì Bản đồ chương trình/dashboard dựa vào. */
-  var VK='20260912-taen-canam', ttKHGD={};   /* (11/9) khgd-lop*.js đổi chữ in hoa → chữ thường: đổi mã để trình duyệt tải lại */
+  var VK='20260912-ta12', ttKHGD={};   /* (11/9) khgd-lop*.js đổi chữ in hoa → chữ thường: đổi mã để trình duyệt tải lại */
   window.BX_KHGD_FILES={'1':'khgd-lop1.js','2':'khgd-lop2.js','3':'khgd-lop3.js','4':'khgd-lop4.js','5':'khgd-lop5.js'};
   window.BX_ensureKHGD=function(lopHoacKhoi){
     var khoi=window.BX_khoiCuaLop(lopHoacKhoi)||String(lopHoacKhoi||'').replace(/\D/g,'').slice(0,1);
@@ -9647,6 +9647,17 @@ var BX_INTG_CAU_EN={
   'KN giao tiếp: mạnh dạn chào hỏi, giới thiệu bản thân bằng câu đơn giản.':'Communication skills: confidently greet others and introduce themselves in simple sentences.'
 };
 var _BX_VI_CHU=/[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
+/* (12/9/2026) Cột 7 KHGD Tiếng Anh (Word, Excel, hai website qua _xuat-cot7-day.js): phần app tự gắn thêm
+   (KNS, QPAN…) cũng phải tiếng Anh — soát website 12/9 thấy ~120 ô/khối "KNS: KN giao tiếp…" tiếng Việt.
+   Câu chưa có bản tiếng Anh trong BX_INTG_CAU_EN thì BỎ. STEM / đính chính không có địa chỉ Tiếng Anh. */
+(function(){
+  var _goc=window.BX_khgdIntgAdd;
+  window.BX_khgdIntgAdd=function(lop, mon, r, st){
+    var a=_goc(lop, mon, r, st);
+    if(!(typeof bxLaTA==='function' && bxLaTA({mon:mon}))) return a;
+    return a.map(function(p){ var c=BX_INTG_CAU_EN[p[1]]; return c?[BX_INTG_NHAN_EN[p[0]]||p[0], c]:(_BX_VI_CHU.test(String(p[1]))?null:p); }).filter(Boolean);
+  };
+})();
 function BX_intgLinesEn(ig, L, row){
   var s=BX_intgState();
   var _mon=(L&&L.mon)||(row&&row.mon)||'', _ten=(L&&(L.bai||L.ten))||(row&&row.bai)||'';
@@ -10384,6 +10395,8 @@ function bxKiemKHGD(LOP,dsMon,KH){
        đánh giá bằng nhận xét. */
     var laToanTV=/tieng viet|toan/.test(mk);
     var diemSo=laToanTV||((/anh|english|tin h|cong nghe|khoa h|lich su|dia l/.test(mk))&&!/tu nhien/.test(mk));
+    /* (12/9/2026) Tiếng Anh lớp 1–2 là môn TỰ CHỌN (làm quen) — không có kiểm tra định kì theo TT27 */
+    if(/anh|english/.test(mk) && (+LOP)<3) diemSo=false;
     var reKT=/(kiem tra|danh gia)[^.,;:]{0,25}(dinh k[iy]|cuoi|giua|hoc k[iy])/;
     var find=function(re,w1,w2){ for(var i=0;i<texts.length;i++){ if(texts[i].w>=w1&&texts[i].w<=w2&&re.test(texts[i].t)) return true; } return false; };
     if(diemSo){
@@ -14102,7 +14115,7 @@ var MON_KHOI={
   'Tiếng Việt':'12345','Toán':'12345','HĐTN':'12345','Đạo đức':'12345',
   'Âm nhạc':'12345','Mĩ thuật':'12345','GDTC':'12345',
   'Tự nhiên và Xã hội':'123','Khoa học':'45','Lịch sử & Địa lí':'45',
-  'Tiếng Anh':'345','Tin học':'345','Công nghệ':'345'
+  'Tiếng Anh':'12345','Tin học':'345','Công nghệ':'345'   /* (12/9/2026) Tiếng Anh 1–2 (tự chọn) đã có KHGD — thầy Chung */
 };
 /* (5/9/2026) Thêm Đạo đức · Tự nhiên và Xã hội · Khoa học · Lịch sử và Địa lí — thầy Chung:
    nhiều trường phân công "giáo viên 2" dạy riêng các môn này, không phải GVCN, trước đây
