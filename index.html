@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-11 · 191';
+  var PB='2026-09-11 · 192';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1366,7 +1366,7 @@ window.bxMergeKho = function(){
      Trước: khgd-lop1..4 (~500KB) tải cho mọi người + KHGD lớp 5 nhúng ngay trong
      index.html (~160KB). Nay: lớp 5 tách ra khgd-lop5.js, cả 5 file nạp lười.
      Khối 5 luôn nạp kèm (sau khởi động) vì Bản đồ chương trình/dashboard dựa vào. */
-  var VK='20260909-khop-giaoan-2', ttKHGD={};
+  var VK='20260911-chuthuong', ttKHGD={};   /* (11/9) khgd-lop*.js đổi chữ in hoa → chữ thường: đổi mã để trình duyệt tải lại */
   window.BX_KHGD_FILES={'1':'khgd-lop1.js','2':'khgd-lop2.js','3':'khgd-lop3.js','4':'khgd-lop4.js','5':'khgd-lop5.js'};
   window.BX_ensureKHGD=function(lopHoacKhoi){
     var khoi=window.BX_khoiCuaLop(lopHoacKhoi)||String(lopHoacKhoi||'').replace(/\D/g,'').slice(0,1);
@@ -2451,6 +2451,7 @@ window.bxMergeKho = function(){
             <li>Bấm vào ô nào để sửa ô đó; bản sửa lưu riêng, <b>không đè bản gốc</b>.</li>
             <li><b>📥 Nhập KHGD của tôi (Excel)</b> — khi tổ chuyên môn đã chốt một kế hoạch khác hẳn, đừng sửa từng ô: tải <b>file mẫu</b> (đã điền sẵn kế hoạch đang dùng, hoặc mẫu trống 35 tuần), sửa trong Excel rồi đưa lại lên. Bút Xanh cho <b>xem trước</b> mới nhận. Nhận rồi thì bảng, bản Word Phụ lục 2 và Bản đồ chương trình đều đổi theo; muốn quay lại bản dựng sẵn thì bấm <b>↺ Quay lại bản Bút Xanh</b>.</li>
             <li>Bấm <b>📄 Tải KHDH về máy</b> — ra file Word khổ ngang, trình ký được luôn.</li>
+            <li>Cần bản Excel để sửa, lọc hay in? Bấm <b>📊 Tải Excel môn này</b> — cùng nội dung bản Word của môn đang xem.</li>
           </ul>
         </div>
 
@@ -10075,8 +10076,29 @@ function bxKHGDBangMau(LOP,SUBJ,DATA){
   var h2=bxTc('',COLS[0],{vm:'cont',bb:'solid'})+hdr('Chủ đề/ Mạch nội dung',COLS[1],{bb:'solid'})+hdr('Tên bài học',COLS[2],{bb:'solid'})+hdr('Tiết học/ thời lượng',COLS[3],{bb:'solid'})+bxTc('',COLS[4],{vm:'cont',bb:'solid'})+bxTc('',COLS[5],{vm:'cont',bb:'solid'});
   rows.push('<w:tr><w:trPr><w:tblHeader/></w:trPr>'+h1+'</w:tr>');
   rows.push('<w:tr><w:trPr><w:tblHeader/></w:trPr>'+h2+'</w:tr>');
+  /* (11/9/2026) Nội dung từng dòng tính ở bxKHGDDong — dùng chung với bản Excel (buildKHGDMonXlsx),
+     để hai bản không bao giờ lệch nhau. Ở đây chỉ còn việc vẽ ra Word. */
+  bxKHGDDong(LOP,SUBJ,DATA).forEach(function(d){
+    if(d.hk){ rows.push('<w:tr>'+bxTc(d.hk,totalW,{span:NC,b:true,jc:'center',sz:20,bb:'solid'})+'</w:tr>'); return; }
+    var bb=d.cuoiTuan?'solid':'dashed';
+    rows.push('<w:tr>'+
+      bxTc(d.tuan,COLS[0],{jc:'center',bb})+
+      bxTc(d.chude,COLS[1],{b:d.dauChu,bb})+
+      bxTc(d.tenBai,COLS[2],{bb})+
+      bxTc(d.tietHoc,COLS[3],{jc:'center',bb})+
+      bxTc(d.tich,COLS[4],{sz:17,bb})+
+      bxTc('',COLS[5],{bb})+            /* Ghi chú — để trống cho tổ chuyên môn ghi tay */
+    '</w:tr>');
+  });
+  return '<w:tbl><w:tblPr><w:tblW w:w="'+totalW+'" w:type="dxa"/><w:jc w:val="center"/>'+bxBorders(true)+'<w:tblLayout w:type="fixed"/></w:tblPr>'+
+    '<w:tblGrid>'+COLS.map(function(w){return '<w:gridCol w:w="'+w+'"/>';}).join('')+'</w:tblGrid>'+rows.join('')+'</w:tbl>';
+}
+/* Các dòng của bảng 6 cột Phụ lục 2 cho một lớp · môn:
+   {hk:'HỌC KÌ I'} = dòng học kì kéo suốt bảng;
+   {tuan, chude, dauChu, tenBai, tietHoc, tich, cuoiTuan} = một dòng tiết (tuan/chude rỗng khi trùng dòng trên). */
+function bxKHGDDong(LOP,SUBJ,DATA){
   var S=function(v){ return String(v==null?'':v).trim(); };
-  var prevHK='',prevChu='',prevTuan='',prevBai='';
+  var out=[], prevHK='',prevChu='',prevTuan='',prevBai='';
   var _igst={}; /* (3/9/2026) sổ chống lặp lồng ghép theo chủ đề — cấp MỚI cho mỗi lượt dựng bảng */
   var _v=window.BX_khgdVal;
   for(var i=0;i<DATA.length;i++){
@@ -10092,14 +10114,12 @@ function bxKHGDBangMau(LOP,SUBJ,DATA){
       }
     }
     var hk=(parseInt(tuan,10)<=18)?'HỌC KÌ I':'HỌC KÌ II';
-    if(hk!==prevHK){ prevHK=hk; prevChu='';prevTuan='';prevBai='';
-      rows.push('<w:tr>'+bxTc(hk,totalW,{span:NC,b:true,jc:'center',sz:20,bb:'solid'})+'</w:tr>'); }
+    if(hk!==prevHK){ prevHK=hk; prevChu='';prevTuan='';prevBai=''; out.push({hk:hk}); }
     var showChu=chude!==prevChu; if(showChu){prevChu=chude;prevBai='';}
     var showTuan=tuan!==prevTuan; if(showTuan)prevTuan=tuan;
     var showBai=bai!==prevBai; if(showBai)prevBai=bai;
     var nr=DATA[i+1];
     var lastOfTuan=!nr || (parseInt(nr[0],10)<=18?'HỌC KÌ I':'HỌC KÌ II')!==hk || nr[0]!==tuan;
-    var bb=lastOfTuan?'solid':'dashed';
     /* Tên bài học = Tên bài (dòng đầu, khi đổi bài) + Phân môn/Hoạt động: Nội dung */
     var tenBai=S(nd); if(S(hd)) tenBai=S(hd)+': '+tenBai;
     if(showBai && S(bai)) tenBai=S(bai)+'\n'+tenBai;
@@ -10117,17 +10137,9 @@ function bxKHGDBangMau(LOP,SUBJ,DATA){
       if(!(_nt&&+_nt[1]===+_mT[1]+1)) tietTxt=_mT[1]+'–'+(+_mT[1]+(+_mL[1])-1);
     }
     var tietHoc=tietTxt?('Tiết '+tietTxt+(tlTxt?' ('+tlTxt+')':'')):tlTxt;
-    rows.push('<w:tr>'+
-      bxTc(showTuan?tuan:'',COLS[0],{jc:'center',bb})+
-      bxTc(showChu?chude:'',COLS[1],{b:showChu,bb})+
-      bxTc(tenBai,COLS[2],{bb})+
-      bxTc(tietHoc,COLS[3],{jc:'center',bb})+
-      bxTc(tich,COLS[4],{sz:17,bb})+
-      bxTc('',COLS[5],{bb})+            /* Ghi chú — để trống cho tổ chuyên môn ghi tay */
-    '</w:tr>');
+    out.push({tuan:showTuan?tuan:'', chude:showChu?chude:'', dauChu:showChu, tenBai:tenBai, tietHoc:tietHoc, tich:tich, cuoiTuan:lastOfTuan});
   }
-  return '<w:tbl><w:tblPr><w:tblW w:w="'+totalW+'" w:type="dxa"/><w:jc w:val="center"/>'+bxBorders(true)+'<w:tblLayout w:type="fixed"/></w:tblPr>'+
-    '<w:tblGrid>'+COLS.map(function(w){return '<w:gridCol w:w="'+w+'"/>';}).join('')+'</w:tblGrid>'+rows.join('')+'</w:tbl>';
+  return out;
 }
 /* ===== (3/9/2026) TỰ KIỂM KHDH TRƯỚC KHI XUẤT — đối chiếu TT32/2018 & TT27/2020 =====
    Vì sao: bản xuất 2/9/2026 lọt Toán lớp 1–3 KHÔNG có tiết kiểm tra định kì nào, Tiếng Anh
@@ -10411,6 +10423,116 @@ window.exportKHGDMonWord=function(){
   }catch(e){ bxAlert('Không xuất được KHGD: '+e.message); }
 };
 window.buildKHGDMonDocx=buildKHGDMonDocx; /* expose để kiểm thử / sinh lại file Word */
+/* ============================================================================
+   (11/9/2026 — thầy Chung) TẢI KHGD MÔN HỌC BẰNG EXCEL
+   Cùng nội dung với bản Word Phụ lục 2 của môn đang xem: bảng 6 cột đúng mẫu (Tuần, tháng ·
+   Chủ đề/Mạch nội dung · Tên bài học · Tiết học/thời lượng · Nội dung điều chỉnh, bổ sung ·
+   Ghi chú), dòng HỌC KÌ I/II, ô ký Tổ trưởng – Hiệu trưởng. Các dòng lấy từ bxKHGDDong — CHÍNH
+   hàm bản Word dùng — nên bật/tắt nội dung lồng ghép, sửa ô, kế hoạch riêng đều theo y hệt.
+   Tên tệp KHGD_mon_* như bản Word (cùng cổng bản quyền).
+============================================================================ */
+var _KHGDX_STYLES='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+'<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+
+'<fonts count="6"><font><sz val="12"/><name val="Times New Roman"/></font><font><b/><sz val="12"/><name val="Times New Roman"/></font>'+
+'<font><b/><sz val="14"/><name val="Times New Roman"/></font><font><i/><sz val="12"/><name val="Times New Roman"/></font>'+
+'<font><sz val="11"/><name val="Times New Roman"/></font><font><i/><sz val="11"/><name val="Times New Roman"/></font></fonts>'+
+'<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE2EFDA"/></patternFill></fill></fills>'+
+'<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border>'+
+'<border><left style="thin"><color rgb="FF000000"/></left><right style="thin"><color rgb="FF000000"/></right><top style="thin"><color rgb="FF000000"/></top><bottom style="thin"><color rgb="FF000000"/></bottom><diagonal/></border></borders>'+
+'<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'+
+'<cellXfs count="13">'+
+'<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'+                                                                                     /* 0 */
+'<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment horizontal="left" vertical="center"/></xf>'+                /* 1 chữ thường, trái */
+'<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="left" vertical="center"/></xf>'+ /* 2 đậm, trái */
+'<xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>'+ /* 3 tiêu đề */
+'<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>'+ /* 4 đậm, giữa */
+'<xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>'+ /* 5 nghiêng, giữa */
+'<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>'+ /* 6 đầu cột */
+'<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>'+ /* 7 dòng học kì */
+'<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="top" wrapText="1"/></xf>'+ /* 8 ô giữa */
+'<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="top" wrapText="1"/></xf>'+ /* 9 ô trái */
+'<xf numFmtId="0" fontId="1" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="top" wrapText="1"/></xf>'+ /* 10 ô trái đậm (chủ đề) */
+'<xf numFmtId="0" fontId="4" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="top" wrapText="1"/></xf>'+ /* 11 ô chữ nhỏ (điều chỉnh) */
+'<xf numFmtId="0" fontId="5" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>'+ /* 12 nghiêng nhỏ */
+'</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+function buildKHGDMonXlsx(LOP,SUBJ){
+  var KH=(window.BX_KHGD_G||{'5':window.BX_KHGD})[LOP]||{};
+  try{ if(window.BX_khgdRiengCua) KH=Object.assign({},KH,window.BX_khgdRiengCua(LOP)); }catch(e){}
+  var DATA=KH[SUBJ]||[];
+  if(!DATA.length) throw new Error('Môn '+SUBJ+' lớp '+LOP+' chưa có dữ liệu Kế hoạch dạy học.');
+  var _pf={}; try{ _pf=JSON.parse(localStorage.getItem('butxanh_profile')||'{}'); }catch(e){}
+  var xa=String(_pf.xa||state.xa||'……………').trim().toUpperCase();
+  var truong=String(_pf.school||state.truong||'……………').replace(/^\s*(trường\s+)?(tiểu\s*học|th)\s+/i,'').trim().toUpperCase();
+  var nam=(state.year||_pf.year||'2026 – 2027');
+  var noiKy=String(_pf.place||_pf.xa||'…').trim(), hieuTruong=String(_pf.hieuTruong||'').trim();
+  var ngayThang=noiKy+', ngày … tháng … năm '+((state.year||'2026').match(/(20\d{2})/)||['','2026'])[1];
+  var L=['A','B','C','D','E','F'], RONG=[9,22,46,15,50,14];
+  var R=[], M=[], r=0;
+  var C=function(c,row,s,v){ var ref=L[c]+row; if(v===''||v==null) return '<c r="'+ref+'" s="'+s+'"/>';
+    return '<c r="'+ref+'" s="'+s+'" t="inlineStr"><is><t xml:space="preserve">'+_xe(v)+'</t></is></c>'; };
+  var dong=function(cells,ht){ r++; R.push('<row r="'+r+'"'+(ht?(' ht="'+ht+'" customHeight="1"'):'')+'>'+cells(r)+'</row>'); return r; };
+  var ca6=function(s,v){ return function(n){ return L.map(function(_,i){ return C(i,n,s,i===0?v:''); }).join(''); }; };
+  var n;
+  n=dong(function(q){ return C(0,q,1,'UBND XÃ '+xa)+C(1,q,1,'')+C(2,q,1,''); },18); M.push('A'+n+':C'+n);
+  n=dong(function(q){ return C(0,q,2,'TRƯỜNG TIỂU HỌC '+truong)+C(1,q,2,'')+C(2,q,2,''); },18); M.push('A'+n+':C'+n);
+  dong(function(){ return ''; },8);
+  n=dong(ca6(3,'KẾ HOẠCH DẠY HỌC MÔN '+String(SUBJ).toUpperCase()+' – LỚP '+LOP),22); M.push('A'+n+':F'+n);
+  n=dong(ca6(4,'Năm học '+nam),18); M.push('A'+n+':F'+n);
+  n=dong(ca6(12,'(Lập theo Phụ lục 2 Công văn 2345/BGDĐT-GDTH)'),16); M.push('A'+n+':F'+n);
+  dong(function(){ return ''; },8);
+  /* hai hàng đầu cột, đúng mẫu: "Chương trình và sách giáo khoa" trùm 3 cột */
+  var h1=dong(function(q){ return C(0,q,6,'Tuần, tháng')+C(1,q,6,'Chương trình và sách giáo khoa')+C(2,q,6,'')+C(3,q,6,'')+
+    C(4,q,6,'Nội dung điều chỉnh, bổ sung (nếu có)')+C(5,q,6,'Ghi chú'); },22);
+  var h2=dong(function(q){ return C(0,q,6,'')+C(1,q,6,'Chủ đề/ Mạch nội dung')+C(2,q,6,'Tên bài học')+C(3,q,6,'Tiết học/ thời lượng')+C(4,q,6,'')+C(5,q,6,''); },32);
+  M.push('A'+h1+':A'+h2,'B'+h1+':D'+h1,'E'+h1+':E'+h2,'F'+h1+':F'+h2);
+  /* ước chiều cao hàng theo số dòng chữ (Excel không tự giãn hàng khi mở tệp) */
+  var soDong=function(v,w){ var t=String(v==null?'':v); if(!t) return 1; var cpl=Math.max(4,w*1.05), k=0;
+    t.split('\n').forEach(function(x){ k+=Math.max(1,Math.ceil(x.length/cpl)); }); return k; };
+  var soTiet=0;
+  bxKHGDDong(LOP,SUBJ,DATA).forEach(function(d){
+    if(d.hk){ var q=dong(ca6(7,d.hk),20); M.push('A'+q+':F'+q); return; }
+    soTiet++;
+    var ht=Math.min(400,Math.max(18,16*Math.max(soDong(d.chude,RONG[1]),soDong(d.tenBai,RONG[2]),soDong(d.tietHoc,RONG[3]),Math.ceil(soDong(d.tich,RONG[4])*0.92))+4));
+    dong(function(q){ return C(0,q,8,d.tuan)+C(1,q,d.dauChu?10:9,d.chude)+C(2,q,9,d.tenBai)+C(3,q,8,d.tietHoc)+C(4,q,11,d.tich)+C(5,q,9,''); },ht);
+  });
+  dong(function(){ return ''; },10);
+  n=dong(function(q){ return C(0,q,0,'')+C(1,q,0,'')+C(2,q,0,'')+C(3,q,5,ngayThang)+C(4,q,5,'')+C(5,q,5,''); },18); M.push('D'+n+':F'+n);
+  n=dong(function(q){ return C(0,q,4,'TỔ TRƯỞNG')+C(1,q,4,'')+C(2,q,4,'')+C(3,q,4,'HIỆU TRƯỞNG')+C(4,q,4,'')+C(5,q,4,''); },18); M.push('A'+n+':C'+n,'D'+n+':F'+n);
+  n=dong(function(q){ return C(0,q,5,'(Kí, ghi rõ họ tên)')+C(1,q,5,'')+C(2,q,5,'')+C(3,q,5,'(Kí, ghi rõ họ tên)')+C(4,q,5,'')+C(5,q,5,''); },18); M.push('A'+n+':C'+n,'D'+n+':F'+n);
+  dong(function(){ return ''; },48);
+  if(hieuTruong){ n=dong(function(q){ return C(3,q,4,hieuTruong)+C(4,q,4,'')+C(5,q,4,''); },18); M.push('D'+n+':F'+n); }
+  var cols='<cols>'+RONG.map(function(w,i){ return '<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+w+'" customWidth="1"/>'; }).join('')+'</cols>';
+  var sheet='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr>'+
+    '<dimension ref="A1:F'+r+'"/>'+
+    '<sheetViews><sheetView showGridLines="0" workbookViewId="0"><pane ySplit="'+h2+'" topLeftCell="A'+(h2+1)+'" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>'+
+    '<sheetFormatPr defaultRowHeight="15.75"/>'+cols+'<sheetData>'+R.join('')+'</sheetData>'+
+    '<mergeCells count="'+M.length+'">'+M.map(function(x){ return '<mergeCell ref="'+x+'"/>'; }).join('')+'</mergeCells>'+
+    '<pageMargins left="0.4" right="0.4" top="0.5" bottom="0.5" header="0.3" footer="0.3"/>'+
+    '<pageSetup paperSize="9" fitToWidth="1" fitToHeight="0" orientation="landscape"/></worksheet>';
+  /* tên trang tính: tối đa 31 kí tự, bỏ kí tự Excel cấm */
+  var tenTrang=('KHDH '+SUBJ+' '+LOP).replace(/[\[\]:*?\/\\]/g,' ').replace(/&/g,'và').slice(0,31);
+  var enc=new TextEncoder(), F=function(name,str){ return {name:name,data:enc.encode(str)}; };
+  window.BX_khgdXlsxLanCuoi={lop:LOP, mon:SUBJ, tiet:soTiet, hang:r};   /* để soi khi cần */
+  return _zipStore([
+    F('[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>'),
+    F('_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'),
+    F('xl/workbook.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="'+_xe(tenTrang)+'" sheetId="1" r:id="rId1"/></sheets><definedNames><definedName name="_xlnm.Print_Titles" localSheetId="0">\''+_xe(tenTrang).replace(/'/g,"''")+'\'!$'+h1+':$'+h2+'</definedName></definedNames></workbook>'),
+    F('xl/_rels/workbook.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'),
+    F('xl/styles.xml',_KHGDX_STYLES),
+    F('xl/worksheets/sheet1.xml',sheet)
+  ], BX_MIME.xlsx);
+}
+window.buildKHGDMonXlsx=buildKHGDMonXlsx;
+window.exportKHGDMonExcel=function(){
+  try{
+    var SUBJ=window.BX_curSubject||'Tiếng Việt', LOP=window.BX_curLop||'5';
+    var slug=SUBJ.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D').replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,'');
+    var yr=(state.year||'2026-2027').replace(/[^0-9]/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,'');
+    var blob=buildKHGDMonXlsx(LOP,SUBJ);
+    _downloadBlob('KHGD_mon_'+slug+'_'+LOP+'_'+yr+'.xlsx', blob, SUBJ);
+  }catch(e){ bxAlert('Không xuất được KHGD (Excel): '+e.message); }
+};
 console.log('[Bút Xanh] KHGD môn Tiếng Việt 5 ('+TV5.length+' hoạt động) đã nạp; nút Xuất Word sẵn sàng.');
 })();
 
@@ -10769,6 +10891,7 @@ function rebuild(){
       '<h3 id="khdh-title" style="margin:0;color:'+NAVY+'">'+esc(titleText())+'</h3>'+
       '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
         '<button class="btn solid" onclick="exportKHGDMonWord()">📄 Tải KHDH môn này</button>'+
+        '<button class="btn solid" onclick="exportKHGDMonExcel()" title="Cùng nội dung bản Word Phụ lục 2 của môn đang xem, dạng Excel để sửa, lọc, in (11/9/2026)">📊 Tải Excel môn này</button>'+
         '<button class="btn solid" onclick="exportKHGDKhoiWord()" title="Một tệp Word đủ các môn của khối, đúng Phụ lục 2 Công văn 2345">📚 Tải KHDH cả khối (Phụ lục 2)</button>'+
         '<button class="btn" id="khdh-edit-btn" onclick="BX_khgdToggleEdit()">✏️ Chỉnh sửa KHDH</button>'+
         '<button class="btn" onclick="BX_khgdMoNhap()" title="Tải file Excel mẫu, sửa theo kế hoạch của tổ rồi đưa lại lên — thay cả bảng, không phải sửa từng ô">📥 Nhập KHGD của tôi (Excel)</button>'+
@@ -14116,7 +14239,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
 <!-- Lớp bản quyền (License) — tách riêng để an toàn, dễ cập nhật.
      ⚠️ Có dấu phiên bản ?v= vì GitHub Pages giữ bản cũ 10 phút — sửa license.js mà
      quên đổi dấu này thì máy thầy cô vẫn chạy bản cũ. (5/8/2026) -->
-<script src="khgd-sgv.js?v=20260909d-trucsgv"></script>
+<script src="khgd-sgv.js?v=20260911-chuthuong"></script>
 <!-- (10/9/2026) phân số đã xác minh trong giáo án Toán gốc 3–5 — sinh bởi giaoan-goc/_ps-lam-js.js; sinh lại thì đổi ?v= -->
 <script src="ps-goc.js?v=20260910a"></script>
 <script src="license.js?v=20260828-lancuoi"></script>
