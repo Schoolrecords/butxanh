@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-11 · 192';
+  var PB='2026-09-11 · 193';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -11819,9 +11819,52 @@ window.BX_baoGioiHan=function(){
   var msg=g.loiNhan||('Bút Xanh hiện mở Lịch báo giảng và giáo án đến Tuần '+gh+'. Các tuần sau sẽ mở tiếp khi tổ chuyên môn rà soát xong kế hoạch.');
   try{ if(typeof bxAlert==='function') bxAlert('🔒 '+msg); }catch(e){}
 };
+/* ===== ⏰ ĐỒNG HỒ MÁY SAI (11/9/2026 — PB 193) =====
+   CA THẬT chiều 11/9: máy tính một thầy cô đăng nhập mãi báo auth/network-request-failed, mạng vẫn tốt.
+   Mã lỗi chép gửi về ghi "Lúc: 15:14:36 14/7/2026" — ĐỒNG HỒ MÁY CHẬM GẦN 2 THÁNG (giờ đúng, ngày sai).
+   Chứng chỉ bảo mật của Google (cấp 10/8/2026), butxanh.net (19/8), firebaseapp.com (20/7), máy chủ
+   dữ liệu (4/9) đều cấp SAU ngày đó → máy coi là "chưa có hiệu lực", đăng nhập hỏng y như mất mạng.
+   App cũng tính "tuần đang soạn" theo đồng hồ máy nên còn mở nhầm tuần.
+   Cách dò: giờ máy chủ lấy từ đầu phản hồi Date của cauhinh.json (vẫn tải mỗi lần mở app, ngay dưới);
+   chưa có thì so với ngày phát hành bản app (BX_PHIENBAN) — máy ghi ngày TRƯỚC ngày phát hành là chắc sai.
+   Lệch quá 30 phút mới báo (Google chịu được lệch vài phút), mỗi lần mở app một lần. */
+(function(){
+  var LECH=30*60000, daBao=false;
+  function ngayGio(t){ try{ var d=new Date(t); return d.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})+' ngày '+d.toLocaleDateString('vi-VN'); }catch(e){ return ''; } }
+  /* null = đồng hồ ổn hoặc chưa biết; có lệch thì trả {may, that} (that=null khi chỉ biết là sai) */
+  window.BX_dongHoLech=function(){
+    var now=Date.now(), g=window.BX_GIO_MAYCHU;
+    if(g && isFinite(g.lech)) return Math.abs(g.lech)>LECH ? {may:now, that:now-g.lech} : null;
+    var m=/^(\d{4})-(\d\d)-(\d\d)/.exec(String(window.BX_PHIENBAN||''));
+    if(m && now < new Date(+m[1],+m[2]-1,+m[3]).getTime()-86400000) return {may:now, that:null};
+    return null;
+  };
+  /* ep=true: báo cả khi đã báo rồi (bấm Đăng nhập trên máy đồng hồ sai). Trả true nếu có báo. */
+  window.BX_baoDongHoSai=function(ep, khiVanThu){
+    var k=window.BX_dongHoLech(); if(!k || (daBao && !ep)) return false;
+    daBao=true;
+    (function hien(){
+      if(typeof window.BX_confirm!=='function' || document.readyState==='loading'){ setTimeout(hien,500); return; }
+      window.BX_confirm({title:'⏰ Đồng hồ máy tính đang sai',
+        html:'Máy này đang để <b>'+ngayGio(k.may)+'</b>'+
+             (k.that?', trong khi bây giờ là <b>'+ngayGio(k.that)+'</b>.':' — sớm hơn cả ngày ra đời của bản Bút Xanh này.')+'<br><br>'+
+             'Đồng hồ sai thì Google <b>không cho đăng nhập</b> (báo lỗi mạng dù mạng vẫn tốt) và Bút Xanh có thể <b>mở nhầm tuần</b>.<br><br>'+
+             '👉 Cách chỉnh trên Windows: bấm <b>chuột phải vào đồng hồ</b> ở góc dưới bên phải màn hình → <b>Điều chỉnh ngày và giờ</b> '+
+             '(Adjust date and time) → bật <b>Đặt thời gian tự động</b> (Set time automatically) → bấm <b>Đồng bộ hóa ngay</b> (Sync now).<br>'+
+             'Xong thầy/cô tải lại trang (phím <b>F5</b>) rồi đăng nhập lại ạ.<br><br>'+
+             '<span style="color:#6b7a72;font-size:13px">Dữ liệu trên máy vẫn nguyên vẹn, không mất gì cả.</span>',
+        okText:'Đã hiểu', cancelText:khiVanThu?'Vẫn thử đăng nhập':undefined, single:!khiVanThu}, null, khiVanThu||null);
+    })();
+    return true;
+  };
+})();
 (function(){
   try{
-    fetch('cauhinh.json?t='+Math.floor(Date.now()/300000),{cache:'no-store'}).then(function(r){ return r.ok?r.json():null; }).then(function(c){
+    fetch('cauhinh.json?t='+Math.floor(Date.now()/300000),{cache:'no-store'}).then(function(r){
+      /* ⏰ giờ máy chủ để dò đồng hồ máy sai — xem BX_dongHoLech ngay trên */
+      try{ var ms=Date.parse(r.headers.get('Date')||''); if(isFinite(ms)){ window.BX_GIO_MAYCHU={lech:Date.now()-ms}; window.BX_baoDongHoSai(); } }catch(e){}
+      return r.ok?r.json():null;
+    }).then(function(c){
       if(!c||typeof c!=='object') return;
       window.BX_GIOI_HAN=c;
       var gh=BX_tuanMoToiDa(), cur=parseInt(state.week,10)||1;
@@ -13581,7 +13624,15 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
      Nay: đếm lượt (bỏ hồi âm của lượt cũ) + tự gỡ kẹt sau HET_GIO + cho bấm lại sau
      CHO_BAM_LAI + quay lại app là mở khoá nút ngay. */
   var luotDN=0, tBatDau=0, hetGioT=null;
-  var HET_GIO=45000, CHO_BAM_LAI=8000;
+  /* (11/9/2026 — PB 193) MÁY TÍNH: 45 giây là QUÁ NGẮN. Chọn tài khoản + gõ mật khẩu + xác minh
+     2 bước trên điện thoại dễ quá 45 giây — app báo "chưa phản hồi" trong lúc thầy cô còn làm dở
+     trong cửa sổ Google; bấm "Thử lại" là mở lượt thứ hai chồng lên, Google nhận CÙNG MỘT lượt
+     đăng nhập hai lần → auth/missing-or-invalid-nonce "Duplicate credential received" (ca thật
+     chiều 11/9, Chrome 153). Trên máy tính cửa sổ Google là cửa sổ riêng, thầy cô đóng thì Firebase
+     tự biết (popup-closed-by-user) nên lưới đỡ để 4 phút là đủ. Điện thoại giữ 45 giây: ở đó cửa sổ
+     hay bị trình duyệt nuốt mất (ca 16/8). */
+  var CHO_BAM_LAI=8000;
+  function hetGio(){ try{ return (typeof window.bxLaCamTay==='function' && window.bxLaCamTay()) ? 45000 : 240000; }catch(e){ return 45000; } }
   function ketThucDangNhap(){                 // gỡ trạng thái "đang đăng nhập" ở mọi ngả
     dangDangNhap=false; tBatDau=0;
     if(hetGioT){ clearTimeout(hetGioT); hetGioT=null; }
@@ -13607,6 +13658,9 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
         }
         luotDN++; ketThucDangNhap();          // bỏ lượt cũ, làm lại từ đầu
       }
+      /* ⏰ (11/9/2026) Đồng hồ máy sai thì Google chắc chắn từ chối — chỉ cách chỉnh trước,
+         vẫn chừa nút "Vẫn thử đăng nhập" phòng khi dò nhầm. */
+      if(window.BX_baoDongHoSai && window.BX_baoDongHoSai(true, function(){ FBX.login2(); })) return;
       FBX.login2();
     },
     login2:function(){
@@ -13636,15 +13690,33 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
         if(luot!==luotDN || !dangDangNhap) return;
         if(auth.currentUser){ ketThucDangNhap(); return; }     // đã vào rồi, chỉ là hồi âm chậm
         luotDN++; ketThucDangNhap();
+        if(window.BX_baoDongHoSai && window.BX_baoDongHoSai(true)) return;   // ⏰ đồng hồ máy sai
         BX_confirm({title:'Đăng nhập chưa xong',
-          html:'Cửa sổ đăng nhập Google chưa phản hồi (có thể đã bị đóng hoặc mạng chập chờn).<br><br>Dữ liệu trên máy <b>vẫn nguyên vẹn</b> ạ. Thầy/cô bấm <b>Thử lại</b> nhé.',
-          okText:'Thử lại',cancelText:'Để sau'}, function(){ FBX.login(); });
-      }, HET_GIO);
+          html:'Cửa sổ đăng nhập Google chưa xong.<br><br>👉 Nếu cửa sổ Google <b>vẫn đang mở</b> (có thể nằm khuất sau cửa sổ này), thầy/cô cứ làm tiếp trong cửa sổ đó, <b>đừng bấm Thử lại</b>.<br>Nếu đã lỡ đóng thì bấm <b>Thử lại</b>.<br><br>Dữ liệu trên máy <b>vẫn nguyên vẹn</b> ạ.',
+          okText:'Thử lại',cancelText:'Để sau'}, function(){ if(auth.currentUser) return; FBX.login(); });
+      }, hetGio());
       auth.signInWithPopup(p).then(function(){ if(luot!==luotDN) return; ketThucDangNhap(); }).catch(function(e){
         if(luot!==luotDN) return;             // hồi âm của lượt đã bỏ — kệ nó
         ketThucDangNhap();
         console.warn('[ĐB] đăng nhập lỗi',e);
         var code=(e&&e.code)||'';
+        /* (11/9/2026 — PB 193) Đã vào được rồi (lượt kia xong trước) thì lỗi của lượt này là thừa — im lặng */
+        if(auth.currentUser) return;
+        /* Lượt trùng: Google nhận cùng một lượt đăng nhập hai lần. Thường lượt kia đang vào —
+           đợi Firebase báo một chút, vẫn chưa vào mới nói. */
+        if(code==='auth/missing-or-invalid-nonce'){
+          setTimeout(function(){
+            if(auth.currentUser) return;
+            BX_confirm({title:'Đăng nhập bị gửi trùng',
+              html:'Google vừa nhận <b>hai lần</b> cùng một lượt đăng nhập nên từ chối lượt sau.<br><br>'+
+                   '👉 Thầy/cô <b>đóng hết các cửa sổ đăng nhập Google</b> đang mở (và các thẻ Bút Xanh khác nếu có), '+
+                   'rồi bấm <b>Thử lại</b> — chỉ bấm <b>một lần</b> và chờ cửa sổ Google hiện ra ạ.<br><br>'+
+                   '<span style="color:#6b7a72;font-size:13px">Dữ liệu trên máy vẫn nguyên vẹn.</span>'+
+                   (typeof bxNutChepLoi==='function'?bxNutChepLoi(code,e):''),
+              okText:'Thử lại',cancelText:'Để sau'}, function(){ if(auth.currentUser) return; FBX.login(); });
+          },2500);
+          return;
+        }
         /* Thầy cô tự đóng cửa sổ / bấm nút hai lần — không phải lỗi, không làm phiền.
            NGOẠI LỆ (18/8/2026): đang mở trong Zalo/Facebook thì Google TỪ CHỐI đăng nhập
            trong webview ("disallowed_useragent"), cửa sổ đóng ngay và app im lặng — thầy cô
@@ -13690,6 +13762,7 @@ window.bxAlert=function(text,opts){ return new Promise(function(res){ BX_confirm
             okText:'Đã hiểu',cancelText:'Thử lại'}, null, function(){ FBX.login(); });
         } else if(code==='auth/network-request-failed'){
           try{ console.warn('[Bút Xanh] đăng nhập lỗi:', code, (e&&e.message)||''); }catch(_){}
+          if(window.BX_baoDongHoSai && window.BX_baoDongHoSai(true)) return;   // ⏰ (11/9) đồng hồ máy sai → nói đúng lý do
           BX_confirm({title:'Mạng đang chập chờn',
             html:'Bút Xanh chưa nối được tới Google để đăng nhập.<br><br>Thầy cô kiểm tra lại mạng rồi bấm <b>Thử lại</b> giúp em ạ.'+(typeof bxNutChepLoi==='function'?bxNutChepLoi(code,e):''),
             okText:'Thử lại',cancelText:'Để sau'}, function(){ FBX.login(); });
