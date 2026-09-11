@@ -875,6 +875,9 @@
     return s;
   }
   function khoaMon(m){
+    /* (12/9/2026) "Toán tăng cường" / "Tiếng Việt tăng cường" (buổi 2) là CON của môn mẹ: ai có quyền
+       Toán khối 1 thì dùng được Toán tăng cường khối 1 — không mở mặt bản quyền mới. */
+    m=String(m==null?'':m).replace(/\s*[-–(]?\s*(tăng cường|tăng buổi|TC)\s*\)?\s*$/i,'');
     return String(canonMon(m)).toLowerCase().normalize('NFD')
       .replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').replace(/[^a-z0-9]+/g,'');
   }
