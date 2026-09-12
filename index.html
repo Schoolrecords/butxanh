@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-12 · 202';
+  var PB='2026-09-12 · 203';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1271,7 +1271,7 @@ window.bxMergeKho = function(){
 (function(){
   /* (4/9/2026) Đổi chuỗi này MỖI KHI sửa nội dung kho-data-*.js — trình duyệt nhớ tệp kho
      theo đúng đường dẫn kèm ?v=, không đổi là thầy cô vẫn mở ra kho cũ. */
-  var V='20260912-tangcuong2';   /* đổi MỖI KHI sửa kho-data-*: không đổi thì trình duyệt giữ bản cũ, thầy cô không thấy dữ liệu vừa vá */
+  var V='20260912-tv1sgv';   /* đổi MỖI KHI sửa kho-data-*: không đổi thì trình duyệt giữ bản cũ, thầy cô không thấy dữ liệu vừa vá */
   window.BX_KHO_FILES={
     '1':['kho-data-lop1.js','kho-data-l1-gdtc.js','kho-data-l1-amnhac.js','kho-data-l1-mithuat.js','kho-data-l1-tienganh.js','kho-data-l1-tangcuong.js'],   /* (12/9/2026) Tiếng Anh 1–2 máy soạn, chờ tổ soát */
     '2':['kho-data-lop2.js','kho-data-l2-gdtc.js','kho-data-l2-amnhac.js','kho-data-l2-mithuat.js','kho-data-l2-tienganh.js','kho-data-l2-tangcuong.js'],
@@ -1441,7 +1441,7 @@ window.bxMergeKho = function(){
        cả tên bài, mà đợt chuẩn hoá tên bài khối 3 đổi 594 tên. Xem bxChuyenKhoaSuaTheoTenMoi. */
     try{
       Promise.all(chos.map(function(p){ return (p&&p.then)?p.catch(function(){}):null; }))
-        .then(function(){ if(window.bxChuyenKhoaSuaTheoTenMoi) window.bxChuyenKhoaSuaTheoTenMoi(); })
+        .then(function(){ if(window.bxChuyenKhoaSuaTheoTenMoi) window.bxChuyenKhoaSuaTheoTenMoi(); if(window.bxChuyenSuaTachTiet) window.bxChuyenSuaTachTiet(); })
         .then(function(){ try{ if(window.bxTuChuaTuanTrong) window.bxTuChuaTuanTrong(); }catch(e){} })
         .then(function(){ try{ if(window.bxChoKhoTKB) return window.bxChoKhoTKB(); }catch(e){} })   /* (6/9/2026) chờ đủ kho các khối trong TKB */
         .then(function(){ try{ if(window.bxLamMoiSauCapNhat) window.bxLamMoiSauCapNhat(); }catch(e){} });
@@ -6956,10 +6956,28 @@ function openWeekKhbdModal(){
     ', thầy cô xem trước khi lưu về máy tính của mình!'+gopNote;
   el('week-overlay').classList.add('show');
 }
+/* (12/9/2026) Tên tệp KHBD cả tuần theo LỚP CỦA CÁC TIẾT trong tệp, KHÔNG theo lớp ở hồ sơ (state.klass).
+   Cổng bản quyền đọc khối từ đuôi "_Lop<khối>" của tên tệp: cô Diệu Thúy dạy bộ môn khối 2–5, hồ sơ khai lớp khối 1
+   → cả tệp bị chặn "chưa mở được tài liệu khối 1" dù mọi tiết trong tệp đều thuộc quyền của cô.
+   Tiết thuộc MỘT khối → "_Lop<lớp>" như cũ; nhiều khối → "_Khoi2-4-5" (cổng tên tệp không bắt khối), phạm vi bản quyền
+   do dlWeekImg lọc TỪNG tiết (_bxLocTheoQuyen) — cổng thu phí vẫn giữ vì tên vẫn bắt đầu bằng KHBD_. */
+function _bxTenTepTuan(items){
+  const ks={}, lops={};
+  (items||[]).forEach(function(it){
+    const l=String((it&&it.r&&it.r.lop)||(it&&it.L&&it.L.lop)||'').split(',')[0].trim();
+    const k=l.replace(/\D/g,'').slice(0,1); if(k){ ks[k]=1; lops[l]=1; }
+  });
+  const dsK=Object.keys(ks).sort(), dsL=Object.keys(lops);
+  if(dsK.length===1) return 'KHBD_Tuan'+state.week+'_Lop'+(dsL.length===1?dsL[0]:dsK[0])+'.docx';
+  if(dsK.length>1) return 'KHBD_Tuan'+state.week+'_Khoi'+dsK.join('-')+'.docx';
+  return 'KHBD_Tuan'+state.week+'_Lop'+state.klass+'.docx';
+}
+window.BX_tenTepTuan=_bxTenTepTuan;
 function downloadWeekKHBD(){
   const rows=state.schedule||[];
   if(!rows.length){ bxAlert('Tuần '+state.week+' chưa có tiết nào trong thời khoá biểu.'); return; }
-  const fname=`KHBD_Tuan${state.week}_Lop${state.klass}.docx`;
+  let _its=null; try{ _its=_weekKhbdItems(); }catch(e){}
+  const fname=_its?_bxTenTepTuan(_its):`KHBD_Tuan${state.week}_Lop${state.klass}.docx`;
   if(_bxChuaTraPhi(fname)) return;                      // chưa kích hoạt → hỏi ngay, đừng dựng tệp
   const dong=function(){ closeModal('week-overlay'); closeModal('preview-overlay'); };
   /* Ưu tiên bản KÈM ẢNH (DOM->docx); lỗi thì fallback bản chữ.
@@ -8699,6 +8717,18 @@ function BX_resolveBankMatch(row){
     var ghim=all.filter(function(L){ if(bankKey(L.mon,L.bai)!==kk) return false; if(row._khoTuan!=null&&String(L.tuan)!==String(row._khoTuan)) return false; if(row._khoTiet!=null&&String(L.tiet)!==String(row._khoTiet)) return false; return true; });
     if(!ghim.length) ghim=all.filter(function(L){ return bankKey(L.mon,L.bai)===kk; });
     if(ghim.length) return {status:'ok', lesson:ghim[0], candidates:ghim, via:'ghim'};
+    /* (12/9/2026) Bản ghi đã ghim là giáo án GỘP nay đã tách từng tiết (Tiếng Việt 1: "… (Tiết 3+4)" → "… (Tiết 1)", "… (Tiết 2)"):
+       lấy anh em cùng bài, cùng tuần kho; ô thứ mấy của bài gộp thì đọc ở đuôi "(tiết k/n)" của dòng lịch (không có = tiết 1).
+       Không có bước này thì lịch đã lưu từ trước (tuần thầy cô chỉnh tay, không được tự làm mới) mở ra "Chưa có trong kho". */
+    var _gocT=function(s){ return _normTxt(String(s||'').replace(/\(\s*ti[eế]t[^)]*\)/gi,' ')).replace(/\s+/g,' ').trim(); };
+    var gk=_gocT(row._khoBai), mk=bankKey(row.mon,'');
+    var ae=all.filter(function(L){ return (row._khoTuan==null||String(L.tuan)===String(row._khoTuan)) && bankKey(L.mon,'')===mk && _gocT(L.bai)===gk; })
+      .sort(function(a,b){ return (+a.tiet||0)-(+b.tiet||0); });
+    if(ae.length>1){
+      var pk=/\(tiết\s*(\d+)\/\d+\)/i.exec(String(row.bai||'')), ik=pk?(+pk[1]-1):0;
+      var L0=ae[Math.max(0,Math.min(ik,ae.length-1))];
+      return {status:'ok', lesson:L0, candidates:[L0], via:'ghim-tach'};
+    }
   }
   var baiSach=String(row.bai||'').replace(/\s*[—–-]\s*Bài học STEM:.*$/i,'').replace(/\s*\(tiết\s*\d+\/\d+\)\s*$/i,'').trim();
   // 1) cpid đã ghim trên dòng lịch
@@ -12799,6 +12829,38 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
     }catch(e){ try{ console.warn('[Bút Xanh] chuyển khoá bản sửa lỗi: '+e.message); }catch(e2){} }
   }
   window.bxChuyenKhoaSuaTheoTenMoi=bxChuyenKhoaSuaTheoTenMoi;
+  /* (12/9/2026) Tiếng Việt 1: giáo án GỘP "(Tiết 1+2)" tách thành từng tiết "(Tiết 1)", "(Tiết 2)" → bản sửa lưu theo tên gộp
+     không còn bản ghi nào mang tên đó, cô mở lại sẽ thấy bản gốc mới mà không hề được báo. Khoá bản sửa có số tiết là ô trên
+     lịch (không cho biết đó là tiết thứ mấy của bài) nên CHÉP bản sửa sang mọi tiết anh em của bài (cùng lớp, tuần, môn, cùng
+     phần tên bỏ cụm "(Tiết …)"): ô nào của bài cũng hiện lại đúng bản cô đã soạn, y như trước khi tách.
+     Chạy MỖI LẦN mở app (không chốt "một lần"): các tuần TV1 còn lại sẽ lần lượt được tách, mỗi đợt phải chuyển được bản sửa
+     của đợt ấy. Chạy lại vô hại — khoá cũ đã chuyển thì mất, tên còn trong kho thì bỏ qua; kho khối chưa về thì để lần sau. */
+  function bxChuyenSuaTachTiet(){
+    try{
+      var m=loadEdits(), khoa=Object.keys(m);
+      if(!khoa.length) return;
+      var K=window.KHO_DATA||[], coTen={}, coKhoi={};
+      K.forEach(function(L){ if(L&&L.bai){ coTen[L.mon+'|'+L.bai]=1; coKhoi[String(L.lop)]=1; } });
+      var gocT=function(s){ return _normTxt(String(s||'').replace(/\(\s*ti[eế]t[^)]*\)/gi,' ')).replace(/\s+/g,' ').trim(); };
+      var doi=0;
+      khoa.forEach(function(k){
+        var p=k.split('|'); if(p[0]!=='khbd'||p.length<6) return;
+        var cu=p.slice(5).join('|');
+        if(!/\(\s*ti[eế]t\s*\d+\s*[+,\-–]\s*\d+/i.test(cu)) return;      // chỉ tên GỘP nhiều tiết
+        if(coTen[p[4]+'|'+cu]) return;                                    // tên vẫn còn trong kho
+        var kl=String(p[1]).replace(/\D/g,'').slice(0,1);
+        if(kl&&!coKhoi[kl]) return;                                       // kho khối đó chưa về → lần sau
+        var g=gocT(cu);
+        var ae=K.filter(function(L){ return L&&L.mon===p[4]&&String(L.tuan)===p[2]&&(!kl||String(L.lop)===kl)&&gocT(L.bai)===g; });
+        if(!ae.length||ae.length>6) return;
+        ae.forEach(function(L){ var kMoi='khbd|'+p[1]+'|'+p[2]+'|'+p[3]+'|'+p[4]+'|'+L.bai; if(m[kMoi]==null) m[kMoi]=m[k]; });
+        delete m[k]; doi++;
+      });
+      if(doi){ localStorage.setItem('butxanh_khbd_edits',JSON.stringify(m));
+        try{ console.log('[Bút Xanh] chép '+doi+' bản sửa giáo án gộp sang các tiết vừa tách'); }catch(e){} }
+    }catch(e){ try{ console.warn('[Bút Xanh] chuyển bản sửa tách tiết lỗi: '+e.message); }catch(e2){} }
+  }
+  window.bxChuyenSuaTachTiet=bxChuyenSuaTachTiet;
   function loadEdits(){try{return JSON.parse(localStorage.getItem('butxanh_khbd_edits')||'{}');}catch(e){return{};}}
   /* (7/9/2026) TRẢ VỀ ĐƯỢC/KHÔNG — trước đây `catch(e){}` nuốt trọn lỗi đầy bộ nhớ.
      Trình duyệt chỉ cho ~5 MB. Đầy rồi thì bản sửa không ghi được, mà localStorage vẫn
@@ -14949,6 +15011,21 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
       if(!c){ c=chonTot(cungTuan().filter(function(r){ return _chua(name,r.bai)>=0.5; }),function(r){ return _chua(name,r.bai); }); }
       return ghi(c);
     }
+    /* (12/9/2026) Dòng kế hoạch nhiều tiết ("Bài 1: A a" · 2 tiết) mà kho soạn TỪNG TIẾT ("Bài 01: A, a (Tiết 1)", "… (Tiết 2)"):
+       ô thứ k của dòng lấy bản ghi ANH EM cùng bài, cùng tuần kho, số tiết = tiết của ô đầu + k. Trước đây mọi ô của dòng
+       nhận chung một giáo án → tiết 2 in y hệt tiết 1 (Tiếng Việt 1, thầy Chung báo 12/9). Không có anh em → giữ như cũ. */
+    function _anhEm(lopN,mon,L,k,used){
+      var t0=(typeof _tietNo==='function')?_tietNo(L.bai):null; if(t0==null) return L;
+      var goc=_n(_lotTiet(L.bai)), nm=_n(mon), nc=_n(_canonMon(mon));
+      var c=(window.KHO_DATA||[]).filter(function(r){
+        if(r===L||!r||String(r.lop)!==String(lopN)||String(r.tuan)!==String(L.tuan)) return false;
+        var rn=_n(r.mon), rc=_n(_canonMon(r.mon)); if(!(rn===nm||rn===nc||rc===nm||rc===nc)) return false;
+        return _n(_lotTiet(r.bai))===goc && _tietNo(r.bai)===t0+k;
+      })[0];
+      if(!c) return L;
+      if(used.indexOf(c)<0) used.push(c);
+      return c;
+    }
     function _planWeek(lop,mon,pw){
       if(window.BX_LBG_KHO_CU) return null;
       var lopN=_digits(lop)||_digits(state.klass);
@@ -14966,7 +15043,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
               var name=String(((window.BX_khgdVal)?window.BX_khgdVal(lopN,mk,i,4,row[4]):row[4])||'').trim(); if(!name) return;
               var sp=(window.BX_rowPeriods?window.BX_rowPeriods(row):1)||1; if(sp>12) sp=1;
               var L=_timGiaoAn(lopN,mon,name,pw,used,nguon);
-              for(var k=0;k<sp;k++){ E.push({L:L,part:k+1,parts:sp,ppct:String(row[6]||'')}); Kn.push(sp>1?(name+' (tiết '+(k+1)+'/'+sp+')'):name); }
+              for(var k=0;k<sp;k++){ E.push({L:(k>0&&L)?_anhEm(lopN,mon,L,k,used):L,part:k+1,parts:sp,ppct:String(row[6]||'')}); Kn.push(sp>1?(name+' (tiết '+(k+1)+'/'+sp+')'):name); }
             });
             ra={E:E,K:Kn};
           }
