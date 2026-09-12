@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-12 · 203';
+  var PB='2026-09-12 · 204';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1271,7 +1271,7 @@ window.bxMergeKho = function(){
 (function(){
   /* (4/9/2026) Đổi chuỗi này MỖI KHI sửa nội dung kho-data-*.js — trình duyệt nhớ tệp kho
      theo đúng đường dẫn kèm ?v=, không đổi là thầy cô vẫn mở ra kho cũ. */
-  var V='20260912-tv1sgv';   /* đổi MỖI KHI sửa kho-data-*: không đổi thì trình duyệt giữ bản cũ, thầy cô không thấy dữ liệu vừa vá */
+  var V='20260912-tv1sgv2';   /* đổi MỖI KHI sửa kho-data-*: không đổi thì trình duyệt giữ bản cũ, thầy cô không thấy dữ liệu vừa vá */
   window.BX_KHO_FILES={
     '1':['kho-data-lop1.js','kho-data-l1-gdtc.js','kho-data-l1-amnhac.js','kho-data-l1-mithuat.js','kho-data-l1-tienganh.js','kho-data-l1-tangcuong.js'],   /* (12/9/2026) Tiếng Anh 1–2 máy soạn, chờ tổ soát */
     '2':['kho-data-lop2.js','kho-data-l2-gdtc.js','kho-data-l2-amnhac.js','kho-data-l2-mithuat.js','kho-data-l2-tienganh.js','kho-data-l2-tangcuong.js'],
@@ -8720,7 +8720,7 @@ function BX_resolveBankMatch(row){
     /* (12/9/2026) Bản ghi đã ghim là giáo án GỘP nay đã tách từng tiết (Tiếng Việt 1: "… (Tiết 3+4)" → "… (Tiết 1)", "… (Tiết 2)"):
        lấy anh em cùng bài, cùng tuần kho; ô thứ mấy của bài gộp thì đọc ở đuôi "(tiết k/n)" của dòng lịch (không có = tiết 1).
        Không có bước này thì lịch đã lưu từ trước (tuần thầy cô chỉnh tay, không được tự làm mới) mở ra "Chưa có trong kho". */
-    var _gocT=function(s){ return _normTxt(String(s||'').replace(/\(\s*ti[eế]t[^)]*\)/gi,' ')).replace(/\s+/g,' ').trim(); };
+    var _gocT=function(s){ return _normTxt(String(s||'').replace(/\(\s*ti[eế]t[^)]*\)/gi,' ').replace(/\(\s*\d+\s*ti[eế]t\s*\)/gi,' ')).replace(/\s+/g,' ').trim(); };   /* cả "(4 TIẾT)" của học kì II */
     var gk=_gocT(row._khoBai), mk=bankKey(row.mon,'');
     var ae=all.filter(function(L){ return (row._khoTuan==null||String(L.tuan)===String(row._khoTuan)) && bankKey(L.mon,'')===mk && _gocT(L.bai)===gk; })
       .sort(function(a,b){ return (+a.tiet||0)-(+b.tiet||0); });
@@ -12841,12 +12841,12 @@ window.KHO_MEDIA_BASE = window.KHO_MEDIA_BASE || 'kho-media/';
       if(!khoa.length) return;
       var K=window.KHO_DATA||[], coTen={}, coKhoi={};
       K.forEach(function(L){ if(L&&L.bai){ coTen[L.mon+'|'+L.bai]=1; coKhoi[String(L.lop)]=1; } });
-      var gocT=function(s){ return _normTxt(String(s||'').replace(/\(\s*ti[eế]t[^)]*\)/gi,' ')).replace(/\s+/g,' ').trim(); };
+      var gocT=function(s){ return _normTxt(String(s||'').replace(/\(\s*ti[eế]t[^)]*\)/gi,' ').replace(/\(\s*\d+\s*ti[eế]t\s*\)/gi,' ')).replace(/\s+/g,' ').trim(); };
       var doi=0;
       khoa.forEach(function(k){
         var p=k.split('|'); if(p[0]!=='khbd'||p.length<6) return;
         var cu=p.slice(5).join('|');
-        if(!/\(\s*ti[eế]t\s*\d+\s*[+,\-–]\s*\d+/i.test(cu)) return;      // chỉ tên GỘP nhiều tiết
+        if(!/\(\s*ti[eế]t\s*\d+\s*[+,\-–]\s*\d+|\(\s*[2-8]\s*ti[eế]t\s*\)/i.test(cu)) return;      // chỉ tên GỘP nhiều tiết ("(Tiết 1+2)", "(4 TIẾT)")
         if(coTen[p[4]+'|'+cu]) return;                                    // tên vẫn còn trong kho
         var kl=String(p[1]).replace(/\D/g,'').slice(0,1);
         if(kl&&!coKhoi[kl]) return;                                       // kho khối đó chưa về → lần sau
