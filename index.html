@@ -61,7 +61,7 @@
   /* DẤU PHIÊN BẢN — đổi mỗi lần phát hành. Trang được trình duyệt giữ lại tới 10 phút
      (Cache-Control: max-age=600 của GitHub Pages), nên rất dễ mất công dò một lỗi đã sửa
      rồi mà máy vẫn đang chạy bản cũ. Có dấu này thì nhìn Console là biết ngay. */
-  var PB='2026-09-12 · 201';
+  var PB='2026-09-12 · 202';
   window.BX_PHIENBAN=PB;
   try{ console.log('%c[Bút Xanh] phiên bản '+PB,'color:#1FA45C;font-weight:700'); }catch(e){}
   var DS=[], daHien=false;
@@ -1922,7 +1922,7 @@ window.bxMergeKho = function(){
         <div id="tkb-view-status" style="margin-bottom:14px"></div>
         <div class="tkb-toolbar">
           <label style="font-size:13px;color:#2c6b48;font-weight:700;display:inline-flex;align-items:center">Lớp mặc định:
-            <input id="tkb-deflop" style="width:78px;margin-left:8px;border:1px solid #cfe2d5;border-radius:8px;padding:6px 8px;text-align:center;font-weight:600" onchange="bxTKBsetDefLop(this.value)">
+            <input id="tkb-deflop" list="bx-dslop" placeholder="VD: 3A" style="width:78px;margin-left:8px;border:1px solid #cfe2d5;border-radius:8px;padding:6px 8px;text-align:center;font-weight:600" onchange="bxTKBsetDefLop(this.value)">
           </label>
           <label style="font-size:13px;color:#5a6b60;display:inline-flex;align-items:center;gap:6px;cursor:pointer">
             <input type="checkbox" id="tkb-thu7" onchange="bxTKBtoggleThu7(this.checked)"> Có học Thứ 7
@@ -12165,7 +12165,7 @@ window.BX_dashSel=function(){
 /* Dựng ô "Lớp" từ lớp GIÁO VIÊN THẬT SỰ DẠY thay vì ghi cứng 5A/5B.
    Nguồn: lớp khai ở Cài đặt (state.klass) + mọi lớp xuất hiện trong thời khoá biểu,
    lịch dạy, lịch báo giảng đã lưu và kho giáo án. Chỉ ĐỌC, không ghi gì vào localStorage. */
-function BX_dsLopCuaToi(){
+function BX_dsLopCuaToi(khongMacDinh){   /* khongMacDinh=true: chưa có lớp nào thì trả [] (không bịa "5A") — TKB dùng (12/9/2026) */
   var ds=[];
   /* CHỈ lấy lớp thầy cô KHAI THẬT trong hồ sơ. Trước đây lấy state.klass — mà giá trị mặc
      định của nó là "5A", nên giáo viên bộ môn chưa khai lớp bị mọc thêm "Lớp 5A" không hề
@@ -12193,8 +12193,9 @@ function BX_dsLopCuaToi(){
   var kb=doc('butxanh_khbd');
   if(Array.isArray(kb)) kb.forEach(function(x){ if(x) them(x.lop); });
   ds.sort(function(a,b){ return a.localeCompare(b,'vi',{numeric:true}); });
-  return ds.length?ds:[me||'5A'];
+  return ds.length?ds:(khongMacDinh?[]:[me||'5A']);
 }
+try{ window.BX_dsLopCuaToi=BX_dsLopCuaToi; }catch(e){}   /* (12/9/2026) màn TKB (khối script khác) gọi qua window */
 function fillLopSelect(){
   var sl=document.getElementById('sel-lop'); if(!sl) return;
   var ds=BX_dsLopCuaToi();
@@ -15197,9 +15198,28 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
 
   /* ---------- trình soạn TKB — LƯỚI chuyên nghiệp (cột Thứ × hàng Tiết) ---------- */
   var _work=null, _showThu7=false, _extra={'Sáng':0,'Chiều':0};
-  function _clone(r){ return {day:r.day,buoi:r.buoi||'Sáng',tiet:parseInt(r.tiet,10)||1,mon:r.mon,lop:r.lop||state.klass}; }
+  function _clone(r){ return {day:r.day,buoi:r.buoi||'Sáng',tiet:parseInt(r.tiet,10)||1,mon:r.mon,lop:r.lop||_lopKhai()}; }
   function _colLetter(c){ var s=''; c++; while(c>0){ var m=(c-1)%26; s=String.fromCharCode(65+m)+s; c=Math.floor((c-1)/26); } return s; }
-  function _defLop(){ var e=document.getElementById('tkb-deflop'); return (e&&e.value)?e.value.trim():(state.klass||''); }
+  /* (12/9/2026 — thầy Chung, gấp) BỎ "5A" MẶC ĐỊNH trong TKB. state.klass khởi tạo sẵn "5A" nên thầy cô chưa khai
+     lớp (GV bộ môn, GV2) thấy ô "Lớp mặc định" ghi 5A và mọi ô tự mang lớp 5A. Nay chỉ dùng lớp THẦY CÔ KHAI ở Cài đặt;
+     chưa khai thì để trống cho thầy cô chọn/ghi đúng lớp. */
+  function _lopKhai(){ try{ return String((JSON.parse(localStorage.getItem('butxanh_profile')||'{}')).klass||'').trim(); }catch(e){ return ''; } }
+  function _defLop(){ var e=document.getElementById('tkb-deflop'); return (e&&e.value)?e.value.trim():_lopKhai(); }
+  /* Danh sách lớp để CHỌN ở ô "Lớp mặc định" và ô lớp từng tiết (vẫn gõ tay được): lớp đã khai + lớp đã có trong
+     TKB/LBG (BX_dsLopCuaToi) + gợi ý A–E cho mỗi khối thầy cô dạy (lớp đã có, Cài đặt ▸ Lớp và môn tôi dạy). */
+  function _veDsLop(){
+    var f=window.BX_dsLopCuaToi||((typeof BX_dsLopCuaToi==='function')?BX_dsLopCuaToi:null);
+    var ds=[], khoi={};
+    var them=function(x){ var l=String(x||'').trim().replace(/^Lớp\s*/i,''); if(!/^[1-5]/.test(l)) return; if(!ds.some(function(y){ return String(y).toUpperCase()===l.toUpperCase(); })) ds.push(l); };
+    try{ (f?f(true):[]).forEach(them); }catch(e){}
+    them(_lopKhai()); (_work||[]).forEach(function(s){ them(s&&s.lop); });   /* lớp đã khai + lớp đang có trên lưới TKB */
+    ds.sort(function(a,b){ return String(a).localeCompare(String(b),'vi',{numeric:true}); });
+    ds.forEach(function(l){ var k=String(l).replace(/\D/g,'').slice(0,1); if(k) khoi[k]=1; });
+    try{ String((window.BX_quyenDaChon&&window.BX_quyenDaChon())||'').split('|').forEach(function(p){ var k=(/^\s*([1-5])\s*:/.exec(p)||[])[1]; if(k) khoi[k]=1; }); }catch(e){}
+    var goiY=[]; Object.keys(khoi).sort().forEach(function(k){ ['A','B','C','D','E'].forEach(function(c){ var l=k+c; if(!ds.some(function(x){ return String(x).toUpperCase()===l; })) goiY.push(l); }); });
+    var dl=document.getElementById('bx-dslop'); if(!dl){ dl=document.createElement('datalist'); dl.id='bx-dslop'; document.body.appendChild(dl); }
+    dl.innerHTML=ds.concat(goiY).map(function(l){ return '<option value="'+_escOpt(l)+'">'; }).join('');
+  }
   function _days(){ var d=['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6']; if(_showThu7) d.push('Thứ 7'); return d; }
   function _rowsFor(buoi){ var def=(buoi==='Sáng')?5:3, mx=0; (_work||[]).forEach(function(s){ if((s.buoi||'Sáng')===buoi){ var t=parseInt(s.tiet,10)||0; if(t>mx)mx=t; } }); return Math.max(def,mx)+(_extra[buoi]||0); }
   function _cell(day,buoi,tiet){ return (_work||[]).find(function(s){ return s.day===day && (s.buoi||'Sáng')===buoi && (parseInt(s.tiet,10)||0)===tiet; }); }
@@ -15210,7 +15230,8 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
     _work=loadTKB().map(_clone);
     _showThu7=_work.some(function(s){return s.day==='Thứ 7';});
     _extra={'Sáng':0,'Chiều':0};
-    var dl=document.getElementById('tkb-deflop'); if(dl) dl.value=state.klass||'';
+    var dl=document.getElementById('tkb-deflop'); if(dl) dl.value=_lopKhai();   /* (12/9/2026) chỉ lớp đã khai — không còn "5A" mặc định */
+    try{ _veDsLop(); }catch(e){}
     var t7=document.getElementById('tkb-thu7'); if(t7) t7.checked=_showThu7;
     renderGrid(); renderStatus();
   };
@@ -15317,7 +15338,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
           h+='<td class="tkb-cell">'+
              '<div class="tkb-card'+(mon?'':' empty')+'" style="'+(mon?monStyle(mon):'')+'">'+
                '<select class="tkb-msel" onchange="bxTkbCell(this,&quot;'+d+'&quot;,&quot;'+buoi+'&quot;,'+t+')">'+monOpts(mon)+'</select>'+
-               (mon?('<input class="tkb-lop" value="'+String((s&&s.lop)||'').replace(/"/g,'&quot;')+'" placeholder="Lớp" onchange="bxTkbCellLop(this,&quot;'+d+'&quot;,&quot;'+buoi+'&quot;,'+t+')">'):'')+
+               (mon?('<input class="tkb-lop" value="'+String((s&&s.lop)||'').replace(/"/g,'&quot;')+'" placeholder="Lớp" list="bx-dslop" onchange="bxTkbCellLop(this,&quot;'+d+'&quot;,&quot;'+buoi+'&quot;,'+t+')">'):'')+
              '</div>'+
              '</td>';
         });
@@ -15395,7 +15416,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
       card.classList.remove('empty'); card.style.cssText=monStyle(mon);
       var inp=card.querySelector('.tkb-lop');
       if(!inp){
-        inp=document.createElement('input'); inp.className='tkb-lop'; inp.placeholder='Lớp';
+        inp=document.createElement('input'); inp.className='tkb-lop'; inp.placeholder='Lớp'; inp.setAttribute('list','bx-dslop');
         inp.setAttribute('onchange','bxTkbCellLop(this,"'+day+'","'+buoi+'",'+tiet+')');
         card.appendChild(inp);
       }
@@ -15420,7 +15441,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
   /* (10/8/2026) Điền nhanh LỊCH MẪU khối đang chọn cho thầy cô THAM KHẢO — không tự áp,
      chỉ khi thầy cô chủ động bấm. Dùng BX_tkbMauKhoi (đã bỏ môn chuyên). Có nội dung rồi thì hỏi. */
   window.bxTKBdienMau=function(){
-    var lop=_defLop()||state.klass||'', khoi=String(lop).replace(/\D/g,'').slice(0,1)||'5';
+    var lop=_defLop(), khoi=String(lop).replace(/\D/g,'').slice(0,1)||'5';
     if(typeof window.BX_tkbMauKhoi!=='function'){ bxAlert('Chưa nạp được lịch mẫu, thầy/cô thử lại sau giây lát.'); return; }
     var lam=function(){
       _work=window.BX_tkbMauKhoi(khoi, lop||(khoi+'A')).map(_clone);
@@ -15444,7 +15465,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
   }
   /* (7/9/2026) Đo ca GV2: hồ sơ không có lớp chủ nhiệm + ô TKB không ghi lớp → app gán "5A" lặng lẽ, tiết thứ hai cùng môn
      trống bài. Nay chặn ngay lúc lưu và chỉ cách. */
-  function _oThieuLop(sl){ var k=String((state&&state.klass)||'').trim(); return (sl||[]).filter(function(s){ return !String(s.lop||'').trim() && !k; }); }
+  function _oThieuLop(sl){ var k=_defLop(); return (sl||[]).filter(function(s){ return !String(s.lop||'').trim() && !k; }); }
   function _baoThieuLop(n){ bxAlert('Có '+n+' ô chưa ghi lớp, mà thầy/cô chưa khai lớp chủ nhiệm nên Bút Xanh không biết tiết đó dạy lớp nào.\n\nThầy/cô ghi lớp vào ô "Lớp mặc định" phía trên lưới (nếu dạy chủ yếu một lớp), hoặc bấm từng ô và ghi lớp (1A, 2B…) rồi lưu lại ạ.'); try{ var e=document.getElementById('tkb-deflop'); if(e) e.focus(); }catch(e){} }
   window.bxTKBsave=function(){
     var sl=_validSlots();
@@ -15524,7 +15545,7 @@ document.addEventListener('DOMContentLoaded',function(){ try{ theSettings(); }ca
       if(cnt>=2){ headerRow=r; dayCol=dc; buoiCol=(bc<0?0:bc); tietCol=(tc<0?1:tc); }
     }
     if(!headerRow) throw new Error('Không thấy hàng tiêu đề có các cột "Thứ 2"…"Thứ 6".');
-    var lop=_defLop()||state.klass||'';
+    var lop=_defLop();
     for(var rr=1;rr<headerRow;rr++){ for(var cc=0;cc<=maxCol;cc++){ var lm=val(cc,rr).match(/L[ơớ]p\s*[:\-]?\s*([0-9][A-Za-z0-9]*)/); if(lm){ lop=lm[1]; break; } } }
     var slots=[], lastBuoi='Sáng';
     for(var r2=headerRow+1;r2<=maxRow;r2++){
